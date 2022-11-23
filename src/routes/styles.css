@@ -1,0 +1,18 @@
+:root {
+	--font-body: ' SourceSansPro-Semibold';
+	--font-mono: monospace;
+
+	--color-light-grey: #ddd;
+	--color-white: #fff;
+	--color-black: #000;
+}
+
+body {
+	width: 100vw;
+	min-height: 100vh;
+	overflow-x: hidden;
+	margin: 0;
+	padding: 0;
+	color: var(--color-black);
+	background-color: var(--color-white);
+}
