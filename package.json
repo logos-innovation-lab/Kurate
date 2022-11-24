@@ -13,7 +13,7 @@
 		"format": "prettier --plugin-search-dir . --write . && eslint . --fix"
 	},
 	"devDependencies": {
-		"@playwright/test": "1.25.0",
+		"@playwright/test": "1.28.1",
 		"@sveltejs/adapter-static": "^1.0.0-next.48",
 		"@sveltejs/kit": "next",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
