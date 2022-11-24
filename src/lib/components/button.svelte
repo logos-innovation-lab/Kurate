@@ -1,8 +1,17 @@
 <script lang="ts">
+	import WalletIcon from '$lib/components/icons/wallet.svelte'
+	import type { SvelteComponent } from 'svelte'
+
 	export let variant: 'light' | 'dark' = 'light'
+	export let icon: ConstructorOfATypedSvelteComponent | undefined = undefined
+
+	let hovered = false
 </script>
 
-<button class={`${variant} root`}>
+<button class={`${variant} root`} on:mouseenter={() => hovered = true} on:mouseleave={() => hovered = false}>
+	{#if icon !== undefined}
+		<svelte:component this={icon} size='20' fill={hovered ? 'black' : 'white'} />
+	{/if}
 	<slot />
 </button>
 
@@ -13,6 +22,9 @@
 		border-radius: 50px;
 		cursor: pointer;
 		transition: 1s;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 	}
 	.light,
 	.dark:hover {
