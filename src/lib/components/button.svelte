@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let variant: 'light' | 'dark' = 'light';
+	export let variant: 'light' | 'dark' = 'light'
 </script>
 
 <button class={`${variant} root`}>
