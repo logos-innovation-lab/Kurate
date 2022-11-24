@@ -1,5 +1,5 @@
 <script lang="ts">
-	import UserIcon from '$lib/components/icons/user.svelte';
+	import UserIcon from '$lib/components/icons/user.svelte'
 </script>
 
 <div class="root">

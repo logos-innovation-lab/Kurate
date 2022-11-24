@@ -1,7 +1,7 @@
 <script lang="ts">
-	import './styles.css';
-	import Header from '$lib/components/header.svelte';
-	import Button from '$lib/components/button.svelte';
+	import './styles.css'
+	import Header from '$lib/components/header.svelte'
+	import Button from '$lib/components/button.svelte'
 </script>
 
 <div>
