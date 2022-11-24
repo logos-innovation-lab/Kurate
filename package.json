@@ -13,6 +13,8 @@
 		"format": "prettier --plugin-search-dir . --write . && eslint . --fix"
 	},
 	"devDependencies": {
+		"@fontsource/source-code-pro": "^4.5.12",
+		"@fontsource/source-sans-pro": "^4.5.11",
 		"@playwright/test": "1.28.1",
 		"@sveltejs/adapter-static": "^1.0.0-next.48",
 		"@sveltejs/kit": "next",

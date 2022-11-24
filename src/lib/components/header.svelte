@@ -1,12 +1,11 @@
 <script lang="ts">
 	import UserIcon from '$lib/components/icons/user.svelte'
+	import Button from './button.svelte'
 </script>
 
 <div class="root">
 	<span class="title">The Outlet</span>
-	<div class="user-icon">
-		<UserIcon size={18} />
-	</div>
+	<Button icon={UserIcon} />
 </div>
 
 <style>
@@ -17,21 +16,10 @@
 		padding: 15px;
 	}
 	.title {
-		font-family: 'SourceSansPro-Semibold';
-		font-size: 18px;
+		font-family: var(--font-body);
 		font-weight: 600;
+		font-size: 18px;
 		font-style: normal;
 		text-align: left;
-	}
-	.user-icon {
-		width: 38px;
-		height: 38px;
-		border-radius: 19px;
-		border-color: #dddddd;
-		border-style: solid;
-		border-width: 1px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
 	}
 </style>

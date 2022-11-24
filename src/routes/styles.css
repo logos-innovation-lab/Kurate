@@ -1,6 +1,6 @@
 :root {
-	--font-body: ' SourceSansPro-Semibold';
-	--font-mono: monospace;
+	--font-body: 'Source Sans Pro';
+	--font-mono: 'Source Code Pro';
 
 	--color-light-grey: #ddd;
 	--color-white: #fff;
@@ -15,4 +15,6 @@ body {
 	padding: 0;
 	color: var(--color-black);
 	background-color: var(--color-white);
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
 }
