@@ -3,7 +3,7 @@
 
 	type $$Props = IconProps
 
-	export let size = 32
+	export let size = 20
 	export let fill = 'black'
 </script>
 

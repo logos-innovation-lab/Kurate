@@ -13,7 +13,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 15px;
+		padding: var(--spacing-12);
 	}
 	.title {
 		font-family: var(--font-body);

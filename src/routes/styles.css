@@ -2,9 +2,18 @@
 	--font-body: 'Source Sans Pro';
 	--font-mono: 'Source Code Pro';
 
-	--color-light-grey: #ddd;
-	--color-white: #fff;
-	--color-black: #000;
+	--color-secondary: #fff;
+	--color-primary: #000;
+	--color-spacer: #ddd;
+
+	--color-text: #000;
+
+	--spacing-3: 3px;
+	--spacing-6: 6px;
+	--spacing-12: 12px;
+	--spacing-15: 15px;
+	--spacing-24: 24px;
+	--spacing-48: 48px;
 }
 
 body {
@@ -13,8 +22,8 @@ body {
 	overflow-x: hidden;
 	margin: 0;
 	padding: 0;
-	color: var(--color-black);
-	background-color: var(--color-white);
+	color: var(--color-text);
+	background-color: var(--color-secondary);
 	font-family: 'Source Sans Pro';
 	font-weight: 400;
 }

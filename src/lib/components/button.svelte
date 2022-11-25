@@ -5,20 +5,15 @@
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 	export let click: svelte.JSX.MouseEventHandler<HTMLButtonElement> | null | undefined = undefined
 	export let label: string | undefined = undefined
-
-	let hovered = false
-	$: fill = (variant === 'dark' && hovered) || (variant === 'light' && !hovered) ? 'black' : 'white'
 </script>
 
-<button
-	class={`root ${variant} ${!label ? 'icon-only' : ''}`}
-	on:mouseenter={() => (hovered = true)}
-	on:click={click}
-	on:mouseleave={() => (hovered = false)}
->
+<button class={`root ${variant} ${!label ? 'icon-only' : ''}`} on:click={click}>
 	{#if icon !== undefined}
 		<div class="wrapper">
-			<svelte:component this={icon} size={20} {fill} />
+			<svelte:component
+				this={icon}
+				fill={variant === 'light' ? 'var(--color-primary)' : 'var(--color-secondary)'}
+			/>
 		</div>
 	{/if}
 	{#if label !== undefined}
@@ -28,10 +23,10 @@
 
 <style>
 	.root {
-		padding-left: 15px;
-		padding-right: 15px;
+		padding-left: var(--spacing-15);
+		padding-right: var(--spacing-15);
 		height: 44px;
-		border: 1px solid var(--color-black);
+		border: 1px solid var(--color-primary);
 		border-radius: 50px;
 		cursor: pointer;
 		display: flex;
@@ -48,21 +43,19 @@
 	.wrapper {
 		width: 20px;
 		height: 20px;
-		margin-right: 10px;
+		margin-right: var(--spacing-6);
 	}
 	.icon-only .wrapper {
 		margin-right: 0px;
 	}
-	.light,
-	.dark:hover {
-		color: var(--color-black);
-		background-color: var(--color-white);
-		border-color: var(--color-light-grey);
+	.light {
+		color: var(--color-primary);
+		background-color: var(--color-secondary);
+		border-color: var(--color-spacer);
 	}
-	.dark,
-	.light:hover {
-		color: var(--color-white);
-		background-color: var(--color-black);
-		border-color: var(--color-black);
+	.dark {
+		color: var(--color-secondary);
+		background-color: var(--color-primary);
+		border-color: var(--color-primary);
 	}
 </style>
