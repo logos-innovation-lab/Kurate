@@ -4,12 +4,22 @@
 </script>
 
 <div class="root">
-	<span class="title">The Outlet</span>
-	<Button icon={UserIcon} />
+	<div class="header">
+		<span class="title">The Outlet</span>
+		<Button icon={UserIcon} />
+	</div>
+	<div class="subheader">
+		Milestone 1 shaman pitchfork typewriter single-origin coffee beard flannel, actually chillwave.
+	</div>
 </div>
 
 <style>
 	.root {
+		top: 0;
+		left: 0;
+		right: 0;
+	}
+	.header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -21,5 +31,10 @@
 		font-size: 18px;
 		font-style: normal;
 		text-align: left;
+	}
+
+	.subheader {
+		padding: var(--spacing-12);
+		padding-bottom: var(--spacing-24);
 	}
 </style>
