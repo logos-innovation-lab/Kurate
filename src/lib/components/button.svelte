@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ComponentConstructor, IconProps } from '$lib/types'
 
-	export let variant: 'light' | 'dark' = 'light'
+	export let variant: 'secondary' | 'primary' = 'secondary'
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 	export let click: svelte.JSX.MouseEventHandler<HTMLButtonElement> | null | undefined = undefined
 	export let label: string | undefined = undefined
@@ -12,7 +12,7 @@
 		<div class="wrapper">
 			<svelte:component
 				this={icon}
-				fill={variant === 'light' ? 'var(--color-primary)' : 'var(--color-secondary)'}
+				fill={variant === 'secondary' ? 'var(--color-primary)' : 'var(--color-secondary)'}
 			/>
 		</div>
 	{/if}
@@ -48,14 +48,14 @@
 	.icon-only .wrapper {
 		margin-right: 0px;
 	}
-	.light {
-		color: var(--color-primary);
-		background-color: var(--color-secondary);
-		border-color: var(--color-spacer);
-	}
-	.dark {
-		color: var(--color-secondary);
+	.primary {
 		background-color: var(--color-primary);
 		border-color: var(--color-primary);
+		color: var(--color-secondary);
+	}
+	.secondary {
+		background-color: var(--color-secondary);
+		border-color: var(--color-grey-border);
+		color: var(--color-primary);
 	}
 </style>

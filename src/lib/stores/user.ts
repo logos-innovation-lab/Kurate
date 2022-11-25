@@ -1,14 +1,15 @@
 import { writable, type Writable } from 'svelte/store'
 
 export interface User {
-	name: string
+	name?: string
 	address: string
-	profile: string
+	avatar?: string
 }
 
 export interface UserStore extends Writable<User[]> {
 	add: (user: User) => void
 	reset: () => void
+	find: (address: string) => Promise<User | undefined>
 }
 
 function createUserStore(): UserStore {
@@ -22,6 +23,12 @@ function createUserStore(): UserStore {
 		reset: () => {
 			store.set([])
 		},
+		find: (address: string) =>
+			new Promise((resolve) => {
+				store.subscribe((v) => {
+					resolve(v.find((u) => u.address === address))
+				})
+			}),
 	}
 }
 
