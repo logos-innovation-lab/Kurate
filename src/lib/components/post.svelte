@@ -30,7 +30,7 @@
 	</div>
 </div>
 
-<style>
+<style lang="scss">
 	.root {
 		border-top: 1px solid var(--color-grey-background);
 		padding: var(--spacing-12);
@@ -48,18 +48,19 @@
 		display: flex;
 		flex-direction: row;
 		margin-bottom: var(--spacing-3);
-	}
-	.post-info > div {
-		margin-right: var(--spacing-6);
-		font-family: 'Source Code Pro';
-		font-size: 14px;
-	}
-	.post-info > div.username {
-		font-family: 'Source Sans Pro';
-		font-weight: 600;
-	}
-	.post-info > div:last-child {
-		margin-right: 0px;
+
+		div {
+			margin-right: var(--spacing-6);
+			font-family: 'Source Code Pro';
+			font-size: 14px;
+		}
+		div.username {
+			font-family: 'Source Sans Pro';
+			font-weight: 600;
+		}
+		div:last-child {
+			margin-right: 0px;
+		}
 	}
 	.color-grey {
 		color: #909090;
