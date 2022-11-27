@@ -21,7 +21,7 @@
 	{/if}
 </button>
 
-<style>
+<style lang="scss">
 	.root {
 		padding-left: var(--spacing-15);
 		padding-right: var(--spacing-15);
@@ -39,14 +39,15 @@
 	}
 	.icon-only {
 		width: 44px;
+
+		.wrapper {
+			margin-right: 0px;
+		}
 	}
 	.wrapper {
 		width: 20px;
 		height: 20px;
 		margin-right: var(--spacing-6);
-	}
-	.icon-only .wrapper {
-		margin-right: 0px;
 	}
 	.primary {
 		background-color: var(--color-primary);
