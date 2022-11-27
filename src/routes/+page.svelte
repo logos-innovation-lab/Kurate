@@ -6,26 +6,25 @@
 	import Populate from '$lib/temp/index.svelte'
 
 	import { posts } from '$lib/stores/post'
+	import { profile } from '$lib/stores/profile'
 </script>
 
 <div>
-	<Header />
+	<Header user={$profile.active} />
 	<WalletConnect />
 
 	<div class="title">Public timeline</div>
 
-	{#if $posts.length < 1}
-		<Populate />
+	{#each $posts as post}
+		<Post
+			{post}
+			onUserClick={(user) => {
+				goto(`/profile/${user.address}`)
+			}}
+		/>
 	{:else}
-		{#each $posts as post}
-			<Post
-				{post}
-				onUserClick={(user) => {
-					goto(`/profile/${user.address}`)
-				}}
-			/>
-		{/each}
-	{/if}
+		<Populate />
+	{/each}
 </div>
 
 <style>

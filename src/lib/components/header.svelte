@@ -2,14 +2,23 @@
 	import UserIcon from '$lib/components/icons/user.svelte'
 	import Button from './button.svelte'
 
+	import Avatar from './avatar.svelte'
+
+	import type { User } from '$lib/stores/user'
+
 	let cls: string | undefined = undefined
 	export { cls as class }
+	export let user: User | undefined = undefined
 </script>
 
 <div class={`root ${cls}`}>
 	<div class="header">
 		<span class="title">The Outlet</span>
-		<Button icon={UserIcon} />
+		{#if user !== undefined}
+			<Avatar src={user.avatar} />
+		{:else}
+			<Button icon={UserIcon} />
+		{/if}
 	</div>
 	<div class="subheader">
 		Milestone 1 shaman pitchfork typewriter single-origin coffee beard flannel, actually chillwave.
