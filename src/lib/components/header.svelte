@@ -1,9 +1,12 @@
 <script lang="ts">
 	import UserIcon from '$lib/components/icons/user.svelte'
 	import Button from './button.svelte'
+
+	let cls: string | undefined = undefined
+	export { cls as class }
 </script>
 
-<div class="root">
+<div class={`root ${cls}`}>
 	<div class="header">
 		<span class="title">The Outlet</span>
 		<Button icon={UserIcon} />
