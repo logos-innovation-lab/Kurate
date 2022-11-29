@@ -1,9 +1,12 @@
 <script lang="ts">
 	import Button from './button.svelte'
 	import WalletIcon from './icons/wallet.svelte'
+
+	let cls: string | undefined = undefined
+	export { cls as class }
 </script>
 
-<div class="root">
+<div class={`root ${cls}`}>
 	<Button icon={WalletIcon} variant="primary" label="Connect wallet to post" />
 	<div class="explanation">Connect a wallet to access or create your account.</div>
 </div>

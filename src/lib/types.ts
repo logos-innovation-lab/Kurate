@@ -7,6 +7,6 @@ export type ComponentConstructor<T extends Record<string, any>> = new (args: {
 }) => SvelteComponentTyped<T>
 
 export interface IconProps {
-	fill?: string
 	size?: number
+	class?: string
 }

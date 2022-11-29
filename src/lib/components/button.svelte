@@ -1,19 +1,18 @@
 <script lang="ts">
 	import type { ComponentConstructor, IconProps } from '$lib/types'
 
+	let cls: string | undefined = undefined
+	export { cls as class }
 	export let variant: 'secondary' | 'primary' = 'secondary'
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 	export let click: svelte.JSX.MouseEventHandler<HTMLButtonElement> | null | undefined = undefined
 	export let label: string | undefined = undefined
 </script>
 
-<button class={`root ${variant} ${!label ? 'icon-only' : ''}`} on:click={click}>
+<button class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click={click}>
 	{#if icon !== undefined}
 		<div class="wrapper">
-			<svelte:component
-				this={icon}
-				fill={variant === 'secondary' ? 'var(--color-primary)' : 'var(--color-secondary)'}
-			/>
+			<svelte:component this={icon} />
 		</div>
 	{/if}
 	{#if label !== undefined}
@@ -53,10 +52,18 @@
 		background-color: var(--color-primary);
 		border-color: var(--color-primary);
 		color: var(--color-secondary);
+
+		& :global(svg) {
+			fill: var(--color-secondary);
+		}
 	}
 	.secondary {
 		background-color: var(--color-secondary);
 		border-color: var(--color-grey-border);
 		color: var(--color-primary);
+
+		& :global(svg) {
+			fill: var(--color-primary);
+		}
 	}
 </style>

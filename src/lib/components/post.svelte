@@ -5,11 +5,13 @@
 	import type { Post } from '$lib/stores/post'
 	import type { User } from '$lib/stores/user'
 
+	let cls: string | undefined = undefined
+	export { cls as class }
 	export let post: Post
 	export let onUserClick: ((user: User) => void) | undefined = undefined
 </script>
 
-<div class="root">
+<div class={`root ${cls}`}>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<div class="content-left" on:click={() => onUserClick && onUserClick(post.user)}>
 		<Avatar src={post.user.avatar} />
