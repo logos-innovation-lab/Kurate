@@ -1,6 +1,9 @@
 <script lang="ts">
 	import Avatar from '$lib/components/avatar.svelte'
 	import Button from '$lib/components/button.svelte'
+	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
+	import Close from '$lib/components/icons/close.svelte'
+	import GroupSecurity from '$lib/components/icons/group-security.svelte'
 	import UpToTop from '$lib/components/icons/up-to-top.svelte'
 	import User from '$lib/components/icons/user.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
@@ -20,6 +23,9 @@
 <UpToTop />
 <User />
 <Wallet />
+<GroupSecurity />
+<ArrowRight />
+<Close />
 
 <h2>Avatar</h2>
 
