@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation'
 	import Button from './button.svelte'
 	import WalletIcon from './icons/wallet.svelte'
 
@@ -7,7 +8,12 @@
 </script>
 
 <div class={`root ${cls}`}>
-	<Button icon={WalletIcon} variant="primary" label="Connect wallet to post" />
+	<Button
+		icon={WalletIcon}
+		variant="primary"
+		label="Connect wallet to post"
+		click={() => goto('/profile')}
+	/>
 	<div class="explanation">Connect a wallet to access or create your account.</div>
 </div>
 

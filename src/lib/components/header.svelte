@@ -5,6 +5,7 @@
 	import Avatar from './avatar.svelte'
 
 	import type { User } from '$lib/stores/user'
+	import { goto } from '$app/navigation'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -15,9 +16,9 @@
 	<div class="header">
 		<span class="title">The Outlet</span>
 		{#if user !== undefined}
-			<Avatar src={user.avatar} />
+			<Avatar src={user.avatar} on:click={() => goto('/profile')} />
 		{:else}
-			<Button icon={UserIcon} />
+			<Button icon={UserIcon} click={() => goto('/profile')} />
 		{/if}
 	</div>
 	<div class="subheader">
