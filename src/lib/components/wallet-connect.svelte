@@ -12,7 +12,7 @@
 		icon={WalletIcon}
 		variant="primary"
 		label="Connect wallet to post"
-		click={() => goto('/profile')}
+		on:click={() => goto('/profile')}
 	/>
 	<div class="explanation">Connect a wallet to access or create your account.</div>
 </div>

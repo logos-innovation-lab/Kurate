@@ -18,7 +18,7 @@
 		{#if user !== undefined}
 			<Avatar src={user.avatar} on:click={() => goto('/profile')} />
 		{:else}
-			<Button icon={UserIcon} click={() => goto('/profile')} />
+			<Button icon={UserIcon} on:click={() => goto('/profile')} />
 		{/if}
 	</div>
 	<div class="subheader">

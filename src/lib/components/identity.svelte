@@ -4,9 +4,11 @@
 	import ArrowRight from './icons/arrow-right.svelte'
 
 	export let identity: User
+	export let click: undefined | ((id: User) => void) = undefined
 </script>
 
-<div class="root">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="root" on:click|preventDefault|stopPropagation={() => click && click(identity)}>
 	<Avatar src={identity.avatar} />
 	<div class="description">
 		<div>{identity.name}</div>

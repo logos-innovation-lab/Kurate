@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Post } from '$lib/stores/post'
 	import { users, type User } from '$lib/stores/user'
+	import { profile } from '$lib/stores/profile'
 	import { posts } from '$lib/stores/post'
 	import Button from '$lib/components/button.svelte'
 	import image1 from '$lib/temp/assets/1.png'
@@ -120,12 +121,24 @@
 		testPosts.forEach((p) => uniqueUsers.set(p.user.address, p.user))
 		console.log(Array.from(uniqueUsers.values()))
 		users.set(Array.from(uniqueUsers.values()))
+		profile.set({
+			profiles: [
+				{
+					name: 'CoyoteRide',
+					avatar: image1,
+					address: "We should forgive each other for stupid things we've said in the past.",
+				},
+				{
+					address: '0x33FEd84c219139A464Cc2aF5643584ab51176DaB',
+				},
+			],
+		})
 	}
 </script>
 
 <div class="root">
 	<span>There are no posts yet</span>
-	<Button click={populateWithData} label="populate with testdata" />
+	<Button on:click={populateWithData} label="populate with testdata" />
 </div>
 
 <style>
