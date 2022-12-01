@@ -5,16 +5,22 @@
 	import GroupSecurity from '$lib/components/icons/group-security.svelte'
 	import Identity from '$lib/components/identity.svelte'
 	import { profile } from '$lib/stores/profile'
+	import type { User } from '$lib/stores/user'
+
+	const onSelectIdentityClick = (id: User) => {
+		$profile.active = id
+		history.back()
+	}
 </script>
 
 <div class="header">
 	<h1>Choose identity</h1>
-	<Button icon={Close} click={() => history.back()} />
+	<Button icon={Close} on:click={() => history.back()} />
 </div>
 <div class="content">
 	{#if $profile.profiles.length > 0}
 		{#each $profile.profiles as p}
-			<Identity identity={p} />
+			<Identity identity={p} click={onSelectIdentityClick} />
 		{/each}
 		<Button icon={GroupSecurity} label="Create new identity" />
 		<span>You can create multiple identities under the same account.</span>

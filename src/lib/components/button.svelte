@@ -5,11 +5,10 @@
 	export { cls as class }
 	export let variant: 'secondary' | 'primary' = 'secondary'
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
-	export let click: svelte.JSX.MouseEventHandler<HTMLButtonElement> | null | undefined = undefined
 	export let label: string | undefined = undefined
 </script>
 
-<button class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click={click}>
+<button class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click>
 	{#if icon !== undefined}
 		<div class="wrapper">
 			<svelte:component this={icon} />

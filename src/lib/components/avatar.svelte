@@ -6,7 +6,8 @@
 	export let src: string = defaultAvatar
 </script>
 
-<img class={`root ${cls}`} {src} alt="Avatar" />
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<img class={`root ${cls}`} {src} alt="Avatar" on:click />
 
 <style>
 	.root {
@@ -16,5 +17,6 @@
 		background-color: var(--color-light-grey-background);
 		object-fit: cover;
 		overflow: hidden;
+		cursor: pointer;
 	}
 </style>
