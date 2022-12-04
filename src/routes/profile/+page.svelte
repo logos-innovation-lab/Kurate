@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation'
 	import Button from '$lib/components/button.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 	import CodeSigningService from '$lib/components/icons/code-signing-service.svelte'
@@ -14,11 +15,11 @@
 </script>
 
 <div class="header">
-	<h1>Choose identity</h1>
+	<h1>{$profile.key ? 'Choose' : 'Create'} identity</h1>
 	<Button icon={Close} on:click={() => history.back()} />
 </div>
 <div class="content">
-	{#if $profile.profiles.length > 0}
+	{#if $profile.key}
 		{#each $profile.profiles as p}
 			<Identity identity={p} click={onSelectIdentityClick} />
 		{/each}
@@ -29,7 +30,12 @@
 		<div class="icon">
 			<GroupSecurity size={200} />
 		</div>
-		<Button variant="primary" icon={CodeSigningService} label="Generate new keypair" />
+		<Button
+			variant="primary"
+			icon={CodeSigningService}
+			label="Generate new keypair"
+			on:click={() => goto('profile/new')}
+		/>
 		<span
 			>You need to generate a new address to be associated with your identity. This address will
 			different that your account address.</span

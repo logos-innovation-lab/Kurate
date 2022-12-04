@@ -6,9 +6,10 @@
 	export let variant: 'secondary' | 'primary' = 'secondary'
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 	export let label: string | undefined = undefined
+	export let disabled: boolean | undefined = undefined
 </script>
 
-<button class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click>
+<button {disabled} class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click>
 	{#if icon !== undefined}
 		<div class="wrapper">
 			<svelte:component this={icon} />
@@ -34,6 +35,11 @@
 		font-family: var(--font-body);
 		font-weight: 600;
 		font-size: 16px;
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.15;
+		}
 	}
 	.icon-only {
 		width: 44px;
