@@ -16,10 +16,16 @@
 <h2>Buttons</h2>
 <Button label="primary" variant="primary" />
 <Button label="secondary" variant="secondary" />
+<Button label="primary disabled" variant="primary" disabled />
+<Button label="secondary disabled" variant="secondary" disabled />
 <Button label="primary icon" variant="primary" icon={UpToTop} />
 <Button label="secondary icon" variant="secondary" icon={UpToTop} />
+<Button label="primary icon disabled" variant="primary" icon={UpToTop} disabled />
+<Button label="secondary icon disabled" variant="secondary" icon={UpToTop} disabled />
 <Button variant="primary" icon={UpToTop} />
 <Button variant="secondary" icon={UpToTop} />
+<Button variant="primary" icon={UpToTop} disabled />
+<Button variant="secondary" icon={UpToTop} disabled />
 
 <h2>Icons</h2>
 

@@ -1,8 +1,13 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte'
 	import Close from '$lib/components/icons/close.svelte'
+	import UserAdmin from '$lib/components/icons/user-admin.svelte'
+	import Input from '$lib/components/input.svelte'
 
 	let username = ''
+	let files: FileList | undefined = undefined
+
+	$: console.log(files)
 </script>
 
 <div class="header">
@@ -18,13 +23,8 @@
 		<span>Name</span>
 		<input type="text" bind:value={username} />
 	</div>
-	<div>
-		<span>Profile picture</span>
-		<label>
-			<input type="file" bind:value={username} />
-		</label>
-	</div>
-	<Button variant="primary" disabled label="Confirm and create" />
+	<Input bind:files />
+	<Button icon={UserAdmin} variant="primary" disabled label="Confirm and create" />
 </div>
 
 <style lang="scss">
