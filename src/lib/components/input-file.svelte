@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { ComponentConstructor, IconProps } from '$lib/types'
 
+	export let files: FileList | undefined = undefined
+
 	let cls: string | undefined = undefined
 	export { cls as class }
 	export let variant: 'secondary' | 'primary' = 'secondary'
@@ -9,7 +11,7 @@
 	export let disabled: boolean | undefined = undefined
 </script>
 
-<button {disabled} class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click>
+<label class={`root ${variant} ${!label ? 'icon-only' : ''} ${disabled ? 'disabled' : ''} ${cls}`}>
 	{#if icon !== undefined}
 		<div class="wrapper">
 			<svelte:component this={icon} />
@@ -18,12 +20,17 @@
 	{#if label !== undefined}
 		{label}
 	{/if}
-</button>
+	<input type="file" bind:files {disabled} />
+</label>
 
 <style lang="scss">
 	.root {
-		padding-left: var(--spacing-12);
-		padding-right: var(--spacing-12);
+		input {
+			display: none;
+		}
+
+		padding-left: var(--spacing-15);
+		padding-right: var(--spacing-15);
 		height: 44px;
 		border: 1px solid var(--color-primary);
 		border-radius: 50px;
@@ -36,8 +43,9 @@
 		font-weight: 600;
 		font-size: 16px;
 
-		&:disabled {
+		&.disabled {
 			cursor: not-allowed;
+			opacity: 0.15;
 		}
 	}
 	.icon-only {
@@ -60,12 +68,6 @@
 		& :global(svg) {
 			fill: var(--color-secondary);
 		}
-
-		&:disabled {
-			background-color: var(--color-light-grey-background);
-			border-color: var(--color-light-grey-background);
-			color:  var(--color-secondary);
-		}
 	}
 	.secondary {
 		background-color: var(--color-secondary);
@@ -75,24 +77,5 @@
 		& :global(svg) {
 			fill: var(--color-primary);
 		}
-
-		&:disabled {
-			background-color: var(--color-secondary);
-			border-color: var(--color-light-grey-background);
-			color: var(--color-light-grey-background);
-			
-			& :global(svg) {
-				fill: var(--color-light-grey-background);
-			}
-		}
-
-		&:active:not(:disabled) {
-			border-color: var(--color-primary);
-		}
 	}
-	// :active:not(:disabled) {
-	// 	height: 48px;
-	// 	padding-left: var(--spacing-14);
-	// 	padding-right: var(--spacing-14);
-	// }
 </style>
