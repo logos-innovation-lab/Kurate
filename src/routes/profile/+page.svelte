@@ -10,13 +10,13 @@
 
 	const onSelectIdentityClick = (id: User) => {
 		$profile.active = id
-		history.back()
+		goto('/')
 	}
 </script>
 
 <div class="header">
 	<h1>{$profile.key ? 'Choose' : 'Create'} identity</h1>
-	<Button icon={Close} on:click={() => history.back()} />
+	<Button icon={Close} on:click={() => goto('/')} />
 </div>
 <div class="content">
 	{#if $profile.key}

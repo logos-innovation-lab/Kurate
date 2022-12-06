@@ -8,6 +8,7 @@
 	import InputString from '$lib/components/input-string.svelte'
 	import { profile } from '$lib/stores/profile'
 	import { formatAddress } from '$lib/utils'
+	import { goto } from '$app/navigation'
 
 	const generateRandomHex = (size: number) =>
 		`0x${[...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`
@@ -26,7 +27,7 @@
 
 <div class="header">
 	<h1>Create identity</h1>
-	<Button icon={Close} on:click={() => history.back()} />
+	<Button icon={Close} on:click={() => goto('/profile')} />
 </div>
 <div class="content">
 	<Input title="Public address">
@@ -58,8 +59,7 @@
 			on:click={() => {
 				const user = { address, name, avatar: image }
 				$profile.profiles = [...$profile.profiles, user]
-				profile.setActive(user)
-				history.back()
+				goto('/profile')
 			}}
 		/>
 	</div>
