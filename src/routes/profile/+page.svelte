@@ -23,7 +23,7 @@
 		{#each $profile.profiles as p}
 			<Identity identity={p} click={onSelectIdentityClick} />
 		{/each}
-		<Button icon={GroupSecurity} label="Create new identity" />
+		<Button icon={GroupSecurity} label="Create new identity" on:click={() => goto('profile/new')} />
 		<span>You can create multiple identities under the same account.</span>
 		<a href="/">Learn more about identities.</a>
 	{:else}
@@ -34,7 +34,10 @@
 			variant="primary"
 			icon={CodeSigningService}
 			label="Generate new keypair"
-			on:click={() => goto('profile/new')}
+			on:click={() => {
+				$profile.key = true
+				goto('profile/new')
+			}}
 		/>
 		<span
 			>You need to generate a new address to be associated with your identity. This address will

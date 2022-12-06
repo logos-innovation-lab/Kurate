@@ -3,11 +3,21 @@
 	import Close from '$lib/components/icons/close.svelte'
 	import UserAdmin from '$lib/components/icons/user-admin.svelte'
 	import Input from '$lib/components/input.svelte'
+	import InputFile from '$lib/components/input-file.svelte'
+	import Image from '$lib/components/icons/image.svelte'
+	import InputString from '$lib/components/input-string.svelte'
+	import { profile } from '$lib/stores/profile'
 
+	let id = '0x00000...000'
 	let username = ''
 	let files: FileList | undefined = undefined
+	let file: File | undefined = undefined
+	let image: string | undefined
+	let disabled = true
 
-	$: console.log(files)
+	$: file = files && files[0]
+	$: image = file ? URL.createObjectURL(file) : undefined
+	$: disabled = username === '' || image === undefined
 </script>
 
 <div class="header">
@@ -15,16 +25,40 @@
 	<Button icon={Close} on:click={() => history.back()} />
 </div>
 <div class="content">
-	<div>
-		<span>Public address</span>
-		<div>0x00000...000</div>
+	<Input title="Public address">
+		<div>{id}</div>
+	</Input>
+
+	<Input title="Name">
+		<InputString bind:value={username} placeholder="Enter identity name…" />
+	</Input>
+
+	<Input title="Profile picture">
+		<div class="profile">
+			{#if image !== undefined}
+				<img src={image} alt={file?.name} />
+			{/if}
+			<InputFile bind:files label="Add image..." icon={Image} variant="secondary" />
+		</div>
+		{#if file !== undefined}
+			<span>{file.name}</span>
+		{/if}
+	</Input>
+
+	<div class="action">
+		<Button
+			icon={UserAdmin}
+			variant="primary"
+			{disabled}
+			label="Confirm and create"
+			on:click={() => {
+				const user = { address: id, name: username, avatar: image }
+				$profile.profiles = [...$profile.profiles, user]
+				profile.setActive(user)
+				history.back()
+			}}
+		/>
 	</div>
-	<div>
-		<span>Name</span>
-		<input type="text" bind:value={username} />
-	</div>
-	<Input bind:files />
-	<Button icon={UserAdmin} variant="primary" disabled label="Confirm and create" />
 </div>
 
 <style lang="scss">
@@ -40,6 +74,23 @@
 	.content {
 		display: flex;
 		flex-direction: column;
+	}
+	.action {
+		border-top: 1px solid var(--color-light-grey-background);
+		padding: var(--spacing-24);
+		display: flex;
+		justify-content: center;
+	}
+	.profile {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
 		align-items: center;
+
+		img {
+			width: 200px;
+			height: 200px;
+			object-fit: contain;
+		}
 	}
 </style>
