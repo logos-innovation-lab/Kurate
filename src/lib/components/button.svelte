@@ -21,8 +21,8 @@
 
 <style lang="scss">
 	.root {
-		padding-left: var(--spacing-15);
-		padding-right: var(--spacing-15);
+		padding-left: var(--spacing-12);
+		padding-right: var(--spacing-12);
 		height: 44px;
 		border: 1px solid var(--color-primary);
 		border-radius: 50px;
@@ -34,6 +34,7 @@
 		font-family: var(--font-body);
 		font-weight: 600;
 		font-size: 16px;
+		
 	}
 	.icon-only {
 		width: 44px;
@@ -55,6 +56,12 @@
 		& :global(svg) {
 			fill: var(--color-secondary);
 		}
+
+		&:disabled {
+			background-color: var(--color-light-grey-background);
+			border-color: var(--color-light-grey-background);
+			color:  var(--color-secondary);
+		}
 	}
 	.secondary {
 		background-color: var(--color-secondary);
@@ -64,5 +71,24 @@
 		& :global(svg) {
 			fill: var(--color-primary);
 		}
+
+		&:disabled {
+			background-color: var(--color-secondary);
+			border-color: var(--color-light-grey-background);
+			color: var(--color-light-grey-background);
+			
+			& :global(svg) {
+				fill: var(--color-light-grey-background);
+			}
+		}
+
+		&:active:not(:disabled) {
+			border-color: var(--color-primary);
+		}
 	}
+	// :active:not(:disabled) {
+	// 	height: 48px;
+	// 	padding-left: var(--spacing-14);
+	// 	padding-right: var(--spacing-14);
+	// }
 </style>
