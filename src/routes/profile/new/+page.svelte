@@ -7,9 +7,13 @@
 	import Image from '$lib/components/icons/image.svelte'
 	import InputString from '$lib/components/input-string.svelte'
 	import { profile } from '$lib/stores/profile'
+	import { formatAddress } from '$lib/utils'
 
-	let id = '0x00000...000'
-	let username = ''
+	const generateRandomHex = (size: number) =>
+		`0x${[...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`
+
+	let address = generateRandomHex(40)
+	let name = ''
 	let files: FileList | undefined = undefined
 	let file: File | undefined = undefined
 	let image: string | undefined
@@ -17,7 +21,7 @@
 
 	$: file = files && files[0]
 	$: image = file ? URL.createObjectURL(file) : undefined
-	$: disabled = username === '' || image === undefined
+	$: disabled = name === '' || image === undefined
 </script>
 
 <div class="header">
@@ -26,11 +30,11 @@
 </div>
 <div class="content">
 	<Input title="Public address">
-		<div>{id}</div>
+		<div>{formatAddress(address, 8)}</div>
 	</Input>
 
 	<Input title="Name">
-		<InputString bind:value={username} placeholder="Enter identity name…" />
+		<InputString bind:value={name} placeholder="Enter identity name…" />
 	</Input>
 
 	<Input title="Profile picture">
@@ -52,7 +56,7 @@
 			{disabled}
 			label="Confirm and create"
 			on:click={() => {
-				const user = { address: id, name: username, avatar: image }
+				const user = { address, name, avatar: image }
 				$profile.profiles = [...$profile.profiles, user]
 				profile.setActive(user)
 				history.back()
