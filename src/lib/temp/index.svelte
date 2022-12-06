@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { Post } from '$lib/stores/post'
 	import { users, type User } from '$lib/stores/user'
-	import { profile } from '$lib/stores/profile'
 	import { posts } from '$lib/stores/post'
 	import Button from '$lib/components/button.svelte'
 	import image1 from '$lib/temp/assets/1.png'
@@ -119,20 +118,7 @@
 		posts.set(testPosts)
 		const uniqueUsers: Map<string, User> = new Map()
 		testPosts.forEach((p) => uniqueUsers.set(p.user.address, p.user))
-		console.log(Array.from(uniqueUsers.values()))
 		users.set(Array.from(uniqueUsers.values()))
-		profile.set({
-			profiles: [
-				{
-					name: 'CoyoteRide',
-					avatar: image1,
-					address: "We should forgive each other for stupid things we've said in the past.",
-				},
-				{
-					address: '0x33FEd84c219139A464Cc2aF5643584ab51176DaB',
-				},
-			],
-		})
 	}
 </script>
 
