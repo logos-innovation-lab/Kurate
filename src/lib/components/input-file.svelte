@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { ComponentConstructor, IconProps } from '$lib/types'
 
+	export let files: FileList | undefined = undefined
+
 	let cls: string | undefined = undefined
 	export { cls as class }
 	export let variant: 'secondary' | 'primary' = 'secondary'
@@ -9,7 +11,7 @@
 	export let disabled: boolean | undefined = undefined
 </script>
 
-<button {disabled} class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click>
+<label class={`root ${variant} ${!label ? 'icon-only' : ''} ${disabled ? 'disabled' : ''} ${cls}`}>
 	{#if icon !== undefined}
 		<div class="wrapper">
 			<svelte:component this={icon} />
@@ -18,10 +20,15 @@
 	{#if label !== undefined}
 		{label}
 	{/if}
-</button>
+	<input type="file" bind:files {disabled} />
+</label>
 
 <style lang="scss">
 	.root {
+		input {
+			display: none;
+		}
+
 		padding-left: var(--spacing-15);
 		padding-right: var(--spacing-15);
 		height: 44px;
@@ -36,7 +43,7 @@
 		font-weight: 600;
 		font-size: 16px;
 
-		&:disabled {
+		&.disabled {
 			cursor: not-allowed;
 			opacity: 0.15;
 		}

@@ -1,5 +1,5 @@
-export function formatAddress(address: string) {
-	return `${address.substring(0, 6)}…${address.substring(address.length - 5)}`
+export function formatAddress(address: string, digits = 4) {
+	return `${address.substring(0, digits + 2)}…${address.substring(address.length - digits - 1)}`
 }
 
 export function formatDateFromNow(timestamp: number) {
