@@ -26,7 +26,7 @@
 				on:click={() => goto('/post/new')}
 			/>
 		</div>
-	{:else if $profile.key === false}
+	{:else if $profile.key === true}
 		<div>
 			<Button
 				variant="primary"

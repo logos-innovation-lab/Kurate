@@ -18,7 +18,7 @@ function createPostStore(): PostStore {
 	return {
 		...store,
 		add: (post: Post) => {
-			store.update((posts) => [...posts, post])
+			store.update((posts) => [post, ...posts])
 		},
 		reset: () => {
 			store.set([])
