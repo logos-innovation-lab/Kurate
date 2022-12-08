@@ -22,7 +22,7 @@
 		top: 0;
 		left: 0;
 		right: 0;
-		background-color: var(--color-grey-background);
+		/* background-color: var(--color-grey-background); */
 		padding: var(--spacing-24) var(--spacing-12);
 		display: flex;
 		flex-direction: column;

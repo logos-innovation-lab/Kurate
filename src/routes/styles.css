@@ -1,13 +1,17 @@
 :root {
+	color-scheme: light dark;
+
 	--font-body: 'Source Sans Pro';
 	--font-mono: 'Source Code Pro';
 
 	--color-secondary: #fff;
 	--color-primary: #000;
-	--color-grey-border: #ddd;
+	--color-light-grey-border: #ddd;
+	--color-dark-grey-border: #252525;
 	--color-grey-background: #f0f0f0;
 	--color-light-grey-background: #ececec;
 	--color-grey-text: #999;
+	--color-dark-grey-text: #2c2c2c;
 
 	--color-text: #000;
 
@@ -20,7 +24,6 @@
 
 	--spacing-4: 4px;
 	--spacing-8: 8px;
-	/* --spacing-14: 14px; */
 }
 
 body {
@@ -50,6 +53,9 @@ img, picture, svg, video {
 	max-width: 100%;
 }
 
-/* html {
-	color-scheme: dark light;
-} */
+@media (prefers-color-scheme: dark) {
+	body {
+		color: var(--color-secondary);
+		background-color: var(--color-text);
+	}
+}
