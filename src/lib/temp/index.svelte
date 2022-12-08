@@ -110,7 +110,7 @@
 			user: {
 				name: 'CoyoteRide',
 				avatar: image1,
-				address: "We should forgive each other for stupid things we've said in the past.",
+				address: '0x2d37a46fad14c4fcaba66660da6a5d99af88bf71',
 			},
 		},
 	]

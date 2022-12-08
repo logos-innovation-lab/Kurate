@@ -36,7 +36,6 @@
 			label="Generate new keypair"
 			on:click={() => {
 				$profile.key = true
-				goto('profile/new')
 			}}
 		/>
 		<span
