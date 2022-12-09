@@ -4,16 +4,29 @@
 	--font-body: 'Source Sans Pro';
 	--font-mono: 'Source Code Pro';
 
-	--color-secondary: #fff;
-	--color-primary: #000;
-	--color-light-grey-border: #ddd;
-	--color-dark-grey-border: #252525;
-	--color-grey-background: #f0f0f0;
-	--color-light-grey-background: #ececec;
-	--color-grey-text: #999;
-	--color-dark-grey-text: #2c2c2c;
 
-	--color-text: #000;
+	--color-body-bg: #ffffff;
+	--color-body-text: #000000;
+	
+	--grey-100: #f0f0f0;
+	--grey-200: #ececec;
+	--grey-300: #999999;
+	--grey-400: #666666;
+	--grey-500: #2c2c2c;
+	
+	--success-highlight: #eafaea;
+	
+	
+	/* RENAMED COLORS START */
+	/* --color-secondary: #ffffff;
+	--color-primary: #000000;
+	--color-grey-background: #f0f0f0; */
+	/* --color-light-grey-background: #ececec; */
+	/* --color-grey-text: #999999; */
+	/* --color-dark-grey-text: #2c2c2c; */
+	
+	/* --color-text: #000000; */
+	/* RENAMED COLORS END */
 
 	--spacing-3: 3px;
 	--spacing-6: 6px;
@@ -55,7 +68,9 @@ img, picture, svg, video {
 
 @media (prefers-color-scheme: dark) {
 	body {
-		color: var(--color-secondary);
-		background-color: var(--color-text);
+		--color-body-bg: #000000;
+		--color-body-text: #ffffff;
+
+		background-color: var(--color-body-bg);
 	}
 }
