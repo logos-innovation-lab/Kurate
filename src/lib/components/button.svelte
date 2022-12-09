@@ -40,7 +40,7 @@
 		justify-content: center;
 		font-family: var(--font-body);
 		font-weight: 600;
-		font-size: 16px;
+		font-size: var(--font-size-normal);
 		transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s, outline-offset 0.1s;
 
 		&:disabled {
@@ -76,8 +76,8 @@
 			color:  var(--color-body-bg);
 		}
 
-		&:active:not(:disabled),
-		&:hover:not(:disabled) {
+		&:active:not(:disabled):not(.icon-only),
+		&:hover:not(:disabled):not(.icon-only) {
 			outline-width: 3px;
 			transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s, outline-offset 0.1s;
 		}
@@ -94,8 +94,8 @@
 				}
 			}
 
-			&:active:not(:disabled),
-			&:hover:not(:disabled) {
+			&:active:not(:disabled):not(.icon-only),
+			&:hover:not(:disabled):not(.icon-only) {
 				outline-width: 3px;
 				transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s, outline-offset 0.1s;
 			}
@@ -121,8 +121,8 @@
 			}
 		}
 
-		&:active:not(:disabled),
-		&:hover:not(:disabled) {
+		&:active:not(:disabled):not(.icon-only),
+		&:hover:not(:disabled):not(.icon-only) {
 			outline-width: 1px;
 			outline-color: var(--color-body-text);
 			outline-offset: 2px;
@@ -156,8 +156,8 @@
 				}
 			}
 
-			&:active:not(:disabled),
-			&:hover:not(:disabled) {
+			&:active:not(:disabled):not(.icon-only),
+			&:hover:not(:disabled):not(.icon-only) {
 				outline-offset: 2px;	
 				border-color: transparent;	
 				transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s, outline-offset 0.1s;

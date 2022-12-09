@@ -40,7 +40,6 @@
 		<WalletConnect />
 	{/if}
 
-	<div class="title">Public timeline</div>
 
 	{#each $posts as post}
 		<Post
@@ -55,10 +54,5 @@
 </div>
 
 <style>
-	.title {
-		height: 20px;
-		font-size: 16px;
-		font-weight: 600;
-		padding: var(--spacing-24) var(--spacing-12);
-	}
+	
 </style>

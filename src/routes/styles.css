@@ -3,10 +3,15 @@
 
 	--font-body: 'Source Sans Pro';
 	--font-mono: 'Source Code Pro';
+	--font-serif: 'Source Serif Pro';
 
+	--font-size-normal: 16px;
+	--font-size-sm: 14px;
 
 	--color-body-bg: #ffffff;
 	--color-body-text: #000000;
+	--color-body-bg-rgb: 255, 255, 255;
+	--color-body-text-rgb: 0, 0, 0;
 	
 	--grey-100: #f0f0f0;
 	--grey-200: #ececec;
@@ -29,14 +34,14 @@
 	/* RENAMED COLORS END */
 
 	--spacing-3: 3px;
+	--spacing-4: 4px;
 	--spacing-6: 6px;
+	--spacing-8: 8px;
 	--spacing-12: 12px;
 	--spacing-15: 15px;
 	--spacing-24: 24px;
 	--spacing-48: 48px;
 
-	--spacing-4: 4px;
-	--spacing-8: 8px;
 }
 
 body {
@@ -45,8 +50,8 @@ body {
 	overflow-x: hidden;
 	margin: 0;
 	padding: 0;
-	color: var(--color-text);
-	background-color: var(--color-secondary);
+	color: var(--color-body-text);
+	background-color: var(--color-body-bg);
 	font-family: 'Source Sans Pro';
 	font-weight: 400;
 }
@@ -70,7 +75,10 @@ img, picture, svg, video {
 	body {
 		--color-body-bg: #000000;
 		--color-body-text: #ffffff;
+		--color-body-bg-rgb: 0, 0, 0;
+		--color-body-text-rgb: 255, 255, 255;
 
 		background-color: var(--color-body-bg);
+		color: var(--color-body-text);
 	}
 }
