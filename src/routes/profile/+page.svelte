@@ -24,7 +24,11 @@
 		{#each $profile.profiles as p}
 			<Identity identity={p} click={onSelectIdentityClick} />
 		{/each}
-		<Button icon={GroupSecurity} label="Create new identity" on:click={() => goto(ROUTES.PROFILE_NEW)} />
+		<Button
+			icon={GroupSecurity}
+			label="Create new identity"
+			on:click={() => goto(ROUTES.PROFILE_NEW)}
+		/>
 		<span>You can create multiple identities under the same account.</span>
 		<a href="/">Learn more about identities.</a>
 	{:else}
