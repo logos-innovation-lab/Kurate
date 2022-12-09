@@ -6,6 +6,7 @@
 
 	import type { User } from '$lib/stores/user'
 	import { goto } from '$app/navigation'
+	import { ROUTES } from '$lib/routes'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -16,9 +17,9 @@
 	<div class="header">
 		<span class="title">The Outlet</span>
 		{#if user !== undefined}
-			<Avatar src={user.avatar} on:click={() => goto('/profile')} />
+			<Avatar src={user.avatar} on:click={() => goto(ROUTES.PROFILE)} />
 		{:else}
-			<Button icon={UserIcon} on:click={() => goto('/profile')} />
+			<Button icon={UserIcon} on:click={() => goto(ROUTES.PROFILE)} />
 		{/if}
 	</div>
 	<div class="subheader">

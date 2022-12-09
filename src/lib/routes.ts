@@ -3,4 +3,5 @@ export const ROUTES = {
 	PROFILE: '/profile',
 	PROFILE_ADDRESS: (address: string) => `/profile/${address}`,
 	PROFILE_NEW: '/profile/new',
+	POST_NEW: '/post/new',
 }

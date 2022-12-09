@@ -8,6 +8,7 @@
 	import { posts } from '$lib/stores/post'
 	import { goto } from '$app/navigation'
 	import Collaborate from '$lib/components/icons/collaborate.svelte'
+	import { ROUTES } from '$lib/routes'
 
 	let postText = ''
 
@@ -19,7 +20,7 @@
 			text: postText,
 			user: $profile.active,
 		})
-		goto('/')
+		goto(ROUTES.HOME)
 	}
 </script>
 
@@ -32,10 +33,10 @@
 </div>
 
 <div>
-	<Avatar src={$profile.active?.avatar} on:click={() => goto('/profile')} />
+	<Avatar src={$profile.active?.avatar} on:click={() => goto(ROUTES.PROFILE)} />
 	<div>{$profile.active?.name}</div>
 	<div>{$profile.active?.address}</div>
-	<Button variant="secondary" icon={Collaborate} on:click={() => goto('/profile')} />
+	<Button variant="secondary" icon={Collaborate} on:click={() => goto(ROUTES.PROFILE)} />
 </div>
 
 <InputString bind:value={postText} placeholder="Write here..." />

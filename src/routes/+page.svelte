@@ -11,6 +11,7 @@
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 	import User from '$lib/components/icons/user.svelte'
+	import { ROUTES } from '$lib/routes'
 </script>
 
 <div>
@@ -23,7 +24,7 @@
 				variant="primary"
 				label="Create post"
 				icon={Edit}
-				on:click={() => goto('/post/new')}
+				on:click={() => goto(ROUTES.POST_NEW)}
 			/>
 		</div>
 	{:else if $profile.key === true}
@@ -32,7 +33,7 @@
 				variant="primary"
 				label="Select identity"
 				icon={User}
-				on:click={() => goto('/profile')}
+				on:click={() => goto(ROUTES.PROFILE)}
 			/>
 			Select an identity to use with your account.
 		</div>
@@ -46,7 +47,7 @@
 		<Post
 			{post}
 			onUserClick={(user) => {
-				goto(`/profile/${user.address}`)
+				goto(ROUTES.PROFILE_ADDRESS(user.address))
 			}}
 		/>
 	{:else}
