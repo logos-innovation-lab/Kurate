@@ -5,25 +5,30 @@
 	import CodeSigningService from '$lib/components/icons/code-signing-service.svelte'
 	import GroupSecurity from '$lib/components/icons/group-security.svelte'
 	import Identity from '$lib/components/identity.svelte'
+	import { ROUTES } from '$lib/routes'
 	import { profile } from '$lib/stores/profile'
 	import type { User } from '$lib/stores/user'
 
 	const onSelectIdentityClick = (id: User) => {
 		$profile.active = id
-		goto('/')
+		history.back()
 	}
 </script>
 
 <div class="header">
 	<h1>{$profile.key ? 'Choose' : 'Create'} identity</h1>
-	<Button icon={Close} on:click={() => goto('/')} />
+	<Button icon={Close} on:click={() => history.back()} />
 </div>
 <div class="content">
 	{#if $profile.key}
 		{#each $profile.profiles as p}
 			<Identity identity={p} click={onSelectIdentityClick} />
 		{/each}
-		<Button icon={GroupSecurity} label="Create new identity" on:click={() => goto('profile/new')} />
+		<Button
+			icon={GroupSecurity}
+			label="Create new identity"
+			on:click={() => goto(ROUTES.PROFILE_NEW)}
+		/>
 		<span>You can create multiple identities under the same account.</span>
 		<a href="/">Learn more about identities.</a>
 	{:else}

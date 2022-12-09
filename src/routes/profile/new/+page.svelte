@@ -9,6 +9,7 @@
 	import { profile } from '$lib/stores/profile'
 	import { formatAddress } from '$lib/utils'
 	import { goto } from '$app/navigation'
+	import { ROUTES } from '$lib/routes'
 
 	const generateRandomHex = (size: number) =>
 		`0x${[...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`
@@ -27,7 +28,7 @@
 
 <div class="header">
 	<h1>Create identity</h1>
-	<Button icon={Close} on:click={() => goto('/profile')} />
+	<Button icon={Close} on:click={() => goto(ROUTES.PROFILE)} />
 </div>
 <div class="content">
 	<Input title="Public address">
@@ -59,7 +60,7 @@
 			on:click={() => {
 				const user = { address, name, avatar: image }
 				$profile.profiles = [...$profile.profiles, user]
-				goto('/profile')
+				goto(ROUTES.PROFILE)
 			}}
 		/>
 	</div>
