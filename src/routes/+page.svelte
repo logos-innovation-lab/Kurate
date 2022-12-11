@@ -18,7 +18,7 @@
 	<Header user={$profile.active} />
 	{#if $profile.active !== undefined}
 		<div>
-			<Avatar src={$profile.active.avatar} />
+			<Avatar src={$profile.active.avatar} on:click={() => goto(ROUTES.PROFILE)} />
 			Share freely...
 			<Button
 				variant="primary"
@@ -27,7 +27,7 @@
 				on:click={() => goto(ROUTES.POST_NEW)}
 			/>
 		</div>
-	{:else if $profile.key === true}
+	{:else if $profile.key?.publicKey !== undefined}
 		<div>
 			<Button
 				variant="primary"
