@@ -36,7 +36,7 @@
 	<Avatar src={$profile.active?.avatar} on:click={() => goto(ROUTES.PROFILE)} />
 	<div>{$profile.active?.name}</div>
 	<div>{$profile.active?.address}</div>
-	<Button variant="secondary" icon={Collaborate} on:click={() => goto(ROUTES.PROFILE)} />
+	<Button variant="secondary" icon={Collaborate} on:click={() => goto(ROUTES.IDENTITY)} />
 </div>
 
 <InputString bind:value={postText} placeholder="Write here..." />

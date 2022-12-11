@@ -1,0 +1,18 @@
+<script lang="ts">
+	import type { IconProps } from '$lib/types'
+
+	type $$Props = IconProps
+
+	let cls: string | undefined = undefined
+	export { cls as class }
+	export let size = 20
+</script>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width={size} height={size} class={cls}>
+	<path
+		d="M6,30H18a2.0023,2.0023,0,0,0,2-2V25H18v3H6V4H18V7h2V4a2.0023,2.0023,0,0,0-2-2H6A2.0023,2.0023,0,0,0,4,4V28A2.0023,2.0023,0,0,0,6,30Z"
+	/>
+	<polygon
+		points="20.586 20.586 24.172 17 10 17 10 15 24.172 15 20.586 11.414 22 10 28 16 22 22 20.586 20.586"
+	/>
+</svg>

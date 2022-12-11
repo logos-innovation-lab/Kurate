@@ -5,11 +5,10 @@
 	import Input from '$lib/components/input.svelte'
 	import InputFile from '$lib/components/input-file.svelte'
 	import Image from '$lib/components/icons/image.svelte'
+	import Renew from '$lib/components/icons/renew.svelte'
 	import InputString from '$lib/components/input-string.svelte'
 	import { profile } from '$lib/stores/profile'
 	import { formatAddress } from '$lib/utils'
-	import { goto } from '$app/navigation'
-	import { ROUTES } from '$lib/routes'
 
 	const generateRandomHex = (size: number) =>
 		`0x${[...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`
@@ -28,7 +27,7 @@
 
 <div class="header">
 	<h1>Create identity</h1>
-	<Button icon={Close} on:click={() => goto(ROUTES.PROFILE)} />
+	<Button icon={Close} on:click={() => history.back()} />
 </div>
 <div class="content">
 	<Input title="Public address">
@@ -43,8 +42,10 @@
 		<div class="profile">
 			{#if image !== undefined}
 				<img src={image} alt={file?.name} />
+				<InputFile bind:files label="Change" icon={Renew} variant="secondary" />
+			{:else}
+				<InputFile bind:files label="Add image..." icon={Image} variant="secondary" />
 			{/if}
-			<InputFile bind:files label="Add image..." icon={Image} variant="secondary" />
 		</div>
 		{#if file !== undefined}
 			<span>{file.name}</span>
@@ -60,7 +61,7 @@
 			on:click={() => {
 				const user = { address, name, avatar: image }
 				$profile.profiles = [...$profile.profiles, user]
-				goto(ROUTES.PROFILE)
+				history.back()
 			}}
 		/>
 	</div>

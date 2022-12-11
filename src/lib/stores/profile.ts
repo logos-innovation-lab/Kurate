@@ -2,7 +2,9 @@ import { writable, type Writable } from 'svelte/store'
 import type { User } from './user'
 
 export interface Profile {
-	key?: boolean // FIXME: this will need to change
+	key?: {
+		publicKey: string
+	}
 	profiles: User[]
 	active?: User
 }

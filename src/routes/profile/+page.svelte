@@ -1,52 +1,85 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
+	import Avatar from '$lib/components/avatar.svelte'
 	import Button from '$lib/components/button.svelte'
-	import Close from '$lib/components/icons/close.svelte'
-	import CodeSigningService from '$lib/components/icons/code-signing-service.svelte'
-	import GroupSecurity from '$lib/components/icons/group-security.svelte'
-	import Identity from '$lib/components/identity.svelte'
+	import Collaborate from '$lib/components/icons/collaborate.svelte'
+	import Logout from '$lib/components/icons/logout.svelte'
+	import Image from '$lib/components/icons/image.svelte'
+	import Undo from '$lib/components/icons/undo.svelte'
+	import Wallet from '$lib/components/icons/wallet.svelte'
+	import InputFile from '$lib/components/input-file.svelte'
+	import InputString from '$lib/components/input-string.svelte'
+	import Input from '$lib/components/input.svelte'
 	import { ROUTES } from '$lib/routes'
 	import { profile } from '$lib/stores/profile'
-	import type { User } from '$lib/stores/user'
+	import Renew from '$lib/components/icons/renew.svelte'
 
-	const onSelectIdentityClick = (id: User) => {
-		$profile.active = id
-		history.back()
-	}
+	let files: FileList | undefined = undefined
+	let file: File | undefined = undefined
+
+	$: file = files && files[0]
+	$: if ($profile.active && file) $profile.active.avatar = URL.createObjectURL(file)
 </script>
 
 <div class="header">
-	<h1>{$profile.key ? 'Choose' : 'Create'} identity</h1>
-	<Button icon={Close} on:click={() => history.back()} />
+	<div>
+		<Button icon={Undo} on:click={() => history.back()} />
+		<h1>Account</h1>
+	</div>
+	<Button
+		variant="primary"
+		icon={Logout}
+		label="Logout"
+		on:click={() => ($profile.key = undefined)}
+		disabled={!$profile.key}
+	/>
 </div>
 <div class="content">
-	{#if $profile.key}
-		{#each $profile.profiles as p}
-			<Identity identity={p} click={onSelectIdentityClick} />
-		{/each}
-		<Button
-			icon={GroupSecurity}
-			label="Create new identity"
-			on:click={() => goto(ROUTES.PROFILE_NEW)}
-		/>
-		<span>You can create multiple identities under the same account.</span>
-		<a href="/">Learn more about identities.</a>
-	{:else}
-		<div class="icon">
-			<GroupSecurity size={200} />
-		</div>
+	{#if $profile.key?.publicKey === undefined}
 		<Button
 			variant="primary"
-			icon={CodeSigningService}
-			label="Generate new keypair"
-			on:click={() => {
-				$profile.key = true
-			}}
+			icon={Wallet}
+			label="Connect wallet to post"
+			on:click={() => ($profile.key = { publicKey: '0x90b1c0A1EeF1fe519AeE75D2Ee04855219923f26' })}
 		/>
-		<span
-			>You need to generate a new address to be associated with your identity. This address will
-			different that your account address.</span
-		>
+		<span>Connect a wallet to access or create your account.</span>
+	{:else}
+		<span>Wallet & Identity</span>
+		<Input title="Connected wallet">
+			<span>{$profile.key.publicKey}</span>
+		</Input>
+		{#if $profile.active === undefined}
+			<Button
+				variant="primary"
+				icon={Collaborate}
+				label="Select identity"
+				on:click={() => goto(ROUTES.IDENTITY)}
+			/>
+			<span>Select an identity to use with your account.</span>
+		{:else}
+			<div>
+				<span>Selected identity</span>
+				<Avatar src={$profile.active.avatar} />
+				<span>{$profile.active.name}</span>
+				<span>{$profile.active.address}</span>
+				<Button icon={Collaborate} on:click={() => goto(ROUTES.IDENTITY)} />
+			</div>
+
+			<Input title="Name">
+				<InputString bind:value={$profile.active.name} placeholder="Enter identity name…" />
+			</Input>
+
+			<Input title="Profile picture">
+				<div class="profile">
+					{#if $profile.active.avatar !== undefined}
+						<img src={$profile.active.avatar} alt={file?.name} />
+						<InputFile bind:files label="Change" icon={Renew} variant="secondary" />
+					{:else}
+						<InputFile bind:files label="Add image..." icon={Image} variant="secondary" />
+					{/if}
+				</div>
+			</Input>
+		{/if}
 	{/if}
 </div>
 
@@ -64,8 +97,5 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-	}
-	.icon :global(svg) {
-		fill: grey;
 	}
 </style>
