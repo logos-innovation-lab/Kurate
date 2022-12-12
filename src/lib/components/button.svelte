@@ -21,16 +21,15 @@
 </button>
 
 <style lang="scss">
-
 	.root {
 		padding-left: var(--spacing-12);
 		padding-right: var(--spacing-12);
 		height: 44px;
 		outline-width: 1px;
 		outline-style: solid;
-		outline-offset: -1px;		
+		outline-offset: -1px;
 		border-width: 1px;
-		border-style: solid;		
+		border-style: solid;
 		box-sizing: border-box;
 		border-radius: 50px;
 		cursor: pointer;
@@ -41,7 +40,8 @@
 		font-family: var(--font-body);
 		font-weight: 600;
 		font-size: var(--font-size-normal);
-		transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s, outline-offset 0.1s;
+		transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
+			outline-offset 0.1s;
 
 		&:disabled {
 			cursor: not-allowed;
@@ -73,13 +73,14 @@
 			background-color: var(--grey-200);
 			border-color: var(--grey-200);
 			outline-color: var(--grey-200);
-			color:  var(--color-body-bg);
+			color: var(--color-body-bg);
 		}
 
 		&:active:not(:disabled):not(.icon-only),
 		&:hover:not(:disabled):not(.icon-only) {
 			outline-width: 3px;
-			transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s, outline-offset 0.1s;
+			transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
+				outline-offset 0.1s;
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -97,7 +98,8 @@
 			&:active:not(:disabled):not(.icon-only),
 			&:hover:not(:disabled):not(.icon-only) {
 				outline-width: 3px;
-				transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s, outline-offset 0.1s;
+				transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
+					outline-offset 0.1s;
 			}
 		}
 	}
@@ -112,10 +114,10 @@
 		}
 
 		&:disabled {
-			// background-color: var(--grey-200);			
+			// background-color: var(--grey-200);
 			// outline-color: var(--grey-200);
-			color:  var(--grey-200);
-			
+			color: var(--grey-200);
+
 			& :global(svg) {
 				fill: var(--grey-200);
 			}
@@ -126,7 +128,8 @@
 			outline-width: 1px;
 			outline-color: var(--color-body-text);
 			outline-offset: 2px;
-			transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s, outline-offset 0.1s;
+			transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
+				outline-offset 0.1s;
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -139,7 +142,7 @@
 			outline-width: 1px;
 			outline-offset: 0px;
 			outline-color: var(--grey-500);
-			color: var(--color-body-text);	
+			color: var(--color-body-text);
 
 			& :global(svg) {
 				fill: var(--color-body-text);
@@ -149,7 +152,7 @@
 				background-color: var(--color-body-bg);
 				outline-color: var(--grey-500);
 				border-color: transparent;
-				color:  var(--grey-500);
+				color: var(--grey-500);
 
 				& :global(svg) {
 					fill: var(--grey-500);
@@ -158,9 +161,10 @@
 
 			&:active:not(:disabled):not(.icon-only),
 			&:hover:not(:disabled):not(.icon-only) {
-				outline-offset: 2px;	
-				border-color: transparent;	
-				transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s, outline-offset 0.1s;
+				outline-offset: 2px;
+				border-color: transparent;
+				transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
+					outline-offset 0.1s;
 			}
 		}
 	}

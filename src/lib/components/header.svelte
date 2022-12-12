@@ -14,10 +14,10 @@
 	export { cls as class }
 	export let user: User | undefined = undefined
 
-	let y: number;
+	let y: number
 </script>
 
-<svelte:window bind:scrollY={y}/>
+<svelte:window bind:scrollY={y} />
 
 <div class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<div class="header">
@@ -31,7 +31,7 @@
 	<div class="header-description">
 		Milestone 1 shaman pitchfork typewriter single-origin coffee beard flannel, actually chillwave.
 	</div>
-	
+
 	<div class="subtitle">Public timeline</div>
 
 	{#if $profile.active !== undefined}
@@ -58,11 +58,9 @@
 	{:else}
 		<WalletConnect />
 	{/if}
-
 </div>
 
 <style lang="scss">
-
 	.root {
 		position: sticky;
 		top: 0;
@@ -76,7 +74,7 @@
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);
 		}
-		
+
 		&.scrolled {
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
 		}

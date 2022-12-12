@@ -63,7 +63,7 @@
 			font-weight: 600;
 		}
 	}
-	.post-content {		
+	.post-content {
 		font-family: var(--font-serif);
 		line-height: 1.38;
 	}

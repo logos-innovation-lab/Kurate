@@ -19,7 +19,6 @@
 </div>
 
 <style lang="scss">
-
 	/* Instead of having this block have a top and/or bottom border, 
 	we only have a bottom border here. This is because this block is used in 2 scenarios:
 	on the Posts timeline page and the Account page. 
@@ -37,7 +36,7 @@
 		justify-content: center;
 		align-items: center;
 		border-bottom: 1px solid var(--grey-200);
-		
+
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);
 		}

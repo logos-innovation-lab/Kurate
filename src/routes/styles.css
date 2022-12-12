@@ -12,16 +12,15 @@
 	--color-body-text: #000000;
 	--color-body-bg-rgb: 255, 255, 255;
 	--color-body-text-rgb: 0, 0, 0;
-	
+
 	--grey-100: #f0f0f0;
 	--grey-200: #ececec;
 	--grey-300: #999999;
 	--grey-400: #666666;
 	--grey-500: #2c2c2c;
-	
+
 	--success-highlight: #eafaea;
-	
-	
+
 	/* RENAMED COLORS START */
 	/* --color-secondary: #ffffff; */
 	/* --color-primary: #000000; */
@@ -29,7 +28,7 @@
 	/* --color-light-grey-background: #ececec; */
 	/* --color-grey-text: #999999; */
 	/* --color-dark-grey-text: #2c2c2c; */
-	
+
 	/* --color-text: #000000; */
 	/* RENAMED COLORS END */
 
@@ -41,7 +40,6 @@
 	--spacing-15: 15px;
 	--spacing-24: 24px;
 	--spacing-48: 48px;
-
 }
 
 body {
@@ -56,17 +54,22 @@ body {
 	font-weight: 400;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
 	box-sizing: border-box;
 }
 
 * {
 	margin: 0;
-	padding:0;
+	padding: 0;
 	font: inherit;
 }
 
-img, picture, svg, video {
+img,
+picture,
+svg,
+video {
 	display: block;
 	max-width: 100%;
 }
