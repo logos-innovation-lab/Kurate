@@ -16,7 +16,7 @@
 		"@fontsource/source-code-pro": "^4.5.12",
 		"@fontsource/source-sans-pro": "^4.5.11",
 		"@playwright/test": "1.28.1",
-		"@sveltejs/adapter-static": "^1.0.0-next.48",
+		"@sveltejs/adapter-static": "^1.0.0-next.49",
 		"@sveltejs/kit": "next",
 		"@typescript-eslint/eslint-plugin": "^5.46.0",
 		"@typescript-eslint/parser": "^5.46.0",
