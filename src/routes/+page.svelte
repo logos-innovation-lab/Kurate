@@ -11,6 +11,7 @@
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 	import User from '$lib/components/icons/user.svelte'
+	import { ROUTES } from '$lib/routes'
 </script>
 
 <div>
@@ -20,7 +21,7 @@
 		<Post
 			{post}
 			onUserClick={(user) => {
-				goto(`/profile/${user.address}`)
+				goto(ROUTES.PROFILE_ADDRESS(user.address))
 			}}
 		/>
 	{:else}
