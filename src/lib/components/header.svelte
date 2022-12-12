@@ -1,18 +1,24 @@
 <script lang="ts">
 	import UserIcon from '$lib/components/icons/user.svelte'
 	import Button from './button.svelte'
+	import WalletConnect from '$lib/components/wallet-connect.svelte'
+	import Avatar from '$lib/components/avatar.svelte'
+	import Edit from '$lib/components/icons/edit.svelte'
 
-	import Avatar from './avatar.svelte'
-
+	import { profile } from '$lib/stores/profile'
 	import type { User } from '$lib/stores/user'
 	import { goto } from '$app/navigation'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
 	export let user: User | undefined = undefined
+
+	let y: number;
 </script>
 
-<div class={`root ${cls}`}>
+<svelte:window bind:scrollY={y}/>
+
+<div class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<div class="header">
 		<span class="header-title">The Outlet</span>
 		{#if user !== undefined}
@@ -26,6 +32,32 @@
 	</div>
 	
 	<div class="subtitle">Public timeline</div>
+
+	{#if $profile.active !== undefined}
+		<div>
+			<Avatar src={$profile.active.avatar} />
+			Share freely...
+			<Button
+				variant="primary"
+				label="Create post"
+				icon={Edit}
+				on:click={() => goto('/post/new')}
+			/>
+		</div>
+	{:else if $profile.key === false}
+		<div>
+			<Button
+				variant="primary"
+				label="Select identity"
+				icon={UserIcon}
+				on:click={() => goto('/profile')}
+			/>
+			Select an identity to use with your account.
+		</div>
+	{:else}
+		<WalletConnect />
+	{/if}
+
 </div>
 
 <style lang="scss">
@@ -44,12 +76,7 @@
 			border-bottom-color: var(--grey-500);
 		}
 		
-		// Statement below is conditional to adding class to element via javascript. 
-		// I added the class to the element because of the unique class name nature of svelte.
-		// Ideally the .scrolled class would be in the body but this doesn't seem feasible. 
-		// Check with Vojtech
-
-		&:global(.scrolled) {
+		&.scrolled {
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
 		}
 	}

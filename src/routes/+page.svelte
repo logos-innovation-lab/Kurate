@@ -15,31 +15,6 @@
 
 <div>
 	<Header user={$profile.active} />
-	{#if $profile.active !== undefined}
-		<div>
-			<Avatar src={$profile.active.avatar} />
-			Share freely...
-			<Button
-				variant="primary"
-				label="Create post"
-				icon={Edit}
-				on:click={() => goto('/post/new')}
-			/>
-		</div>
-	{:else if $profile.key === false}
-		<div>
-			<Button
-				variant="primary"
-				label="Select identity"
-				icon={User}
-				on:click={() => goto('/profile')}
-			/>
-			Select an identity to use with your account.
-		</div>
-	{:else}
-		<WalletConnect />
-	{/if}
-
 
 	{#each $posts as post}
 		<Post

@@ -10,6 +10,7 @@
 	import UserAdmin from '$lib/components/icons/user-admin.svelte'
 	import User from '$lib/components/icons/user.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
+	import Edit from '$lib/components/icons/edit.svelte'
 	import img1 from '$lib/temp/assets/1.png'
 </script>
 
@@ -38,6 +39,7 @@
 <CodeSigningService />
 <Renew />
 <UserAdmin />
+<Edit />
 
 <h2>Avatar</h2>
 

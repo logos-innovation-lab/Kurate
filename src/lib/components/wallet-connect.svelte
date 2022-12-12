@@ -14,7 +14,7 @@
 		label="Connect wallet to post"
 		on:click={() => goto('/profile')}
 	/>
-	<div class="explanation">Connect a wallet to access or create your account.</div>
+	<div class="description">Connect a wallet to access or create your account.</div>
 </div>
 
 <style lang="scss">
@@ -41,7 +41,7 @@
 			border-bottom-color: var(--grey-500);
 		}
 	}
-	.explanation {
+	.description {
 		margin-top: var(--spacing-12);
 		font-size: var(--font-size-sm);
 		font-weight: 400;
