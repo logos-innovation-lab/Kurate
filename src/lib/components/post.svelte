@@ -1,25 +1,17 @@
 <script lang="ts">
-	import Avatar from './avatar.svelte'
 	import { formatAddress, formatDateFromNow } from '$lib/utils'
 
 	import type { Post } from '$lib/stores/post'
-	import type { User } from '$lib/stores/user'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
 	export let post: Post
-	export let onUserClick: ((user: User) => void) | undefined = undefined
 </script>
 
 <div class={`root ${cls}`}>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div class="user-img" on:click={() => onUserClick && onUserClick(post.user)}>
-		<Avatar src={post.user.avatar} />
-	</div>
 	<div class="content-wrapper">
 		<div class="user-info">
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<div class="username" on:click={() => onUserClick && onUserClick(post.user)}>
+			<div class="username">
 				{post.user.name ?? 'Anonymous'}
 			</div>
 			{#if post.user.address !== undefined}

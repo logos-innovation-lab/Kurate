@@ -3,9 +3,6 @@
 	import { users, type User } from '$lib/stores/user'
 	import { posts } from '$lib/stores/post'
 	import Button from '$lib/components/button.svelte'
-	import image1 from '$lib/temp/assets/1.png'
-	import image2 from '$lib/temp/assets/2.png'
-	import image3 from '$lib/temp/assets/3.png'
 
 	const testPosts: Post[] = [
 		{
@@ -13,7 +10,6 @@
 			text: 'Decision making by awkward silence.',
 			user: {
 				name: 'CoyoteRide',
-				avatar: image1,
 				address: '0x2d37a46fad14c4fcaba66660da6a5d99af88bf71',
 			},
 		},
@@ -22,7 +18,6 @@
 			text: "It's an amazing trigger within human nature: the minute someone acknowledges their flaws, not only do we tend to forgive them, but we actually come to admire them.",
 			user: {
 				name: 'Lemur',
-				avatar: image2,
 				address: '0x032b3c7a6af9bbf38838f582acc8e4074932f2b8',
 			},
 		},
@@ -45,7 +40,6 @@
 			text: "Y'all should go check this amazing online magazine https://two.compost.digital/",
 			user: {
 				name: 'Cryptocowboy',
-				avatar: image3,
 				address: '0x0554369c1f47B130104fC8A6aa5a94fF3b06b0e1',
 			},
 		},
@@ -61,7 +55,6 @@
 			text: 'Decision making by awkward silence.',
 			user: {
 				name: 'CoyoteRide',
-				avatar: image1,
 				address: '0x2d37a46fad14c4fcaba66660da6a5d99af88bf71',
 			},
 		},
@@ -70,7 +63,6 @@
 			text: "It's an amazing trigger within human nature: the minute someone acknowledges their flaws, not only do we tend to forgive them, but we actually come to admire them.",
 			user: {
 				name: 'Lemur',
-				avatar: image2,
 				address: '0x032b3c7a6af9bbf38838f582acc8e4074932f2b8',
 			},
 		},
@@ -93,7 +85,6 @@
 			text: "Y'all should go check this amazing online magazine https://two.compost.digital/",
 			user: {
 				name: 'Cryptocowboy',
-				avatar: image3,
 				address: '0x0554369c1f47B130104fC8A6aa5a94fF3b06b0e1',
 			},
 		},
@@ -109,7 +100,6 @@
 			text: 'Decision making by awkward silence.',
 			user: {
 				name: 'CoyoteRide',
-				avatar: image1,
 				address: '0x2d37a46fad14c4fcaba66660da6a5d99af88bf71',
 			},
 		},

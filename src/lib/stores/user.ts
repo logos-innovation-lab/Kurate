@@ -3,7 +3,6 @@ import { writable, type Writable } from 'svelte/store'
 export interface User {
 	name?: string
 	address: string
-	avatar?: string
 }
 
 export interface UserStore extends Writable<User[]> {
