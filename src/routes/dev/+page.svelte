@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Avatar from '$lib/components/avatar.svelte'
 	import Button from '$lib/components/button.svelte'
 	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
 	import Close from '$lib/components/icons/close.svelte'
@@ -11,7 +10,6 @@
 	import User from '$lib/components/icons/user.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
-	import img1 from '$lib/temp/assets/1.png'
 </script>
 
 <h2>Buttons</h2>
@@ -40,8 +38,3 @@
 <Renew />
 <UserAdmin />
 <Edit />
-
-<h2>Avatar</h2>
-
-<Avatar />
-<Avatar src={img1} />

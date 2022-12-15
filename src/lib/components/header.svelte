@@ -2,19 +2,17 @@
 	import UserIcon from '$lib/components/icons/user.svelte'
 	import Button from './button.svelte'
 	import WalletConnect from '$lib/components/wallet-connect.svelte'
-	import Avatar from '$lib/components/avatar.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
-
 	import { profile } from '$lib/stores/profile'
-	import type { User } from '$lib/stores/user'
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
+	import Wallet from './icons/wallet.svelte'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
-	export let user: User | undefined = undefined
 
 	let y: number
+	export let loggedin: boolean | undefined = undefined
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -22,11 +20,7 @@
 <div class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<div class="header">
 		<span class="header-title">The Outlet</span>
-		{#if user !== undefined}
-			<Avatar src={user.avatar} on:click={() => goto(ROUTES.PROFILE)} />
-		{:else}
-			<Button icon={UserIcon} on:click={() => goto(ROUTES.PROFILE)} />
-		{/if}
+		<Button icon={loggedin ? UserIcon : Wallet} on:click={() => goto(ROUTES.PROFILE)} />
 	</div>
 	<div class="header-description">
 		Milestone 1 shaman pitchfork typewriter single-origin coffee beard flannel, actually chillwave.
@@ -34,9 +28,8 @@
 
 	<div class="subtitle">Public timeline</div>
 
-	{#if $profile.active !== undefined}
+	{#if $profile.key?.publicKey !== undefined}
 		<div>
-			<Avatar src={$profile.active.avatar} />
 			Share freely...
 			<Button
 				variant="primary"
@@ -44,16 +37,6 @@
 				icon={Edit}
 				on:click={() => goto('/post/new')}
 			/>
-		</div>
-	{:else if $profile.key?.publicKey !== undefined}
-		<div>
-			<Button
-				variant="primary"
-				label="Select identity"
-				icon={UserIcon}
-				on:click={() => goto('/profile')}
-			/>
-			Select an identity to use with your account.
 		</div>
 	{:else}
 		<WalletConnect />
