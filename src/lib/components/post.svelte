@@ -13,11 +13,11 @@
 
 <div class={`root ${cls}`}>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div class="content-left" on:click={() => onUserClick && onUserClick(post.user)}>
+	<div class="user-img" on:click={() => onUserClick && onUserClick(post.user)}>
 		<Avatar src={post.user.avatar} />
 	</div>
-	<div class="content-right">
-		<div class="post-info">
+	<div class="content-wrapper">
+		<div class="user-info">
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<div class="username" on:click={() => onUserClick && onUserClick(post.user)}>
 				{post.user.name ?? 'Anonymous'}
@@ -25,46 +25,52 @@
 			{#if post.user.address !== undefined}
 				<div>{formatAddress(post.user.address)}</div>
 			{/if}
-			<div class="color-grey">•</div>
-			<div class="color-grey">{formatDateFromNow(post.timestamp)}</div>
+			<div class="faded">•</div>
+			<div class="faded">{formatDateFromNow(post.timestamp)}</div>
 		</div>
-		{post.text}
+		<div class="post-content">{post.text}</div>
 	</div>
 </div>
 
 <style lang="scss">
 	.root {
-		border-top: 1px solid var(--color-grey-background);
+		border-bottom: 1px solid var(--grey-200);
 		padding: var(--spacing-12);
 		display: flex;
+		gap: var(--spacing-12);
 		flex-direction: row;
+
+		@media (prefers-color-scheme: dark) {
+			border-bottom-color: var(--grey-500);
+		}
 	}
-	.content-left {
+	.user-img {
 		flex-shrink: 0;
 	}
-	.content-right {
-		margin-left: var(--spacing-12);
+	.content-wrapper {
 		flex-grow: 1;
 	}
-	.post-info {
+	.user-info {
 		display: flex;
 		flex-direction: row;
+		gap: var(--spacing-6);
 		margin-bottom: var(--spacing-3);
+		font-family: 'Source Code Pro';
+		font-size: var(--font-size-sm);
 
-		div {
-			margin-right: var(--spacing-6);
-			font-family: 'Source Code Pro';
-			font-size: 14px;
-		}
 		div.username {
 			font-family: 'Source Sans Pro';
 			font-weight: 600;
 		}
-		div:last-child {
-			margin-right: 0px;
-		}
 	}
-	.color-grey {
-		color: #909090;
+	.post-content {
+		font-family: var(--font-serif);
+		line-height: 1.38;
+	}
+	.faded {
+		color: var(--grey-300);
+		@media (prefers-color-scheme: dark) {
+			color: var(--grey-400);
+		}
 	}
 </style>

@@ -15,24 +15,36 @@
 		label="Connect wallet to post"
 		on:click={() => goto(ROUTES.PROFILE)}
 	/>
-	<div class="explanation">Connect a wallet to access or create your account.</div>
+	<div class="description">Connect a wallet to access or create your account.</div>
 </div>
 
-<style>
+<style lang="scss">
+	/* Instead of having this block have a top and/or bottom border, 
+	we only have a bottom border here. This is because this block is used in 2 scenarios:
+	on the Posts timeline page and the Account page. 
+	On the Posts timeline page, the header section should have a border-bottom for scroll,
+	and on the Account page, there's no content below this section which could 
+	contain the next border. */
+
 	.root {
 		top: 0;
 		left: 0;
 		right: 0;
-		background-color: var(--color-grey-background);
 		padding: var(--spacing-24) var(--spacing-12);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		border-bottom: 1px solid var(--grey-200);
+
+		@media (prefers-color-scheme: dark) {
+			border-bottom-color: var(--grey-500);
+		}
 	}
-	.explanation {
+	.description {
 		margin-top: var(--spacing-12);
-		font-size: 14;
+		font-size: var(--font-size-sm);
 		font-weight: 400;
+		text-align: center;
 	}
 </style>
