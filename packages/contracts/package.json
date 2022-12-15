@@ -1,0 +1,55 @@
+{
+    "name": "contracts",
+    "version": "1.0.0",
+    "private": true,
+    "main": "index.js",
+    "scripts": {
+        "start": "hardhat node & yarn compile && yarn deploy --network localhost",
+        "compile": "hardhat compile",
+        "download:snark-artifacts": "hardhat run scripts/download-snark-artifacts.ts",
+        "deploy": "yarn compile && hardhat deploy",
+        "test": "hardhat test",
+        "test:report-gas": "REPORT_GAS=true hardhat test",
+        "test:coverage": "hardhat coverage",
+        "typechain": "hardhat typechain",
+        "lint": "solhint 'contracts/**/*.sol'"
+    },
+    "devDependencies": {
+        "@nomicfoundation/hardhat-chai-matchers": "^1.0.5",
+        "@semaphore-protocol/group": "2.6.1",
+        "@semaphore-protocol/hardhat": "^0.1.0",
+        "@semaphore-protocol/identity": "2.6.1",
+        "@semaphore-protocol/proof": "2.6.1",
+        "@typechain/hardhat": "^6.1.5",
+        "@types/chai": "^4.3.4",
+        "@types/mocha": "^10.0.1",
+        "chai": "^4.3.7",
+        "circomlibjs": "0.1.7",
+        "download": "^8.0.0",
+        "ethers": "^5.7.2",
+        "hardhat": "^2.12.4",
+        "hardhat-gas-reporter": "^1.0.9",
+        "mocha": "^10.2.0",
+        "solhint": "^3.3.7",
+        "solidity-coverage": "^0.8.2",
+        "ts-node": "^10.9.1"
+    },
+    "dependencies": {
+        "@semaphore-protocol/contracts": "2.6.1"
+    },
+    "config": {
+        "solidity": {
+            "version": "0.8.4"
+        },
+        "paths": {
+            "contracts": "./contracts",
+            "tests": "./test",
+            "cache": "./cache",
+            "build": {
+                "snark-artifacts": "./build/snark-artifacts",
+                "contracts": "./build/contracts",
+                "typechain": "./build/typechain"
+            }
+        }
+    }
+}

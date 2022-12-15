@@ -25,6 +25,9 @@ jobs:
       - name: Install npm deps
         run: npm ci
 
+      - name: Test
+        run: npm run test --workspaces --if-present
+
       - name: Check the build
         run: npm run check --workspaces --if-present
 
