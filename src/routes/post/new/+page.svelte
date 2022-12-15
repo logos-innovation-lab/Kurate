@@ -11,12 +11,12 @@
 	let postText = ''
 
 	function submit() {
-		if (!$profile.active) return
+		if (!$profile.key?.publicKey) return
 
 		posts.add({
 			timestamp: Date.now(),
 			text: postText,
-			user: $profile.active,
+			user: { address: $profile.key.publicKey },
 		})
 		goto(ROUTES.HOME)
 	}
@@ -26,7 +26,13 @@
 	<div>Create post</div>
 	<div>
 		<Button variant="secondary" label="Cancel" icon={Close} on:click={() => history.back()} />
-		<Button variant="primary" label="Post" icon={SendAltFilled} on:click={submit} />
+		<Button
+			variant="primary"
+			label="Post"
+			icon={SendAltFilled}
+			on:click={submit}
+			disabled={!$profile.key?.publicKey}
+		/>
 	</div>
 </div>
 

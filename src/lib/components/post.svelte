@@ -14,9 +14,6 @@
 			<div class="username">
 				{post.user.name ?? 'Anonymous'}
 			</div>
-			{#if post.user.address !== undefined}
-				<div>{formatAddress(post.user.address)}</div>
-			{/if}
 			<div class="faded">•</div>
 			<div class="faded">{formatDateFromNow(post.timestamp)}</div>
 		</div>
