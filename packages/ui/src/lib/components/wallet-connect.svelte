@@ -5,10 +5,12 @@
 	import WalletIcon from './icons/wallet.svelte'
 
 	let cls: string | undefined = undefined
+	let y: number
 	export { cls as class }
 </script>
 
-<div class={`root ${cls}`}>
+<svelte:window bind:scrollY={y} />
+<div class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<Button
 		icon={WalletIcon}
 		variant="primary"
@@ -19,13 +21,6 @@
 </div>
 
 <style lang="scss">
-	/* Instead of having this block have a top and/or bottom border, 
-	we only have a bottom border here. This is because this block is used in 2 scenarios:
-	on the Posts timeline page and the Account page. 
-	On the Posts timeline page, the header section should have a border-bottom for scroll,
-	and on the Account page, there's no content below this section which could 
-	contain the next border. */
-
 	.root {
 		top: 0;
 		left: 0;
@@ -36,9 +31,18 @@
 		justify-content: center;
 		align-items: center;
 		border-bottom: 1px solid var(--grey-200);
+		transition: height 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;
 
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);
+		}
+
+		&.scrolled {
+			height: 0;
+			padding: 0;
+			margin: 0;
+			font-size: 0;
+			transition: height 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;
 		}
 	}
 	.description {

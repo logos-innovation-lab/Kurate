@@ -41,7 +41,7 @@
 		font-weight: 600;
 		font-size: var(--font-size-normal);
 		transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
-			outline-offset 0.1s;
+			outline-offset 0.1s, background-color 0.2s, color 0.2s;
 
 		&:disabled {
 			cursor: not-allowed;

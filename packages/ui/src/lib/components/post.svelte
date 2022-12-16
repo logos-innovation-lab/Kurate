@@ -11,6 +11,7 @@
 <div class={`root ${cls}`}>
 	<div class="content-wrapper">
 		<div class="user-info">
+			<!-- THIS SHOULD SHOW THE POSTED TIME NOW -->
 			<div class="username">
 				{post.user.name ?? 'Anonymous'}
 			</div>
