@@ -28,7 +28,7 @@
 
 	<div class="subtitle">Public timeline</div>
 
-	{#if $profile.key?.publicKey !== undefined}
+	{#if $profile.signer !== undefined}
 		<div>
 			Share freely...
 			<Button

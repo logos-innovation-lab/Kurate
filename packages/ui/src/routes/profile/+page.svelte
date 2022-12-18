@@ -16,23 +16,31 @@
 		variant="primary"
 		icon={Logout}
 		label="Logout"
-		on:click={() => ($profile.key = undefined)}
-		disabled={!$profile.key}
+		on:click={() => ($profile.signer = undefined)}
+		disabled={!$profile.signer}
 	/>
 </div>
 <div class="content">
-	{#if $profile.key?.publicKey === undefined}
+	{#if $profile.signer === undefined}
 		<Button
 			variant="primary"
 			icon={Wallet}
 			label="Connect wallet to post"
-			on:click={() => ($profile.key = { publicKey: '0x90b1c0A1EeF1fe519AeE75D2Ee04855219923f26' })}
+			on:click={profile.getSigner}
 		/>
 		<span>Connect a wallet to access or create your account.</span>
 	{:else}
 		<span>Wallet & Identity</span>
 		<Input title="Connected wallet">
-			<span>{$profile.key.publicKey}</span>
+			<span>
+				{#await $profile.signer.getAddress()}
+					loading...
+				{:then address}
+					{address}
+				{:catch error}
+					{error.message}
+				{/await}
+			</span>
 		</Input>
 	{/if}
 </div>
