@@ -12,44 +12,87 @@
 		<Button icon={Undo} on:click={() => history.back()} />
 		<h1>Account</h1>
 	</div>
-	<Button
-		variant="primary"
-		icon={Logout}
-		label="Logout"
-		on:click={() => ($profile.key = undefined)}
-		disabled={!$profile.key}
-	/>
+	
 </div>
 <div class="content">
 	{#if $profile.key?.publicKey === undefined}
-		<Button
-			variant="primary"
-			icon={Wallet}
-			label="Connect wallet to post"
-			on:click={() => ($profile.key = { publicKey: '0x90b1c0A1EeF1fe519AeE75D2Ee04855219923f26' })}
-		/>
-		<span>Connect a wallet to access or create your account.</span>
+		<div class="wallet-icon-wrapper">
+			<!-- HOW DO I PASS PROPS TO THE WALLET? width="192" height="192" color="var(--grey-100)" -->
+			<Wallet  />
+		</div>
+		<div class="pad">
+			<Button
+				variant="primary"
+				icon={Wallet}
+				label="Connect wallet to post"
+				on:click={() => ($profile.key = { publicKey: '0x90b1c0A1EeF1fe519AeE75D2Ee04855219923f26' })}
+			/>
+			<span class="connect-info">Connect a wallet to access or create your account.</span>
+		</div>
 	{:else}
-		<span>Wallet & Identity</span>
-		<Input title="Connected wallet">
-			<span>{$profile.key.publicKey}</span>
-		</Input>
+		
+		<!-- WHY IS THIS AN INPUT? DOES IT HAVE TO BE? -->
+		<div class="wallet-info-wrapper">
+			<Input title="Connected wallet">
+				<span>{$profile.key.publicKey}</span>
+			</Input>
+		</div>
+		<div class="pad">
+			<Button
+				variant="primary"
+				icon={Logout}
+				label="Logout"
+				on:click={() => ($profile.key = undefined)}
+				disabled={!$profile.key}
+			/>
+		</div>
 	{/if}
 </div>
 
 <style lang="scss">
 	.header {
-		left: 0;
-		right: 0;
-		top: 0;
+		padding: var(--spacing-12) var(--spacing-12) 0;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
+
+		> div:first-child {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: var(--spacing-12);
+
+			h1 {
+				font-weight: 600;
+			}
+		}
 	}
 	.content {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		
+		.pad {
+			padding: var(--spacing-12);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		> div:first-child {
+			margin-top: var(--spacing-48);
+			margin-bottom: var(--spacing-24);
+		}
+
+		.wallet-info-wrapper {
+			background-color: var(--grey-100);
+			width: 100%;
+		}
+
+		.connect-info {
+			margin-top: var(--spacing-12);
+			text-align: center;
+		}
 	}
 </style>

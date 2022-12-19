@@ -10,13 +10,19 @@
 
 <style lang="scss">
 	.root {
-		border: none;
-		font-family: var(--font-body);
+		border: none;		
+		font-family: var(--font-serif);
 		font-size: 18px;
+		background-color: transparent;
 
 		&:disabled {
 			cursor: not-allowed;
 			opacity: 0.15;
+		}
+
+		&::placeholder {
+			font-family: var(--font-serif);
+			color: var(--grey-300);
 		}
 	}
 </style>

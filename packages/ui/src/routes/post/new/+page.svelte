@@ -8,6 +8,9 @@
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
 
+	let cls: string | undefined = undefined
+	export { cls as class }
+
 	let postText = ''
 
 	function submit() {
@@ -22,21 +25,43 @@
 	}
 </script>
 
-<div>
-	<div>Create post</div>
-	<div>
-		<Button variant="secondary" label="Cancel" icon={Close} on:click={() => history.back()} />
-		<Button
-			variant="primary"
-			label="Post"
-			icon={SendAltFilled}
-			on:click={submit}
-			disabled={!$profile.key?.publicKey}
-		/>
+<div class={`root ${cls}`}>
+	<div class="header">
+		<div>Create post</div>
+		<div class="btns">
+			<Button variant="secondary" icon={Close} on:click={() => history.back()} />
+			<Button
+				variant="primary"
+				label="Publish"
+				icon={SendAltFilled}
+				on:click={submit}
+				disabled={!$profile.key?.publicKey}
+			/>
+		</div>
+	</div>
+	<div class="post-content">
+		<InputString bind:value={postText} placeholder="Write here..." />
 	</div>
 </div>
 
-<InputString bind:value={postText} placeholder="Write here..." />
-
 <style lang="scss">
+	.header {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		font-weight: 600;
+		padding: var(--spacing-12) var(--spacing-12) var(--spacing-24);
+	}
+
+	.btns {
+		display: flex;
+		flex-direction: row;
+		gap: var(--spacing-12);
+		align-items: center;
+	}
+
+	.post-content {
+		padding: var(--spacing-24) var(--spacing-12) var(--spacing-12);
+	}
 </style>

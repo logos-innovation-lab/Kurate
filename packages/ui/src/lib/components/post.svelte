@@ -11,11 +11,10 @@
 <div class={`root ${cls}`}>
 	<div class="content-wrapper">
 		<div class="user-info">
-			<!-- THIS SHOULD SHOW THE POSTED TIME NOW -->
-			<div class="username">
-				{post.user.name ?? 'Anonymous'}
-			</div>
+			<!-- THE DIV BELOW SHOULD SHOW THE DATE -->
+			<div class="faded">{formatDateFromNow(post.timestamp)}</div>
 			<div class="faded">•</div>
+			<!-- THE DIV BELOW SHOULD SHOW THE TIME -->
 			<div class="faded">{formatDateFromNow(post.timestamp)}</div>
 		</div>
 		<div class="post-content">{post.text}</div>
@@ -45,13 +44,13 @@
 		flex-direction: row;
 		gap: var(--spacing-6);
 		margin-bottom: var(--spacing-3);
-		font-family: 'Source Code Pro';
+		// font-family: var(--font-mono);
 		font-size: var(--font-size-sm);
 
-		div.username {
-			font-family: 'Source Sans Pro';
-			font-weight: 600;
-		}
+		// div.username {
+		// 	// font-family: var(--font-body);
+		// 	font-weight: 600;
+		// }
 	}
 	.post-content {
 		font-family: var(--font-serif);
@@ -62,5 +61,19 @@
 		@media (prefers-color-scheme: dark) {
 			color: var(--grey-400);
 		}
+	}
+
+	@keyframes newpost {
+		from {
+			background-color: var(--success-highlight);
+		}
+		to {
+			background-color: transparent;
+		}
+	}
+	:global(.newpost) {
+		animation-name: newpost;
+		animation-duration: 2.5s;
+		animation-timing-function: ease-out;
 	}
 </style>
