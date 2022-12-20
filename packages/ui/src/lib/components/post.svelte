@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatAddress, formatDateFromNow } from '$lib/utils'
+	import { formatDateFromNow } from '$lib/utils'
 
 	import type { Post } from '$lib/stores/post'
 

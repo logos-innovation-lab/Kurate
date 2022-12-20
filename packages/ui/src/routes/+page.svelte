@@ -8,7 +8,7 @@
 </script>
 
 <div>
-	<Header loggedin={$profile.key !== undefined} />
+	<Header loggedin={$profile.signer !== undefined} />
 
 	{#each $posts as post}
 		<Post {post} />
