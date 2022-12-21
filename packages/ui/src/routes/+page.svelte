@@ -18,15 +18,10 @@
 	<Header loggedin={$profile.key !== undefined} />
 
 	{#if $profile.key?.publicKey !== undefined && y == 0}
-		<!-- THIS ENTIRE DIV SHOULD BE THE BUTTON. CAN WE MOVE THE ONCLICK TO THE DIV? -->
-		<div class="new-post-button">
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<div class="new-post-button" on:click={() => goto('/post/new')}>
 			Share freely...
-			<Button
-				variant="primary"
-				label="Create post"
-				icon={Edit}
-				on:click={() => goto('/post/new')}
-			/>
+			<Button variant="primary" label="Create post" icon={Edit} />
 		</div>
 	{:else}
 		<WalletConnect />

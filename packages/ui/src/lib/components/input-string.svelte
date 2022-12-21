@@ -10,7 +10,7 @@
 
 <style lang="scss">
 	.root {
-		border: none;		
+		border: none;
 		font-family: var(--font-serif);
 		font-size: 18px;
 		background-color: transparent;

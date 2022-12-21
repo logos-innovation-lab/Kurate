@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatAddress, formatDateFromNow } from '$lib/utils'
+	import { formatDateAndTime } from '$lib/utils'
 
 	import type { Post } from '$lib/stores/post'
 
@@ -11,11 +11,7 @@
 <div class={`root ${cls}`}>
 	<div class="content-wrapper">
 		<div class="user-info">
-			<!-- THE DIV BELOW SHOULD SHOW THE DATE -->
-			<div class="faded">{formatDateFromNow(post.timestamp)}</div>
-			<div class="faded">•</div>
-			<!-- THE DIV BELOW SHOULD SHOW THE TIME -->
-			<div class="faded">{formatDateFromNow(post.timestamp)}</div>
+			<div class="faded">{formatDateAndTime(post.timestamp)}</div>
 		</div>
 		<div class="post-content">{post.text}</div>
 	</div>

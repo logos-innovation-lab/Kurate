@@ -19,7 +19,7 @@
 	--grey-400: #666666;
 	--grey-500: #2c2c2c;
 
-	--success-highlight: #eafaea;	
+	--success-highlight: #eafaea;
 
 	/* RENAMED COLORS START */
 	/* --color-secondary: #ffffff; */
@@ -85,7 +85,7 @@ video {
 		--color-body-text: #ffffff;
 		--color-body-bg-rgb: 0, 0, 0;
 		--color-body-text-rgb: 255, 255, 255;
-	
+
 		background-color: var(--color-body-bg);
 		color: var(--color-body-text);
 	}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import UserIcon from '$lib/components/icons/user.svelte'
 	import Button from './button.svelte'
-	
+
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
 	import Wallet from './icons/wallet.svelte'
@@ -17,7 +17,7 @@
 	export let loggedin: boolean | undefined = undefined
 
 	function goTop() {
-		document.body.scrollIntoView();
+		document.body.scrollIntoView()
 	}
 </script>
 
@@ -32,26 +32,26 @@
 			</span>
 		</div>
 		{#if y > 0}
-			<Button icon={loggedin ? Edit : Wallet} variant="primary" on:click={loggedin ? () => goto(ROUTES.POST_NEW) : () => goto(ROUTES.PROFILE)} />
+			<Button
+				icon={loggedin ? Edit : Wallet}
+				variant="primary"
+				on:click={() => goto(loggedin ? ROUTES.POST_NEW : ROUTES.PROFILE)}
+			/>
 		{:else}
 			<!-- I BELIEVE THIS IS SUPPOSED BE THE MARKETPLACE'S AVATAR. WHAT IS THE ONCLICK ACTION?? IS THERE ONE? -->
 			<Button icon={UserIcon} variant="secondary" on:click={() => goto(ROUTES.PROFILE)} />
 		{/if}
 	</div>
-	{#if y == 0}
+	{#if y === 0}
 		<div class="header-description">
-			Milestone 1 shaman pitchfork typewriter single-origin coffee beard flannel, actually chillwave.
+			Milestone 1 shaman pitchfork typewriter single-origin coffee beard flannel, actually
+			chillwave.
 		</div>
-		<div class="subtitle">
-			Public timeline
-		</div>
-	{/if}	
+		<div class="subtitle">Public timeline</div>
+	{/if}
 </div>
 
-
 <!-- THE ANIMATION IS STILL A BIT WONKY ON THIS PAGE -->
-
-
 <style lang="scss">
 	.root {
 		position: sticky;
@@ -84,7 +84,7 @@
 
 			.header-title-wrap {
 				margin-left: 0;
-				transition: margin .2s ease-in-out;
+				transition: margin 0.2s ease-in-out;
 			}
 
 			// .header-description,
@@ -96,7 +96,6 @@
 			// 	font-size: 0;
 			// 	transition: height 0.2s, opacity 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;
 			// }
-
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -128,7 +127,7 @@
 		align-items: center;
 		gap: var(--spacing-12);
 		margin-left: -56px;
-		transition: margin .2s ease-in-out;
+		transition: margin 0.2s ease-in-out;
 	}
 
 	.header-description {
@@ -137,7 +136,7 @@
 		// transition: height 0.2s, opacity 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;
 	}
 
-	.subtitle {		
+	.subtitle {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -148,6 +147,5 @@
 		overflow: hidden;
 		opacity: 1;
 		// transition: height 0.5s, opacity 0.5s, padding 0.5s, margin 0.5s, font-size 0.5s;
-
 	}
 </style>
