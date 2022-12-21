@@ -1,10 +1,23 @@
 <script lang="ts">
+	import { browser } from '$app/environment'
 	import Button from '$lib/components/button.svelte'
 	import Logout from '$lib/components/icons/logout.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import Input from '$lib/components/input.svelte'
-	import { canConnect, profile } from '$lib/stores/profile'
+	import { connectWallet, canConnectWallet } from '$lib/services'
+	import { profile } from '$lib/stores/profile'
+
+	let error: Error | undefined = undefined
+	let hasWallet = browser && canConnectWallet()
+
+	const handleConnect = async () => {
+		try {
+			$profile.signer = await connectWallet()
+		} catch (err) {
+			error = err as Error
+		}
+	}
 </script>
 
 <div class="header">
@@ -21,18 +34,18 @@
 	/>
 </div>
 <div class="content">
-	{#if !canConnect()}
+	{#if !hasWallet}
 		<span>Your browser does not have web3 wallet access.</span>
 	{:else if $profile.signer === undefined}
 		<Button
 			variant="primary"
 			icon={Wallet}
 			label="Connect wallet to post"
-			on:click={() => profile.getSigner()}
+			on:click={handleConnect}
 		/>
 		<span>Connect a wallet to access or create your account.</span>
-		{#if $profile.error !== undefined}
-			<span>Failed to connect {$profile.error.message}</span>
+		{#if error !== undefined}
+			<span>Failed to connect {error.message}</span>
 		{/if}
 	{:else}
 		<span>Wallet & Identity</span>
