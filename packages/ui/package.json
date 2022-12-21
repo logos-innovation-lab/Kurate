@@ -13,10 +13,13 @@
 		"format": "prettier --plugin-search-dir . --write . && eslint . --fix"
 	},
 	"devDependencies": {
+		"@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+		"@esbuild-plugins/node-modules-polyfill": "^0.1.4",
 		"@fontsource/source-code-pro": "^4.5.12",
 		"@fontsource/source-sans-pro": "^4.5.11",
 		"@fontsource/source-serif-pro": "^4.5.9",
 		"@playwright/test": "1.28.1",
+		"@semaphore-protocol/identity": "^2.6.1",
 		"@sveltejs/adapter-static": "^1.0.0",
 		"@sveltejs/kit": "^1.0.0-next.578",
 		"@typescript-eslint/eslint-plugin": "^5.46.1",

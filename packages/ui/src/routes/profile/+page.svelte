@@ -5,8 +5,9 @@
 	import Undo from '$lib/components/icons/undo.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import Input from '$lib/components/input.svelte'
-	import { connectWallet, canConnectWallet } from '$lib/services'
+	import { connectWallet, canConnectWallet, createIdentity } from '$lib/services'
 	import { profile } from '$lib/stores/profile'
+	import { identity } from 'svelte/internal'
 
 	let error: Error | undefined = undefined
 	let hasWallet = browser && canConnectWallet()
@@ -14,6 +15,12 @@
 	const handleConnect = async () => {
 		try {
 			$profile.signer = await connectWallet()
+			
+			const defaultIdentity = 'anonymous'
+
+			const identity = await createIdentity($profile.signer, defaultIdentity)
+
+			$profile.identities.set(defaultIdentity, identity)
 		} catch (err) {
 			error = err as Error
 		}
@@ -61,6 +68,10 @@
 			</span>
 		</Input>
 	{/if}
+
+	{#each Array.from($profile.identities) as identity}
+		<pre>{JSON.stringify(identity)}</pre>
+	{/each}
 </div>
 
 <style lang="scss">

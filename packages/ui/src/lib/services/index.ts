@@ -1,4 +1,5 @@
 import { providers } from 'ethers'
+import { Identity } from "@semaphore-protocol/identity"
 
 type WindowWithEthereum = Window &
 	typeof globalThis & { ethereum: providers.ExternalProvider | providers.JsonRpcFetchFunc }
@@ -11,4 +12,9 @@ export async function connectWallet(network?: providers.Networkish) {
 
 export function canConnectWallet() {
 	return Boolean((window as WindowWithEthereum)?.ethereum)
+}
+
+export async function createIdentity(signer: providers.JsonRpcSigner, secret: string) {
+	const identitySeed = await signer.signMessage(secret)
+	return new Identity(identitySeed)
 }
