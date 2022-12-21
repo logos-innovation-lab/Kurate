@@ -12,27 +12,27 @@ const config: UserConfig = {
 		esbuildOptions: {
 			// Node.js global to browser globalThis
 			define: {
-				global: 'globalThis'
+				global: 'globalThis',
 			},
 			// Enable esbuild polyfill plugins
 			plugins: [
 				NodeGlobalsPolyfillPlugin({
 					process: true,
-					buffer: true
+					buffer: true,
 				}),
-				NodeModulesPolyfillPlugin()
-			]
-		}
+				NodeModulesPolyfillPlugin(),
+			],
+		},
 	},
 	build: {
 		rollupOptions: {
 			plugins: [
 				// Enable rollup polyfills plugin
 				// used during production bundling
-				rollupNodePolyFill() as any
-			]
-		}
-	}
+				rollupNodePolyFill() as any,
+			],
+		},
+	},
 }
 
 export default config

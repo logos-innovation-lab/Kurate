@@ -1,5 +1,5 @@
 import { providers } from 'ethers'
-import { Identity } from "@semaphore-protocol/identity"
+import { Identity } from '@semaphore-protocol/identity'
 
 type WindowWithEthereum = Window &
 	typeof globalThis & { ethereum: providers.ExternalProvider | providers.JsonRpcFetchFunc }

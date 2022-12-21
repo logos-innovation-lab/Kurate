@@ -7,7 +7,6 @@
 	import Input from '$lib/components/input.svelte'
 	import { connectWallet, canConnectWallet, createIdentity } from '$lib/services'
 	import { profile } from '$lib/stores/profile'
-	import { identity } from 'svelte/internal'
 
 	let error: Error | undefined = undefined
 	let hasWallet = browser && canConnectWallet()
@@ -15,16 +14,18 @@
 	const handleConnect = async () => {
 		try {
 			$profile.signer = await connectWallet()
-			
+
 			const defaultIdentity = 'anonymous'
 
 			const identity = await createIdentity($profile.signer, defaultIdentity)
 
-			$profile.identities.set(defaultIdentity, identity)
+			$profile.identities = { ...$profile.identities, [defaultIdentity]: identity }
 		} catch (err) {
 			error = err as Error
 		}
 	}
+
+	$: console.log($profile.identities)
 </script>
 
 <div class="header">
@@ -69,8 +70,11 @@
 		</Input>
 	{/if}
 
-	{#each Array.from($profile.identities) as identity}
-		<pre>{JSON.stringify(identity)}</pre>
+	{#each Object.entries($profile.identities) as [name, identity]}
+		<div>{name}</div>
+		<div>commitment: {identity.getCommitment().toString(16)}</div>
+		<div>nullifier: {identity.getNullifier().toString(16)}</div>
+		<div>trapdoor: {identity.getTrapdoor().toString(16)}</div>
 	{/each}
 </div>
 
