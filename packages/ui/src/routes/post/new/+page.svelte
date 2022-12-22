@@ -13,13 +13,15 @@
 
 	let postText = ''
 
-	function submit() {
-		if (!$profile.key?.publicKey) return
+	async function submit() {
+		if (!$profile.signer) return
+
+		const address = await $profile.signer.getAddress()
 
 		posts.add({
 			timestamp: Date.now(),
 			text: postText,
-			user: { address: $profile.key.publicKey },
+			user: { address },
 		})
 		goto(ROUTES.HOME)
 	}
@@ -35,7 +37,7 @@
 				label="Publish"
 				icon={SendAltFilled}
 				on:click={submit}
-				disabled={!$profile.key?.publicKey}
+				disabled={!$profile.signer}
 			/>
 		</div>
 	</div>

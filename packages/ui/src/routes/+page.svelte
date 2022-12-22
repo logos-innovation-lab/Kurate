@@ -15,9 +15,9 @@
 
 <svelte:window bind:scrollY={y} />
 <div>
-	<Header loggedin={$profile.key !== undefined} />
+	<Header loggedin={$profile.signer !== undefined} />
 
-	{#if $profile.key?.publicKey !== undefined && y == 0}
+	{#if $profile.signer !== undefined && y == 0}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div class="new-post-button" on:click={() => goto('/post/new')}>
 			Share freely...

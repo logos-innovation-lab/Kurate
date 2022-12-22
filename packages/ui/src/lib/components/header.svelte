@@ -8,8 +8,6 @@
 	import Edit from './icons/edit.svelte'
 	import UpToTop from './icons/up-to-top.svelte'
 
-	// import { fade } from 'svelte/transition';
-
 	let cls: string | undefined = undefined
 	export { cls as class }
 

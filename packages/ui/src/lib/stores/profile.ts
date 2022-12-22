@@ -1,27 +1,16 @@
 import { writable, type Writable } from 'svelte/store'
-import type { User } from './user'
+import type { providers } from 'ethers'
+import type { Identity } from '@semaphore-protocol/identity'
 
 export interface Profile {
-	key?: {
-		publicKey: string
-	}
-	profiles: User[]
-	active?: User
+	signer?: providers.JsonRpcSigner
+	identities: Record<string, Identity>
 }
 
-export interface ProfileStore extends Writable<Profile> {
-	setActive: (user: User) => void
-}
+export type ProfileStore = Writable<Profile>
 
 function createProfileStore(): ProfileStore {
-	const store = writable<Profile>({ profiles: [], active: undefined })
-
-	return {
-		...store,
-		setActive: (user: User) => {
-			store.update((profile) => ({ ...profile, active: user }))
-		},
-	}
+	return writable<Profile>({ identities: {} })
 }
 
 export const profile = createProfileStore()
