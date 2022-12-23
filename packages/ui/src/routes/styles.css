@@ -42,6 +42,10 @@
 	--spacing-48: 48px;
 }
 
+html {
+	scroll-behavior: smooth;
+}
+
 body {
 	width: 100vw;
 	min-height: 100vh;
@@ -75,7 +79,8 @@ video {
 }
 
 @media (prefers-color-scheme: dark) {
-	body {
+	:root {
+		--success-highlight: #052b05;
 		--color-body-bg: #000000;
 		--color-body-text: #ffffff;
 		--color-body-bg-rgb: 0, 0, 0;

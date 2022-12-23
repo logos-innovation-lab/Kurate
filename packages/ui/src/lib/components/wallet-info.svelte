@@ -10,14 +10,15 @@
 <style lang="scss">
 	.root {
 		padding: var(--spacing-12);
-		display: flex;
-		flex-direction: column;
-		border-top: 1px solid var(--color-light-grey-background);
+		// display: flex;
+		// flex-direction: column;
+		// border-top: 1px solid var(--color-light-grey-background);
 	}
 	.title {
+		display: block;
 		margin-bottom: var(--spacing-6);
 		font-family: var(--font-body);
 		font-size: 14px;
-		color: var(--color-grey-text);
+		color: var(--grey-300);
 	}
 </style>

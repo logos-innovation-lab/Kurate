@@ -22,7 +22,7 @@
 			},
 		},
 		{
-			timestamp: new Date().setDate(new Date().getDate() - 2),
+			timestamp: new Date().setDate(new Date().getDate() - 1),
 			text: 'What were the skies like when you were young?',
 			user: {
 				address: '0x547172511e83121ea8b27f25dc00e7294d9b8b6d',

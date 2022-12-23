@@ -3,6 +3,7 @@ import type { UserConfig } from 'vite'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
+import type { InputPluginOption } from 'rollup'
 
 const config: UserConfig = {
 	plugins: [sveltekit()],
@@ -29,7 +30,7 @@ const config: UserConfig = {
 			plugins: [
 				// Enable rollup polyfills plugin
 				// used during production bundling
-				rollupNodePolyFill() as any,
+				rollupNodePolyFill() as InputPluginOption,
 			],
 		},
 	},
