@@ -18,7 +18,7 @@
 		"@fontsource/source-code-pro": "^4.5.12",
 		"@fontsource/source-sans-pro": "^4.5.11",
 		"@fontsource/source-serif-pro": "^4.5.9",
-		"@playwright/test": "1.28.1",
+		"@playwright/test": "1.29.1",
 		"@semaphore-protocol/identity": "^2.6.1",
 		"@sveltejs/adapter-static": "^1.0.0",
 		"@sveltejs/kit": "^1.0.1",
