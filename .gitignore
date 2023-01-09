@@ -3,3 +3,6 @@ dist/
 node_modules/
 cache/
 coverage/
+
+# This is rather wrong but sadly necessary because of https://github.com/evanw/esbuild/issues/1819#issuecomment-1365520831
+package-lock.json 
