@@ -28,6 +28,9 @@ jobs:
       - name: Install browser runners
         run: npx playwright install
 
+      - name: Download snark-artifacts
+        run: npm run download:snark-artifacts --workspaces --if-present
+
       - name: Test
         run: npm run test --workspaces --if-present
 
