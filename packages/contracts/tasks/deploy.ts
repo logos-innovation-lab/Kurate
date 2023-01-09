@@ -1,39 +1,27 @@
 import { task, types } from "hardhat/config"
 
-task("deploy", "Deploy a Feedback contract")
+task("deploy", "Deploy a GlobalAnonymousFeed contract")
     .addOptionalParam("semaphore", "Semaphore contract address", undefined, types.string)
-    .addOptionalParam("group", "Group identifier", undefined, types.int)
+    .addOptionalParam("group", "Group id", "42", types.string)
     .addOptionalParam("logs", "Print the logs", true, types.boolean)
     .setAction(async ({ logs, semaphore: semaphoreAddress, group: groupId }, { ethers, run }) => {
         if (!semaphoreAddress) {
-            const { address: verifierAddress } = await run("deploy:verifier", { logs, merkleTreeDepth: 20 })
-
-            const { address } = await run("deploy:semaphore", {
-                logs,
-                verifiers: [
-                    {
-                        merkleTreeDepth: 20,
-                        contractAddress: verifierAddress
-                    }
-                ]
+            const { semaphore } = await run("deploy:semaphore", {
+                logs
             })
 
-            semaphoreAddress = address
+            semaphoreAddress = semaphore.address
         }
 
-        if (!groupId) {
-            groupId = process.env.GROUP_ID
-        }
+        const globalAnonymousFeedFactory = await ethers.getContractFactory("GlobalAnonymousFeed")
 
-        const FeedbackFactory = await ethers.getContractFactory("Feedback")
+        const globalAnonymousFeedContract = await globalAnonymousFeedFactory.deploy(semaphoreAddress, groupId)
 
-        const feedbackContract = await FeedbackFactory.deploy(semaphoreAddress, groupId)
-
-        await feedbackContract.deployed()
+        await globalAnonymousFeedContract.deployed()
 
         if (logs) {
-            console.info(`Feedback contract has been deployed to: ${feedbackContract.address}`)
+            console.info(`GlobalAnonymousFeedContract contract has been deployed to: ${globalAnonymousFeedContract.address}`)
         }
 
-        return feedbackContract
+        return globalAnonymousFeedContract
     })

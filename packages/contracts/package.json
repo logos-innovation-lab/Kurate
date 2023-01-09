@@ -4,10 +4,10 @@
     "private": true,
     "main": "index.js",
     "scripts": {
-        "start": "hardhat node & yarn compile && yarn deploy --network localhost",
+        "start": "hardhat node & npm run compile && npm run deploy -- --network localhost",
         "compile": "hardhat compile",
         "download:snark-artifacts": "hardhat run scripts/download-snark-artifacts.ts",
-        "deploy": "yarn compile && hardhat deploy",
+        "deploy": "npm run compile && hardhat deploy",
         "test": "hardhat test",
         "test:report-gas": "REPORT_GAS=true hardhat test",
         "test:coverage": "hardhat coverage",
@@ -16,12 +16,13 @@
     },
     "devDependencies": {
         "@nomicfoundation/hardhat-chai-matchers": "^1.0.5",
-        "@semaphore-protocol/group": "2.6.1",
-        "@semaphore-protocol/hardhat": "^0.1.0",
-        "@semaphore-protocol/identity": "2.6.1",
-        "@semaphore-protocol/proof": "2.6.1",
+        "@semaphore-protocol/group": "3.0.0-beta.6",
+        "@semaphore-protocol/hardhat": "3.0.0-beta.6",
+        "@semaphore-protocol/identity": "3.0.0-beta.6",
+        "@semaphore-protocol/proof": "3.0.0-beta.6",
         "@typechain/hardhat": "^6.1.5",
         "@types/chai": "^4.3.4",
+        "@types/download": "^8.0.2",
         "@types/mocha": "^10.0.1",
         "chai": "^4.3.7",
         "circomlibjs": "0.1.7",
@@ -35,7 +36,7 @@
         "ts-node": "^10.9.1"
     },
     "dependencies": {
-        "@semaphore-protocol/contracts": "2.6.1"
+        "@semaphore-protocol/contracts": "3.0.0-beta.6"
     },
     "config": {
         "solidity": {
