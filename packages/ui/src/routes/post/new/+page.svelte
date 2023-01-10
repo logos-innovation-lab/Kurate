@@ -7,6 +7,7 @@
 	import { posts } from '$lib/stores/post'
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
+	import { generateGroupProof, getContractGroup, getGlobalAnonymousFeed } from '$lib/services/index'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -14,14 +15,19 @@
 	let postText = ''
 
 	async function submit() {
-		if (!$profile.signer) return
+		const signer = $profile.signer
+		if (!signer) return console.log('no signer')
 
-		const address = await $profile.signer.getAddress()
+		const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
+		const group = await getContractGroup(globalAnonymousFeed)
+		const proof = await generateGroupProof(group, $profile.identities.anonymous, postText)
 
+		const address = await signer.getAddress()
 		posts.add({
 			timestamp: Date.now(),
 			text: postText,
 			user: { address },
+			proof,
 		})
 		goto(ROUTES.HOME)
 	}
