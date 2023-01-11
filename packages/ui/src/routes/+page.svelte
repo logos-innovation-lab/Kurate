@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Header from '$lib/components/header.svelte'
 	import Post from '$lib/components/post.svelte'
-	import Populate from '$lib/temp/index.svelte'
 	import Button from '$lib/components/button.svelte'
 	import WalletConnect from '$lib/components/wallet-connect.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
@@ -30,7 +29,7 @@
 	{#each $posts as post}
 		<Post {post} />
 	{:else}
-		<Populate />
+		<p>There are no posts yet</p>
 	{/each}
 </div>
 
