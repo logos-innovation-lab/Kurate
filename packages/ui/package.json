@@ -15,12 +15,11 @@
 		"waku:stop": "docker kill tests-waku-1"
 	},
 	"devDependencies": {
-		"@esbuild-plugins/node-globals-polyfill": "^0.1.1",
-		"@esbuild-plugins/node-modules-polyfill": "^0.1.4",
 		"@fontsource/source-code-pro": "^4.5.12",
 		"@fontsource/source-sans-pro": "^4.5.11",
 		"@fontsource/source-serif-pro": "^4.5.9",
 		"@playwright/test": "1.29.1",
+		"@rollup/plugin-inject": "^5.0.3",
 		"@semaphore-protocol/group": "3.0.0-beta.6",
 		"@semaphore-protocol/identity": "3.0.0-beta.6",
 		"@semaphore-protocol/proof": "3.0.0-beta.6",
@@ -33,6 +32,7 @@
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
 		"ethers": "^5.7.2",
+		"node-stdlib-browser": "^1.2.0",
 		"prettier": "^2.8.1",
 		"prettier-plugin-svelte": "^2.9.0",
 		"sass": "^1.57.1",
