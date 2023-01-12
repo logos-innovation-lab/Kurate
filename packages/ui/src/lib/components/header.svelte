@@ -22,31 +22,34 @@
 <svelte:window bind:scrollY={y} />
 
 <div class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}>
-	<div class="header">
-		<div class="header-title-wrap">
-			<Button icon={UpToTop} on:click={goTop} />
-			<span class={` ${y > 0 ? 'subtitle' : 'header-title'} ${cls}`}>
-				{y > 0 ? 'Public Timeline' : 'The Outlet'}
-			</span>
+	<div class="header-content">
+		<div class="header">
+			<div class="header-title-wrap">
+				<div class="top-button">
+					<Button icon={UpToTop} on:click={goTop} />
+				</div>
+				<span class={` ${y > 0 ? 'subtitle' : 'header-title'} ${cls}`}>
+					{y > 0 ? 'Public Timeline' : 'The Outlet'}
+				</span>
+			</div>
+			{#if y > 0}
+				<Button
+					icon={loggedin ? Edit : Wallet}
+					variant="primary"
+					on:click={() => goto(loggedin ? ROUTES.POST_NEW : ROUTES.PROFILE)}
+				/>
+			{:else}
+				<Button icon={UserIcon} variant="secondary" on:click={() => goto(ROUTES.PROFILE)} />
+			{/if}
 		</div>
-		{#if y > 0}
-			<Button
-				icon={loggedin ? Edit : Wallet}
-				variant="primary"
-				on:click={() => goto(loggedin ? ROUTES.POST_NEW : ROUTES.PROFILE)}
-			/>
-		{:else}
-			<!-- I BELIEVE THIS IS SUPPOSED BE THE MARKETPLACE'S AVATAR. WHAT IS THE ONCLICK ACTION?? IS THERE ONE? -->
-			<Button icon={UserIcon} variant="secondary" on:click={() => goto(ROUTES.PROFILE)} />
+		{#if y === 0}
+			<div class="header-description">
+				Milestone 1 shaman pitchfork typewriter single-origin coffee beard flannel, actually
+				chillwave.
+			</div>
+			<div class="subtitle">Public timeline</div>
 		{/if}
 	</div>
-	{#if y === 0}
-		<div class="header-description">
-			Milestone 1 shaman pitchfork typewriter single-origin coffee beard flannel, actually
-			chillwave.
-		</div>
-		<div class="subtitle">Public timeline</div>
-	{/if}
 </div>
 
 <!-- THE ANIMATION IS STILL A BIT WONKY ON THIS PAGE -->
@@ -61,6 +64,24 @@
 		background-color: rgba(var(--color-body-bg-rgb), 0.93);
 		backdrop-filter: blur(3px);
 
+		@media (min-width: 1280px) {
+			border-bottom: none;
+			padding-bottom: 0;
+			padding-top: var(--spacing-48);
+			transition: padding 0.2s;
+		}
+
+		.header-content {
+			max-width: 1280px;
+			margin: 0 auto 0;
+
+			@media (min-width: 1280px) {
+				padding-bottom: var(--spacing-12);
+				border-bottom: 1px solid var(--grey-200);
+				transition: padding 0.2s;
+			}
+		}
+
 		.hide {
 			opacity: 0;
 			font-size: 0;
@@ -74,6 +95,17 @@
 
 		&.scrolled {
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
+			
+			@media (min-width: 1280px) {
+				padding: var(--spacing-12);
+				transition: padding 0.2s;
+
+				.header-content {
+					border-bottom: none;
+					padding-bottom: 0;
+					transition: padding 0.2s;
+				}
+			}
 
 			.header {
 				padding-bottom: 0;
@@ -83,7 +115,13 @@
 			.header-title-wrap {
 				margin-left: 0;
 				transition: margin 0.2s ease-in-out;
+
+				.top-button {
+					opacity: 1;
+					transition: opacity 0.2s ease-in-out;
+				}
 			}
+
 
 			// .header-description,
 			// .subtitle.hide {
@@ -126,6 +164,11 @@
 		gap: var(--spacing-12);
 		margin-left: -56px;
 		transition: margin 0.2s ease-in-out;
+
+		.top-button {
+			opacity: 0;
+			transition: opacity 0.2s ease-in-out;
+		}
 	}
 
 	.header-description {

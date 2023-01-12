@@ -31,7 +31,13 @@
 	<div class="header">
 		<div>Create post</div>
 		<div class="btns">
-			<Button variant="secondary" icon={Close} on:click={() => history.back()} />
+			<!-- THIS IS A HACK JOB BECAUSE I'M NOT SURE HOW TO CHANGE A PROP VALUE (label) BASED ON MEDIA QUERY -->
+			<div class="sm">
+				<Button variant="secondary" icon={Close} on:click={() => history.back()} />
+			</div>			
+			<div class="lg">
+				<Button variant="secondary" icon={Close} label="Cancel" on:click={() => history.back()} />
+			</div>
 			<Button
 				variant="primary"
 				label="Publish"
@@ -61,9 +67,26 @@
 		flex-direction: row;
 		gap: var(--spacing-12);
 		align-items: center;
+
+		.sm {
+			display: block;
+		}
+		.lg {
+			display: none;
+		}
+
+		@media (min-width: 1280px) {
+			.sm {
+				display: none;
+			}
+			.lg {
+				display: block;
+			}
+		}
 	}
 
 	.post-content {
 		padding: var(--spacing-24) var(--spacing-12) var(--spacing-12);
+		height: calc(100vh - 80px);
 	}
 </style>

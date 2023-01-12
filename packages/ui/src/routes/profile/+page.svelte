@@ -60,7 +60,6 @@
 			{/if}
 		</div>
 	{:else}
-		<!-- WHY IS THIS AN INPUT? DOES IT HAVE TO BE? -->
 		<div class="wallet-info-wrapper">
 			<WalletInfo title="Connected wallet">
 				{#await $profile.signer.getAddress()}
@@ -134,6 +133,7 @@
 		.wallet-info-wrapper {
 			background-color: var(--grey-100);
 			width: 100%;
+			max-width: 480px;
 		}
 
 		.connect-info {

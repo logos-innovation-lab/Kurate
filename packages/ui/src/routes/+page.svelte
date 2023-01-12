@@ -16,22 +16,24 @@
 <svelte:window bind:scrollY={y} />
 <div>
 	<Header loggedin={$profile.signer !== undefined} />
-
-	{#if $profile.signer !== undefined && y == 0}
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<div class="new-post-button" on:click={() => goto('/post/new')}>
-			Share freely...
-			<Button variant="primary" label="Create post" icon={Edit} />
-		</div>
-	{:else}
-		<WalletConnect />
-	{/if}
-
-	{#each $posts as post}
-		<Post {post} />
-	{:else}
-		<Populate />
-	{/each}
+	<div class="wrapper">
+		{#if $profile.signer !== undefined && y == 0}
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<div class="new-post-button" on:click={() => goto('/post/new')}>
+				Share freely...
+				<Button variant="primary" label="Create post" icon={Edit} />
+			</div>
+		{:else}
+			<WalletConnect />
+		{/if}
+		<div class="posts">
+			{#each $posts as post}
+				<Post {post} />
+			{:else}
+				<Populate />
+			{/each}
+		</div>	
+	</div>
 </div>
 
 <style lang="scss">
@@ -45,4 +47,22 @@
 		align-items: center;
 		border-bottom: 1px solid var(--grey-200);
 	}
+	.wrapper {
+		max-width: 1280px;
+		margin: 0 auto 0;
+		@media (min-width: 1280px) {
+			border-left: 1px solid var(--grey-200);
+			border-right: 1px solid var(--grey-200);
+		}
+	}
+	.posts {
+		column-width: 100%;
+		column-gap: 0;
+		column-rule: 1px solid var(--grey-200);
+
+		@media (min-width: 739px) {
+			column-width: 320px;			
+		}
+	}
+
 </style>

@@ -6,7 +6,7 @@
 	export let placeholder: string | undefined = undefined
 </script>
 
-<input type="text" {placeholder} {disabled} bind:value class={`root ${cls}`} />
+<textarea {placeholder} {disabled} bind:value class={`root ${cls}`} />
 
 <style lang="scss">
 	.root {
@@ -14,6 +14,8 @@
 		font-family: var(--font-serif);
 		font-size: 18px;
 		background-color: transparent;
+		width: 100%;
+		height: 100%;
 
 		&:disabled {
 			cursor: not-allowed;
@@ -23,6 +25,7 @@
 		&::placeholder {
 			font-family: var(--font-serif);
 			color: var(--grey-300);
+			text-align: center;
 		}
 	}
 </style>

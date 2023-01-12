@@ -24,6 +24,7 @@
 		display: flex;
 		gap: var(--spacing-12);
 		flex-direction: row;
+		break-inside: avoid-column;
 
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);

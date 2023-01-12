@@ -31,7 +31,7 @@
 		justify-content: center;
 		align-items: center;
 		border-bottom: 1px solid var(--grey-200);
-		transition: height 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;
+		transition: height 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;		
 
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);
