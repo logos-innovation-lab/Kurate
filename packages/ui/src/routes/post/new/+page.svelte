@@ -32,6 +32,7 @@
 		<div>Create post</div>
 		<div class="btns">
 			<!-- THIS IS A HACK JOB BECAUSE I'M NOT SURE HOW TO CHANGE A PROP VALUE (label) BASED ON MEDIA QUERY -->
+			<!-- to test: use js to bind the window width to a variable x, just like we're doing y, test value of x -->
 			<div class="sm">
 				<Button variant="secondary" icon={Close} on:click={() => history.back()} />
 			</div>			

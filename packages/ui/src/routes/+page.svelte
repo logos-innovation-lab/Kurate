@@ -1,5 +1,7 @@
 <script lang="ts">
-	import Header from '$lib/components/header.svelte'
+	// import Header from '$lib/components/header.svelte'
+	import HeaderTop from '$lib/components/header-top.svelte'
+	import HeaderDescription from '$lib/components/header-description.svelte'
 	import Post from '$lib/components/post.svelte'
 	import Populate from '$lib/temp/index.svelte'
 	import Button from '$lib/components/button.svelte'
@@ -15,9 +17,13 @@
 
 <svelte:window bind:scrollY={y} />
 <div>
-	<Header loggedin={$profile.signer !== undefined} />
+	<!-- <Header loggedin={$profile.signer !== undefined} /> -->
+
+	<HeaderTop loggedin={$profile.signer !== undefined} />
+	<HeaderDescription />
+
 	<div class="wrapper">
-		{#if $profile.signer !== undefined && y == 0}
+		{#if $profile.signer !== undefined}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<div class="new-post-button" on:click={() => goto('/post/new')}>
 				Share freely...

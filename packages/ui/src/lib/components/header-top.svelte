@@ -51,18 +51,10 @@
 					/>
 				</div>
 			</div>
-		</div>
-		{#if y === 0}
-			<div class="header-description">
-				Milestone 1 shaman pitchfork typewriter single-origin coffee beard flannel, actually
-				chillwave.
-			</div>
-			<div class={`subtitle ${y > 0 ? 'hide' : ''} ${cls}`}>Public timeline</div>
-		{/if}
+		</div>		
 	</div>
 </div>
 
-<!-- THE ANIMATION IS STILL A BIT WONKY ON THIS PAGE -->
 <style lang="scss">
 	.root {
 		position: sticky;
@@ -70,7 +62,6 @@
 		left: 0;
 		right: 0;
 		padding: var(--spacing-12);
-		border-bottom: 1px solid var(--grey-200);
 		background-color: rgba(var(--color-body-bg-rgb), 0.93);
 		backdrop-filter: blur(3px);
 
@@ -87,7 +78,6 @@
 
 			@media (min-width: 1280px) {
 				padding-bottom: var(--spacing-12);
-				border-bottom: 1px solid var(--grey-200);
 				transition: padding 0.2s;
 			}
 		}
@@ -115,17 +105,34 @@
 			}
 		}
 
-		
-
-		.hide {
-			opacity: 0;
-			font-size: 0;
-			transition: opacity 0.2s, font-size 0.2s;
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0 0 var(--spacing-24);
+			transition: padding 0.2s ease-in-out;
 		}
 
-		.show {
-			opacity: 1;
-			transition: opacity 0.2s, font-size 0.2s;
+		.header-title {
+			font-family: var(--font-body);
+			font-weight: 600;
+			font-size: 18px;
+			font-style: normal;
+			text-align: left;
+		}
+
+		.header-title-wrap {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: var(--spacing-12);
+			margin-left: -56px;
+			transition: margin 0.2s ease-in-out;
+
+			.top-button {
+				opacity: 0;
+				transition: opacity 0.2s ease-in-out;
+			}
 		}
 
 		&.scrolled {
@@ -168,17 +175,6 @@
 					transition: opacity 0.2s ease-in-out;
 				}
 			}
-
-
-			.header-description,
-			.subtitle.hide {
-				height: 0;
-				opacity: 0;
-				padding: 0;
-				margin: 0;
-				font-size: 0;
-				transition: height 0.2s, opacity 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;
-			}
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -188,56 +184,5 @@
 			}
 		}
 	}
-	.header {
-		// position: fixed;
-		// top: 0;
-		// left: 0;
-		// right: 0;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0 0 var(--spacing-24);
-		transition: padding 0.2s ease-in-out;
-	}
-
-	.header-title {
-		font-family: var(--font-body);
-		font-weight: 600;
-		font-size: 18px;
-		font-style: normal;
-		text-align: left;
-	}
-
-	.header-title-wrap {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: var(--spacing-12);
-		margin-left: -56px;
-		transition: margin 0.2s ease-in-out;
-
-		.top-button {
-			opacity: 0;
-			transition: opacity 0.2s ease-in-out;
-		}
-	}
-
-	.header-description {
-		padding: 0 0 var(--spacing-24);
-		opacity: 1;
-		// transition: height 0.2s, opacity 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;
-	}
-
-	.subtitle {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
-		font-size: 16px;
-		font-weight: 600;
-		padding: 0;
-		overflow: hidden;
-		opacity: 1;
-		// transition: height 0.5s, opacity 0.5s, padding 0.5s, margin 0.5s, font-size 0.5s;
-	}
+	
 </style>
