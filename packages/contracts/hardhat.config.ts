@@ -22,6 +22,11 @@ function getNetworks(): NetworksUserConfig {
                 url: process.env.ETHEREUM_URL,
                 chainId: 5,
                 accounts
+            },
+            sepolia: {
+                url: process.env.ETHEREUM_URL,
+                chainId: 11155111,
+                accounts
             }
         }
     }
