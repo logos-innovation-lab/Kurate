@@ -13,6 +13,7 @@ import wasmFilePath from '$lib/assets/semaphore.wasm?url'
 
 import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '$lib/assets/typechain'
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS } from '$lib/constants'
+import { solidityKeccak256 } from 'ethers/lib/utils'
 
 type WindowWithEthereum = Window &
 	typeof globalThis & { ethereum: providers.ExternalProvider | providers.JsonRpcFetchFunc }
@@ -41,12 +42,11 @@ export async function getContractGroup(
 ): Promise<Group> {
 	const group = new Group(20)
 
-	console.log('getting events')
 	const events = await globalAnonymousFeedContract.queryFilter(
 		globalAnonymousFeedContract.filters.NewIdentity(null),
 	)
 
-	console.log(events)
+	group.addMembers(events.map((e) => e.args.identityCommitment.toBigInt()))
 	return group
 }
 
@@ -68,7 +68,9 @@ export async function generateGroupProof(
 ): Promise<FullProof> {
 	const externalNullifier = group.root
 
-	return generateProof(identity, group, externalNullifier, message, {
+	const messageHash = solidityKeccak256(['string'], [message])
+
+	return generateProof(identity, group, BigInt(42), messageHash, {
 		zkeyFilePath,
 		wasmFilePath,
 	})
@@ -90,5 +92,6 @@ export function validateProofOnChain(
 		fullProof.publicSignals.merkleTreeRoot,
 		fullProof.publicSignals.nullifierHash,
 		solidityProof,
+		{ gasLimit: '4000000' },
 	)
 }
