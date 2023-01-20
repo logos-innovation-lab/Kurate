@@ -52,19 +52,28 @@
 		gap: var(--spacing-12);
 		align-items: center;
 		border-bottom: 1px solid var(--grey-200);
+		cursor: pointer;
 	}
 	.wrapper {
 		max-width: 1280px;
 		margin: 0 auto 0;
 		@media (min-width: 1280px) {
 			border-left: 1px solid var(--grey-200);
-			border-right: 1px solid var(--grey-200);
+		}
+
+		@media (prefers-color-scheme: dark) {
+			border-left-color: var(--grey-500);
 		}
 	}
 	.posts {
+		// SIMPLE COLUMN LAYOUT, LOADS FROM TOP TO BOTTOM, 1 COLUMN AT A TIME.
+
 		column-width: 100%;
 		column-gap: 0;
-		column-rule: 1px solid var(--grey-200);
+		// column-rule: 1px solid var(--grey-200);
+		// @media (prefers-color-scheme: dark) {
+			// column-rule: 1px solid var(--grey-500);
+		// }
 
 		@media (min-width: 739px) {
 			column-width: 320px;			

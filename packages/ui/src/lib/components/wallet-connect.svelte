@@ -30,11 +30,15 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		border-top: 1px solid var(--grey-200);
 		border-bottom: 1px solid var(--grey-200);
+		border-right: 1px solid var(--grey-200);
 		transition: height 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;		
 
 		@media (prefers-color-scheme: dark) {
+			border-top-color: var(--grey-500);
 			border-bottom-color: var(--grey-500);
+			border-right-color: var(--grey-500);
 		}
 
 		// &.scrolled {

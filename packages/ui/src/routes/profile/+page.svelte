@@ -93,6 +93,10 @@
 <style lang="scss">
 	.wallet-icon-wrapper :global(svg) {
 		fill: var(--grey-100);
+
+		@media (prefers-color-scheme: dark) {
+			fill: var(--grey-500);
+		}
 	}
 
 	.header {

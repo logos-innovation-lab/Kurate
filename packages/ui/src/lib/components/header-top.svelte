@@ -22,7 +22,7 @@
 
 <svelte:window bind:scrollY={y} />
 
-<div class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}>
+<div class={`root header-top ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<div class="header-content">
 		<div class="header">
 			<div class="header-title-wrap">
@@ -64,6 +64,7 @@
 		padding: var(--spacing-12);
 		background-color: rgba(var(--color-body-bg-rgb), 0.93);
 		backdrop-filter: blur(3px);
+		transition: padding 0.2s;
 
 		@media (min-width: 1280px) {
 			border-bottom: none;
@@ -109,7 +110,8 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: 0 0 var(--spacing-24);
+			padding: 0;
+			// padding-bottom: var(--spacing-24);
 			transition: padding 0.2s ease-in-out;
 		}
 

@@ -12,6 +12,7 @@
 	export { cls as class }
 
 	let postText = ''
+	let x: number
 
 	async function submit() {
 		if (!$profile.signer) return
@@ -27,18 +28,13 @@
 	}
 </script>
 
+<svelte:window bind:innerWidth={x} />
+
 <div class={`root ${cls}`}>
 	<div class="header">
 		<div>Create post</div>
 		<div class="btns">
-			<!-- THIS IS A HACK JOB BECAUSE I'M NOT SURE HOW TO CHANGE A PROP VALUE (label) BASED ON MEDIA QUERY -->
-			<!-- to test: use js to bind the window width to a variable x, just like we're doing y, test value of x -->
-			<div class="sm">
-				<Button variant="secondary" icon={Close} on:click={() => history.back()} />
-			</div>			
-			<div class="lg">
-				<Button variant="secondary" icon={Close} label="Cancel" on:click={() => history.back()} />
-			</div>
+			<Button variant="secondary" icon={Close} label={x < 1280 ? '' : 'Cancel'} on:click={() => history.back()} />
 			<Button
 				variant="primary"
 				label="Publish"
@@ -68,22 +64,6 @@
 		flex-direction: row;
 		gap: var(--spacing-12);
 		align-items: center;
-
-		.sm {
-			display: block;
-		}
-		.lg {
-			display: none;
-		}
-
-		@media (min-width: 1280px) {
-			.sm {
-				display: none;
-			}
-			.lg {
-				display: block;
-			}
-		}
 	}
 
 	.post-content {

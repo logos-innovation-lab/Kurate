@@ -20,6 +20,7 @@
 <style lang="scss">
 	.root {
 		border-bottom: 1px solid var(--grey-200);
+		border-right: 1px solid var(--grey-200);
 		padding: var(--spacing-12);
 		display: flex;
 		gap: var(--spacing-12);
@@ -28,6 +29,7 @@
 
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);
+			border-right-color: var(--grey-500);
 		}
 	}
 	.user-img {
