@@ -62,7 +62,6 @@
 	</div>
 </div>
 
-<!-- THE ANIMATION IS STILL A BIT WONKY ON THIS PAGE -->
 <style lang="scss">
 	.root {
 		position: sticky;
