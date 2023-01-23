@@ -36,6 +36,7 @@ contract GlobalAnonymousFeed {
         string calldata message,
         uint256 merkleTreeRoot,
         uint256 nullifierHash,
+        uint256 externalNullifier,
         uint256[8] calldata proof
     ) external {
         semaphore.verifyProof(
@@ -43,7 +44,7 @@ contract GlobalAnonymousFeed {
             merkleTreeRoot,
             uint256(keccak256(abi.encodePacked(message))),
             nullifierHash,
-            groupId,
+            externalNullifier,
             proof
         );
 

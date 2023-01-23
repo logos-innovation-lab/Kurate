@@ -52,8 +52,9 @@ describe("Global Anonymous Feed Contract", () => {
         it("Should allow users to send message anonymously", async () => {
             const feedback = "Hello World"
             const feedbackHash = solidityKeccak256(["string"], [feedback])
+            const nullifier = 69
 
-            const fullProof = await generateProof(identities[1], group, BigInt(groupId), feedbackHash, {
+            const fullProof = await generateProof(identities[1], group, nullifier, feedbackHash, {
                 wasmFilePath,
                 zkeyFilePath
             })
@@ -63,6 +64,29 @@ describe("Global Anonymous Feed Contract", () => {
                 feedback,
                 fullProof.publicSignals.merkleTreeRoot,
                 fullProof.publicSignals.nullifierHash,
+                nullifier, //fullProof.publicSignals.externalNullifier,
+                solidityProof
+            )
+
+            await expect(transaction).to.emit(postContract, "NewMessage").withArgs(feedback)
+        })
+
+        it("Should allow users to send message anonymously", async () => {
+            const feedback = "Hello World"
+            const feedbackHash = solidityKeccak256(["string"], [feedback])
+            const nullifier = 80
+
+            const fullProof = await generateProof(identities[1], group, nullifier, feedbackHash, {
+                wasmFilePath,
+                zkeyFilePath
+            })
+            const solidityProof = packToSolidityProof(fullProof.proof)
+
+            const transaction = postContract.sendMessage(
+                feedback,
+                fullProof.publicSignals.merkleTreeRoot,
+                fullProof.publicSignals.nullifierHash,
+                nullifier, //fullProof.publicSignals.externalNullifier,
                 solidityProof
             )
 
