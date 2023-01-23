@@ -33,7 +33,7 @@ export async function createIdentity(signer: Signer, secret: string) {
 	return new Identity(identitySeed)
 }
 
-export function getGlobalAnonymousFeed(signer: Signer): GlobalAnonymousFeed {
+export function getGlobalAnonymousFeed(signer?: Signer): GlobalAnonymousFeed {
 	return new GlobalAnonymousFeed__factory(signer).attach(GLOBAL_ANONYMOUS_FEED_ADDRESS)
 }
 

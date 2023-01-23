@@ -4,7 +4,6 @@
 	import SendAltFilled from '$lib/components/icons/send-alt-filled.svelte'
 	import InputString from '$lib/components/input-string.svelte'
 	import { profile } from '$lib/stores/profile'
-	import { posts } from '$lib/stores/post'
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
 	import {
@@ -13,6 +12,7 @@
 		getGlobalAnonymousFeed,
 		validateProofOnChain,
 	} from '$lib/services/index'
+	import { posts } from '$lib/stores/post'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -35,15 +35,11 @@
 
 			const res = await tx.wait()
 
-			console.log(res.status)
-
-			// const address = await signer.getAddress()
-			// posts.add({
-			// 	timestamp: Date.now(),
-			// 	text: postText,
-			// 	user: { address },
-			// 	proof,
-			// })
+			posts.add({
+				timestamp: Date.now(),
+				text: postText,
+				tx: res.transactionHash,
+			})
 			goto(ROUTES.HOME)
 		} catch (error) {
 			console.error(error)

@@ -26,7 +26,7 @@
 		<WalletConnect />
 	{/if}
 
-	{#each $posts as post}
+	{#each $posts.posts as post}
 		<Post {post} />
 	{:else}
 		<p>There are no posts yet</p>

@@ -1,2 +1,7 @@
+import { PUBLIC_PROVIDER } from '$env/static/public'
+
+console.log(PUBLIC_PROVIDER)
+
 export const GLOBAL_ANONYMOUS_FEED_ADDRESS = '0xBE5bE57920b0d171FfeC323081C305f5b76871Fb'
 export const GROUP_ID = 382193579
+export const PROVIDER = PUBLIC_PROVIDER
