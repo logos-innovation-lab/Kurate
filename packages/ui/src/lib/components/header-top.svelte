@@ -106,7 +106,6 @@
 			justify-content: space-between;
 			align-items: center;
 			padding: 0;
-			// padding-bottom: var(--spacing-24);
 			transition: padding 0.2s ease-in-out;
 		}
 

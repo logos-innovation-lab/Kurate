@@ -40,14 +40,6 @@
 			border-bottom-color: var(--grey-500);
 			border-right-color: var(--grey-500);
 		}
-
-		// &.scrolled {
-		// 	height: 0;
-		// 	padding: 0;
-		// 	margin: 0;
-		// 	font-size: 0;
-		// 	transition: height 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;
-		// }
 	}
 	.description {
 		margin-top: var(--spacing-12);

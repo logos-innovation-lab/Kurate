@@ -180,10 +180,6 @@
 		}
 	}
 	.header {
-		// position: fixed;
-		// top: 0;
-		// left: 0;
-		// right: 0;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -216,7 +212,6 @@
 	.header-description {
 		padding: 0 0 var(--spacing-24);
 		opacity: 1;
-		// transition: height 0.2s, opacity 0.2s, padding 0.2s, margin 0.2s, font-size 0.2s;
 	}
 
 	.subtitle {
@@ -229,6 +224,5 @@
 		padding: 0;
 		overflow: hidden;
 		opacity: 1;
-		// transition: height 0.5s, opacity 0.5s, padding 0.5s, margin 0.5s, font-size 0.5s;
 	}
 </style>

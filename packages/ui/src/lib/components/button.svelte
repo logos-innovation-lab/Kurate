@@ -114,8 +114,6 @@
 		}
 
 		&:disabled {
-			// background-color: var(--grey-200);
-			// outline-color: var(--grey-200);
 			color: var(--grey-200);
 
 			& :global(svg) {
@@ -133,10 +131,6 @@
 		}
 
 		@media (prefers-color-scheme: dark) {
-			// & :global(:root) {
-			// 	--color-btn-outline: var(--color-body-text);
-			// }
-
 			background-color: var(--color-body-bg);
 			border-color: var(--color-body-text);
 			outline-width: 1px;

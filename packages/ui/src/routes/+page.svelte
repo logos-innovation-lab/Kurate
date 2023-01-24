@@ -15,8 +15,6 @@
 
 <svelte:window bind:scrollY={y} />
 <div>
-	<!-- <Header loggedin={$profile.signer !== undefined} /> -->
-
 	<HeaderTop loggedin={$profile.signer !== undefined} />
 	<HeaderDescription />
 
@@ -64,14 +62,8 @@
 		}
 	}
 	.posts {
-		// SIMPLE COLUMN LAYOUT, LOADS FROM TOP TO BOTTOM, 1 COLUMN AT A TIME.
-
 		column-width: 100%;
 		column-gap: 0;
-		// column-rule: 1px solid var(--grey-200);
-		// @media (prefers-color-scheme: dark) {
-		// column-rule: 1px solid var(--grey-500);
-		// }
 
 		@media (min-width: 739px) {
 			column-width: 320px;

@@ -43,13 +43,7 @@
 		flex-direction: row;
 		gap: var(--spacing-6);
 		margin-bottom: var(--spacing-3);
-		// font-family: var(--font-mono);
 		font-size: var(--font-size-sm);
-
-		// div.username {
-		// 	// font-family: var(--font-body);
-		// 	font-weight: 600;
-		// }
 	}
 	.post-content {
 		font-family: var(--font-serif);

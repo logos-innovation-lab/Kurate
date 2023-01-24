@@ -10,9 +10,6 @@
 <style lang="scss">
 	.root {
 		padding: var(--spacing-12);
-		// display: flex;
-		// flex-direction: column;
-		// border-top: 1px solid var(--color-light-grey-background);
 		@media (prefers-color-scheme: dark) {
 			color: var(--color-body-bg);
 		}
