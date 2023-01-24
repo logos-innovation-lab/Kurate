@@ -23,7 +23,7 @@
 		"@semaphore-protocol/group": "3.0.0-beta.6",
 		"@semaphore-protocol/identity": "3.0.0-beta.6",
 		"@semaphore-protocol/proof": "3.0.0-beta.6",
-		"@sveltejs/adapter-static": "^1.0.0",
+		"@sveltejs/adapter-static": "^1.0.5",
 		"@sveltejs/kit": "^1.0.1",
 		"@typescript-eslint/eslint-plugin": "^5.47.1",
 		"@typescript-eslint/parser": "^5.47.1",
