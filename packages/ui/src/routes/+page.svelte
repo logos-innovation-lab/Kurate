@@ -60,11 +60,9 @@
 		@media (min-width: 1280px) {
 			width: 1280px;
 			margin: 0 auto 0;
-			// border-left: 1px solid var(--grey-200);
 		}
 
 		@media (prefers-color-scheme: dark) {
-			// border-left-color: var(--grey-500);
 		}
 	}
 </style>
