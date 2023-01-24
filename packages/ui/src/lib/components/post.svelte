@@ -20,13 +20,16 @@
 <style lang="scss">
 	.root {
 		border-bottom: 1px solid var(--grey-200);
+		border-right: 1px solid var(--grey-200);
 		padding: var(--spacing-12);
 		display: flex;
 		gap: var(--spacing-12);
 		flex-direction: row;
+		break-inside: avoid-column;
 
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);
+			border-right-color: var(--grey-500);
 		}
 	}
 	.user-img {
@@ -40,13 +43,7 @@
 		flex-direction: row;
 		gap: var(--spacing-6);
 		margin-bottom: var(--spacing-3);
-		// font-family: var(--font-mono);
 		font-size: var(--font-size-sm);
-
-		// div.username {
-		// 	// font-family: var(--font-body);
-		// 	font-weight: 600;
-		// }
 	}
 	.post-content {
 		font-family: var(--font-serif);

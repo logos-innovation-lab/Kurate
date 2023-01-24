@@ -19,6 +19,7 @@
 	export { cls as class }
 
 	let postText = ''
+	let x: number
 
 	async function submit() {
 		try {
@@ -49,11 +50,18 @@
 	}
 </script>
 
+<svelte:window bind:innerWidth={x} />
+
 <div class={`root ${cls}`}>
 	<div class="header">
 		<div>Create post</div>
 		<div class="btns">
-			<Button variant="secondary" icon={Close} on:click={() => history.back()} />
+			<Button
+				variant="secondary"
+				icon={Close}
+				label={x < 1280 ? '' : 'Cancel'}
+				on:click={() => history.back()}
+			/>
 			<Button
 				variant="primary"
 				label="Publish"
@@ -87,5 +95,6 @@
 
 	.post-content {
 		padding: var(--spacing-24) var(--spacing-12) var(--spacing-12);
+		height: calc(100vh - 80px);
 	}
 </style>
