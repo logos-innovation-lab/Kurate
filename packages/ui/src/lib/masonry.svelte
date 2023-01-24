@@ -9,6 +9,7 @@
 		mod: number
 	}
 
+	export let stretchFirst = false
 	export let gridGap = '0.5em'
 	export let colWidth = 'minmax(Min(20em, 100%), 1fr)'
 	export let items: unknown[] = [] // pass in data if it's dynamically updated
@@ -94,8 +95,8 @@
 <!-- 
 	An almost direct copy and paste of: https://css-tricks.com/a-lightweight-masonry-solution
 	Usage:
-
-  <Masonry>
+		- stretchFirst stretches the first item across the top
+  <Masonry stretchFirst={true} >
     {#each data as o}
       <div class="_card _padding">
         Here's some stuff {o.name}
@@ -112,20 +113,29 @@
 
 <div
 	bind:this={masonryElement}
-	class={'__grid--masonry'}
+	class={`__grid--masonry ${stretchFirst ? '__stretch-first' : ''}`}
 	style={`--grid-gap: ${gridGap}; --col-width: ${colWidth};`}
 >
 	<slot />
 </div>
 
+<!-- 
+  $w: var(--col-width); // minmax(Min(20em, 100%), 1fr);
+  $s: var(--grid-gap); // .5em;
+ -->
 <style>
 	:global(.__grid--masonry) {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, var(--col-width));
 		grid-template-rows: masonry;
 		justify-content: center;
+		grid-gap: var(--grid-gap);
+		padding: var(--grid-gap);
 	}
 	:global(.__grid--masonry > *) {
 		align-self: start;
+	}
+	:global(.__grid--masonry.__stretch-first > *:first-child) {
+		grid-column: 1/ -1;
 	}
 </style>
