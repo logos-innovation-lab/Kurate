@@ -1,4 +1,5 @@
 <script lang="ts">
+	// import Header from '$lib/components/header.svelte'
 	import HeaderTop from '$lib/components/header-top.svelte'
 	import HeaderDescription from '$lib/components/header-description.svelte'
 	import Post from '$lib/components/post.svelte'
@@ -9,12 +10,15 @@
 	import { posts } from '$lib/stores/post'
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
+	import Masonry from '$lib/masonry.svelte'
 
 	let y: number
 </script>
 
 <svelte:window bind:scrollY={y} />
 <div>
+	<!-- <Header loggedin={$profile.signer !== undefined} /> -->
+
 	<HeaderTop loggedin={$profile.signer !== undefined} />
 	<HeaderDescription />
 
@@ -28,13 +32,15 @@
 		{:else}
 			<WalletConnect />
 		{/if}
-		<div class="posts">
-			{#each $posts.posts as post}
-				<Post {post} />
-			{:else}
-				<p>There are no posts yet</p>
-			{/each}
-		</div>
+		<!-- <div class="posts"> -->
+			<Masonry colWidth={'minmax(Min(20em, 100%), 1fr)'} items={$posts.posts}>
+				{#each $posts.posts as post}
+					<Post {post} />
+				{:else}
+					<p>There are no posts yet</p>
+				{/each}
+			</Masonry>
+		<!-- </div>	 -->
 	</div>
 </div>
 
@@ -62,11 +68,18 @@
 		}
 	}
 	.posts {
+		// SIMPLE COLUMN LAYOUT, LOADS FROM TOP TO BOTTOM, 1 COLUMN AT A TIME.
+
 		column-width: 100%;
 		column-gap: 0;
+		// column-rule: 1px solid var(--grey-200);
+		// @media (prefers-color-scheme: dark) {
+			// column-rule: 1px solid var(--grey-500);
+		// }
 
 		@media (min-width: 739px) {
-			column-width: 320px;
+			column-width: 320px;			
 		}
 	}
+
 </style>
