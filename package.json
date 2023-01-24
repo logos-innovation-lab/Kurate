@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "devDependencies": {
-    "lerna": "^6.3.0"
+    "lerna": "^6.4.1"
   },
   "dependencies": {
     "dotenv": "^16.0.3"
