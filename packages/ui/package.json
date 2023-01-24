@@ -29,7 +29,7 @@
 		"@typescript-eslint/parser": "^5.47.1",
 		"big-integer": "^1.6.51",
 		"eslint": "^8.31.0",
-		"eslint-config-prettier": "^8.5.0",
+		"eslint-config-prettier": "^8.6.0",
 		"eslint-plugin-svelte3": "^4.0.0",
 		"ethers": "^5.7.2",
 		"node-stdlib-browser": "^1.2.0",
