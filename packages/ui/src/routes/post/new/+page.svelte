@@ -56,7 +56,12 @@
 	<div class="header">
 		<div>Create post</div>
 		<div class="btns">
-			<Button variant="secondary" icon={Close} label={x < 1280 ? '' : 'Cancel'} on:click={() => history.back()} />
+			<Button
+				variant="secondary"
+				icon={Close}
+				label={x < 1280 ? '' : 'Cancel'}
+				on:click={() => history.back()}
+			/>
 			<Button
 				variant="primary"
 				label="Publish"

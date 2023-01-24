@@ -36,7 +36,7 @@
 			{:else}
 				<p>There are no posts yet</p>
 			{/each}
-		</div>	
+		</div>
 	</div>
 </div>
 
@@ -70,12 +70,11 @@
 		column-gap: 0;
 		// column-rule: 1px solid var(--grey-200);
 		// @media (prefers-color-scheme: dark) {
-			// column-rule: 1px solid var(--grey-500);
+		// column-rule: 1px solid var(--grey-500);
 		// }
 
 		@media (min-width: 739px) {
-			column-width: 320px;			
+			column-width: 320px;
 		}
 	}
-
 </style>

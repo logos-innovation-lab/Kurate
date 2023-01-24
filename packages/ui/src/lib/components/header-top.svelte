@@ -8,7 +8,6 @@
 	import Edit from './icons/edit.svelte'
 	import UpToTop from './icons/up-to-top.svelte'
 
-
 	let cls: string | undefined = undefined
 	export { cls as class }
 
@@ -34,7 +33,6 @@
 				</span>
 			</div>
 
-
 			<div class="btns">
 				<div class="btn wallet">
 					<Button
@@ -43,15 +41,12 @@
 						on:click={() => goto(loggedin ? ROUTES.POST_NEW : ROUTES.PROFILE)}
 					/>
 				</div>
-	
+
 				<div class="btn user">
-					<Button icon={UserIcon} 
-						variant="secondary" 
-						on:click={() => goto(ROUTES.PROFILE)} 
-					/>
+					<Button icon={UserIcon} variant="secondary" on:click={() => goto(ROUTES.PROFILE)} />
 				</div>
 			</div>
-		</div>		
+		</div>
 	</div>
 </div>
 
@@ -139,7 +134,7 @@
 
 		&.scrolled {
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
-			
+
 			@media (min-width: 1280px) {
 				padding: var(--spacing-12);
 				transition: padding 0.2s;
@@ -186,5 +181,4 @@
 			}
 		}
 	}
-	
 </style>

@@ -1,11 +1,7 @@
 <script lang="ts">
-
-
 	let cls: string | undefined = undefined
 	export { cls as class }
-
 </script>
-
 
 <div class={`root header-description ${cls}`}>
 	<!-- <div class="header-description">
@@ -54,7 +50,7 @@
 		justify-content: space-between;
 		font-size: 16px;
 		font-weight: 600;
-		
+
 		@media (min-width: 1280px) {
 			padding: 0;
 			width: 1280px;
