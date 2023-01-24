@@ -1,9 +1,9 @@
 import { writable, type Writable } from 'svelte/store'
-import type { providers } from 'ethers'
+import type { Signer } from 'ethers'
 import type { Identity } from '@semaphore-protocol/identity'
 
 export interface Profile {
-	signer?: providers.JsonRpcSigner
+	signer?: Signer
 	identities: Record<string, Identity>
 }
 

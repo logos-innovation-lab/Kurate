@@ -1,0 +1,20 @@
+version: '2.4'
+services:
+  waku:
+    image: statusteam/nim-waku:v0.12.0
+    command: |
+      --nat:pmp
+      --relay:true
+      --persist-messages:true
+      --store:true
+      --store-capacity:150000
+      --sqlite-store:true
+      --sqlite-retention-time:31536000
+      --filter:true
+      --lightpush:true
+      --websocket-support:true
+      --db-path:/db
+      --rpc-address:0.0.0.0
+      --nodekey:7b8d9a670aae6421500b7b3f933d0b5d08b51fcf0f0c2f14cba3a4737c83a228
+    ports:
+      - 8000:8000/tcp

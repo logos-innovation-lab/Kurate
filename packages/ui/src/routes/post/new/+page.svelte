@@ -4,9 +4,16 @@
 	import SendAltFilled from '$lib/components/icons/send-alt-filled.svelte'
 	import InputString from '$lib/components/input-string.svelte'
 	import { profile } from '$lib/stores/profile'
-	import { posts } from '$lib/stores/post'
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
+	import {
+		generateGroupProof,
+		getContractGroup,
+		getGlobalAnonymousFeed,
+		getRandomExternalNullifier,
+		validateProofOnChain,
+	} from '$lib/services/index'
+	import { posts } from '$lib/stores/post'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -14,16 +21,31 @@
 	let postText = ''
 
 	async function submit() {
-		if (!$profile.signer) return
+		try {
+			const signer = $profile.signer
+			if (!signer) throw new Error('no signer')
 
-		const address = await $profile.signer.getAddress()
+			const identity = $profile.identities.anonymous
+			if (!identity) throw new Error('no identity')
 
-		posts.add({
-			timestamp: Date.now(),
-			text: postText,
-			user: { address },
-		})
-		goto(ROUTES.HOME)
+			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
+			const group = await getContractGroup(globalAnonymousFeed)
+
+			const externalNullifier = getRandomExternalNullifier()
+			const proof = await generateGroupProof(group, identity, postText, externalNullifier)
+			const tx = await validateProofOnChain(globalAnonymousFeed, proof, postText, externalNullifier)
+
+			const res = await tx.wait()
+
+			posts.add({
+				timestamp: Date.now(),
+				text: postText,
+				tx: res.transactionHash,
+			})
+			goto(ROUTES.HOME)
+		} catch (error) {
+			console.error(error)
+		}
 	}
 </script>
 
