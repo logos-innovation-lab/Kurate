@@ -6,7 +6,15 @@
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import WalletInfo from '$lib/components/wallet-info.svelte'
 	import { formatAddress } from '$lib/utils'
-	import { connectWallet, canConnectWallet, createIdentity } from '$lib/services'
+	import {
+		connectWallet,
+		canConnectWallet,
+		createIdentity,
+		getGlobalAnonymousFeed,
+		getContractGroup,
+		joinGroupOffChain,
+		joinGroupOnChain,
+	} from '$lib/services'
 	import { profile } from '$lib/stores/profile'
 
 	let error: Error | undefined = undefined
@@ -14,19 +22,29 @@
 
 	const handleConnect = async () => {
 		try {
-			$profile.signer = await connectWallet()
+			const signer = await connectWallet()
+			$profile.signer = signer
 
 			const defaultIdentity = 'anonymous'
 
-			const identity = await createIdentity($profile.signer, defaultIdentity)
+			const identity = await createIdentity(signer, defaultIdentity)
 
 			$profile.identities = { ...$profile.identities, [defaultIdentity]: identity }
+
+			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
+			const group = await getContractGroup(globalAnonymousFeed)
+
+			const commitment = identity.commitment
+
+			if (!group.members.includes(commitment)) {
+				joinGroupOffChain(group, commitment)
+				const txres = await joinGroupOnChain(globalAnonymousFeed, commitment)
+				console.log(txres)
+			}
 		} catch (err) {
 			error = err as Error
 		}
 	}
-
-	$: console.log($profile.identities)
 </script>
 
 <div class="header">
