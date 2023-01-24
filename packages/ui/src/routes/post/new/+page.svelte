@@ -10,6 +10,7 @@
 		generateGroupProof,
 		getContractGroup,
 		getGlobalAnonymousFeed,
+		getRandomExternalNullifier,
 		validateProofOnChain,
 	} from '$lib/services/index'
 	import { posts } from '$lib/stores/post'
@@ -30,8 +31,9 @@
 			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
 			const group = await getContractGroup(globalAnonymousFeed)
 
-			const proof = await generateGroupProof(group, identity, postText)
-			const tx = await validateProofOnChain(globalAnonymousFeed, proof, postText)
+			const externalNullifier = getRandomExternalNullifier()
+			const proof = await generateGroupProof(group, identity, postText, externalNullifier)
+			const tx = await validateProofOnChain(globalAnonymousFeed, proof, postText, externalNullifier)
 
 			const res = await tx.wait()
 

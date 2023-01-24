@@ -64,7 +64,7 @@ function createPostStore(): PostStore {
 					localStorage.setItem('messages', JSON.stringify(newPosts))
 				}
 
-				return { loading, posts }
+				return { loading, posts: newPosts }
 			})
 		},
 	}

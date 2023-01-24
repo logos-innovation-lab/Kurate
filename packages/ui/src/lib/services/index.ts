@@ -1,4 +1,4 @@
-import { providers, Signer, type ContractTransaction } from 'ethers'
+import { ethers, providers, Signer, type BigNumberish, type ContractTransaction } from 'ethers'
 import { Identity } from '@semaphore-protocol/identity'
 import { Group, type Member } from '@semaphore-protocol/group'
 import {
@@ -13,7 +13,8 @@ import wasmFilePath from '$lib/assets/semaphore.wasm?url'
 
 import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '$lib/assets/typechain'
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, GROUP_ID } from '$lib/constants'
-import { solidityKeccak256 } from 'ethers/lib/utils'
+import { solidityKeccak256, type BytesLike, type Hexable } from 'ethers/lib/utils'
+import type { PromiseOrValue } from '$lib/assets/typechain/common'
 
 type WindowWithEthereum = Window &
 	typeof globalThis & { ethereum: providers.ExternalProvider | providers.JsonRpcFetchFunc }
@@ -61,14 +62,19 @@ export async function joinGroupOnChain(
 	return globalAnonymousFeed.joinGroup(identityCommitment)
 }
 
+export function getRandomExternalNullifier() {
+	return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(crypto.randomUUID()))
+}
+
 export async function generateGroupProof(
 	group: Group,
 	identity: Identity,
 	message: string,
+	externalNullifier: BytesLike | Hexable | number | bigint,
 ): Promise<FullProof> {
 	const messageHash = solidityKeccak256(['string'], [message])
 
-	return generateProof(identity, group, BigInt(GROUP_ID), messageHash, {
+	return generateProof(identity, group, externalNullifier, messageHash, {
 		zkeyFilePath,
 		wasmFilePath,
 	})
@@ -82,6 +88,7 @@ export function validateProofOnChain(
 	globalAnonymousFeed: GlobalAnonymousFeed,
 	fullProof: FullProof,
 	message: string,
+	externalNullifier: PromiseOrValue<BigNumberish>,
 ): Promise<ContractTransaction> {
 	const solidityProof = packToSolidityProof(fullProof.proof)
 
@@ -89,7 +96,7 @@ export function validateProofOnChain(
 		message,
 		fullProof.publicSignals.merkleTreeRoot,
 		fullProof.publicSignals.nullifierHash,
+		externalNullifier,
 		solidityProof,
-		{ gasLimit: '4000000' },
 	)
 }

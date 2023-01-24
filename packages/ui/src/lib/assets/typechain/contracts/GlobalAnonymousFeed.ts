@@ -29,7 +29,7 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
 		'joinGroup(uint256)': FunctionFragment
 		'registeredIdentities(uint256)': FunctionFragment
 		'semaphore()': FunctionFragment
-		'sendMessage(string,uint256,uint256,uint256[8])': FunctionFragment
+		'sendMessage(string,uint256,uint256,uint256,uint256[8])': FunctionFragment
 	}
 
 	getFunction(
@@ -52,6 +52,7 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
 		functionFragment: 'sendMessage',
 		values: [
 			PromiseOrValue<string>,
+			PromiseOrValue<BigNumberish>,
 			PromiseOrValue<BigNumberish>,
 			PromiseOrValue<BigNumberish>,
 			PromiseOrValue<BigNumberish>[],
@@ -130,6 +131,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 			message: PromiseOrValue<string>,
 			merkleTreeRoot: PromiseOrValue<BigNumberish>,
 			nullifierHash: PromiseOrValue<BigNumberish>,
+			externalNullifier: PromiseOrValue<BigNumberish>,
 			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<ContractTransaction>
@@ -153,6 +155,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 		message: PromiseOrValue<string>,
 		merkleTreeRoot: PromiseOrValue<BigNumberish>,
 		nullifierHash: PromiseOrValue<BigNumberish>,
+		externalNullifier: PromiseOrValue<BigNumberish>,
 		proof: PromiseOrValue<BigNumberish>[],
 		overrides?: Overrides & { from?: PromiseOrValue<string> },
 	): Promise<ContractTransaction>
@@ -176,6 +179,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 			message: PromiseOrValue<string>,
 			merkleTreeRoot: PromiseOrValue<BigNumberish>,
 			nullifierHash: PromiseOrValue<BigNumberish>,
+			externalNullifier: PromiseOrValue<BigNumberish>,
 			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: CallOverrides,
 		): Promise<void>
@@ -208,6 +212,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 			message: PromiseOrValue<string>,
 			merkleTreeRoot: PromiseOrValue<BigNumberish>,
 			nullifierHash: PromiseOrValue<BigNumberish>,
+			externalNullifier: PromiseOrValue<BigNumberish>,
 			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<BigNumber>
@@ -232,6 +237,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 			message: PromiseOrValue<string>,
 			merkleTreeRoot: PromiseOrValue<BigNumberish>,
 			nullifierHash: PromiseOrValue<BigNumberish>,
+			externalNullifier: PromiseOrValue<BigNumberish>,
 			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<PopulatedTransaction>
