@@ -52,8 +52,25 @@
 		justify-content: space-between;
 		gap: var(--spacing-12);
 		align-items: center;
+		border-top: 1px solid var(--grey-200);
 		border-bottom: 1px solid var(--grey-200);
 		cursor: pointer;
+
+		@media (min-width: 640px) {
+			border-bottom: none;
+		}
+		@media (min-width: 1280px) {			
+			border: none;
+			outline: 1px solid var(--grey-200);
+			outline-offset: -0.5px;
+		}
+		
+		@media (prefers-color-scheme: dark) {
+			border-top-color: var(--grey-500);
+			border-left-color: var(--grey-500);
+			border-bottom-color: var(--grey-500);
+			outline-color: var(--grey-500);
+		}
 	}
 	.wrapper {
 		margin-left: -1px;
