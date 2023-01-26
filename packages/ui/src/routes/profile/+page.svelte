@@ -17,6 +17,10 @@
 	} from '$lib/services'
 	import { profile } from '$lib/stores/profile'
 
+	let y: number
+	let cls: string | undefined = undefined
+	export { cls as class }
+
 	let error: Error | undefined = undefined
 	let hasWallet = browser && canConnectWallet()
 
@@ -47,7 +51,9 @@
 	}
 </script>
 
-<div class="header">
+<svelte:window bind:scrollY={y} />
+
+<div class={`header ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<div>
 		<Button icon={Undo} on:click={() => history.back()} />
 		<h1>Account</h1>
@@ -118,17 +124,40 @@
 	}
 
 	.header {
-		padding: var(--spacing-12) var(--spacing-12) 0;
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
+		position: sticky;
+		top: 0;
+		left: 0;
+		right: 0;
+		padding: var(--spacing-12);
+		background-color: rgba(var(--color-body-bg-rgb), 0.93);
+		backdrop-filter: blur(3px);
+		transition: padding 0.2s;
+
+		@media (min-width: 1280px) {
+			border-bottom: none;
+			padding-top: var(--spacing-48);
+			transition: padding 0.2s;
+		}
+
+		&.scrolled {
+			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
+
+			@media (min-width: 1280px) {
+				padding-top: var(--spacing-12);
+				transition: padding 0.2s;
+			}
+		}
 
 		> div:first-child {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			gap: var(--spacing-12);
+
+			@media (min-width: 1280px) {				
+				width: 1280px;
+				margin: 0 auto;
+			}
 
 			h1 {
 				font-weight: 600;
