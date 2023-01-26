@@ -84,6 +84,14 @@
 		align-items: center;
 		font-weight: 600;
 		padding: var(--spacing-12) var(--spacing-12) var(--spacing-24);
+		max-width: 1280px;
+		margin: 0 auto;
+		transition: padding 0.2s;
+
+		@media (min-width: 1280px) {
+			padding-top: var(--spacing-48);
+			transition: padding 0.2s;
+		}
 	}
 
 	.btns {
