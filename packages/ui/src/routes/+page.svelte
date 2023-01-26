@@ -33,7 +33,7 @@
 			<WalletConnect />
 		{/if}
 
-		<Masonry gridGap='0' colWidth={'minmax(Min(20em, 100%), 1fr)'} items={$posts.posts}>
+		<Masonry gridGap='0' colWidth={'minmax(Min(320px, 100%), 1fr)'} items={$posts.posts}>
 			{#each $posts.posts as post}
 				<Post {post} />
 			{:else}
@@ -56,14 +56,13 @@
 		cursor: pointer;
 	}
 	.wrapper {
-		max-width: 1280px;
-		margin: 0 auto 0;
+		margin-left: -1px;
 		@media (min-width: 1280px) {
-			border-left: 1px solid var(--grey-200);
+			width: 1280px;
+			margin: 0 auto 0;
 		}
 
 		@media (prefers-color-scheme: dark) {
-			border-left-color: var(--grey-500);
 		}
 	}
 </style>
