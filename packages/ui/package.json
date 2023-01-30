@@ -46,6 +46,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"bigint-conversion": "^2.3.0",
 		"js-waku": "^0.30.0",
 		"multiaddr": "^10.0.1",
 		"protons": "^6.1.1"

@@ -4,5 +4,5 @@ import "./proof.proto";
 
 message Post {
   string text = 1;
-	Proof proof = 99;
+	FullProof fullProof = 99;
 }

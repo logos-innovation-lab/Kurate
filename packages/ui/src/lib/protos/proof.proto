@@ -1,5 +1,21 @@
 syntax = "proto3";
 
 message Proof {
-  bytes identity = 1;
+  bytes pi_a = 1;
+  bytes pi_b = 2;
+  bytes pi_c = 3;
+  string protocol = 4;
+  string curve = 5;
+}
+
+message PublicSignals {
+  bytes merkleTreeRoot = 1;
+  bytes nullifierHash = 2;
+  bytes signalHash = 3;
+  bytes externalNullifier = 4;
+}
+
+message FullProof {
+  Proof proof = 1;
+  PublicSignals publicSignals = 2;
 }

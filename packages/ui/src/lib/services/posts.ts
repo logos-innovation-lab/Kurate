@@ -4,6 +4,7 @@ import pDefer from 'p-defer'
 // Types
 import type { WakuLight } from 'js-waku/lib/interfaces'
 import type { WithPayload } from './waku'
+import type { FullProof } from '@semaphore-protocol/proof'
 
 // Protos
 import { Post } from '../protos/post'
@@ -17,7 +18,7 @@ export type CreatePost = {
 
 export type PostClean = {
 	text: string
-	proof: {}
+	proof: FullProof
 }
 
 export const getPostsTopic = () => {
