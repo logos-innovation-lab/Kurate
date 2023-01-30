@@ -26,7 +26,7 @@ export async function getWaku(
 	await waku.start()
 	await waku.dial(
 		multiaddr(
-			'/ip4/127.0.0.1/tcp/8000/ws/p2p/16Uiu2HAm53sojJN72rFbYg6GV2LpRRER9XeWkiEAhjKy3aL9cN5Z',
+			'/dns4/ws.waku.apyos.dev/tcp/443/wss/p2p/16Uiu2HAm5wH4dPAV6zDfrBHkWt9Wu9iiXT4ehHdUArDUbEevzmBY',
 		),
 	)
 	await waitForRemotePeer(waku, protocols)
