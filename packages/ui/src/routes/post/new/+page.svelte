@@ -84,9 +84,9 @@
 		align-items: center;
 		font-weight: 600;
 		padding: var(--spacing-12) var(--spacing-12) var(--spacing-24);
-		max-width: 1280px;
 		margin: 0 auto;
-		transition: padding 0.2s;
+		transition: padding 0.2s;		
+		max-width: var(--container-width);
 
 		@media (min-width: 1280px) {
 			padding-top: var(--spacing-48);
@@ -104,5 +104,9 @@
 	.post-content {
 		padding: var(--spacing-24) var(--spacing-12) var(--spacing-12);
 		height: calc(100vh - 80px);
+		
+		@media (min-width: 1280px) {
+			height: calc(100vh - 116px);
+		}
 	}
 </style>
