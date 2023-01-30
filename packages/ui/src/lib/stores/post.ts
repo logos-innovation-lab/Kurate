@@ -28,7 +28,7 @@ async function getPosts() {
 
 	// Fetch posts
 	const posts = getWakuPosts(waku)
-	console.log(posts)
+	posts.then(console.log)
 }
 
 async function pullFeed() {
