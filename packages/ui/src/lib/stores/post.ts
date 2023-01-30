@@ -4,6 +4,9 @@ import { getGlobalAnonymousFeed } from '$lib/services'
 import { providers } from 'ethers'
 import { PROVIDER } from '$lib/constants'
 
+import { getWaku } from '$lib/services/waku'
+import { getPosts as getWakuPosts } from '$lib/services/posts'
+
 export interface Post {
 	timestamp: number
 	text: string
@@ -17,6 +20,15 @@ interface PostData {
 
 export interface PostStore extends Writable<PostData> {
 	add: (post: Post) => void
+}
+
+async function getPosts() {
+	// TODO: Move this to some global store / injected depencency somehow
+	const waku = await getWaku()
+
+	// Fetch posts
+	const posts = getWakuPosts(waku)
+	console.log(posts)
 }
 
 async function pullFeed() {
@@ -53,6 +65,7 @@ function createPostStore(): PostStore {
 	}
 	const store = writable<PostData>({ posts, loading })
 	pullFeed()
+	getPosts()
 
 	return {
 		...store,

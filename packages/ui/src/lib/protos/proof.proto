@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+message Proof {
+  bytes identity = 1;
+}
