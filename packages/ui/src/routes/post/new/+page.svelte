@@ -48,7 +48,6 @@
 			console.error(error)
 		}
 	}
-	    
 </script>
 
 <svelte:window bind:innerWidth={x} />

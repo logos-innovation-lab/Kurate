@@ -4,10 +4,10 @@
 	export let value: string | undefined = undefined
 	export let disabled: boolean | undefined = undefined
 	export let placeholder: string | undefined = undefined
-	export let autofocus = false;
-
+	export let autofocus = false
 </script>
 
+<!-- svelte-ignore a11y-autofocus -->
 <textarea {placeholder} {disabled} bind:value class={`root ${cls}`} {autofocus} />
 
 <style lang="scss">

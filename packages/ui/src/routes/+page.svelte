@@ -33,7 +33,7 @@
 			<WalletConnect />
 		{/if}
 
-		<Masonry gridGap='0' colWidth={'minmax(Min(320px, 100%), 1fr)'} items={$posts.posts}>
+		<Masonry gridGap="0" colWidth={'minmax(Min(320px, 100%), 1fr)'} items={$posts.posts}>
 			{#each $posts.posts as post}
 				<Post {post} />
 			{:else}
