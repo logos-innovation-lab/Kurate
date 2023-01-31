@@ -24,10 +24,10 @@
 		display: flex;
 		gap: var(--spacing-12);
 		flex-direction: row;
-		break-inside: avoid-column;		
+		break-inside: avoid-column;
 
-		@media (min-width: 640px) {		
-			border: none;	
+		@media (min-width: 640px) {
+			border: none;
 			outline-style: solid;
 			outline-width: 1px;
 			outline-color: var(--grey-200);

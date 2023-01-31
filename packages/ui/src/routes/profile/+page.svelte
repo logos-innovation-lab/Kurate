@@ -152,7 +152,7 @@
 			align-items: center;
 			gap: var(--spacing-12);
 
-			@media (min-width: 1280px) {				
+			@media (min-width: 1280px) {
 				width: 1280px;
 				margin: 0 auto;
 			}
