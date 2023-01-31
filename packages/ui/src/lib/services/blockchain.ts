@@ -11,22 +11,22 @@ export async function connectWallet(network?: providers.Networkish): Promise<Sig
 }
 
 export function canConnectWallet() {
-	return Boolean((window as WindowWithEthereum)?.ethereum)
+	return browser && Boolean((window as WindowWithEthereum)?.ethereum)
 }
 
-export function hasWallet(w: Window & typeof globalThis = window): w is WindowWithEthereum {
-	return Boolean((w as WindowWithEthereum)?.ethereum)
+export function hasWallet(w?: Window & typeof globalThis): w is WindowWithEthereum {
+	return browser && Boolean(((w ?? window) as WindowWithEthereum)?.ethereum)
 }
 
-export function getEthereum(w: Window & typeof globalThis = window): providers.ExternalProvider {
+export function getEthereum(): providers.ExternalProvider {
 	if (hasWallet()) {
-		return (w as WindowWithEthereum)?.ethereum
+		return (window as WindowWithEthereum)?.ethereum
 	}
 
 	throw new Error('No web3 wallet found')
 }
 
-export async function checkNetwork() {
+export async function checkNetwork(targetChainId = TARGET_CHAIN_ID) {
 	if (!browser) return
 
 	const ethereum = (window as WindowWithEthereum)?.ethereum
@@ -35,7 +35,7 @@ export async function checkNetwork() {
 			method: 'eth_chainId',
 		})
 
-		if (Number.parseInt(currentChainId, 16) === Number.parseInt(TARGET_CHAIN_ID, 16)) {
+		if (Number.parseInt(currentChainId, 16) === Number.parseInt(targetChainId, 16)) {
 			return true
 		}
 	}

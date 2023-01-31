@@ -1,4 +1,3 @@
-import { onDestroy } from 'svelte'
 import { writable, type Writable } from 'svelte/store'
 
 export interface UserStore extends Writable<Error[]> {
