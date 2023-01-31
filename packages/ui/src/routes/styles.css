@@ -21,17 +21,6 @@
 
 	--success-highlight: #eafaea;
 
-	/* RENAMED COLORS START */
-	/* --color-secondary: #ffffff; */
-	/* --color-primary: #000000; */
-	/* --color-grey-background: #f0f0f0; */
-	/* --color-light-grey-background: #ececec; */
-	/* --color-grey-text: #999999; */
-	/* --color-dark-grey-text: #2c2c2c; */
-
-	/* --color-text: #000000; */
-	/* RENAMED COLORS END */
-
 	--spacing-3: 3px;
 	--spacing-4: 4px;
 	--spacing-6: 6px;
@@ -40,6 +29,14 @@
 	--spacing-15: 15px;
 	--spacing-24: 24px;
 	--spacing-48: 48px;
+
+	--container-width: 100%;
+}
+
+@media (min-width: 1280px) {
+	:root {
+		--container-width: 1280px;
+	}
 }
 
 html {
