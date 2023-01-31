@@ -1,5 +1,4 @@
 <script lang="ts">
-	// import Header from '$lib/components/header.svelte'
 	import HeaderTop from '$lib/components/header-top.svelte'
 	import HeaderDescription from '$lib/components/header-description.svelte'
 	import Post from '$lib/components/post.svelte'
@@ -20,8 +19,6 @@
 
 <svelte:window bind:scrollY={y} />
 <div>
-	<!-- <Header loggedin={$profile.signer !== undefined} /> -->
-
 	<HeaderTop loggedin={$profile.signer !== undefined} />
 	<HeaderDescription />
 

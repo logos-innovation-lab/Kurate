@@ -3,7 +3,6 @@
 	import Close from '$lib/components/icons/close.svelte'
 	import SendAltFilled from '$lib/components/icons/send-alt-filled.svelte'
 	import InputString from '$lib/components/input-string.svelte'
-	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
 	import {
@@ -13,7 +12,12 @@
 		getRandomExternalNullifier,
 		validateProofOnChain,
 	} from '$lib/services/zk'
+
+	import { profile } from '$lib/stores/profile'
 	import { posts } from '$lib/stores/post'
+	import { errors } from '$lib/stores/errors'
+
+	import type { ErrorWithCode } from '$lib/types'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -24,10 +28,14 @@
 	async function submit() {
 		try {
 			const signer = $profile.signer
-			if (!signer) throw new Error('no signer')
+			if (!signer)
+				throw new Error(
+					'Failed to post - could not connect to web3 wallet. Try and refresh the page.',
+				)
 
 			const identity = $profile.identities.anonymous
-			if (!identity) throw new Error('no identity')
+			if (!identity)
+				throw new Error('Failed to post - no identity found. Try and refresh the page.')
 
 			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
 			const group = await getContractGroup(globalAnonymousFeed)
@@ -35,19 +43,26 @@
 			const externalNullifier = getRandomExternalNullifier()
 			const proof = await generateGroupProof(group, identity, postText, externalNullifier)
 
-			console.log(proof)
-			// const tx = await validateProofOnChain(globalAnonymousFeed, proof, postText, externalNullifier)
+			const tx = await validateProofOnChain(globalAnonymousFeed, proof, postText, externalNullifier)
 
-			// const res = await tx.wait()
+			const res = await tx.wait()
 
-			// posts.add({
-			// 	timestamp: Date.now(),
-			// 	text: postText,
-			// 	tx: res.transactionHash,
-			// })
+			posts.add({
+				timestamp: Date.now(),
+				text: postText,
+				tx: res.transactionHash,
+			})
 			goto(ROUTES.HOME)
 		} catch (error) {
-			console.error(error)
+			if ((error as ErrorWithCode)?.code === 'ACTION_REJECTED') {
+				errors.add(
+					new Error(
+						"You've rejected the post transaction. If you still want to publish your post, press publish button again.",
+					),
+				)
+			} else {
+				errors.add(error as Error)
+			}
 		}
 	}
 </script>
