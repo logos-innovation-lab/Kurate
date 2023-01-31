@@ -1,6 +1,6 @@
 import { writable, type Writable } from 'svelte/store'
 import { browser } from '$app/environment'
-import { getGlobalAnonymousFeed } from '$lib/services'
+import { getGlobalAnonymousFeed } from '$lib/services/zk'
 import { providers } from 'ethers'
 import { PROVIDER } from '$lib/constants'
 

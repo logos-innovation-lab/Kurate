@@ -11,6 +11,9 @@
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
 	import Masonry from '$lib/masonry.svelte'
+	import { checkNetwork } from '$lib/services/blockchain'
+
+	checkNetwork()
 
 	let y: number
 </script>

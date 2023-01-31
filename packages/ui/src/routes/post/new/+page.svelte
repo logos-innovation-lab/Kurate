@@ -12,7 +12,7 @@
 		getGlobalAnonymousFeed,
 		getRandomExternalNullifier,
 		validateProofOnChain,
-	} from '$lib/services/index'
+	} from '$lib/services/zk'
 	import { posts } from '$lib/stores/post'
 
 	let cls: string | undefined = undefined
@@ -34,15 +34,17 @@
 
 			const externalNullifier = getRandomExternalNullifier()
 			const proof = await generateGroupProof(group, identity, postText, externalNullifier)
-			const tx = await validateProofOnChain(globalAnonymousFeed, proof, postText, externalNullifier)
 
-			const res = await tx.wait()
+			console.log(proof)
+			// const tx = await validateProofOnChain(globalAnonymousFeed, proof, postText, externalNullifier)
 
-			posts.add({
-				timestamp: Date.now(),
-				text: postText,
-				tx: res.transactionHash,
-			})
+			// const res = await tx.wait()
+
+			// posts.add({
+			// 	timestamp: Date.now(),
+			// 	text: postText,
+			// 	tx: res.transactionHash,
+			// })
 			goto(ROUTES.HOME)
 		} catch (error) {
 			console.error(error)
