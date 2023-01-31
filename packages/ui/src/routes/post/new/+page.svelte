@@ -48,14 +48,7 @@
 			console.error(error)
 		}
 	}
-	
-	import { onMount } from 'svelte';
-    
-	let ref;
-		
-	onMount(() => {
-		ref.focus(); 
-	}); 
+	    
 </script>
 
 <svelte:window bind:innerWidth={x} />
@@ -80,7 +73,7 @@
 		</div>
 	</div>
 	<div class="post-content">
-		<InputString bind:value={postText} placeholder="Write here..." bind:ref />
+		<InputString bind:value={postText} placeholder="Write here..." autofocus />
 	</div>
 </div>
 

@@ -4,11 +4,11 @@
 	export let value: string | undefined = undefined
 	export let disabled: boolean | undefined = undefined
 	export let placeholder: string | undefined = undefined
-	export let ref = null;
+	export let autofocus = false;
 
 </script>
 
-<textarea {placeholder} {disabled} bind:value class={`root ${cls}`} bind:this={ref}  />
+<textarea {placeholder} {disabled} bind:value class={`root ${cls}`} {autofocus} />
 
 <style lang="scss">
 	.root {
