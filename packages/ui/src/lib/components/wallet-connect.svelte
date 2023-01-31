@@ -46,7 +46,7 @@
 		@media (prefers-color-scheme: dark) {
 			border-top-color: var(--grey-500);
 			border-left-color: var(--grey-500);
-			border-right-color: var(--grey-500);
+			border-bottom-color: var(--grey-500);
 			outline-color: var(--grey-500);
 		}
 	}

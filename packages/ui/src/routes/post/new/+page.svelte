@@ -72,7 +72,7 @@
 		</div>
 	</div>
 	<div class="post-content">
-		<InputString bind:value={postText} placeholder="Write here..." />
+		<InputString bind:value={postText} placeholder="Write here..." autofocus />
 	</div>
 </div>
 
@@ -104,6 +104,7 @@
 	.post-content {
 		padding: var(--spacing-24) var(--spacing-12) var(--spacing-12);
 		height: calc(100vh - 80px);
+		text-align: center;
 
 		@media (min-width: 1280px) {
 			height: calc(100vh - 116px);
