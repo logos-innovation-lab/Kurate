@@ -18,8 +18,6 @@
 	import { profile } from '$lib/stores/profile'
 
 	let y: number
-	let cls: string | undefined = undefined
-	export { cls as class }
 
 	let error: Error | undefined = undefined
 	let hasWallet = browser && canConnectWallet()
@@ -53,7 +51,7 @@
 
 <svelte:window bind:scrollY={y} />
 
-<div class={`header ${y > 0 ? 'scrolled' : ''} ${cls}`}>
+<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
 	<div>
 		<Button icon={Undo} on:click={() => history.back()} />
 		<h1>Account</h1>
