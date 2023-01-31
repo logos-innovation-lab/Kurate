@@ -37,12 +37,12 @@
 		@media (min-width: 640px) {
 			border-bottom: none;
 		}
-		@media (min-width: 1280px) {			
+		@media (min-width: 1280px) {
 			border: none;
 			outline: 1px solid var(--grey-200);
 			outline-offset: -0.5px;
 		}
-		
+
 		@media (prefers-color-scheme: dark) {
 			border-top-color: var(--grey-500);
 			border-left-color: var(--grey-500);
