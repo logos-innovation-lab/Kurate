@@ -104,12 +104,14 @@
 		</div>
 	{/if}
 
-	{#each Object.entries($profile.identities) as [name, identity]}
-		<div>{name}</div>
-		<div>commitment: {identity.getCommitment().toString(16)}</div>
-		<div>nullifier: {identity.getNullifier().toString(16)}</div>
-		<div>trapdoor: {identity.getTrapdoor().toString(16)}</div>
-	{/each}
+	<div class="info">
+		{#each Object.entries($profile.identities) as [name, identity]}
+			<div>{name}</div>
+			<div>commitment: {identity.getCommitment().toString(16)}</div>
+			<div>nullifier: {identity.getNullifier().toString(16)}</div>
+			<div>trapdoor: {identity.getTrapdoor().toString(16)}</div>
+		{/each}
+	</div>
 </div>
 
 <style lang="scss">
@@ -188,6 +190,15 @@
 		.connect-info {
 			margin-top: var(--spacing-12);
 			text-align: center;
+		}
+	}
+	.info {
+		padding: var(--spacing-12);
+		max-width: 100%;
+		word-wrap: break-word;
+
+		> div:not(:first-child) {
+			margin-top: var(--spacing-12);
 		}
 	}
 </style>
