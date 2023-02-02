@@ -175,9 +175,7 @@
 
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);
-			&.scrolled {
-				box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
-			}
+			box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
 		}
 	}
 </style>
