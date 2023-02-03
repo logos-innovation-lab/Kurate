@@ -1,70 +1,52 @@
-// Types
-import type { BigNumberish, FullProof, Proof, PublicSignals } from '@semaphore-protocol/proof'
-import type {
-	FullProof as ProtoFullProof,
-	Proof as ProtoProof,
-	PublicSignals as ProtoPublicSignals,
-} from '$lib/protos/proof'
 import { bigintToBuf, bufToBigint } from 'bigint-conversion'
+
+// Types
+import type { BigNumberish, FullProof, Proof } from '@semaphore-protocol/proof'
+import type { FullProof as ProtoFullProof } from '$lib/protos/proof'
+
+type ProofProto = [
+	Uint8Array,
+	Uint8Array,
+	Uint8Array,
+	Uint8Array,
+	Uint8Array,
+	Uint8Array,
+	Uint8Array,
+	Uint8Array,
+]
 
 const bigNumberishToUint8Array = (number: BigNumberish) => {
 	return bigintToBuf(BigInt(number)) as Uint8Array
 }
 
-export const fullProofToProto = ({ proof, publicSignals }: FullProof): ProtoFullProof => {
+export const fullProofToProto = (fullProof: FullProof): ProtoFullProof => {
 	return {
-		proof: proofToProto(proof),
-		publicSignals: publicSignalsToProto(publicSignals),
+		proof: proofToProto(fullProof.proof),
+		merkleTreeRoot: bigNumberishToUint8Array(fullProof.merkleTreeRoot),
+		nullifierHash: bigNumberishToUint8Array(fullProof.nullifierHash),
+		signal: bigNumberishToUint8Array(fullProof.signal),
+		externalNullifier: bigNumberishToUint8Array(fullProof.externalNullifier),
 	}
 }
 
 export const fullProofFromProto = (fullProof: ProtoFullProof): FullProof => {
-	if (!fullProof.proof || !fullProof.publicSignals) {
+	if (fullProof.proof.length !== 8) {
 		throw new Error('invalid full proof')
 	}
 
 	return {
-		proof: proofFromProto(fullProof.proof),
-		publicSignals: publicSignalsFromProto(fullProof.publicSignals),
+		proof: proofFromProto(fullProof.proof as ProofProto),
+		merkleTreeRoot: bufToBigint(fullProof.merkleTreeRoot),
+		nullifierHash: bufToBigint(fullProof.nullifierHash),
+		signal: bufToBigint(fullProof.signal),
+		externalNullifier: bufToBigint(fullProof.externalNullifier),
 	}
 }
 
-export const proofToProto = (proof: Proof): ProtoProof => {
-	// TODO: Somehow pack those BigNumberish (partially 2d) arrays to bytes
-	return {
-		protocol: proof.protocol,
-		curve: proof.curve,
-		piA: new Uint8Array([]),
-		piB: new Uint8Array([]),
-		piC: new Uint8Array([]),
-	}
+export const proofToProto = (proof: Proof): ProofProto => {
+	return proof.map(bigNumberishToUint8Array) as ProofProto
 }
 
-export const proofFromProto = (proof: ProtoProof): Proof => {
-	// TODO: Somehow unpack those BigNumberish (partially 2d) arrays from bytes
-	return {
-		protocol: proof.protocol,
-		curve: proof.curve,
-		pi_a: [],
-		pi_b: [],
-		pi_c: [],
-	}
-}
-
-export const publicSignalsToProto = (publicSignals: PublicSignals): ProtoPublicSignals => {
-	return {
-		merkleTreeRoot: bigNumberishToUint8Array(publicSignals.merkleTreeRoot),
-		nullifierHash: bigNumberishToUint8Array(publicSignals.nullifierHash),
-		signalHash: bigNumberishToUint8Array(publicSignals.signalHash),
-		externalNullifier: bigNumberishToUint8Array(publicSignals.externalNullifier),
-	}
-}
-
-export const publicSignalsFromProto = (publicSignals: ProtoPublicSignals): PublicSignals => {
-	return {
-		merkleTreeRoot: bufToBigint(publicSignals.merkleTreeRoot),
-		nullifierHash: bufToBigint(publicSignals.nullifierHash),
-		signalHash: bufToBigint(publicSignals.signalHash),
-		externalNullifier: bufToBigint(publicSignals.externalNullifier),
-	}
+export const proofFromProto = (proof: ProofProto): Proof => {
+	return proof.map(bufToBigint) as Proof
 }
