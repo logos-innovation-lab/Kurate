@@ -12,7 +12,7 @@ import { Post } from '../protos/post'
 
 // Lib
 import { decodeStore, subscribeToWakuTopic } from './waku'
-import { fullProofFromProto, type WithFullProof } from './proof'
+import { fullProofFromProto, fullProofToProto, type WithFullProof } from './proof'
 
 export type CreatePost = {
 	text: string
@@ -27,9 +27,9 @@ export const getPostsTopic = () => {
 	return `/the-outlet/1/posts/proto`
 }
 
-export const createPost = async (waku: WakuLight, { text }: CreatePost) => {
+export const createPost = async (waku: WakuLight, { text }: CreatePost, fullProof: FullProof) => {
 	// Create the payload
-	const payload = Post.encode({ text })
+	const payload = Post.encode({ text, fullProof: fullProofToProto(fullProof) })
 
 	// Post the metadata on Waku
 	await waku.lightPush.push(new EncoderV0(getPostsTopic()), { payload })
