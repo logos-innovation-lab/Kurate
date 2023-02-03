@@ -1,11 +1,6 @@
 import { writable, type Writable } from 'svelte/store'
-import { browser } from '$app/environment'
-import { getGlobalAnonymousFeed } from '$lib/services'
-import { providers } from 'ethers'
-import { PROVIDER } from '$lib/constants'
-
 import { getWaku } from '$lib/services/waku'
-import { getPosts as getWakuPosts } from '$lib/services/posts'
+import { subscribeToPosts } from '$lib/services/posts'
 
 export interface Post {
 	timestamp: number
@@ -22,62 +17,36 @@ export interface PostStore extends Writable<PostData> {
 	add: (post: Post) => void
 }
 
-async function getPosts() {
+async function fetchPosts() {
 	// TODO: Move this to some global store / injected depencency somehow
 	const waku = await getWaku()
 
 	// Fetch posts
-	const posts = getWakuPosts(waku)
-	posts.then(console.log)
-}
-
-async function pullFeed() {
-	try {
-		const provider = new providers.JsonRpcProvider(PROVIDER)
-		if (provider) {
-			const contract = getGlobalAnonymousFeed().connect(provider)
-			const events = await contract.queryFilter(contract.filters.NewMessage())
-			const messages: Post[] = events.map((e) => ({
-				text: e.args.message,
-				tx: e.transactionHash,
-				timestamp: e.blockNumber,
-			}))
-			posts.set({ posts: messages.reverse(), loading: false })
-
-			if (browser) {
-				localStorage.setItem('messages', JSON.stringify(messages))
-			}
-		}
-	} catch (e) {
-		console.error(e)
-	}
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const unsubscribe = await subscribeToPosts(
+		waku,
+		(post) => {
+			posts.add({
+				text: post.text,
+				timestamp: Date.now(),
+				tx: '',
+			})
+		},
+		undefined,
+		() => posts.update((state) => ({ ...state, loading: false })),
+	)
 }
 
 function createPostStore(): PostStore {
-	let posts: Post[] = []
-	const loading = false
-	if (browser) {
-		const messages = localStorage.getItem('messages')
-
-		if (messages) {
-			posts = JSON.parse(messages)
-		}
-	}
-	const store = writable<PostData>({ posts, loading })
-	pullFeed()
-	getPosts()
+	const store = writable<PostData>({ posts: [], loading: true })
+	fetchPosts()
 
 	return {
 		...store,
 		add: (post: Post) => {
-			store.update(({ posts, loading }) => {
+			store.update(({ posts, ...state }) => {
 				const newPosts = [post, ...posts]
-
-				if (browser) {
-					localStorage.setItem('messages', JSON.stringify(newPosts))
-				}
-
-				return { loading, posts: newPosts }
+				return { ...state, posts: newPosts }
 			})
 		},
 	}
