@@ -8,7 +8,7 @@ import wasmFilePath from '$lib/assets/semaphore.wasm?url'
 
 import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '$lib/assets/typechain'
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, GROUP_ID } from '$lib/constants'
-import { solidityKeccak256, type BytesLike, type Hexable } from 'ethers/lib/utils'
+import type { BytesLike, Hexable } from 'ethers/lib/utils'
 import type { PromiseOrValue } from '$lib/assets/typechain/common'
 
 type WindowWithEthereum = Window &
@@ -64,12 +64,10 @@ export function getRandomExternalNullifier() {
 export async function generateGroupProof(
 	group: Group,
 	identity: Identity,
-	message: string,
+	signal: string,
 	externalNullifier: BytesLike | Hexable | number | bigint,
 ): Promise<FullProof> {
-	const messageHash = solidityKeccak256(['string'], [message])
-
-	return generateProof(identity, group, externalNullifier, messageHash, {
+	return generateProof(identity, group, externalNullifier, signal, {
 		zkeyFilePath,
 		wasmFilePath,
 	})

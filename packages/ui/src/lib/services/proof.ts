@@ -17,8 +17,8 @@ export type ProofProto = [
 
 export type WithFullProof<Type> = Type & { fullProof: FullProof }
 
-const bigNumberishToUint8Array = (number: BigNumberish) => {
-	return bigintToBuf(BigInt(number)) as Uint8Array
+export const bigNumberishToUint8Array = (number: BigNumberish): Uint8Array => {
+	return new Uint8Array(bigintToBuf(BigInt(number), true))
 }
 
 export const fullProofToProto = (fullProof: FullProof): ProtoFullProof => {

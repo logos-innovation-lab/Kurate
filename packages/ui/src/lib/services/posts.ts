@@ -2,6 +2,7 @@ import { DecoderV0, EncoderV0, MessageV0 } from 'js-waku/lib/waku_message/versio
 import pDefer from 'p-defer'
 import { verifyProof } from '@semaphore-protocol/proof'
 import { solidityKeccak256 } from 'ethers/lib/utils'
+import { hexToBigint } from 'bigint-conversion'
 
 // Types
 import type { WakuLight } from 'js-waku/lib/interfaces'
@@ -47,7 +48,7 @@ const verifyPostProof = async (post: Post): Promise<boolean> => {
 	}
 
 	const fullProof = fullProofFromProto(post.fullProof)
-	return fullProof.signal === hashPost(post) && (await verifyProof(fullProof, 20))
+	return fullProof.signal === hexToBigint(hashPost(post)) && (await verifyProof(fullProof, 20))
 }
 
 const decodeWakuPost = async (message: WithPayload<MessageV0>): Promise<PostClean | false> => {
