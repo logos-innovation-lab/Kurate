@@ -1,12 +1,7 @@
 import { ethers, providers, Signer, type BigNumberish, type ContractTransaction } from 'ethers'
 import { Identity } from '@semaphore-protocol/identity'
 import { Group, type Member } from '@semaphore-protocol/group'
-import {
-	generateProof,
-	packToSolidityProof,
-	verifyProof,
-	type FullProof,
-} from '@semaphore-protocol/proof'
+import { generateProof, verifyProof, type FullProof } from '@semaphore-protocol/proof'
 
 import zkeyFilePath from '$lib/assets/semaphore.zkey?url'
 import wasmFilePath from '$lib/assets/semaphore.wasm?url'
@@ -90,13 +85,11 @@ export function validateProofOnChain(
 	message: string,
 	externalNullifier: PromiseOrValue<BigNumberish>,
 ): Promise<ContractTransaction> {
-	const solidityProof = packToSolidityProof(fullProof.proof)
-
 	return globalAnonymousFeed.sendMessage(
 		message,
-		fullProof.publicSignals.merkleTreeRoot,
-		fullProof.publicSignals.nullifierHash,
+		fullProof.merkleTreeRoot,
+		fullProof.nullifierHash,
 		externalNullifier,
-		solidityProof,
+		fullProof.proof,
 	)
 }

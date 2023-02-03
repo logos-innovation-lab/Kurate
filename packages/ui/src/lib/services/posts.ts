@@ -1,6 +1,7 @@
 import { DecoderV0, EncoderV0, MessageV0 } from 'js-waku/lib/waku_message/version_0'
 import pDefer from 'p-defer'
 import { verifyProof } from '@semaphore-protocol/proof'
+import { solidityKeccak256 } from 'ethers/lib/utils'
 
 // Types
 import type { WakuLight } from 'js-waku/lib/interfaces'
@@ -27,6 +28,11 @@ export const getPostsTopic = () => {
 	return `/the-outlet/1/posts/proto`
 }
 
+// TODO: Does this have to be keccak? Does it need to be hashable on-chain?
+export const hashPost = (post: CreatePost): string => {
+	return solidityKeccak256(['string'], [post.text])
+}
+
 export const createPost = async (waku: WakuLight, { text }: CreatePost, fullProof: FullProof) => {
 	// Create the payload
 	const payload = Post.encode({ text, fullProof: fullProofToProto(fullProof) })
@@ -41,7 +47,7 @@ const verifyPostProof = async (post: Post): Promise<boolean> => {
 	}
 
 	const fullProof = fullProofFromProto(post.fullProof)
-	return await verifyProof(fullProof, 20)
+	return fullProof.signal === hashPost(post) && (await verifyProof(fullProof, 20))
 }
 
 const decodeWakuPost = async (message: WithPayload<MessageV0>): Promise<PostClean | false> => {
