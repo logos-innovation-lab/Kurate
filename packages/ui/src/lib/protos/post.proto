@@ -3,6 +3,6 @@ syntax = "proto3";
 import "./proof.proto";
 
 message Post {
-  string text = 1;
+	string text = 1;
 	FullProof fullProof = 99;
 }

@@ -1,9 +1,9 @@
 syntax = "proto3";
 
 message FullProof {
-  bytes merkleTreeRoot = 1;
-  bytes nullifierHash = 2;
-  bytes signal = 3;
-  bytes externalNullifier = 4;
-  repeated bytes proof = 5;
+	bytes merkleTreeRoot = 1;
+	 bytes nullifierHash = 2;
+	bytes signal = 3;
+	bytes externalNullifier = 4;
+	repeated bytes proof = 5;
 }
