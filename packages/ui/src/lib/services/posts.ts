@@ -1,5 +1,6 @@
 import { DecoderV0, EncoderV0, MessageV0 } from 'js-waku/lib/waku_message/version_0'
 import pDefer from 'p-defer'
+import { verifyProof } from '@semaphore-protocol/proof'
 
 // Types
 import type { WakuLight } from 'js-waku/lib/interfaces'
@@ -11,6 +12,7 @@ import { Post } from '../protos/post'
 
 // Lib
 import { decodeStore, subscribeToWakuTopic } from './waku'
+import { fullProofFromProto, type WithFullProof } from './proof'
 
 export type CreatePost = {
 	text: string
@@ -33,35 +35,29 @@ export const createPost = async (waku: WakuLight, { text }: CreatePost) => {
 	await waku.lightPush.push(new EncoderV0(getPostsTopic()), { payload })
 }
 
-const verifyPostProof = (post: Post) => {
-	/*
-	const from = getAddress('0x' + utils.bytesToHex(reply.from))
-	const recovered = verifyTypedData(
-		DOMAIN,
-		TYPES,
-		{
-			from,
-			marketplace: reply.marketplace,
-			item: reply.item,
-			text: reply.text,
-			keyExchange: reply.keyExchange,
-		},
-		reply.signature,
-	)
-	return recovered === from
-  */
-	return true
+const verifyPostProof = async (post: Post): Promise<boolean> => {
+	if (!post.fullProof) {
+		return false
+	}
+
+	const fullProof = fullProofFromProto(post.fullProof)
+	return await verifyProof(fullProof, 20)
 }
 
 const decodeWakuPost = async (message: WithPayload<MessageV0>): Promise<PostClean | false> => {
 	try {
 		const post = Post.decode(message.payload)
-		return (
-			verifyPostProof(post) && {
-				text: post.text,
-				proof: {},
-			}
-		)
+		const valid = await verifyPostProof(post)
+
+		if (!valid) {
+			return false
+		}
+
+		// TODO: Update "as" when asynchronous type narrowing ships in TypeScript
+		return {
+			text: post.text,
+			proof: fullProofFromProto((post as WithFullProof<Post>).fullProof),
+		}
 	} catch (err) {
 		return false
 	}

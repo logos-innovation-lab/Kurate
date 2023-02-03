@@ -4,7 +4,7 @@ import { bigintToBuf, bufToBigint } from 'bigint-conversion'
 import type { BigNumberish, FullProof, Proof } from '@semaphore-protocol/proof'
 import type { FullProof as ProtoFullProof } from '$lib/protos/proof'
 
-type ProofProto = [
+export type ProofProto = [
 	Uint8Array,
 	Uint8Array,
 	Uint8Array,
@@ -14,6 +14,8 @@ type ProofProto = [
 	Uint8Array,
 	Uint8Array,
 ]
+
+export type WithFullProof<Type> = Type & { fullProof: FullProof }
 
 const bigNumberishToUint8Array = (number: BigNumberish) => {
 	return bigintToBuf(BigInt(number)) as Uint8Array
