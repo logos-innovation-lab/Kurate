@@ -13,52 +13,48 @@
 	import { browser } from '$app/environment';
 	import Masonry from '$lib/masonry.svelte'
 
-	let width: number = browser ? window.innerWidth : 0
-	let newColWidth: string
+	let windowWidth: number = browser ? window.innerWidth : 0
 
-	function checkWidth(w: number) {
-        let val = '100%'
+	function GetMasonryColumnWidth(w: number) {
 
 		if (w < 739) {
-			val = '100%'
+			return '100%'
 		}
 
 		else if (w < 1060) {
-			val = 'minmax(min(100%/2, max(320px, 100%/2)), 1fr)'
+			return 'minmax(min(100%/2, max(320px, 100%/2)), 1fr)'
 		}
 
 		else if (w < 1381) {
-			val = 'minmax(min(100%/3, max(320px, 100%/3)), 1fr)'
+			return 'minmax(min(100%/3, max(320px, 100%/3)), 1fr)'
 		}
 
 		else if (w < 1702) {
-			val = 'minmax(min(100%/4, max(320px, 100%/4)), 1fr)'
+			return 'minmax(min(100%/4, max(320px, 100%/4)), 1fr)'
 		}
 
 		else if (w < 2023) {
-			val = 'minmax(min(100%/5, max(320px, 100%/5)), 1fr)'
+			return 'minmax(min(100%/5, max(320px, 100%/5)), 1fr)'
 		}
 
 		else if (w < 2560) {
-			val = 'minmax(min(100%/6, max(320px, 100%/6)), 1fr)'
+			return 'minmax(min(100%/6, max(320px, 100%/6)), 1fr)'
 		}
 
 		else if (w < 3009) {
-			val = 'minmax(min(100%/7, max(320px, 100%/7)), 1fr)'
+			return 'minmax(min(100%/7, max(320px, 100%/7)), 1fr)'
 		}
 
 		else {
-			val = 'minmax(323px, 1fr)'			
+			return 'minmax(323px, 1fr)'			
 		}
 
-        return val
     }
 	
-    $: newColWidth = checkWidth(width).toString()
 
 </script>
 
-<svelte:window bind:innerWidth={width} />
+<svelte:window bind:innerWidth={windowWidth} />
 
 <div>
 
@@ -79,7 +75,7 @@
 			<WalletConnect />
 		{/if}
 
-		<Masonry gridGap="0" colWidth={newColWidth} items={$posts.posts}>
+		<Masonry gridGap="0" colWidth={GetMasonryColumnWidth(windowWidth)} items={$posts.posts}>
 			{#each $posts.posts as post}
 				<Post {post} />
 			{:else}
