@@ -1,6 +1,6 @@
-import { ethers, providers, Signer, type BigNumberish, type ContractTransaction } from 'ethers'
-import { Identity } from '@semaphore-protocol/identity'
+import { ethers, Signer, type BigNumberish, type ContractTransaction } from 'ethers'
 import { Group, type Member } from '@semaphore-protocol/group'
+import { Identity } from '@semaphore-protocol/identity'
 import {
 	generateProof,
 	packToSolidityProof,
@@ -15,19 +15,6 @@ import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '$lib/ass
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, GROUP_ID } from '$lib/constants'
 import { solidityKeccak256, type BytesLike, type Hexable } from 'ethers/lib/utils'
 import type { PromiseOrValue } from '$lib/assets/typechain/common'
-
-type WindowWithEthereum = Window &
-	typeof globalThis & { ethereum: providers.ExternalProvider | providers.JsonRpcFetchFunc }
-
-export async function connectWallet(network?: providers.Networkish): Promise<Signer> {
-	const provider = new providers.Web3Provider((window as WindowWithEthereum).ethereum, network)
-	await provider.send('eth_requestAccounts', [])
-	return provider.getSigner()
-}
-
-export function canConnectWallet() {
-	return Boolean((window as WindowWithEthereum)?.ethereum)
-}
 
 export async function createIdentity(signer: Signer, secret: string) {
 	const identitySeed = await signer.signMessage(secret)

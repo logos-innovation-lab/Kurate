@@ -1,8 +1,10 @@
 import { writable, type Writable } from 'svelte/store'
 import { browser } from '$app/environment'
-import { getGlobalAnonymousFeed } from '$lib/services'
+import { getGlobalAnonymousFeed } from '$lib/services/zk'
 import { providers } from 'ethers'
 import { PROVIDER } from '$lib/constants'
+import { errors } from '$lib/stores/errors'
+import type { ErrorWithCode } from '$lib/types'
 
 export interface Post {
 	timestamp: number
@@ -36,8 +38,12 @@ async function pullFeed() {
 				localStorage.setItem('messages', JSON.stringify(messages))
 			}
 		}
-	} catch (e) {
-		console.error(e)
+	} catch (error) {
+		if ((error as ErrorWithCode).code === 'NETWORK_ERROR') {
+			errors.add(new Error('Could not connect to the ethereum blockchain.'))
+		} else {
+			errors.add(error as Error)
+		}
 	}
 }
 

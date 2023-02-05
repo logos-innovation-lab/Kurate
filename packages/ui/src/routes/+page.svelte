@@ -1,5 +1,4 @@
 <script lang="ts">
-	// import Header from '$lib/components/header.svelte'
 	import HeaderTop from '$lib/components/header-top.svelte'
 	import HeaderDescription from '$lib/components/header-description.svelte'
 	import Post from '$lib/components/post.svelte'
@@ -11,14 +10,15 @@
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
 	import Masonry from '$lib/masonry.svelte'
+	import { checkNetwork } from '$lib/services/blockchain'
+
+	checkNetwork()
 
 	let y: number
 </script>
 
 <svelte:window bind:scrollY={y} />
 <div>
-	<!-- <Header loggedin={$profile.signer !== undefined} /> -->
-
 	<HeaderTop loggedin={$profile.signer !== undefined} />
 	<HeaderDescription />
 

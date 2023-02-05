@@ -10,3 +10,7 @@ export interface IconProps {
 	size?: number
 	class?: string
 }
+
+export interface ErrorWithCode extends Error {
+	code?: string
+}

@@ -6,15 +6,14 @@
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import WalletInfo from '$lib/components/wallet-info.svelte'
 	import { formatAddress } from '$lib/utils'
+	import { connectWallet, canConnectWallet } from '$lib/services/blockchain'
 	import {
-		connectWallet,
-		canConnectWallet,
 		createIdentity,
 		getGlobalAnonymousFeed,
 		getContractGroup,
 		joinGroupOffChain,
 		joinGroupOnChain,
-	} from '$lib/services'
+	} from '$lib/services/zk'
 	import { profile } from '$lib/stores/profile'
 
 	let y: number
