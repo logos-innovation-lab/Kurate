@@ -11,9 +11,10 @@
 		getContractGroup,
 		getGlobalAnonymousFeed,
 		getRandomExternalNullifier,
-		validateProofOnChain,
 	} from '$lib/services/index'
 	import { posts } from '$lib/stores/post'
+	import { hashPost, createPost } from '$lib/services/posts'
+	import { getWaku } from '$lib/services/waku'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -32,16 +33,19 @@
 			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
 			const group = await getContractGroup(globalAnonymousFeed)
 
-			const externalNullifier = getRandomExternalNullifier()
-			const proof = await generateGroupProof(group, identity, postText, externalNullifier)
-			const tx = await validateProofOnChain(globalAnonymousFeed, proof, postText, externalNullifier)
+			const post = { text: postText }
+			const signal = hashPost(post)
 
-			const res = await tx.wait()
+			const externalNullifier = getRandomExternalNullifier()
+			const proof = await generateGroupProof(group, identity, signal, externalNullifier)
+
+			const waku = await getWaku()
+			await createPost(waku, post, proof)
 
 			posts.add({
 				timestamp: Date.now(),
 				text: postText,
-				tx: res.transactionHash,
+				tx: '',
 			})
 			goto(ROUTES.HOME)
 		} catch (error) {

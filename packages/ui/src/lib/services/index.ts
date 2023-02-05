@@ -1,19 +1,14 @@
 import { ethers, providers, Signer, type BigNumberish, type ContractTransaction } from 'ethers'
 import { Identity } from '@semaphore-protocol/identity'
 import { Group, type Member } from '@semaphore-protocol/group'
-import {
-	generateProof,
-	packToSolidityProof,
-	verifyProof,
-	type FullProof,
-} from '@semaphore-protocol/proof'
+import { generateProof, verifyProof, type FullProof } from '@semaphore-protocol/proof'
 
 import zkeyFilePath from '$lib/assets/semaphore.zkey?url'
 import wasmFilePath from '$lib/assets/semaphore.wasm?url'
 
 import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '$lib/assets/typechain'
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, GROUP_ID } from '$lib/constants'
-import { solidityKeccak256, type BytesLike, type Hexable } from 'ethers/lib/utils'
+import type { BytesLike, Hexable } from 'ethers/lib/utils'
 import type { PromiseOrValue } from '$lib/assets/typechain/common'
 
 type WindowWithEthereum = Window &
@@ -69,12 +64,10 @@ export function getRandomExternalNullifier() {
 export async function generateGroupProof(
 	group: Group,
 	identity: Identity,
-	message: string,
+	signal: string,
 	externalNullifier: BytesLike | Hexable | number | bigint,
 ): Promise<FullProof> {
-	const messageHash = solidityKeccak256(['string'], [message])
-
-	return generateProof(identity, group, externalNullifier, messageHash, {
+	return generateProof(identity, group, externalNullifier, signal, {
 		zkeyFilePath,
 		wasmFilePath,
 	})
@@ -90,13 +83,11 @@ export function validateProofOnChain(
 	message: string,
 	externalNullifier: PromiseOrValue<BigNumberish>,
 ): Promise<ContractTransaction> {
-	const solidityProof = packToSolidityProof(fullProof.proof)
-
 	return globalAnonymousFeed.sendMessage(
 		message,
-		fullProof.publicSignals.merkleTreeRoot,
-		fullProof.publicSignals.nullifierHash,
+		fullProof.merkleTreeRoot,
+		fullProof.nullifierHash,
 		externalNullifier,
-		solidityProof,
+		fullProof.proof,
 	)
 }
