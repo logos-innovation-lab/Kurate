@@ -29,14 +29,18 @@
 		"@typescript-eslint/eslint-plugin": "^5.50.0",
 		"@typescript-eslint/parser": "^5.50.0",
 		"big-integer": "^1.6.51",
+		"bigint-conversion": "^2.3.0",
 		"eslint": "^8.33.0",
 		"eslint-config-prettier": "^8.6.0",
 		"eslint-plugin-svelte3": "^4.0.0",
 		"ethers": "^5.7.2",
+		"js-waku": "^0.30.0",
+		"multiaddr": "^10.0.1",
 		"node-stdlib-browser": "^1.2.0",
 		"prettier": "^2.8.3",
 		"prettier-plugin-svelte": "^2.9.0",
 		"protons": "^7.0.0",
+		"protons-runtime": "^5.0.0",
 		"sass": "^1.58.0",
 		"svelte": "^3.55.1",
 		"svelte-check": "^3.0.3",
@@ -45,11 +49,5 @@
 		"typescript": "^4.9.5",
 		"vite": "^4.1.1"
 	},
-	"type": "module",
-	"dependencies": {
-		"bigint-conversion": "^2.3.0",
-		"js-waku": "^0.30.0",
-		"multiaddr": "^10.0.1",
-		"protons-runtime": "^5.0.0"
-	}
+	"type": "module"
 }
