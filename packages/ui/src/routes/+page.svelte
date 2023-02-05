@@ -10,12 +10,46 @@
 	import { posts } from '$lib/stores/post'
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
+	import { browser } from '$app/environment'
 	import Masonry from '$lib/masonry.svelte'
 
-	let y: number
+	let windowWidth: number = browser ? window.innerWidth : 0
+
+	function getMasonryColumnWidth(windowInnerWidth: number) {
+		if (windowInnerWidth < 739) {
+			return '100%'
+		}
+
+		if (windowInnerWidth < 1060) {
+			return 'minmax(min(100%/2, max(320px, 100%/2)), 1fr)'
+		}
+
+		if (windowInnerWidth < 1381) {
+			return 'minmax(min(100%/3, max(320px, 100%/3)), 1fr)'
+		}
+
+		if (windowInnerWidth < 1702) {
+			return 'minmax(min(100%/4, max(320px, 100%/4)), 1fr)'
+		}
+
+		if (windowInnerWidth < 2023) {
+			return 'minmax(min(100%/5, max(320px, 100%/5)), 1fr)'
+		}
+
+		if (windowInnerWidth < 2560) {
+			return 'minmax(min(100%/6, max(320px, 100%/6)), 1fr)'
+		}
+
+		if (windowInnerWidth < 3009) {
+			return 'minmax(min(100%/7, max(320px, 100%/7)), 1fr)'
+		}
+
+		return 'minmax(323px, 1fr)'
+	}
 </script>
 
-<svelte:window bind:scrollY={y} />
+<svelte:window bind:innerWidth={windowWidth} />
+
 <div>
 	<!-- <Header loggedin={$profile.signer !== undefined} /> -->
 
@@ -33,7 +67,7 @@
 			<WalletConnect />
 		{/if}
 
-		<Masonry gridGap="0" colWidth={'minmax(Min(320px, 100%), 1fr)'} items={$posts.posts}>
+		<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={$posts.posts}>
 			{#each $posts.posts as post}
 				<Post {post} />
 			{:else}
@@ -74,8 +108,9 @@
 	}
 	.wrapper {
 		margin-left: -1px;
-		@media (min-width: 1280px) {
-			width: 1280px;
+
+		@media (min-width: 739px) {
+			padding: 0 var(--spacing-48);
 			margin: 0 auto 0;
 		}
 	}
