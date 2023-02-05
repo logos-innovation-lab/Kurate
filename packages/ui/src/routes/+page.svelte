@@ -67,13 +67,17 @@
 			<WalletConnect />
 		{/if}
 
-		<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={$posts.posts}>
-			{#each $posts.posts as post}
-				<Post {post} />
-			{:else}
-				<p>There are no posts yet</p>
-			{/each}
-		</Masonry>
+		{#if $posts.loading}
+			<p>Loading posts...</p>
+		{:else if $posts.posts.length == 0}
+			<p>There are no posts yet</p>
+		{:else}
+			<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={$posts.posts}>
+				{#each $posts.posts as post}
+					<Post {post} />
+				{/each}
+			</Masonry>
+		{/if}
 	</div>
 </div>
 
