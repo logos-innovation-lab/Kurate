@@ -1,10 +1,13 @@
 <script lang="ts">
 	let cls: string | undefined = undefined
 	export { cls as class }
+
+	let filterText = ''
 </script>
 
 <div class={`root header-description ${cls}`}>
-	<div class="subtitle">Public timeline</div>
+	<div class="subtitle">All personas</div>
+	<input bind:value={filterText} placeholder="Search" />
 </div>
 
 <style lang="scss">

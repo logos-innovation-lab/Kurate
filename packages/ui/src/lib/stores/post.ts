@@ -5,7 +5,6 @@ import { subscribeToPosts } from '$lib/services/posts'
 export interface Post {
 	timestamp: number
 	text: string
-	tx: string
 }
 
 interface PostData {
@@ -29,7 +28,6 @@ async function fetchPosts() {
 			posts.add({
 				text: post.text,
 				timestamp: Date.now(),
-				tx: '',
 			})
 		},
 		undefined,
