@@ -1,4 +1,6 @@
 <script lang="ts">
+	import UserMultiple from './icons/user-multiple.svelte'
+
 	let cls: string | undefined = undefined
 	export { cls as class }
 	export let name: string
@@ -13,7 +15,7 @@
 	<div class="details">
 		<div class="header">{name}</div>
 		<div class="description">{description}</div>
-		<div class="postsCount">{postsCount}</div>
+		<div class="post-count"><UserMultiple size={18} /> {postsCount}</div>
 	</div>
 </div>
 
@@ -47,5 +49,9 @@
 		flex-direction: column;
 		justify-content: space-between;
 		padding-left: 24px;
+	}
+	.post-count {
+		display: flex;
+		flex-direction: row;
 	}
 </style>

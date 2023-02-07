@@ -18,11 +18,9 @@ export type PersonaStore = Writable<{
 }>
 
 function createPersonaStore(): PersonaStore {
-
 	const store = writable({ all: new Map(), draft: new Map(), favorite: new Map(), loading: true })
 
 	setTimeout(() => {
-
 		const chitChat = {
 			identity: undefined,
 			description: 'We pretty much just say gm all the time.',
@@ -59,7 +57,8 @@ function createPersonaStore(): PersonaStore {
 			description: '...',
 			postsCount: 9999,
 			groupId: GROUP_ID,
-			picture: 'https://upload.wikimedia.org/wikipedia/en/e/ea/Controversy_legend.gif?20060220215816',
+			picture:
+				'https://upload.wikimedia.org/wikipedia/en/e/ea/Controversy_legend.gif?20060220215816',
 		}
 
 		const all = new Map<string, Persona>()
