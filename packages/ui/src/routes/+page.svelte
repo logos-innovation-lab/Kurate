@@ -11,6 +11,7 @@
 	import Button from '$lib/components/button.svelte'
 	import Search from '$lib/components/icons/search.svelte'
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
+	import { chats } from '$lib/stores/chat'
 
 	let filterText = ''
 	let showChat = false
@@ -24,7 +25,12 @@
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<div class="nav">
 				<div class={showChat ? '' : 'active'} on:click={() => (showChat = false)}>Personas</div>
-				<div class={showChat ? 'active' : ''} on:click={() => (showChat = true)}>Chats</div>
+				<div class={showChat ? 'active' : ''} on:click={() => (showChat = true)}>
+					Chats
+					{#if $chats.unread > 0}
+						<div class="unread">{$chats.unread}</div>
+					{/if}
+				</div>
 			</div>
 		{/if}
 
@@ -103,7 +109,7 @@
 		background-color: #ececec;
 		display: flex;
 		align-items: center;
-		border: solid 1px #ececec;
+		border: solid 3px #ececec;
 		font-family: var(--font-body);
 		font-size: 16px;
 		font-weight: 600;
@@ -121,6 +127,15 @@
 
 		div.active {
 			background-color: white;
+		}
+
+		.unread {
+			background-color: black;
+			color: white;
+			width: min-content;
+			margin-left: 6px;
+			font-size: 12px;
+			font-weight: bold;
 		}
 	}
 
