@@ -4,11 +4,12 @@
 	export let name: string
 	export let description: string
 	export let postsCount: number
+	export let picture: string | undefined
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class={`root ${cls}`} on:click>
-	<div class="picture" />
+	<div class="picture"><img src={picture} alt="persona" /></div>
 	<div class="details">
 		<div class="header">{name}</div>
 		<div class="description">{description}</div>
@@ -20,19 +21,31 @@
 	.root {
 		display: flex;
 		flex-direction: row;
-		padding: 10px;
-		border: 1px solid grey;
+		padding: 24px;
 		cursor: pointer;
+
+		&:hover {
+			background-color: #f9f9f9;
+		}
 	}
 
 	.picture {
 		width: 100px;
 		height: 100px;
+		flex-basis: 100px;
+		flex-shrink: 0;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
 	}
 
 	.details {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		padding-left: 24px;
 	}
 </style>
