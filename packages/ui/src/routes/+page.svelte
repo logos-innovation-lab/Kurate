@@ -13,6 +13,7 @@
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
 
 	let filterText = ''
+	let showChat = false
 </script>
 
 <div>
@@ -21,24 +22,54 @@
 	<div class="wrapper">
 		{#if $profile.signer !== undefined}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<div>
-				<div>Personas</div>
-				<div>Chats</div>
+			<div class="nav">
+				<div class={showChat ? '' : 'active'} on:click={() => (showChat = false)}>Personas</div>
+				<div class={showChat ? 'active' : ''} on:click={() => (showChat = true)}>Chats</div>
 			</div>
 		{/if}
 
-		<div class="subtitle">All personas</div>
-		<Search />
-		<input bind:value={filterText} placeholder="Search..." />
-		<Button icon={SettingsView} />
-
-		{#if $personas.loading}
+		{#if showChat}
+			<div>Chat not implemented yet</div>
+		{:else if $personas.loading}
 			<p>Loading personas...</p>
-		{:else if $personas.personas.size === 0}
-			<p>There are no personas yet</p>
 		{:else}
+			{#if $personas.draft.size !== 0 && $profile.signer !== undefined}
+				<div class="subtitle">Draft personas</div>
+				<div class="grid">
+					{#each [...$personas.draft] as [name, data]}
+						<Persona
+							{name}
+							description={data.description}
+							postsCount={data.postsCount}
+							on:click={() => goto(ROUTES.PERSONA(name))}
+							picture={data.picture}
+						/>
+					{/each}
+				</div>
+			{/if}
+
+			{#if $personas.favorite.size !== 0 && $profile.signer !== undefined}
+				<div class="subtitle">Favorites</div>
+				<div class="grid">
+					{#each [...$personas.favorite] as [name, data]}
+						<Persona
+							{name}
+							description={data.description}
+							postsCount={data.postsCount}
+							on:click={() => goto(ROUTES.PERSONA(name))}
+							picture={data.picture}
+						/>
+					{/each}
+				</div>
+			{/if}
+
+			<div class="subtitle">All personas</div>
+			<Search />
+			<input bind:value={filterText} placeholder="Search..." />
+			<Button icon={SettingsView} />
+
 			<div class="grid">
-				{#each [...$personas.personas].filter( ([name]) => name.includes(filterText), ) as [name, data]}
+				{#each [...$personas.all].filter(([name]) => name.includes(filterText)) as [name, data]}
 					<Persona
 						{name}
 						description={data.description}
@@ -46,6 +77,8 @@
 						on:click={() => goto(ROUTES.PERSONA(name))}
 						picture={data.picture}
 					/>
+				{:else}
+					<p>There are no personas yet</p>
 				{/each}
 			</div>
 		{/if}
@@ -59,6 +92,35 @@
 		@media (min-width: 739px) {
 			padding: 0 var(--spacing-48);
 			margin: 0 auto 0;
+		}
+	}
+
+	.nav {
+		width: 450px;
+		height: 50px;
+		margin: auto;
+		border-radius: 25px;
+		background-color: #ececec;
+		display: flex;
+		align-items: center;
+		border: solid 1px #ececec;
+		font-family: var(--font-body);
+		font-size: 16px;
+		font-weight: 600;
+
+		div {
+			padding: 10px;
+			width: 50%;
+			border-radius: 25px;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+
+		div.active {
+			background-color: white;
 		}
 	}
 
