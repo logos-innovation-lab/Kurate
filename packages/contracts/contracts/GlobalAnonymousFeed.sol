@@ -6,48 +6,36 @@ import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
 contract GlobalAnonymousFeed {
     error IdentityAlreadyExists();
 
-    event NewMessage(string message);
-    event NewIdentity(uint256 identityCommitment);
+    event GroupCreated(uint256 id);
+    event GroupJoined(uint256 id, uint256 identityCommitment);
 
-    ISemaphore public semaphore;
+    ISemaphore public immutable semaphore;
+    uint256 public constant GROUP_SIZE = 20;
 
-    uint256 public groupId;
-    mapping(uint256 => bool) public registeredIdentities;
+    uint256 public groupId = 0;
+    mapping(uint256 => mapping(uint256 => bool)) public registeredIdentities;
 
-    constructor(address semaphoreAddress, uint256 _groupId) {
+    constructor(address semaphoreAddress) {
         semaphore = ISemaphore(semaphoreAddress);
-        groupId = _groupId;
-
-        semaphore.createGroup(groupId, 20, address(this));
     }
 
-    function joinGroup(uint256 identityCommitment) external {
-        if (registeredIdentities[identityCommitment] == true) {
+    function createGroup() external {
+        semaphore.createGroup(groupId, GROUP_SIZE, address(this));
+        emit GroupCreated(groupId);
+
+        unchecked {
+            groupId++;
+        }
+    }
+
+    function joinGroup(uint256 group, uint256 identityCommitment) external {
+        if (registeredIdentities[group][identityCommitment] == true) {
             revert IdentityAlreadyExists();
         }
 
-        semaphore.addMember(groupId, identityCommitment);
-        registeredIdentities[identityCommitment] = true;
+        semaphore.addMember(group, identityCommitment);
+        registeredIdentities[group][identityCommitment] = true;
 
-        emit NewIdentity(identityCommitment);
-    }
-
-    function sendMessage(
-        string calldata message,
-        uint256 merkleTreeRoot,
-        uint256 nullifierHash,
-        uint256 externalNullifier,
-        uint256[8] calldata proof
-    ) external {
-        semaphore.verifyProof(
-            groupId,
-            merkleTreeRoot,
-            uint256(keccak256(abi.encodePacked(message))),
-            nullifierHash,
-            externalNullifier,
-            proof
-        );
-
-        emit NewMessage(message);
+        emit GroupJoined(group, identityCommitment);
     }
 }
