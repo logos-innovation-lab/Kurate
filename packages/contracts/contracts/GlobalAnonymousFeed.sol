@@ -12,7 +12,6 @@ contract GlobalAnonymousFeed {
     ISemaphore public immutable semaphore;
     uint256 public constant GROUP_SIZE = 20;
 
-    uint256 public groupId = 0;
     mapping(uint256 => bool) public registeredIdentities;
 
     constructor(address semaphoreAddress) {
@@ -20,12 +19,20 @@ contract GlobalAnonymousFeed {
     }
 
     function createGroup() external {
-        semaphore.createGroup(groupId, GROUP_SIZE, address(this));
-        emit GroupCreated(groupId);
-
-        unchecked {
-            groupId++;
+        uint256 id = uint256(keccak256(abi.encodePacked(block.difficulty)));
+        while (true) {
+            try semaphore.createGroup(id, GROUP_SIZE, address(this)) {
+                break;
+            } catch {
+                id = uint256(keccak256(abi.encodePacked(id)));
+            }
         }
+        emit GroupCreated(id);
+    }
+
+    function createGroup(uint256 id) external {
+        semaphore.createGroup(id, GROUP_SIZE, address(this));
+        emit GroupCreated(id);
     }
 
     function joinGroup(uint256 group, uint256 identityCommitment) external {
