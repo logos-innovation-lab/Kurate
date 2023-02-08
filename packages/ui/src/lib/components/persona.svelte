@@ -1,5 +1,6 @@
 <script lang="ts">
 	import UserMultiple from './icons/user-multiple.svelte'
+	import Posts from './icons/edit.svelte'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -15,7 +16,14 @@
 	<div class="details">
 		<div class="header">{name}</div>
 		<div class="description">{description}</div>
-		<div class="post-count"><UserMultiple size={18} /> {postsCount}</div>
+		<div class="post-count">
+			<div>
+				<UserMultiple size={18} /> {postsCount}
+			</div>
+			<div>
+				<Posts size={18} /> {postsCount}
+			</div>
+		</div>
 	</div>
 </div>
 
@@ -23,19 +31,37 @@
 	.root {
 		display: flex;
 		flex-direction: row;
-		padding: 24px;
+		align-items: flex-start;
+		justify-content: flex-start;
+		flex-wrap: nowrap;
+		gap: var(--spacing-12);
+		padding: var(--spacing-24);
+		border-bottom: 1px solid var(--grey-200);
 		cursor: pointer;
 
+		@media (min-width: 739px) {
+			border-bottom: none;
+		}
 		&:hover {
-			background-color: #f9f9f9;
+			background-color: var(--grey-150);
 		}
 	}
 
 	.picture {
-		width: 100px;
-		height: 100px;
-		flex-basis: 100px;
-		flex-shrink: 0;
+		flex: 0 0 90px;
+		aspect-ratio: 1;
+
+		@media (min-width: 412px) {
+			flex-basis: 100px;
+		}
+
+		@media (min-width: 688px) {
+			flex-basis: 90px;
+		}
+		
+		@media (min-width: 844px) {
+			flex-basis: 100px;
+		}
 
 		img {
 			width: 100%;
@@ -47,11 +73,50 @@
 	.details {
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
-		padding-left: 24px;
+		gap: var(--spacing-8);
+
+		.header {
+			font-size: 16px;
+  			font-weight: 600;
+		}
+
+		.description {
+			font-size: 14px;
+		}
+
+		.post-count {
+			font-size: 12px;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: flex-start;
+			flex-wrap: nowrap;
+			gap: var(--spacing-12);
+
+			> div {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: flex-start;
+				flex-wrap: nowrap;
+				gap: var(--spacing-3);
+			}
+		}
 	}
-	.post-count {
-		display: flex;
-		flex-direction: row;
+
+	@media (prefers-color-scheme: dark) {
+		.root {
+			border-bottom-color: var(--grey-500);
+
+			&:hover {
+				background-color: var(--grey-500);
+			}
+		}
+
+		:global(svg) {
+			fill: var(--grey-100);
+			width: 16px;
+			height: 16px;
+		}
 	}
 </style>

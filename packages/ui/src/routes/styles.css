@@ -14,6 +14,7 @@
 	--color-body-text-rgb: 0, 0, 0;
 
 	--grey-100: #f0f0f0;
+	--grey-150: #f9f9f9;
 	--grey-200: #ececec;
 	--grey-300: #999999;
 	--grey-400: #666666;
@@ -41,10 +42,13 @@
 
 html {
 	scroll-behavior: smooth;
+	line-height: 1.25;
+  	-webkit-text-size-adjust: 100%;
 }
 
 body {
 	width: 100%;
+	min-height: 100dvh;
 	min-height: 100vh;
 	overflow-x: hidden;
 	margin: 0;
@@ -73,7 +77,9 @@ svg,
 video {
 	display: block;
 	max-width: 100%;
+	border-style: none;
 }
+
 
 @media (prefers-color-scheme: dark) {
 	:root {

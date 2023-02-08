@@ -11,6 +11,7 @@
 	import Button from '$lib/components/button.svelte'
 	import Search from '$lib/components/icons/search.svelte'
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
+	import Add from '$lib/components/icons/arrow-right.svelte'
 	import { chats } from '$lib/stores/chat'
 
 	let filterText = ''
@@ -69,10 +70,21 @@
 				</div>
 			{/if}
 
-			<div class="subtitle">All personas</div>
-			<Search />
-			<input bind:value={filterText} placeholder="Search..." />
-			<Button icon={SettingsView} />
+			<div class="personas-wrap">
+				<div class="personas-filter">
+					<div class="subtitle">All personas</div>
+					<div class="btns">
+						{#if $profile.signer !== undefined}
+							<Button icon={Add} label="Create persona" />
+						{/if}
+						<Button icon={SettingsView} />
+					</div>
+				</div>
+				<div class="search-field">
+					<Search />
+					<input bind:value={filterText} placeholder="Search..." />
+				</div>
+			</div>
 
 			<div class="grid">
 				{#each [...$personas.all].filter(([name]) => name.includes(filterText)) as [name, data]}
@@ -92,14 +104,7 @@
 </div>
 
 <style lang="scss">
-	.wrapper {
-		margin-left: -1px;
-
-		@media (min-width: 739px) {
-			padding: 0 var(--spacing-48);
-			margin: 0 auto 0;
-		}
-	}
+	
 
 	.nav {
 		width: 450px;
@@ -139,10 +144,94 @@
 		}
 	}
 
-	.grid {
+	.grid {		
 		display: grid;
 		grid-auto-columns: auto;
-		grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+		grid-template-columns: 100%;
 		grid-auto-rows: auto;
+
+		@media (min-width: 739px) {
+			padding: 0 var(--spacing-24);
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/2, max(320px, 100%/2)), 1fr));
+		}
+
+		@media (min-width: 1060px) {
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/3, max(320px, 100%/3)), 1fr));
+		}
+
+		@media (min-width: 1381px) {
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/4, max(320px, 100%/4)), 1fr));
+		}
+
+		@media (min-width: 1702px) {
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/5, max(320px, 100%/5)), 1fr));
+		}
+
+		@media (min-width: 2023px) {
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/6, max(320px, 100%/6)), 1fr));
+		}
+
+		@media (min-width: 2560px) {
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/7, max(320px, 100%/7)), 1fr));
+		}
+
+		@media (min-width: 3009px) {
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/9, max(320px, 100%/9)), 1fr));
+		}
 	}
+
+	.personas-wrap {
+		border-top: 1px solid var(--grey-200);
+		border-bottom: 1px solid var(--grey-200);
+		padding: var(--spacing-24);
+		transition: padding 0.2s;
+		@media (min-width: 739px) {
+			padding: var(--spacing-48);
+			transition: padding 0.2s;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			border-top: 1px solid var(--grey-500);
+			border-bottom: 1px solid var(--grey-500);
+		}
+
+		.personas-filter {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			flex-direction: row;
+			flex-wrap: nowrap;			
+
+		.btns {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			gap: var(--spacing-12);
+		}
+
+	}
+
+	.search-field {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		flex-wrap: nowrap;
+		flex-direction: row;
+		gap: var(--spacing-12);
+		padding-top: var(--spacing-12);
+
+		@media (min-width: 739px) {
+			padding-top: var(--spacing-24);
+		}
+
+		input {
+			border: none;
+			background-color: transparent;
+			font-size: 18px;
+		}
+	}
+	}
+	
 </style>

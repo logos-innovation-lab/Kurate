@@ -9,7 +9,7 @@
 	export let disabled: boolean | undefined = undefined
 </script>
 
-<button {disabled} class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click>
+<button type="button" {disabled} class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click>
 	{#if icon !== undefined}
 		<div class="wrapper">
 			<svelte:component this={icon} />
