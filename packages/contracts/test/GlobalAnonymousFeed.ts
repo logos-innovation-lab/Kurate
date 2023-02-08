@@ -1,6 +1,6 @@
 import { Group } from "@semaphore-protocol/group"
 import { Identity } from "@semaphore-protocol/identity"
-import { generateProof, packToSolidityProof } from "@semaphore-protocol/proof"
+import { generateProof } from "@semaphore-protocol/proof"
 import { expect } from "chai"
 import { solidityKeccak256 } from "ethers/lib/utils"
 import { run, ethers } from "hardhat"
@@ -58,14 +58,13 @@ describe("Global Anonymous Feed Contract", () => {
                 wasmFilePath,
                 zkeyFilePath
             })
-            const solidityProof = packToSolidityProof(fullProof.proof)
 
             const transaction = postContract.sendMessage(
                 feedback,
-                fullProof.publicSignals.merkleTreeRoot,
-                fullProof.publicSignals.nullifierHash,
+                fullProof.merkleTreeRoot,
+                fullProof.nullifierHash,
                 nullifier, //fullProof.publicSignals.externalNullifier,
-                solidityProof
+                fullProof.proof
             )
 
             await expect(transaction).to.emit(postContract, "NewMessage").withArgs(feedback)
@@ -80,14 +79,13 @@ describe("Global Anonymous Feed Contract", () => {
                 wasmFilePath,
                 zkeyFilePath
             })
-            const solidityProof = packToSolidityProof(fullProof.proof)
 
             const transaction = postContract.sendMessage(
                 feedback,
-                fullProof.publicSignals.merkleTreeRoot,
-                fullProof.publicSignals.nullifierHash,
+                fullProof.merkleTreeRoot,
+                fullProof.nullifierHash,
                 externalNullifier, //fullProof.publicSignals.externalNullifier,
-                solidityProof
+                fullProof.proof
             )
 
             await expect(transaction).to.emit(postContract, "NewMessage").withArgs(feedback)
