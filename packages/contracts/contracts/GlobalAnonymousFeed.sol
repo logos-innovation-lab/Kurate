@@ -13,7 +13,7 @@ contract GlobalAnonymousFeed {
     uint256 public constant GROUP_SIZE = 20;
 
     uint256 public groupId = 0;
-    mapping(uint256 => mapping(uint256 => bool)) public registeredIdentities;
+    mapping(uint256 => bool) public registeredIdentities;
 
     constructor(address semaphoreAddress) {
         semaphore = ISemaphore(semaphoreAddress);
@@ -29,12 +29,12 @@ contract GlobalAnonymousFeed {
     }
 
     function joinGroup(uint256 group, uint256 identityCommitment) external {
-        if (registeredIdentities[group][identityCommitment] == true) {
+        if (registeredIdentities[identityCommitment] == true) {
             revert IdentityAlreadyExists();
         }
 
         semaphore.addMember(group, identityCommitment);
-        registeredIdentities[group][identityCommitment] = true;
+        registeredIdentities[identityCommitment] = true;
 
         emit GroupJoined(group, identityCommitment);
     }
