@@ -132,7 +132,7 @@
 
 		@media (prefers-color-scheme: dark) {
 			background-color: var(--color-body-bg);
-			border-color: var(--color-body-text);
+			// border-color: var(--color-body-text);
 			outline-width: 1px;
 			outline-offset: 0px;
 			outline-color: var(--grey-500);

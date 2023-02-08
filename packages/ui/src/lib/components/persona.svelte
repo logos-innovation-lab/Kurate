@@ -1,6 +1,6 @@
 <script lang="ts">
 	import UserMultiple from './icons/user-multiple.svelte'
-	import Posts from './icons/edit.svelte'
+	import Forum from './icons/forum.svelte'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -21,7 +21,7 @@
 				<UserMultiple size={18} /> {postsCount}
 			</div>
 			<div>
-				<Posts size={18} /> {postsCount}
+				<Forum size={18} /> {postsCount}
 			</div>
 		</div>
 	</div>
@@ -36,14 +36,23 @@
 		flex-wrap: nowrap;
 		gap: var(--spacing-12);
 		padding: var(--spacing-24);
-		border-bottom: 1px solid var(--grey-200);
 		cursor: pointer;
 
+		&:not(:last-child) {			
+			border-bottom: 1px solid var(--grey-200);
+		}
+
 		@media (min-width: 739px) {
-			border-bottom: none;
+			&:not(:last-child) {
+				border-bottom: none;
+			}
 		}
 		&:hover {
 			background-color: var(--grey-150);
+		}
+
+		@media (prefers-color-scheme: dark) {
+
 		}
 	}
 
@@ -106,7 +115,9 @@
 
 	@media (prefers-color-scheme: dark) {
 		.root {
-			border-bottom-color: var(--grey-500);
+			&:not(:last-child) {
+				border-bottom-color: var(--grey-500);
+			}
 
 			&:hover {
 				background-color: var(--grey-500);

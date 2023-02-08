@@ -6,7 +6,13 @@
 	--font-serif: 'Source Serif Pro';
 
 	--font-size-normal: 16px;
+	--font-size-lg: 18px;
 	--font-size-sm: 14px;
+	--font-size-xs: 12px;
+
+	--font-weight-normal: 400;
+	--font-weight-sb: 600;
+
 
 	--color-body-bg: #ffffff;
 	--color-body-text: #000000;
