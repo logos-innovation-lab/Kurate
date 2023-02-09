@@ -33,7 +33,7 @@
 		"eslint": "^8.33.0",
 		"eslint-config-prettier": "^8.6.0",
 		"eslint-plugin-svelte3": "^4.0.0",
-		"ethers": "^5.7.2",
+		"ethers": "^6.0.2",
 		"js-waku": "^0.30.0",
 		"multiaddr": "^10.0.1",
 		"node-stdlib-browser": "^1.2.0",
