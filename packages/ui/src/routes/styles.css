@@ -13,7 +13,6 @@
 	--font-weight-normal: 400;
 	--font-weight-sb: 600;
 
-
 	--color-body-bg: #ffffff;
 	--color-body-text: #000000;
 	--color-body-bg-rgb: 255, 255, 255;
@@ -49,7 +48,7 @@
 html {
 	scroll-behavior: smooth;
 	line-height: 1.25;
-  	-webkit-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -85,7 +84,6 @@ video {
 	max-width: 100%;
 	border-style: none;
 }
-
 
 @media (prefers-color-scheme: dark) {
 	:root {

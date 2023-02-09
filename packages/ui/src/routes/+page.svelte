@@ -4,6 +4,7 @@
 
 	import { profile } from '$lib/stores/profile'
 	import { personas } from '$lib/stores/persona'
+	import { chats } from '$lib/stores/chat'
 
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
@@ -12,11 +13,9 @@
 	import Search from '$lib/components/icons/search.svelte'
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
 	import Add from '$lib/components/icons/add.svelte'
-	import { chats } from '$lib/stores/chat'
 
 	let filterText = ''
 	let showChat = false
-
 </script>
 
 <div>
@@ -43,17 +42,18 @@
 		{:else if $personas.loading}
 			<p>Loading personas...</p>
 		{:else}
-			{#if $personas.draft.size !== 0 && $profile.signer !== undefined}
+			{#if $personas.draft.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
 					<div class="subtitle">Draft personas</div>
+					<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
 					<div class="grid">
-						{#each [...$personas.draft] as [name, data]}
+						{#each $personas.draft as draftPersona, index}
 							<Persona
-								{name}
-								description={data.description}
-								postsCount={data.postsCount}
-								on:click={() => goto(ROUTES.PERSONA(name))}
-								picture={data.picture}
+								name={draftPersona.name}
+								description={draftPersona.description}
+								postsCount={draftPersona.postsCount}
+								on:click={() => goto(ROUTES.PERSONA(index.toFixed()))}
+								picture={draftPersona.picture}
 							/>
 						{/each}
 					</div>
@@ -94,12 +94,14 @@
 			</div>
 
 			<div class="grid">
-				{#each [...$personas.all].filter(([name]) => name.includes(filterText)) as [name, data]}
+				{#each [...$personas.all].filter(([, data]) => data.name
+						.toLowerCase()
+						.includes(filterText.toLowerCase())) as [groupId, data]}
 					<Persona
-						{name}
+						name={data.name}
 						description={data.description}
 						postsCount={data.postsCount}
-						on:click={() => goto(ROUTES.PERSONA(name))}
+						on:click={() => goto(ROUTES.PERSONA(groupId))}
 						picture={data.picture}
 					/>
 				{:else}
@@ -111,31 +113,29 @@
 </div>
 
 <style lang="scss">
-	
 	.nav-wrapper {
 		border-bottom: 1px solid var(--grey-200);
 		padding: 0 var(--spacing-24) var(--spacing-24);
-		
+
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);
 		}
-		
+
 		@media (min-width: 739px) {
 			padding: 0 var(--spacing-48) var(--spacing-48);
-		}			
-
+		}
 	}
 
 	.section-wrapper {
 		border-bottom: 1px solid var(--grey-200);
-		
+
 		@media (prefers-color-scheme: dark) {
 			border-bottom-color: var(--grey-500);
 		}
 
 		@media (min-width: 739px) {
 			padding-block: var(--spacing-24);
-		}		
+		}
 	}
 	.subtitle {
 		padding: var(--spacing-24);
@@ -150,15 +150,15 @@
 		@media (min-width: 739px) {
 			padding-inline: var(--spacing-48);
 			border-bottom: none;
-		}		
+		}
 	}
-	
+
 	nav {
 		width: 100%;
 		max-width: 450px;
 		height: 50px;
 		margin: auto;
-		border-radius: 25px;		
+		border-radius: 25px;
 		background-color: var(--grey-200);
 		display: flex;
 		align-items: center;
@@ -172,13 +172,13 @@
 			background-color: var(--grey-500);
 			border-color: var(--grey-500);
 		}
-		
+
 		&::before {
-			content: "";
+			content: '';
 			position: absolute;
 			inset: 0 50% 0 0;
 			background-color: var(--color-body-bg);
-			padding: 10px;				
+			padding: 10px;
 			border-radius: 25px;
 			z-index: 0;
 			transition: inset 0.3s;
@@ -199,7 +199,6 @@
 			justify-content: center;
 			cursor: pointer;
 			z-index: 10;
-			
 		}
 
 		.unread {
@@ -211,11 +210,9 @@
 			margin-left: var(--spacing-6);
 			font-size: var(--font-size-xs);
 			font-weight: var(--font-weight-sb);
-    		line-height: 20px;
+			line-height: 20px;
 		}
 	}
-	
-
 
 	.personas-wrap {
 		border-top: 1px solid var(--grey-200);
@@ -237,29 +234,27 @@
 			justify-content: space-between;
 			align-items: center;
 			flex-direction: row;
-			flex-wrap: nowrap;		
-			padding-bottom: var(--spacing-12);	
-			
+			flex-wrap: nowrap;
+			padding-bottom: var(--spacing-12);
+
 			.personas-title {
 				padding-bottom: var(--spacing-12);
 				border-bottom: none;
 			}
 
 			@media (min-width: 739px) {
-				padding-bottom: var(--spacing-24);	
+				padding-bottom: var(--spacing-24);
 			}
 
-
-		.btns {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			flex-direction: row;
-			flex-wrap: nowrap;
-			gap: var(--spacing-12);
+			.btns {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				flex-direction: row;
+				flex-wrap: nowrap;
+				gap: var(--spacing-12);
+			}
 		}
-
-	}
 
 		.search-field {
 			display: flex;
@@ -279,10 +274,8 @@
 			}
 		}
 	}
-	
 
-	
-	.grid {		
+	.grid {
 		display: grid;
 		grid-auto-columns: auto;
 		grid-template-columns: 100%;
@@ -316,5 +309,50 @@
 		@media (min-width: 3009px) {
 			grid-template-columns: repeat(auto-fit, minmax(min(100%/9, max(320px, 100%/9)), 1fr));
 		}
+	}
+
+	.nav {
+		width: 450px;
+		height: 50px;
+		margin: auto;
+		border-radius: 25px;
+		background-color: #ececec;
+		display: flex;
+		align-items: center;
+		border: solid 3px #ececec;
+		font-family: var(--font-body);
+		font-size: 16px;
+		font-weight: 600;
+
+		div {
+			padding: 10px;
+			width: 50%;
+			border-radius: 25px;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+
+		div.active {
+			background-color: white;
+		}
+
+		.unread {
+			background-color: black;
+			color: white;
+			width: min-content;
+			margin-left: 6px;
+			font-size: 12px;
+			font-weight: bold;
+		}
+	}
+
+	.grid {
+		display: grid;
+		grid-auto-columns: auto;
+		grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+		grid-auto-rows: auto;
 	}
 </style>

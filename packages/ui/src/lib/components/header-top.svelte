@@ -57,12 +57,10 @@
 		position: sticky;
 		top: 0;
 		left: 0;
-		right: 0;		
+		right: 0;
 		background-color: rgba(var(--color-body-bg-rgb), 0.93);
 		backdrop-filter: blur(3px);
 		transition: box-shadow 0.2s;
-
-		
 
 		.header-content {
 			display: flex;
@@ -88,24 +86,20 @@
 
 		&.scrolled {
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
-			// border-bottom: none;			
+			// border-bottom: none;
 			transition: box-shadow 0.2s;
-			
+
 			.header-content {
-				
-				@media (min-width: 739px){
+				@media (min-width: 739px) {
 					padding-block: var(--spacing-24);
 					transition: padding 0.2s;
 				}
 			}
 		}
 
-
 		@media (prefers-color-scheme: dark) {
 			// border-bottom-color: var(--grey-500);
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
-
-
 		}
 	}
 </style>

@@ -18,10 +18,12 @@
 		<div class="description">{description}</div>
 		<div class="post-count">
 			<div>
-				<UserMultiple size={18} /> {postsCount}
+				<UserMultiple size={18} />
+				{postsCount}
 			</div>
 			<div>
-				<Forum size={18} /> {postsCount}
+				<Forum size={18} />
+				{postsCount}
 			</div>
 		</div>
 	</div>
@@ -38,7 +40,7 @@
 		padding: var(--spacing-24);
 		cursor: pointer;
 
-		&:not(:last-child) {			
+		&:not(:last-child) {
 			border-bottom: 1px solid var(--grey-200);
 		}
 
@@ -52,7 +54,6 @@
 		}
 
 		@media (prefers-color-scheme: dark) {
-
 		}
 	}
 
@@ -67,7 +68,7 @@
 		@media (min-width: 688px) {
 			flex-basis: 90px;
 		}
-		
+
 		@media (min-width: 844px) {
 			flex-basis: 100px;
 		}
@@ -86,7 +87,7 @@
 
 		.header {
 			font-size: 16px;
-  			font-weight: 600;
+			font-weight: 600;
 		}
 
 		.description {
