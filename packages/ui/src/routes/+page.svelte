@@ -82,7 +82,7 @@
 					<div class="personas-title">All personas</div>
 					<div class="btns">
 						{#if $profile.signer !== undefined}
-							<Button icon={Add} label="Create persona" />
+							<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
 						{/if}
 						<Button icon={SettingsView} />
 					</div>
@@ -308,44 +308,6 @@
 
 		@media (min-width: 3009px) {
 			grid-template-columns: repeat(auto-fit, minmax(min(100%/9, max(320px, 100%/9)), 1fr));
-		}
-	}
-
-	.nav {
-		width: 450px;
-		height: 50px;
-		margin: auto;
-		border-radius: 25px;
-		background-color: #ececec;
-		display: flex;
-		align-items: center;
-		border: solid 3px #ececec;
-		font-family: var(--font-body);
-		font-size: 16px;
-		font-weight: 600;
-
-		div {
-			padding: 10px;
-			width: 50%;
-			border-radius: 25px;
-			height: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			cursor: pointer;
-		}
-
-		div.active {
-			background-color: white;
-		}
-
-		.unread {
-			background-color: black;
-			color: white;
-			width: min-content;
-			margin-left: 6px;
-			font-size: 12px;
-			font-weight: bold;
 		}
 	}
 
