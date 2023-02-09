@@ -3,5 +3,5 @@ import { expect, test } from '@playwright/test'
 
 test('index page has expected header', async ({ page }) => {
 	await page.goto(ROUTES.HOME)
-	expect(await page.textContent('span')).toBe('Kurate')
+	expect(await page.textContent('h1')).toBe('Kurate')
 })
