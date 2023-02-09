@@ -6,15 +6,7 @@
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import WalletInfo from '$lib/components/wallet-info.svelte'
 	import { formatAddress } from '$lib/utils'
-	import {
-		connectWallet,
-		canConnectWallet,
-		createIdentity,
-		getGlobalAnonymousFeed,
-		getContractGroup,
-		joinGroupOffChain,
-		joinGroupOnChain,
-	} from '$lib/services'
+	import { connectWallet, canConnectWallet } from '$lib/services'
 	import { profile } from '$lib/stores/profile'
 
 	let y: number
@@ -25,24 +17,9 @@
 	const handleConnect = async () => {
 		try {
 			const signer = await connectWallet()
-			$profile.signer = signer
+			const address = await signer.getAddress()
 
-			const defaultIdentity = 'anonymous'
-
-			const identity = await createIdentity(signer, defaultIdentity)
-
-			$profile.identities = { ...$profile.identities, [defaultIdentity]: identity }
-
-			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
-			const group = await getContractGroup(globalAnonymousFeed)
-
-			const commitment = identity.commitment
-
-			if (!group.members.includes(commitment)) {
-				joinGroupOffChain(group, commitment)
-				const txres = await joinGroupOnChain(globalAnonymousFeed, commitment)
-				console.log(txres)
-			}
+			$profile = { signer, address }
 		} catch (err) {
 			error = err as Error
 		}
@@ -98,20 +75,11 @@
 				variant="primary"
 				icon={Logout}
 				label="Logout"
-				on:click={() => ($profile.signer = undefined)}
+				on:click={() => ($profile = {})}
 				disabled={!$profile.signer}
 			/>
 		</div>
 	{/if}
-
-	<div class="info">
-		{#each Object.entries($profile.identities) as [name, identity]}
-			<div>{name}</div>
-			<div>commitment: {identity.getCommitment().toString(16)}</div>
-			<div>nullifier: {identity.getNullifier().toString(16)}</div>
-			<div>trapdoor: {identity.getTrapdoor().toString(16)}</div>
-		{/each}
-	</div>
 </div>
 
 <style lang="scss">
@@ -190,15 +158,6 @@
 		.connect-info {
 			margin-top: var(--spacing-12);
 			text-align: center;
-		}
-	}
-	.info {
-		padding: var(--spacing-12);
-		max-width: 100%;
-		word-wrap: break-word;
-
-		> div:not(:first-child) {
-			margin-top: var(--spacing-12);
 		}
 	}
 </style>

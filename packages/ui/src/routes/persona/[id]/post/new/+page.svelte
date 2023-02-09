@@ -7,10 +7,13 @@
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
 	import {
+		createIdentity,
 		generateGroupProof,
 		getContractGroup,
 		getGlobalAnonymousFeed,
 		getRandomExternalNullifier,
+		joinGroupOffChain,
+		joinGroupOnChain,
 	} from '$lib/services/index'
 	import { posts } from '$lib/stores/post'
 	import { hashPost, createPost } from '$lib/services/posts'
@@ -27,11 +30,20 @@
 			const signer = $profile.signer
 			if (!signer) throw new Error('no signer')
 
-			const identity = $profile.identities.anonymous
-			if (!identity) throw new Error('no identity')
+			const defaultIdentity = 'anonymous'
+
+			const identity = await createIdentity(signer, defaultIdentity)
 
 			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
 			const group = await getContractGroup(globalAnonymousFeed)
+
+			const commitment = identity.commitment
+
+			if (!group.members.includes(commitment)) {
+				joinGroupOffChain(group, commitment)
+				const txres = await joinGroupOnChain(globalAnonymousFeed, commitment)
+				console.log(txres)
+			}
 
 			const post = { text: postText }
 			const signal = hashPost(post)
@@ -45,7 +57,6 @@
 			posts.add({
 				timestamp: Date.now(),
 				text: postText,
-				tx: '',
 			})
 			goto(ROUTES.HOME)
 		} catch (error) {

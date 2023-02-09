@@ -1,21 +1,28 @@
 <script lang="ts">
-	import UserIcon from '$lib/components/icons/user.svelte'
 	import Button from './button.svelte'
 
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
 	import Wallet from './icons/wallet.svelte'
-	import Edit from './icons/edit.svelte'
-	import UpToTop from './icons/up-to-top.svelte'
+	import { formatAddress } from '$lib/utils'
+	import { profile } from '$lib/stores/profile'
+	import { connectWallet } from '$lib/services'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
 
 	let y: number
-	export let loggedin: boolean | undefined = undefined
+	export let address: string | undefined = undefined
 
-	function goTop() {
-		document.body.scrollIntoView()
+	const handleConnect = async () => {
+		try {
+			const signer = await connectWallet()
+			const address = await signer.getAddress()
+
+			$profile = { signer, address }
+		} catch (err) {
+			console.error(err)
+		}
 	}
 </script>
 
@@ -25,26 +32,25 @@
 	<div class="header-content">
 		<div class="header">
 			<div class="header-title-wrap">
-				<div class="top-button">
-					<Button icon={UpToTop} on:click={goTop} />
-				</div>
-				<span class={` ${y > 0 ? 'subtitle' : 'header-title'} ${cls}`}>
-					{y > 0 ? 'Public Timeline' : 'The Outlet'}
-				</span>
+				<span class={`header-title ${cls}`}>Kurate</span>
 			</div>
 
 			<div class="btns">
-				<div class="btn wallet">
+				{#if address}
 					<Button
-						icon={loggedin ? Edit : Wallet}
-						variant="primary"
-						on:click={() => goto(loggedin ? ROUTES.POST_NEW : ROUTES.PROFILE)}
+						icon={Wallet}
+						variant={'secondary'}
+						label={formatAddress(address)}
+						on:click={() => goto(ROUTES.PROFILE)}
 					/>
-				</div>
-
-				<div class="btn user">
-					<Button icon={UserIcon} variant="secondary" on:click={() => goto(ROUTES.PROFILE)} />
-				</div>
+				{:else}
+					<Button
+						icon={Wallet}
+						variant={'primary'}
+						label={'Connect'}
+						on:click={() => handleConnect()}
+					/>
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -122,13 +128,7 @@
 			flex-direction: row;
 			align-items: center;
 			gap: var(--spacing-12);
-			margin-left: -56px;
 			transition: margin 0.2s ease-in-out;
-
-			.top-button {
-				opacity: 0;
-				transition: opacity 0.2s ease-in-out;
-			}
 		}
 
 		&.scrolled {

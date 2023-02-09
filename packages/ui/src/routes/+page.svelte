@@ -1,115 +1,104 @@
 <script lang="ts">
-	// import Header from '$lib/components/header.svelte'
 	import HeaderTop from '$lib/components/header-top.svelte'
-	import HeaderDescription from '$lib/components/header-description.svelte'
-	import Post from '$lib/components/post.svelte'
-	import Button from '$lib/components/button.svelte'
-	import WalletConnect from '$lib/components/wallet-connect.svelte'
-	import Edit from '$lib/components/icons/edit.svelte'
+	import Persona from '$lib/components/persona.svelte'
 
-	import { posts } from '$lib/stores/post'
 	import { profile } from '$lib/stores/profile'
+	import { personas } from '$lib/stores/persona'
+
 	import { goto } from '$app/navigation'
-	import { browser } from '$app/environment'
-	import Masonry from '$lib/masonry.svelte'
+	import { ROUTES } from '$lib/routes'
 
-	let windowWidth: number = browser ? window.innerWidth : 0
+	import Button from '$lib/components/button.svelte'
+	import Search from '$lib/components/icons/search.svelte'
+	import SettingsView from '$lib/components/icons/settings-view.svelte'
+	import { chats } from '$lib/stores/chat'
+	import Add from '$lib/components/icons/add.svelte'
 
-	function getMasonryColumnWidth(windowInnerWidth: number) {
-		if (windowInnerWidth < 739) {
-			return '100%'
-		}
-
-		if (windowInnerWidth < 1060) {
-			return 'minmax(min(100%/2, max(320px, 100%/2)), 1fr)'
-		}
-
-		if (windowInnerWidth < 1381) {
-			return 'minmax(min(100%/3, max(320px, 100%/3)), 1fr)'
-		}
-
-		if (windowInnerWidth < 1702) {
-			return 'minmax(min(100%/4, max(320px, 100%/4)), 1fr)'
-		}
-
-		if (windowInnerWidth < 2023) {
-			return 'minmax(min(100%/5, max(320px, 100%/5)), 1fr)'
-		}
-
-		if (windowInnerWidth < 2560) {
-			return 'minmax(min(100%/6, max(320px, 100%/6)), 1fr)'
-		}
-
-		if (windowInnerWidth < 3009) {
-			return 'minmax(min(100%/7, max(320px, 100%/7)), 1fr)'
-		}
-
-		return 'minmax(323px, 1fr)'
-	}
+	let filterText = ''
+	let showChat = false
 </script>
 
-<svelte:window bind:innerWidth={windowWidth} />
-
 <div>
-	<!-- <Header loggedin={$profile.signer !== undefined} /> -->
-
-	<HeaderTop loggedin={$profile.signer !== undefined} />
-	<HeaderDescription />
+	<HeaderTop address={$profile.address} />
 
 	<div class="wrapper">
 		{#if $profile.signer !== undefined}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<div class="new-post-button" on:click={() => goto('/post/new')}>
-				Share freely...
-				<Button variant="primary" label="Create post" icon={Edit} />
+			<div class="nav">
+				<div class={showChat ? '' : 'active'} on:click={() => (showChat = false)}>Personas</div>
+				<div class={showChat ? 'active' : ''} on:click={() => (showChat = true)}>
+					Chats
+					{#if $chats.unread > 0}
+						<div class="unread">{$chats.unread}</div>
+					{/if}
+				</div>
 			</div>
-		{:else}
-			<WalletConnect />
 		{/if}
 
-		{#if $posts.loading}
-			<p>Loading posts...</p>
-		{:else if $posts.posts.length == 0}
-			<p>There are no posts yet</p>
+		{#if showChat}
+			<div>Chat not implemented yet</div>
+		{:else if $personas.loading}
+			<p>Loading personas...</p>
 		{:else}
-			<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={$posts.posts}>
-				{#each $posts.posts as post}
-					<Post {post} />
+			{#if $personas.draft.length !== 0 && $profile.signer !== undefined}
+				<div class="subtitle">Draft personas</div>
+				<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
+				<div class="grid">
+					{#each $personas.draft as draftPersona, index}
+						<Persona
+							name={draftPersona.name}
+							description={draftPersona.description}
+							postsCount={draftPersona.postsCount}
+							on:click={() => goto(ROUTES.PERSONA(index.toFixed()))}
+							picture={draftPersona.picture}
+						/>
+					{/each}
+				</div>
+			{/if}
+
+			{#if $personas.favorite.size !== 0 && $profile.signer !== undefined}
+				<div class="subtitle">Favorites</div>
+				<div class="grid">
+					{#each [...$personas.favorite] as [groupId, data]}
+						<Persona
+							name={data.name}
+							description={data.description}
+							postsCount={data.postsCount}
+							on:click={() => goto(ROUTES.PERSONA(groupId))}
+							picture={data.picture}
+						/>
+					{/each}
+				</div>
+			{/if}
+
+			<div class="subtitle">All personas</div>
+			<Search />
+			<input bind:value={filterText} placeholder="Search..." />
+			{#if $profile.signer !== undefined}
+				<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
+			{/if}
+			<Button icon={SettingsView} />
+
+			<div class="grid">
+				{#each [...$personas.all].filter(([, data]) => data.name
+						.toLowerCase()
+						.includes(filterText.toLowerCase())) as [groupId, data]}
+					<Persona
+						name={data.name}
+						description={data.pitch}
+						postsCount={data.postsCount}
+						on:click={() => goto(ROUTES.PERSONA(groupId))}
+						picture={data.picture}
+					/>
+				{:else}
+					<p>There are no personas yet</p>
 				{/each}
-			</Masonry>
+			</div>
 		{/if}
 	</div>
 </div>
 
 <style lang="scss">
-	.new-post-button {
-		font-family: var(--font-serif);
-		padding: var(--spacing-24) var(--spacing-12);
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		gap: var(--spacing-12);
-		align-items: center;
-		border-top: 1px solid var(--grey-200);
-		border-bottom: 1px solid var(--grey-200);
-		cursor: pointer;
-
-		@media (min-width: 640px) {
-			border-bottom: none;
-		}
-		@media (min-width: 1280px) {
-			border: none;
-			outline: 1px solid var(--grey-200);
-			outline-offset: -0.5px;
-		}
-
-		@media (prefers-color-scheme: dark) {
-			border-top-color: var(--grey-500);
-			border-left-color: var(--grey-500);
-			border-bottom-color: var(--grey-500);
-			outline-color: var(--grey-500);
-		}
-	}
 	.wrapper {
 		margin-left: -1px;
 
@@ -117,5 +106,50 @@
 			padding: 0 var(--spacing-48);
 			margin: 0 auto 0;
 		}
+	}
+
+	.nav {
+		width: 450px;
+		height: 50px;
+		margin: auto;
+		border-radius: 25px;
+		background-color: #ececec;
+		display: flex;
+		align-items: center;
+		border: solid 3px #ececec;
+		font-family: var(--font-body);
+		font-size: 16px;
+		font-weight: 600;
+
+		div {
+			padding: 10px;
+			width: 50%;
+			border-radius: 25px;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+
+		div.active {
+			background-color: white;
+		}
+
+		.unread {
+			background-color: black;
+			color: white;
+			width: min-content;
+			margin-left: 6px;
+			font-size: 12px;
+			font-weight: bold;
+		}
+	}
+
+	.grid {
+		display: grid;
+		grid-auto-columns: auto;
+		grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+		grid-auto-rows: auto;
 	}
 </style>
