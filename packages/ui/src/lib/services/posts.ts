@@ -26,7 +26,7 @@ export type PostClean = {
 }
 
 export const getPostsTopic = () => {
-	return `/the-outlet/1/posts/proto`
+	return `/kurate/1/posts/proto`
 }
 
 // TODO: Does this have to be keccak? Does it need to be hashable on-chain?
