@@ -9,7 +9,12 @@
 	export let disabled: boolean | undefined = undefined
 </script>
 
-<button {disabled} class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`} on:click>
+<button
+	type="button"
+	{disabled}
+	class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`}
+	on:click
+>
 	{#if icon !== undefined}
 		<div class="wrapper">
 			<svelte:component this={icon} />
@@ -132,7 +137,7 @@
 
 		@media (prefers-color-scheme: dark) {
 			background-color: var(--color-body-bg);
-			border-color: var(--color-body-text);
+			// border-color: var(--color-body-text);
 			outline-width: 1px;
 			outline-offset: 0px;
 			outline-color: var(--grey-500);
