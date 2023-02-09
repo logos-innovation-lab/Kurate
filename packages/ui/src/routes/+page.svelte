@@ -12,6 +12,7 @@
 	import Search from '$lib/components/icons/search.svelte'
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
 	import { chats } from '$lib/stores/chat'
+	import Add from '$lib/components/icons/add.svelte'
 
 	let filterText = ''
 	let showChat = false
@@ -39,16 +40,17 @@
 		{:else if $personas.loading}
 			<p>Loading personas...</p>
 		{:else}
-			{#if $personas.draft.size !== 0 && $profile.signer !== undefined}
+			{#if $personas.draft.length !== 0 && $profile.signer !== undefined}
 				<div class="subtitle">Draft personas</div>
+				<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
 				<div class="grid">
-					{#each [...$personas.draft] as [name, data]}
+					{#each $personas.draft as draftPersona, index}
 						<Persona
-							{name}
-							description={data.description}
-							postsCount={data.postsCount}
-							on:click={() => goto(ROUTES.PERSONA(name))}
-							picture={data.picture}
+							name={draftPersona.name}
+							description={draftPersona.description}
+							postsCount={draftPersona.postsCount}
+							on:click={() => goto(ROUTES.PERSONA(index))}
+							picture={draftPersona.picture}
 						/>
 					{/each}
 				</div>
@@ -57,12 +59,12 @@
 			{#if $personas.favorite.size !== 0 && $profile.signer !== undefined}
 				<div class="subtitle">Favorites</div>
 				<div class="grid">
-					{#each [...$personas.favorite] as [name, data]}
+					{#each [...$personas.favorite] as [groupId, data]}
 						<Persona
-							{name}
+							name={data.name}
 							description={data.description}
 							postsCount={data.postsCount}
-							on:click={() => goto(ROUTES.PERSONA(name))}
+							on:click={() => goto(ROUTES.PERSONA(groupId))}
 							picture={data.picture}
 						/>
 					{/each}
@@ -72,15 +74,20 @@
 			<div class="subtitle">All personas</div>
 			<Search />
 			<input bind:value={filterText} placeholder="Search..." />
+			{#if $profile.signer !== undefined}
+				<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
+			{/if}
 			<Button icon={SettingsView} />
 
 			<div class="grid">
-				{#each [...$personas.all].filter(([name]) => name.includes(filterText)) as [name, data]}
+				{#each [...$personas.all].filter(([, data]) => data.name
+						.toLowerCase()
+						.includes(filterText.toLowerCase())) as [groupId, data]}
 					<Persona
-						{name}
-						description={data.description}
+						name={data.name}
+						description={data.pitch}
 						postsCount={data.postsCount}
-						on:click={() => goto(ROUTES.PERSONA(name))}
+						on:click={() => goto(ROUTES.PERSONA(groupId))}
 						picture={data.picture}
 					/>
 				{:else}

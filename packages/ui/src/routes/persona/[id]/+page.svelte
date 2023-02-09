@@ -24,6 +24,8 @@
 		if (windowInnerWidth < 3009) return 'minmax(min(100%/7, max(320px, 100%/7)), 1fr)'
 		return 'minmax(323px, 1fr)'
 	}
+
+	const isDraft = $page.url.searchParams.has('draft')
 </script>
 
 <svelte:window bind:innerWidth={windowWidth} />
@@ -36,7 +38,7 @@
 	<div class="wrapper">
 		{#if $profile.signer !== undefined}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<div class="new-post-button" on:click={() => goto(ROUTES.POST_NEW($page.params.slug))}>
+			<div class="new-post-button" on:click={() => goto(ROUTES.POST_NEW($page.params.id))}>
 				Share freely...
 				<Button variant="primary" label="Create post" icon={Edit} />
 			</div>
