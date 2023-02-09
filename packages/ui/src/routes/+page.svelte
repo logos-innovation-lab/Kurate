@@ -49,7 +49,7 @@
 							name={draftPersona.name}
 							description={draftPersona.description}
 							postsCount={draftPersona.postsCount}
-							on:click={() => goto(ROUTES.PERSONA(index))}
+							on:click={() => goto(ROUTES.PERSONA(index.toFixed()))}
 							picture={draftPersona.picture}
 						/>
 					{/each}
