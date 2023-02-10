@@ -1,6 +1,7 @@
 <script lang="ts">
 	import HeaderTop from '$lib/components/header-top.svelte'
 	import Persona from '$lib/components/persona.svelte'
+	import Grid from '$lib/components/grid.svelte'
 
 	import { profile } from '$lib/stores/profile'
 	import { personas } from '$lib/stores/persona'
@@ -47,7 +48,7 @@
 					<div class="subtitle">Draft personas</div>
 					<hr/>
 					<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
-					<div class="grid">
+					<Grid>
 						{#each $personas.draft as draftPersona, index}
 							<Persona
 								name={draftPersona.name}
@@ -57,7 +58,7 @@
 								picture={draftPersona.picture}
 							/>
 						{/each}
-					</div>
+					</Grid>
 				</div>
 			{/if}
 
@@ -65,7 +66,7 @@
 				<div class="section-wrapper">
 					<div class="subtitle">Favorites</div>
 					 <hr/>
-					<div class="grid">
+					 <Grid>
 						{#each [...$personas.favorite] as [name, data]}
 							<Persona
 								{name}
@@ -75,7 +76,7 @@
 								picture={data.picture}
 							/>
 						{/each}
-					</div>
+					 </Grid>
 				</div>
 			{/if}
 
@@ -97,7 +98,7 @@
 				</div>
 			</div>
 
-			<div class="grid">
+			<Grid>
 				{#each [...$personas.all].filter(([, data]) => data.name
 						.toLowerCase()
 						.includes(filterText.toLowerCase())) as [groupId, data]}
@@ -111,7 +112,7 @@
 				{:else}
 					<p>There are no personas yet</p>
 				{/each}
-			</div>
+			</Grid>
 		{/if}
 	</div>
 </div>
@@ -324,41 +325,6 @@
 		}
 	}
 
-	.grid {
-		display: grid;
-		grid-auto-columns: auto;
-		grid-template-columns: 100%;
-		grid-auto-rows: auto;		
-    	margin-inline: auto;
-		
-		> div {			
-			padding: var(--spacing-24);
-			transition: padding 0.2s;
-		}
-		
-		// decided to use max-width here to make it easier to match the page headers' width
-		@media (min-width: 688px) {
-			padding: 0 var(--spacing-24);
-			transition: padding 0.2s;
-			max-width: 996px;
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/2, max(320px, 100%/2)), 1fr));
-		}
-
-		@media (min-width: 1242px) {
-			max-width: 1494px;
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/3, max(350px, 100%/3)), 1fr));
-		}
-
-		@media (min-width: 1640px) {
-			max-width: 1992px;
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/4, max(350px, 100%/4)), 1fr));
-		}
-
-		@media (min-width: 2038px) {
-			max-width: 2490px;
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/5, max(350px, 100%/5)), 1fr));
-		}
-
-	}
+	
 		
 </style>

@@ -52,7 +52,6 @@
 		gap: var(--spacing-12);
 		padding: var(--spacing-24);
 		cursor: pointer;
-		min-width: 320px;
 		max-width: 498px;
 		margin-inline: auto;
 
