@@ -10,16 +10,19 @@
 	let pitch = ''
 	let description = ''
 	let y: number
-	let descriptionHeight: number
+	let descPlaceholderHeight: number
+	let pitchPlaceholderHeight: number
 </script>
 
 <svelte:window bind:scrollY={y} />
 
 <header class={y > 0 ? 'scrolled' : ''}>
-	<div class="btn-undo">
-		<Button icon={Undo} on:click={() => history.back()} />
+	<div class="header-content">
+		<div class="btn-undo">
+			<Button icon={Undo} on:click={() => history.back()} />
+		</div>
+		<h1>Create persona</h1>
 	</div>
-	<h1>Create persona</h1>
 </header>
 
 <form>
@@ -31,23 +34,27 @@
 	<label>
 		Persona pitch
 		<div class="area-placeholder">
-			<div class="{`placeholder-text ${pitch != '' ? 'hide' : ''} `}">
+			<div bind:clientHeight={pitchPlaceholderHeight} class="{`placeholder-text ${pitch != '' ? 'hide' : ''} `}">
 				Pitch the persona in one sentence, this should serve as a brief introduction…
 			</div>
-			<textarea bind:value={pitch} class={pitch != '' ? 'content' : ''} />
+			<textarea 
+				bind:value={pitch} 
+				class={pitch != '' ? 'content' : ''} 
+				style={`${pitch != '' ? 'min-height: ' + pitchPlaceholderHeight : ''}px;`}  
+			/>
 		</div>
 	</label>
 	
 	<label>
 		Persona description
 		<div class="area-placeholder">
-			<div bind:clientHeight={descriptionHeight} class={`placeholder-text ${description != '' ? 'hide' : ''} `}>
+			<div bind:clientHeight={descPlaceholderHeight} class={`placeholder-text ${description != '' ? 'hide' : ''} `}>
 				Describe the persona in more details, provide additional context and help anyone understand the concept of this persona…
 			</div>
 			<textarea 
 				bind:value={description} 
 				class={description != '' ? 'content' : ''}  
-				style={`${description != '' ? 'min-height: ' + descriptionHeight : ''}px;`}  
+				style={`${description != '' ? 'min-height: ' + descPlaceholderHeight : ''}px;`}  
 			/>
 		</div>
 	</label>
@@ -74,38 +81,49 @@
 		right: 0;
 		background-color: rgba(var(--color-body-bg-rgb), 0.93);
 		backdrop-filter: blur(3px);
-		transition: box-shadow 0.2s;
 		z-index: 100;
-		// position: relative;
 		padding: var(--spacing-24);
-		display: flex;
-		align-items: center;
-    	justify-content: center;
-
-		&.scrolled {
-			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
-			transition: box-shadow 0.2s;
-
-				@media (min-width: 688px) {
-					padding-block: var(--spacing-24);
-					transition: padding 0.2s;
-				}
-		}
-
+		transition: padding 0.2s, box-shadow 0.2s;
+		
 		@media (prefers-color-scheme: dark) {
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
 		}
 
 		@media (min-width: 688px){
 			padding: var(--spacing-48);
+			transition: padding 0.2s;
+		}
+
+		.header-content {
+			position: relative;
+			max-width: 450px;
+			margin-inline: auto;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: max-width 0.2s;
+
+			@media (min-width: 688px) {
+				max-width: 996px;
+				transition: max-width 0.2s;
+			}
+	
+			@media (min-width: 1242px) {
+				max-width: 1494px;
+			}
+	
+			@media (min-width: 1640px) {
+				max-width: 1992px;
+			}
+	
+			@media (min-width: 2038px) {
+				max-width: 2490px;
+			}
 		}
 		
 		.btn-undo {
 			position: absolute;
-			inset: var(--spacing-24) auto 0 var(--spacing-24);
-			@media (min-width: 688px){
-				inset: var(--spacing-48) auto 0 var(--spacing-48);
-			}
+			inset: 0 0 auto 0;
 		}
 		
 		h1 {
@@ -115,6 +133,16 @@
 			font-style: normal;
 			text-align: center;
 			line-height: 44px;
+		}
+
+		&.scrolled {
+			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
+			transition: box-shadow 0.2s;
+
+			@media (min-width: 688px) {
+				padding-block: var(--spacing-24);
+				transition: padding 0.2s;
+			}
 		}
 	}
 	
@@ -128,7 +156,7 @@
 		gap: var(--spacing-48);
 		max-width: 498px;
 		margin-inline: auto;
-		padding: var(--spacing-24);
+		padding: var(--spacing-24);		
 
 		label {
 			display: flex;
@@ -164,6 +192,7 @@
 						background-color: #ffffff;
 						transition: background-color 0.2s;
 					}
+					
 					&.content {
 						position: static;
 						width: 100%;
