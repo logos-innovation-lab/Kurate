@@ -10,26 +10,39 @@
 	export let picture: string | undefined
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class={`root ${cls}`} on:click>
-	<div class="picture"><img src={picture} alt="persona" /></div>
-	<div class="details">
-		<div class="header">{name}</div>
-		<div class="description">{description}</div>
-		<div class="post-count">
-			<div>
-				<UserMultiple size={18} />
-				{postsCount}
-			</div>
-			<div>
-				<Forum size={18} />
-				{postsCount}
+<div class="persona-card-wrapper">
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<div class={`root ${cls}`} on:click>
+		<div class="picture"><img src={picture} alt="persona" /></div>
+		<div class="details">
+			<div class="header">{name}</div>
+			<div class="description">{description}</div>
+			<div class="post-count">
+				<div>
+					<UserMultiple size={18} />
+					{postsCount}
+				</div>
+				<div>
+					<Forum size={18} />
+					{postsCount}
+				</div>
 			</div>
 		</div>
 	</div>
+	<hr/>
 </div>
 
 <style lang="scss">
+
+	.persona-card-wrapper {
+		width: 100%;
+
+		hr {
+			@media (min-width: 688px) {
+				display: none;
+			}
+		}
+	}
 	.root {
 		display: flex;
 		flex-direction: row;
@@ -39,16 +52,15 @@
 		gap: var(--spacing-12);
 		padding: var(--spacing-24);
 		cursor: pointer;
+		min-width: 320px;
+		max-width: 498px;
+		margin-inline: auto;
 
-		&:not(:last-child) {
-			border-bottom: 1px solid var(--grey-200);
+		
+		@media (min-width: 1242px) {
+			min-width: 350px;
 		}
 
-		@media (min-width: 739px) {
-			&:not(:last-child) {
-				border-bottom: none;
-			}
-		}
 		&:hover {
 			background-color: var(--grey-150);
 		}

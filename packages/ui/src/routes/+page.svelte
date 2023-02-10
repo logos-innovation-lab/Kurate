@@ -45,6 +45,7 @@
 			{#if $personas.draft.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
 					<div class="subtitle">Draft personas</div>
+					<hr/>
 					<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
 					<div class="grid">
 						{#each $personas.draft as draftPersona, index}
@@ -63,6 +64,7 @@
 			{#if $personas.favorite.size !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
 					<div class="subtitle">Favorites</div>
+					 <hr/>
 					<div class="grid">
 						{#each [...$personas.favorite] as [name, data]}
 							<Persona
@@ -77,19 +79,21 @@
 				</div>
 			{/if}
 
-			<div class="personas-wrap">
-				<div class="personas-filter">
-					<div class="personas-title">All personas</div>
-					<div class="btns">
-						{#if $profile.signer !== undefined}
-							<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
-						{/if}
-						<Button icon={SettingsView} />
+			<div class={`personas-wrap ${$profile.signer === undefined ? 'border-top' : ''}`}>
+				<div>
+					<div class="personas-filter">
+						<div class="personas-title">All personas</div>
+						<div class="btns">
+							{#if $profile.signer !== undefined}
+								<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
+							{/if}
+							<Button icon={SettingsView} />
+						</div>
 					</div>
-				</div>
-				<div class="search-field">
-					<Search />
-					<input bind:value={filterText} placeholder="Search..." />
+					<div class="search-field">
+						<Search />
+						<input bind:value={filterText} placeholder="Search..." />
+					</div>
 				</div>
 			</div>
 
@@ -121,35 +125,53 @@
 			border-bottom-color: var(--grey-500);
 		}
 
-		@media (min-width: 739px) {
+		@media (min-width: 688px) {
 			padding: 0 var(--spacing-48) var(--spacing-48);
 		}
 	}
 
 	.section-wrapper {
-		border-bottom: 1px solid var(--grey-200);
-
-		@media (prefers-color-scheme: dark) {
-			border-bottom-color: var(--grey-500);
-		}
-
-		@media (min-width: 739px) {
+		
+		@media (min-width: 688px) {
 			padding-block: var(--spacing-24);
+			border-bottom: 1px solid var(--grey-200);
+
+			@media (prefers-color-scheme: dark) {
+				border-bottom-color: var(--grey-500);
+			}
 		}
 	}
 	.subtitle {
 		padding: var(--spacing-24);
 		font-size: var(--font-size-lg);
 		font-weight: var(--font-weight-sb);
-		border-bottom: 1px solid var(--grey-200);
 
-		@media (prefers-color-scheme: dark) {
-			border-bottom-color: var(--grey-500);
+		transition: padding 0.2s;
+		max-width: 498px;
+		margin-inline: auto;
+		
+		@media (min-width: 688px) {
+			max-width: 996px;
+			transition: padding 0.2s;
+			padding-inline: var(--spacing-48);
 		}
 
-		@media (min-width: 739px) {
-			padding-inline: var(--spacing-48);
-			border-bottom: none;
+		@media (min-width: 1242px) {
+			max-width: 1494px;
+		}
+
+		@media (min-width: 1640px) {
+			max-width: 1992px;
+		}
+
+		@media (min-width: 2038px) {
+			max-width: 2490px;
+		}		
+	}
+
+	hr {
+		@media (min-width: 688px) {
+			display: none;
 		}
 	}
 
@@ -214,18 +236,46 @@
 		}
 	}
 
-	.personas-wrap {
-		border-top: 1px solid var(--grey-200);
+	.personas-wrap {		
 		border-bottom: 1px solid var(--grey-200);
-		padding: var(--spacing-24);
+		padding: var(--spacing-24);		
 		transition: padding 0.2s;
-		@media (min-width: 739px) {
-			padding: var(--spacing-48);
-			transition: padding 0.2s;
+
+		&.border-top {
+			border-top: 1px solid var(--grey-200);
+		}
+		
+		> div {
+			max-width: 450px;		
+			margin-inline: auto;
+
+			@media (min-width: 688px) {
+				max-width: 900px;
+				transition: padding 0.2s;
+			}
+
+			@media (min-width: 1242px) {
+				max-width: 1398px;
+			}
+
+			@media (min-width: 1640px) {
+				max-width: 1896px;
+			}
+
+			@media (min-width: 2038px) {
+				max-width: 2394px;
+			}
+		}
+
+		@media (min-width: 688px) {
+			padding: var(--spacing-48) var(--spacing-48) var(--spacing-24);
+			border-bottom: none;
 		}
 
 		@media (prefers-color-scheme: dark) {
-			border-top-color: var(--grey-500);
+			&.border-top {
+				border-top-color: var(--grey-500);
+			}
 			border-bottom-color: var(--grey-500);
 		}
 
@@ -235,15 +285,14 @@
 			align-items: center;
 			flex-direction: row;
 			flex-wrap: nowrap;
-			padding-bottom: var(--spacing-12);
+			margin-bottom: var(--spacing-12);
 
 			.personas-title {
-				padding-bottom: var(--spacing-12);
 				border-bottom: none;
 			}
 
-			@media (min-width: 739px) {
-				padding-bottom: var(--spacing-24);
+			@media (min-width: 688px) {
+				margin-bottom: var(--spacing-24);
 			}
 
 			.btns {
@@ -264,7 +313,7 @@
 			flex-direction: row;
 			gap: var(--spacing-12);
 
-			@media (min-width: 739px) {
+			@media (min-width: 688px) {
 			}
 
 			input {
@@ -279,42 +328,37 @@
 		display: grid;
 		grid-auto-columns: auto;
 		grid-template-columns: 100%;
-		grid-auto-rows: auto;
-
-		@media (min-width: 739px) {
+		grid-auto-rows: auto;		
+    	margin-inline: auto;
+		
+		> div {			
+			padding: var(--spacing-24);
+			transition: padding 0.2s;
+		}
+		
+		// decided to use max-width here to make it easier to match the page headers' width
+		@media (min-width: 688px) {
 			padding: 0 var(--spacing-24);
+			transition: padding 0.2s;
+			max-width: 996px;
 			grid-template-columns: repeat(auto-fit, minmax(min(100%/2, max(320px, 100%/2)), 1fr));
 		}
 
-		@media (min-width: 1060px) {
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/3, max(320px, 100%/3)), 1fr));
+		@media (min-width: 1242px) {
+			max-width: 1494px;
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/3, max(350px, 100%/3)), 1fr));
 		}
 
-		@media (min-width: 1381px) {
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/4, max(320px, 100%/4)), 1fr));
+		@media (min-width: 1640px) {
+			max-width: 1992px;
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/4, max(350px, 100%/4)), 1fr));
 		}
 
-		@media (min-width: 1702px) {
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/5, max(320px, 100%/5)), 1fr));
+		@media (min-width: 2038px) {
+			max-width: 2490px;
+			grid-template-columns: repeat(auto-fit, minmax(min(100%/5, max(350px, 100%/5)), 1fr));
 		}
 
-		@media (min-width: 2023px) {
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/6, max(320px, 100%/6)), 1fr));
-		}
-
-		@media (min-width: 2560px) {
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/7, max(320px, 100%/7)), 1fr));
-		}
-
-		@media (min-width: 3009px) {
-			grid-template-columns: repeat(auto-fit, minmax(min(100%/9, max(320px, 100%/9)), 1fr));
-		}
 	}
-
-	.grid {
-		display: grid;
-		grid-auto-columns: auto;
-		grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-		grid-auto-rows: auto;
-	}
+		
 </style>
