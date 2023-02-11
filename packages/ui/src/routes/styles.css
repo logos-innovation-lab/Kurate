@@ -85,6 +85,12 @@ video {
 	border-style: none;
 }
 
+hr {
+	border: none;
+	height: 1px;
+	background-color: var(--grey-200);
+}
+
 @media (prefers-color-scheme: dark) {
 	:root {
 		--success-highlight: #052b05;
@@ -95,5 +101,9 @@ video {
 
 		background-color: var(--color-body-bg);
 		color: var(--color-body-text);
+	}
+
+	hr {
+		background-color: var(--grey-500);
 	}
 }

@@ -61,19 +61,35 @@
 		background-color: rgba(var(--color-body-bg-rgb), 0.93);
 		backdrop-filter: blur(3px);
 		transition: box-shadow 0.2s;
+		z-index: 100;
 
 		.header-content {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
 			padding: var(--spacing-24);
-			// border-bottom: 1px solid var(--grey-200);
 			transition: padding 0.2s;
-
-			@media (min-width: 739px) {
+			max-width: 498px;
+			margin-inline: auto;
+			
+			@media (min-width: 688px) {
 				padding: var(--spacing-48);
+				max-width: 996px;
 				transition: padding 0.2s;
 			}
+	
+			@media (min-width: 1242px) {
+				max-width: 1494px;
+			}
+	
+			@media (min-width: 1640px) {
+				max-width: 1992px;
+			}
+	
+			@media (min-width: 2038px) {
+				max-width: 2490px;
+			}
+
 		}
 
 		.header-title {
@@ -90,7 +106,7 @@
 			transition: box-shadow 0.2s;
 
 			.header-content {
-				@media (min-width: 739px) {
+				@media (min-width: 688px) {
 					padding-block: var(--spacing-24);
 					transition: padding 0.2s;
 				}
