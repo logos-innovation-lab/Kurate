@@ -5,6 +5,8 @@
 	import Button from '$lib/components/button.svelte'
 	import Textarea from '$lib/components/textarea.svelte'
 	import { personas } from '$lib/stores/persona'
+	import { goto } from '$app/navigation'
+	import { ROUTES } from '$lib/routes'
 
 	let name = ''
 	let pitch = ''
@@ -39,15 +41,20 @@
 	<div class="btns">
 		<Button label="Cancel" icon={Close} on:click={() => history.back()} />
 
-		<!-- NEEDS CONDITION TO DISABLE/ENABLE -->
-
 		<Button
 			label="Proceed"
 			icon={ArrowRight}
 			variant="primary"
-			disabled
+			disabled={!name || !pitch || !description}
 			on:click={() => {
-				$personas.draft
+				$personas.draft.push({
+					identity: undefined,
+					name,
+					pitch,
+					description,
+					postsCount: 0,
+				})
+				goto(ROUTES.PERSONA($personas.draft.length, true))
 			}}
 		/>
 	</div>

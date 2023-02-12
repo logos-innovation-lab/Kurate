@@ -3,8 +3,11 @@
 	import Post from '$lib/components/post.svelte'
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
+	import Undo from '$lib/components/icons/undo.svelte'
+	import Star from '$lib/components/icons/star.svelte'
 
 	import { posts } from '$lib/stores/post'
+	import { personas } from '$lib/stores/persona'
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
 	import { browser } from '$app/environment'
@@ -26,22 +29,34 @@
 	}
 
 	const isDraft = $page.url.searchParams.has('draft')
+
+	const persona = $personas.all.get($page.params.id)
 </script>
 
 <svelte:window bind:innerWidth={windowWidth} />
 
-<div>
-	<HeaderTop address={$profile.address} />
-
-	<Button label="GO BACK" on:click={() => goto(ROUTES.HOME)} />
-
+{#if persona === undefined}
+	<div>There is no persona with group ID {$page.params.id}</div>
+{:else}
 	<div class="wrapper">
+		<div class="top" />
+		<div class="buttons">
+			<Button icon={Undo} variant="primary" on:click={() => history.back()} />
+			<Button icon={Star} variant="primary" label="Add to favorites" />
+		</div>
+		<div class="avatar" />
+
+		<div>{persona.name}</div>
+		<div>{persona.pitch}</div>
+		<div>{persona.description}</div>
+
 		{#if $profile.signer !== undefined}
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<div class="new-post-button" on:click={() => goto(ROUTES.POST_NEW($page.params.id))}>
-				Share freely...
-				<Button variant="primary" label="Create post" icon={Edit} />
-			</div>
+			<Button
+				variant="primary"
+				label="Submit post"
+				icon={Edit}
+				on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+			/>
 		{/if}
 
 		{#if $posts.loading}
@@ -56,9 +71,32 @@
 			</Masonry>
 		{/if}
 	</div>
-</div>
+{/if}
 
 <style lang="scss">
+	.wrapper {
+	}
+	.top {
+		height: 360px;
+		width: 100vw;
+		background-color: #666666;
+		position: absolute;
+		z-index: -1;
+	}
+
+	.buttons {
+		padding: 48px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+	.avatar {
+		width: 268px;
+		height: 268px;
+		background-color: #333;
+		margin: auto;
+	}
+
 	.new-post-button {
 		font-family: var(--font-serif);
 		padding: var(--spacing-24) var(--spacing-12);
@@ -85,14 +123,6 @@
 			border-left-color: var(--grey-500);
 			border-bottom-color: var(--grey-500);
 			outline-color: var(--grey-500);
-		}
-	}
-	.wrapper {
-		margin-left: -1px;
-
-		@media (min-width: 739px) {
-			padding: 0 var(--spacing-48);
-			margin: 0 auto 0;
 		}
 	}
 </style>
