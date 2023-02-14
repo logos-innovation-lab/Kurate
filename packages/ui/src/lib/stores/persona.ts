@@ -26,6 +26,7 @@ type PersonaStore = {
 
 export interface PersonaStoreWritable extends Writable<PersonaStore> {
 	addDraft: (draft: DraftPersona) => void
+	updateDraft: (index: number, draft: DraftPersona) => void
 }
 
 function createPersonaStore(): PersonaStoreWritable {
@@ -107,6 +108,17 @@ function createPersonaStore(): PersonaStoreWritable {
 				}
 
 				return { ...state, draft: newDraft }
+			})
+		},
+		updateDraft: (index: number, draftPersona: DraftPersona) => {
+			store.update(({ draft, ...state }) => {
+				draft[index] = draftPersona
+
+				if (browser && localStorage) {
+					localStorage.setItem('drafts', JSON.stringify(draft))
+				}
+
+				return { ...state, draft }
 			})
 		},
 	}

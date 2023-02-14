@@ -35,7 +35,7 @@
 		try {
 			personaPicture = picture
 				? await clipAndResize(picture, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
-				: undefined
+				: personaPicture ?? persona.picture
 		} catch (error) {
 			console.error(error)
 		}
@@ -45,7 +45,7 @@
 		try {
 			personaCover = cover
 				? await clipAndResize(cover, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
-				: undefined
+				: personaCover ?? persona.cover
 		} catch (error) {
 			console.error(error)
 		}
@@ -59,10 +59,21 @@
 	<div>There is no persona with group ID {$page.params.id}</div>
 {:else}
 	<div class="wrapper">
-		<div class="top" />
+		<div class="top">
+			{#if personaCover}
+				<div class="img">
+					<img src={personaCover} alt="profile" />
+				</div>
+			{/if}
+		</div>
 		<div class="buttons">
 			<Button icon={Undo} variant="primary" on:click={() => goto(ROUTES.HOME)} />
-			<InputFile icon={Image} variant="primary" label="Add cover" bind:files={cover} />
+			<InputFile
+				icon={personaCover ? Renew : Image}
+				variant="primary"
+				label={personaCover ? 'Change cover' : 'Add cover'}
+				bind:files={cover}
+			/>
 		</div>
 		<div class="avatar">
 			{#if personaPicture}
@@ -84,7 +95,20 @@
 		<div>{persona.description}</div>
 
 		<Button variant="secondary" label="Edit text" icon={Edit} />
-		<Button variant="primary" label="Save changes" icon={Checkmark} />
+		<Button
+			variant="primary"
+			label="Save changes"
+			icon={Checkmark}
+			disabled={!personaCover || !personaPicture}
+			on:click={() => {
+				personas.updateDraft(Number($page.params.id), {
+					...persona,
+					picture: personaPicture,
+					cover: personaCover,
+				})
+				goto(ROUTES.HOME)
+			}}
+		/>
 
 		<p>Please provide at least a cover image.</p>
 		<a href="/" target="_blank">Learn more →</a>
@@ -98,6 +122,21 @@
 		background-color: #666666;
 		position: absolute;
 		z-index: -1;
+
+		.img {
+			position: absolute;
+			width: inherit;
+			height: inherit;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			.img {
+				max-height: 360px;
+				max-width: 100vw;
+				object-fit: fit;
+			}
+		}
 	}
 
 	.buttons {
