@@ -11,7 +11,7 @@
 	import { page } from '$app/stores'
 	import { ROUTES } from '$lib/routes'
 	import InputFile from '$lib/components/input-file.svelte'
-	import { resize } from '$lib/utils/image'
+	import { clipAndResize } from '$lib/utils/image'
 
 	const MAX_DIMENSIONS = {
 		PICTURE: {
@@ -34,7 +34,7 @@
 	async function resizePersonaPicture(picture?: File) {
 		try {
 			personaPicture = picture
-				? await resize(picture, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
+				? await clipAndResize(picture, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
 				: undefined
 		} catch (error) {
 			console.error(error)
@@ -44,7 +44,7 @@
 	async function resizePersonaCover(cover?: File) {
 		try {
 			personaCover = cover
-				? await resize(cover, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
+				? await clipAndResize(cover, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
 				: undefined
 		} catch (error) {
 			console.error(error)
@@ -66,7 +66,9 @@
 		</div>
 		<div class="avatar">
 			{#if personaPicture}
-				<img src={personaPicture} alt="profile" />
+				<div class="img">
+					<img src={personaPicture} alt="profile" />
+				</div>
 				<div class="change">
 					<InputFile icon={Renew} variant="primary" bind:files={picture} />
 				</div>
@@ -110,11 +112,18 @@
 		background-color: #c9c9c9;
 		margin: auto;
 
-		img {
+		.img {
 			position: absolute;
 			width: inherit;
 			height: inherit;
-			object-fit: cover;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			.img {
+				max-width: 268px;
+				max-height: 268px;
+				object-fit: fit;
+			}
 		}
 		.empty {
 			width: inherit;
