@@ -3,7 +3,7 @@
 
 	let cls: string | undefined = undefined
 	export { cls as class }
-	export let value: string | undefined = undefined
+	export let files: FileList | undefined = undefined
 	export let disabled: boolean | undefined = undefined
 	export let label: string | undefined = undefined
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
@@ -20,7 +20,7 @@
 		{label}
 	{/if}
 	<!-- svelte-ignore a11y-missing-attribute -->
-	<input type="file" {disabled} bind:value hidden />
+	<input type="file" {disabled} bind:files hidden />
 </label>
 
 <style lang="scss">

@@ -11,12 +11,48 @@
 	import { page } from '$app/stores'
 	import { ROUTES } from '$lib/routes'
 	import InputFile from '$lib/components/input-file.svelte'
+	import { resize } from '$lib/utils/image'
+
+	const MAX_DIMENSIONS = {
+		PICTURE: {
+			width: 268,
+			height: 268,
+		},
+		COVER: {
+			width: 1024,
+			height: 360,
+		},
+	}
 
 	let persona = $personas.draft[Number($page.params.id)]
-	let cover = ''
-	let picture = ''
+	let cover: FileList | undefined = undefined
+	let picture: FileList | undefined = undefined
 
-	$: console.log({ cover, picture })
+	let personaPicture: string | undefined = undefined
+	let personaCover: string | undefined = undefined
+
+	async function resizePersonaPicture(picture?: File) {
+		try {
+			personaPicture = picture
+				? await resize(picture, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
+				: undefined
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	async function resizePersonaCover(cover?: File) {
+		try {
+			personaCover = cover
+				? await resize(cover, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
+				: undefined
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	$: resizePersonaPicture(picture && picture[0])
+	$: resizePersonaCover(cover && cover[0])
 </script>
 
 {#if persona === undefined}
@@ -26,17 +62,17 @@
 		<div class="top" />
 		<div class="buttons">
 			<Button icon={Undo} variant="primary" on:click={() => goto(ROUTES.HOME)} />
-			<InputFile icon={Image} variant="primary" label="Add cover" bind:value={cover} />
+			<InputFile icon={Image} variant="primary" label="Add cover" bind:files={cover} />
 		</div>
 		<div class="avatar">
-			{#if persona.picture}
-				<img src={persona.picture} alt="profile" />
+			{#if personaPicture}
+				<img src={personaPicture} alt="profile" />
 				<div class="change">
-					<InputFile icon={Renew} variant="primary" bind:value={picture} />
+					<InputFile icon={Renew} variant="primary" bind:files={picture} />
 				</div>
 			{:else}
 				<div class="empty">
-					<InputFile icon={Image} variant="primary" label="Add picture" bind:value={picture} />
+					<InputFile icon={Image} variant="primary" label="Add picture" bind:files={picture} />
 				</div>
 			{/if}
 		</div>
@@ -78,7 +114,7 @@
 			position: absolute;
 			width: inherit;
 			height: inherit;
-			object-fit: contain;
+			object-fit: cover;
 		}
 		.empty {
 			width: inherit;

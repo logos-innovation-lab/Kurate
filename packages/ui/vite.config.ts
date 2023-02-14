@@ -15,6 +15,9 @@ const config: UserConfig = {
 			enforce: 'post',
 		},
 	],
+	test: {
+		include: ['tests/unit/**/*.{test,spec}.{js,ts}'],
+	},
 	resolve: {
 		alias: stdLibBrowser,
 	},

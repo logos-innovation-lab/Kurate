@@ -6,7 +6,9 @@
 		"dev": "npm run protos && vite dev",
 		"build": "npm run protos && vite build",
 		"preview": "npm run protos && vite preview",
-		"test": "npm run protos && playwright test",
+		"test": "npm run test:unit && npm run test:playwright",
+		"test:unit": "npm run protos && vitest",
+		"test:playwright": "npm run protos && playwright test",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
@@ -47,7 +49,8 @@
 		"svelte-preprocess": "^5.0.1",
 		"tslib": "^2.5.0",
 		"typescript": "^4.9.5",
-		"vite": "^4.1.1"
+		"vite": "^4.1.1",
+		"vitest": "^0.28.5"
 	},
 	"type": "module"
 }
