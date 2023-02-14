@@ -47,14 +47,15 @@
 			variant="primary"
 			disabled={!name || !pitch || !description}
 			on:click={() => {
-				$personas.draft.push({
+				const index = $personas.draft.length
+				personas.addDraft({
 					identity: undefined,
 					name,
 					pitch,
 					description,
-					postsCount: 0,
+					posts: [],
 				})
-				goto(ROUTES.PERSONA($personas.draft.length, true))
+				goto(ROUTES.PERSONA_DRAFT(index))
 			}}
 		/>
 	</div>

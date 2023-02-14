@@ -1,24 +1,40 @@
 import { writable, type Writable } from 'svelte/store'
 import type { Identity } from '@semaphore-protocol/identity'
+import type { Post } from './post'
+import { browser } from '$app/environment'
 
 interface Persona {
 	identity?: Identity
 	picture?: string
+	cover?: string
 	name: string
 	pitch: string
 	description: string
 	postsCount: number
 }
 
-export type PersonaStore = Writable<{
-	draft: Persona[]
+interface DraftPersona extends Omit<Persona, 'postsCount'> {
+	posts: Post[]
+}
+
+type PersonaStore = {
+	draft: DraftPersona[]
 	favorite: Map<string, Persona>
 	all: Map<string, Persona>
 	loading: boolean
-}>
+}
 
-function createPersonaStore(): PersonaStore {
-	const store = writable({ all: new Map(), draft: [], favorite: new Map(), loading: true })
+export interface PersonaStoreWritable extends Writable<PersonaStore> {
+	addDraft: (draft: DraftPersona) => void
+}
+
+function createPersonaStore(): PersonaStoreWritable {
+	const store = writable<PersonaStore>({
+		all: new Map(),
+		draft: browser && localStorage ? JSON.parse(localStorage.getItem('drafts') ?? '[]') : [],
+		favorite: new Map(),
+		loading: true,
+	})
 
 	setTimeout(() => {
 		const chitChat = {
@@ -77,10 +93,23 @@ function createPersonaStore(): PersonaStore {
 		favorite.set('3', cats)
 		favorite.set('4', controversy)
 
-		store.set({ draft: [], all, favorite, loading: false })
+		store.update((state) => ({ ...state, all, favorite, loading: false }))
 	}, 1000)
 
-	return store
+	return {
+		...store,
+		addDraft: (draftPersona: DraftPersona) => {
+			store.update(({ draft, ...state }) => {
+				const newDraft = [draftPersona, ...draft]
+
+				if (browser && localStorage) {
+					localStorage.setItem('drafts', JSON.stringify(newDraft))
+				}
+
+				return { ...state, draft: newDraft }
+			})
+		},
+	}
 }
 
 export const personas = createPersonaStore()

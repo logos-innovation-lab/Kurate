@@ -43,7 +43,7 @@
 		{:else if $personas.loading}
 			<p>Loading personas...</p>
 		{:else}
-			{#if $personas.draft.length !== 0 && $profile.signer !== undefined}
+			{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
 					<div class="subtitle">Draft personas</div>
 					<hr />
@@ -53,8 +53,8 @@
 							<Persona
 								name={draftPersona.name}
 								description={draftPersona.description}
-								postsCount={draftPersona.postsCount}
-								on:click={() => goto(ROUTES.PERSONA(index.toFixed()))}
+								postsCount={draftPersona.posts.length}
+								on:click={() => goto(ROUTES.PERSONA_DRAFT(index.toFixed()))}
 								picture={draftPersona.picture}
 							/>
 						{/each}

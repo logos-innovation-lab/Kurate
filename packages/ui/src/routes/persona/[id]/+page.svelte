@@ -1,5 +1,4 @@
 <script lang="ts">
-	import HeaderTop from '$lib/components/header-top.svelte'
 	import Post from '$lib/components/post.svelte'
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
@@ -27,8 +26,6 @@
 		if (windowInnerWidth < 3009) return 'minmax(min(100%/7, max(320px, 100%/7)), 1fr)'
 		return 'minmax(323px, 1fr)'
 	}
-
-	const isDraft = $page.url.searchParams.has('draft')
 
 	const persona = $personas.all.get($page.params.id)
 </script>
@@ -74,8 +71,6 @@
 {/if}
 
 <style lang="scss">
-	.wrapper {
-	}
 	.top {
 		height: 360px;
 		width: 100vw;
@@ -95,34 +90,5 @@
 		height: 268px;
 		background-color: #333;
 		margin: auto;
-	}
-
-	.new-post-button {
-		font-family: var(--font-serif);
-		padding: var(--spacing-24) var(--spacing-12);
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		gap: var(--spacing-12);
-		align-items: center;
-		border-top: 1px solid var(--grey-200);
-		border-bottom: 1px solid var(--grey-200);
-		cursor: pointer;
-
-		@media (min-width: 640px) {
-			border-bottom: none;
-		}
-		@media (min-width: 1280px) {
-			border: none;
-			outline: 1px solid var(--grey-200);
-			outline-offset: -0.5px;
-		}
-
-		@media (prefers-color-scheme: dark) {
-			border-top-color: var(--grey-500);
-			border-left-color: var(--grey-500);
-			border-bottom-color: var(--grey-500);
-			outline-color: var(--grey-500);
-		}
 	}
 </style>
