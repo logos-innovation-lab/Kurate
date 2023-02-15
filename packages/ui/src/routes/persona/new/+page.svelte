@@ -12,6 +12,7 @@
 	let y: number
 	let descPlaceholderHeight: number
 	let pitchPlaceholderHeight: number
+	let namePlaceholderHeight: number
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -28,7 +29,16 @@
 <form>
 	<label>
 		Persona name
-		<input type="text" bind:value={name} placeholder="Enter a short memorable name…" />
+		<div class="area-placeholder">
+			<div bind:clientHeight={namePlaceholderHeight} class="{`placeholder-text ${name != '' ? 'hide' : ''} `}">
+				Enter a short memorable name…
+			</div>
+			<input type="text" 
+				bind:value={name}  
+				class={name != '' ? 'content' : ''} 
+				style={`${name != '' ? 'min-height: ' + namePlaceholderHeight : ''}px;`}	
+			/>
+		</div>
 	</label>
 	
 	<label>
@@ -61,6 +71,9 @@
 	
 	<div class="btns">
 		<Button label="Cancel" icon={Close} on:click={() => history.back()} />
+
+		<!-- NEEDS CONDITION TO DISABLE/ENABLE -->
+
 		<Button
 			label="Proceed"
 			icon={ArrowRight}
@@ -179,7 +192,8 @@
 						display: none;
 					}
 				}
-				textarea {
+				textarea, 
+				input {
 					position: absolute;
 					inset: 0;					
 					border: none;
