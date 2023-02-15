@@ -13,7 +13,7 @@ interface Persona {
 	postsCount: number
 }
 
-interface DraftPersona extends Partial<Omit<Persona, 'postsCount'>> {
+export interface DraftPersona extends Partial<Omit<Persona, 'postsCount'>> {
 	posts: Post[]
 }
 
