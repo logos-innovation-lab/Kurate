@@ -29,11 +29,10 @@
 			</div>
 		</div>
 	</div>
-	<hr/>
+	<hr />
 </div>
 
 <style lang="scss">
-
 	.persona-card-wrapper {
 		width: 100%;
 
@@ -55,7 +54,6 @@
 		max-width: 498px;
 		margin-inline: auto;
 
-		
 		@media (min-width: 1242px) {
 			min-width: 350px;
 		}

@@ -46,7 +46,7 @@
 			{#if $personas.draft.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
 					<div class="subtitle">Draft personas</div>
-					<hr/>
+					<hr />
 					<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
 					<Grid>
 						{#each $personas.draft as draftPersona, index}
@@ -65,8 +65,8 @@
 			{#if $personas.favorite.size !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
 					<div class="subtitle">Favorites</div>
-					 <hr/>
-					 <Grid>
+					<hr />
+					<Grid>
 						{#each [...$personas.favorite] as [name, data]}
 							<Persona
 								{name}
@@ -76,7 +76,7 @@
 								picture={data.picture}
 							/>
 						{/each}
-					 </Grid>
+					</Grid>
 				</div>
 			{/if}
 
@@ -86,7 +86,11 @@
 						<div class="personas-title">All personas</div>
 						<div class="btns">
 							{#if $profile.signer !== undefined}
-								<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
+								<Button
+									icon={Add}
+									label="Create persona"
+									on:click={() => goto(ROUTES.PERSONA_NEW)}
+								/>
 							{/if}
 							<Button icon={SettingsView} />
 						</div>
@@ -132,7 +136,6 @@
 	}
 
 	.section-wrapper {
-		
 		@media (min-width: 688px) {
 			padding-block: var(--spacing-24);
 			border-bottom: 1px solid var(--grey-200);
@@ -150,7 +153,7 @@
 		transition: padding 0.2s;
 		max-width: 498px;
 		margin-inline: auto;
-		
+
 		@media (min-width: 688px) {
 			max-width: 996px;
 			transition: padding 0.2s;
@@ -167,7 +170,7 @@
 
 		@media (min-width: 2038px) {
 			max-width: 2490px;
-		}		
+		}
 	}
 
 	hr {
@@ -237,17 +240,17 @@
 		}
 	}
 
-	.personas-wrap {		
+	.personas-wrap {
 		border-bottom: 1px solid var(--grey-200);
-		padding: var(--spacing-24);		
+		padding: var(--spacing-24);
 		transition: padding 0.2s;
 
 		&.border-top {
 			border-top: 1px solid var(--grey-200);
 		}
-		
+
 		> div {
-			max-width: 450px;		
+			max-width: 450px;
 			margin-inline: auto;
 
 			@media (min-width: 688px) {
@@ -324,7 +327,4 @@
 			}
 		}
 	}
-
-	
-		
 </style>
