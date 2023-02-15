@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install npm deps
+        run: npm ci
+
+      - name: Build
+        run: cd packages/ui && npm run build
+
+      - uses: aquiladev/ipfs-action@v0.3.1
+        with:
+          path: ./packages/ui/build
+          timeout: 300000
+          service: ipfs
+          pin: true
+          host: ipfs-api.apyos.dev
+          protocol: https
+          port: 443
+          headers: '{ "Authorization": "${{ secrets.IPFS_AUTHORIZATION }}" }'
+          key: kurate-ui
