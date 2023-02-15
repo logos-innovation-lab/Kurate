@@ -17,6 +17,12 @@
 
 	let filterText = ''
 	let showChat = false
+
+	function createDraft() {
+		const index = $personas.draft.length
+		personas.addDraft({ posts: [] })
+		goto(ROUTES.PERSONA_DRAFT(index))
+	}
 </script>
 
 <div>
@@ -47,14 +53,14 @@
 				<div class="section-wrapper">
 					<div class="subtitle">Draft personas</div>
 					<hr />
-					<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
+					<Button icon={Add} label="Create persona" on:click={createDraft} />
 					<Grid>
 						{#each $personas.draft as draftPersona, index}
 							<Persona
 								name={draftPersona.name}
 								description={draftPersona.description}
 								postsCount={draftPersona.posts.length}
-								on:click={() => goto(ROUTES.PERSONA_DRAFT(index.toFixed()))}
+								on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
 								picture={draftPersona.picture}
 							/>
 						{/each}
@@ -86,11 +92,7 @@
 						<div class="personas-title">All personas</div>
 						<div class="btns">
 							{#if $profile.signer !== undefined}
-								<Button
-									icon={Add}
-									label="Create persona"
-									on:click={() => goto(ROUTES.PERSONA_NEW)}
-								/>
+								<Button icon={Add} label="Create persona" on:click={createDraft} />
 							{/if}
 							<Button icon={SettingsView} />
 						</div>

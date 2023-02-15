@@ -13,7 +13,7 @@ interface Persona {
 	postsCount: number
 }
 
-interface DraftPersona extends Omit<Persona, 'postsCount'> {
+interface DraftPersona extends Partial<Omit<Persona, 'postsCount'>> {
 	posts: Post[]
 }
 
@@ -101,7 +101,7 @@ function createPersonaStore(): PersonaStoreWritable {
 		...store,
 		addDraft: (draftPersona: DraftPersona) => {
 			store.update(({ draft, ...state }) => {
-				const newDraft = [draftPersona, ...draft]
+				const newDraft = [...draft, draftPersona]
 
 				if (browser && localStorage) {
 					localStorage.setItem('drafts', JSON.stringify(newDraft))
