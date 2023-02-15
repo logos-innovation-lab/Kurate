@@ -19,7 +19,11 @@ contract GlobalAnonymousFeed {
     }
 
     function createGroup() external {
-        uint256 id = uint256(keccak256(abi.encodePacked(block.difficulty)));
+        // The msg.sender is there to prevent longer loops if
+        // multiple groups are created in the same block.
+        uint256 id = uint256(
+            keccak256(abi.encodePacked(msg.sender, block.difficulty))
+        );
         while (true) {
             try semaphore.createGroup(id, GROUP_SIZE, address(this)) {
                 break;
