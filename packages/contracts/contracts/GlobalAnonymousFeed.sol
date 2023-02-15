@@ -18,12 +18,10 @@ contract GlobalAnonymousFeed {
         semaphore = ISemaphore(semaphoreAddress);
     }
 
-    function createGroup() external {
+    function createGroup() external returns (uint256 id) {
         // The msg.sender is there to prevent longer loops if
         // multiple groups are created in the same block.
-        uint256 id = uint256(
-            keccak256(abi.encodePacked(msg.sender, block.difficulty))
-        );
+        id = uint256(keccak256(abi.encodePacked(msg.sender, block.difficulty)));
         while (true) {
             try semaphore.createGroup(id, GROUP_SIZE, address(this)) {
                 break;
