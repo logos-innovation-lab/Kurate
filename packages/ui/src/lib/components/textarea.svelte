@@ -48,6 +48,7 @@
 				position: absolute;
 				inset: 0;
 				border: none;
+				resize: none;
 				background-color: transparent;
 				transition: background-color 0.2s;
 				font-size: var(--font-size-lg);

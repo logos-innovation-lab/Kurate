@@ -19,9 +19,7 @@
 	let showChat = false
 
 	function createDraft() {
-		const index = $personas.draft.length
-		personas.addDraft({ posts: [] })
-		goto(ROUTES.PERSONA_DRAFT(index))
+		goto(ROUTES.PERSONA_NEW)
 	}
 </script>
 
