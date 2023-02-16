@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
+	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 
 	import Button from '$lib/components/button.svelte'
@@ -21,11 +22,11 @@
 	}
 
 	let state: 'edit_text' | 'edit_images' | 'confirm' = 'edit_text'
+	let showWarningModal = false
 	let draftPersonaIndex: number | undefined
 
 	function onCancel() {
-		// TODO: there should be a blocking modal window that asks user if they are sure to exit and lose data
-		history.back()
+		showWarningModal = true
 	}
 
 	async function savePersona() {
@@ -34,7 +35,27 @@
 	}
 </script>
 
-{#if state === 'edit_text'}
+{#if showWarningModal}
+	<InfoScreen title="Leaving persona creation" onBack={() => (showWarningModal = false)}>
+		<div>
+			<h1>Are you sure you want to leave?</h1>
+			<p>
+				You are about to leave the persona creation screenWARNING: If you do so, all changes will be
+				lost.
+			</p>
+		</div>
+
+		<svelte:fragment slot="buttons">
+			<Button
+				variant="secondary"
+				label="Cancel"
+				icon={Close}
+				on:click={() => (showWarningModal = false)}
+			/>
+			<Button icon={ArrowRight} variant="primary" label="Leave" on:click={() => history.back()} />
+		</svelte:fragment>
+	</InfoScreen>
+{:else if state === 'edit_text'}
 	<PersonaEditText
 		bind:name={persona.name}
 		bind:pitch={persona.pitch}
