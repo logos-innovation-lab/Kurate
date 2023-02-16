@@ -109,6 +109,7 @@
 	<PostNew
 		submit={(postText) => {
 			persona.posts.push({ timestamp: Date.now(), text: postText })
+			personas.updateDraft(personaIndex, persona)
 			state = 'posts'
 		}}
 		cancel={() => (state = 'posts')}
