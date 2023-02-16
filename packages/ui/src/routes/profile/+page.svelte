@@ -5,7 +5,7 @@
 	import Undo from '$lib/components/icons/undo.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import WalletInfo from '$lib/components/wallet-info.svelte'
-	import { formatAddress } from '$lib/utils'
+	import { formatAddress } from '$lib/utils/format'
 	import { connectWallet, canConnectWallet } from '$lib/services'
 	import { profile } from '$lib/stores/profile'
 

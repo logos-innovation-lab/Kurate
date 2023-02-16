@@ -1,16 +1,19 @@
 <script lang="ts">
-	import HeaderTop from '$lib/components/header-top.svelte'
 	import Post from '$lib/components/post.svelte'
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
+	import Star from '$lib/components/icons/star.svelte'
+	import StarFilled from '$lib/components/icons/star_filled.svelte'
 
 	import { posts } from '$lib/stores/post'
+	import { personas } from '$lib/stores/persona'
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
 	import { browser } from '$app/environment'
 	import { page } from '$app/stores'
 	import Masonry from '$lib/masonry.svelte'
 	import { ROUTES } from '$lib/routes'
+	import PersonaDetail from '$lib/components/persona_detail.svelte'
 
 	let windowWidth: number = browser ? window.innerWidth : 0
 
@@ -25,24 +28,39 @@
 		return 'minmax(323px, 1fr)'
 	}
 
-	const isDraft = $page.url.searchParams.has('draft')
+	const persona = $personas.all.get($page.params.id)
 </script>
 
 <svelte:window bind:innerWidth={windowWidth} />
 
-<div>
-	<HeaderTop address={$profile.address} />
+{#if persona === undefined}
+	<div>There is no persona with group ID {$page.params.id}</div>
+{:else}
+	<PersonaDetail
+		name={persona.name}
+		pitch={persona.pitch}
+		description={persona.description}
+		bind:picture={persona.picture}
+		bind:cover={persona.cover}
+	>
+		<svelte:fragment slot="button_top">
+			{#if $personas.favorite.includes($page.params.id)}
+				<Button icon={StarFilled} variant="primary" label="Remove favorite" />
+			{:else}
+				<Button icon={Star} variant="primary" label="Add to favorites" />
+			{/if}
+		</svelte:fragment>
 
-	<Button label="GO BACK" on:click={() => goto(ROUTES.HOME)} />
-
-	<div class="wrapper">
-		{#if $profile.signer !== undefined}
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<div class="new-post-button" on:click={() => goto(ROUTES.POST_NEW($page.params.id))}>
-				Share freely...
-				<Button variant="primary" label="Create post" icon={Edit} />
-			</div>
-		{/if}
+		<svelte:fragment slot="button_primary">
+			{#if $profile.signer !== undefined}
+				<Button
+					variant="primary"
+					label="Submit post"
+					icon={Edit}
+					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+				/>
+			{/if}</svelte:fragment
+		>
 
 		{#if $posts.loading}
 			<p>Loading posts...</p>
@@ -55,44 +73,8 @@
 				{/each}
 			</Masonry>
 		{/if}
-	</div>
-</div>
+	</PersonaDetail>
+{/if}
 
 <style lang="scss">
-	.new-post-button {
-		font-family: var(--font-serif);
-		padding: var(--spacing-24) var(--spacing-12);
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		gap: var(--spacing-12);
-		align-items: center;
-		border-top: 1px solid var(--grey-200);
-		border-bottom: 1px solid var(--grey-200);
-		cursor: pointer;
-
-		@media (min-width: 640px) {
-			border-bottom: none;
-		}
-		@media (min-width: 1280px) {
-			border: none;
-			outline: 1px solid var(--grey-200);
-			outline-offset: -0.5px;
-		}
-
-		@media (prefers-color-scheme: dark) {
-			border-top-color: var(--grey-500);
-			border-left-color: var(--grey-500);
-			border-bottom-color: var(--grey-500);
-			outline-color: var(--grey-500);
-		}
-	}
-	.wrapper {
-		margin-left: -1px;
-
-		@media (min-width: 739px) {
-			padding: 0 var(--spacing-48);
-			margin: 0 auto 0;
-		}
-	}
 </style>

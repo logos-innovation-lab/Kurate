@@ -1,24 +1,41 @@
 import { writable, type Writable } from 'svelte/store'
 import type { Identity } from '@semaphore-protocol/identity'
+import type { Post } from './post'
+import { browser } from '$app/environment'
 
 interface Persona {
 	identity?: Identity
 	picture?: string
+	cover?: string
 	name: string
 	pitch: string
 	description: string
 	postsCount: number
 }
 
-export type PersonaStore = Writable<{
-	draft: Persona[]
-	favorite: Map<string, Persona>
+export interface DraftPersona extends Omit<Persona, 'postsCount'> {
+	posts: Post[]
+}
+
+type PersonaStore = {
+	draft: DraftPersona[]
+	favorite: string[]
 	all: Map<string, Persona>
 	loading: boolean
-}>
+}
 
-function createPersonaStore(): PersonaStore {
-	const store = writable({ all: new Map(), draft: [], favorite: new Map(), loading: true })
+export interface PersonaStoreWritable extends Writable<PersonaStore> {
+	addDraft: (draft: DraftPersona) => Promise<number>
+	updateDraft: (index: number, draft: DraftPersona) => void
+}
+
+function createPersonaStore(): PersonaStoreWritable {
+	const store = writable<PersonaStore>({
+		all: new Map(),
+		draft: browser && localStorage ? JSON.parse(localStorage.getItem('drafts') ?? '[]') : [],
+		favorite: [],
+		loading: true,
+	})
 
 	setTimeout(() => {
 		const chitChat = {
@@ -67,20 +84,48 @@ function createPersonaStore(): PersonaStore {
 		}
 
 		const all = new Map<string, Persona>()
-		const favorite = new Map<string, Persona>()
+		const favorite: string[] = []
 		all.set('1', chitChat)
 		all.set('2', expats)
 		all.set('3', cats)
 		all.set('4', geoPolitics)
 		all.set('5', controversy)
 
-		favorite.set('3', cats)
-		favorite.set('4', controversy)
+		favorite.push('3')
+		favorite.push('4')
 
-		store.set({ draft: [], all, favorite, loading: false })
+		store.update((state) => ({ ...state, all, favorite, loading: false }))
 	}, 1000)
 
-	return store
+	return {
+		...store,
+		addDraft: (draftPersona: DraftPersona) => {
+			return new Promise((resolve) =>
+				store.update(({ draft, ...state }) => {
+					const newDraft = [...draft, draftPersona]
+
+					if (browser && localStorage) {
+						localStorage.setItem('drafts', JSON.stringify(newDraft))
+					}
+
+					resolve(newDraft.length - 1)
+
+					return { ...state, draft: newDraft }
+				}),
+			)
+		},
+		updateDraft: (index: number, draftPersona: DraftPersona) => {
+			store.update(({ draft, ...state }) => {
+				draft[index] = draftPersona
+
+				if (browser && localStorage) {
+					localStorage.setItem('drafts', JSON.stringify(draft))
+				}
+
+				return { ...state, draft }
+			})
+		},
+	}
 }
 
 export const personas = createPersonaStore()

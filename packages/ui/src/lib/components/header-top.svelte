@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
 	import Wallet from './icons/wallet.svelte'
-	import { formatAddress } from '$lib/utils'
+	import { formatAddress } from '$lib/utils/format'
 	import { profile } from '$lib/stores/profile'
 	import { connectWallet } from '$lib/services'
 

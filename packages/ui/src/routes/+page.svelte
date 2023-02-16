@@ -17,6 +17,10 @@
 
 	let filterText = ''
 	let showChat = false
+
+	function createDraft() {
+		goto(ROUTES.PERSONA_NEW)
+	}
 </script>
 
 <div>
@@ -43,18 +47,18 @@
 		{:else if $personas.loading}
 			<p>Loading personas...</p>
 		{:else}
-			{#if $personas.draft.length !== 0 && $profile.signer !== undefined}
+			{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
 					<div class="subtitle">Draft personas</div>
 					<hr />
-					<Button icon={Add} label="Create persona" on:click={() => goto(ROUTES.PERSONA_NEW)} />
+					<Button icon={Add} label="Create persona" on:click={createDraft} />
 					<Grid>
 						{#each $personas.draft as draftPersona, index}
 							<Persona
 								name={draftPersona.name}
 								description={draftPersona.description}
-								postsCount={draftPersona.postsCount}
-								on:click={() => goto(ROUTES.PERSONA(index.toFixed()))}
+								postsCount={draftPersona.posts.length}
+								on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
 								picture={draftPersona.picture}
 							/>
 						{/each}
@@ -62,19 +66,21 @@
 				</div>
 			{/if}
 
-			{#if $personas.favorite.size !== 0 && $profile.signer !== undefined}
+			{#if $personas.favorite.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
 					<div class="subtitle">Favorites</div>
 					<hr />
 					<Grid>
-						{#each [...$personas.favorite] as [name, data]}
-							<Persona
-								{name}
-								description={data.description}
-								postsCount={data.postsCount}
-								on:click={() => goto(ROUTES.PERSONA(name))}
-								picture={data.picture}
-							/>
+						{#each $personas.favorite as personaId}
+							{#if $personas.all.get(personaId) !== undefined}
+								<Persona
+									name={$personas.all.get(personaId)?.name}
+									description={$personas.all.get(personaId)?.description}
+									postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
+									on:click={() => goto(ROUTES.PERSONA(personaId))}
+									picture={$personas.all.get(personaId)?.picture}
+								/>
+							{/if}
 						{/each}
 					</Grid>
 				</div>
@@ -86,11 +92,7 @@
 						<div class="personas-title">All personas</div>
 						<div class="btns">
 							{#if $profile.signer !== undefined}
-								<Button
-									icon={Add}
-									label="Create persona"
-									on:click={() => goto(ROUTES.PERSONA_NEW)}
-								/>
+								<Button icon={Add} label="Create persona" on:click={createDraft} />
 							{/if}
 							<Button icon={SettingsView} />
 						</div>

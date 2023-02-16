@@ -4,8 +4,8 @@
 
 	let cls: string | undefined = undefined
 	export { cls as class }
-	export let name: string
-	export let description: string
+	export let name: string | undefined
+	export let description: string | undefined
 	export let postsCount: number
 	export let picture: string | undefined
 </script>

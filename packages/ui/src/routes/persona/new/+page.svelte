@@ -1,150 +1,124 @@
 <script lang="ts">
-	import Undo from '$lib/components/icons/undo.svelte'
-	import Close from '$lib/components/icons/close.svelte'
 	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
-	import Button from '$lib/components/button.svelte'
-	import Textarea from '$lib/components/textarea.svelte'
-	import { personas } from '$lib/stores/persona'
+	import Checkmark from '$lib/components/icons/checkmark.svelte'
+	import Close from '$lib/components/icons/close.svelte'
+	import Edit from '$lib/components/icons/edit.svelte'
 
-	let name = ''
-	let pitch = ''
-	let description = ''
-	let y: number
+	import Button from '$lib/components/button.svelte'
+	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
+	import PersonaDetail from '$lib/components/persona_detail.svelte'
+
+	import { ROUTES } from '$lib/routes'
+	import { goto } from '$app/navigation'
+	import { personas } from '$lib/stores/persona'
+	import InfoScreen from '$lib/components/info_screen.svelte'
+
+	let persona = {
+		name: '',
+		pitch: '',
+		description: '',
+		picture: '',
+		cover: '',
+	}
+
+	let state: 'edit_text' | 'edit_images' | 'confirm' = 'edit_text'
+	let showWarningModal = false
+	let draftPersonaIndex: number | undefined
+
+	function onCancel() {
+		showWarningModal = true
+	}
+
+	async function savePersona() {
+		draftPersonaIndex = await personas.addDraft({ ...persona, posts: [] })
+		state = 'confirm'
+	}
 </script>
 
-<svelte:window bind:scrollY={y} />
-
-<header class={y > 0 ? 'scrolled' : ''}>
-	<div class="header-content">
-		<div class="btn-undo">
-			<Button icon={Undo} on:click={() => history.back()} />
+{#if showWarningModal}
+	<InfoScreen title="Leaving persona creation" onBack={() => (showWarningModal = false)}>
+		<div>
+			<h1>Are you sure you want to leave?</h1>
+			<p>
+				You are about to leave the persona creation screenWARNING: If you do so, all changes will be
+				lost.
+			</p>
 		</div>
-		<h1>Create persona</h1>
-	</div>
-</header>
 
-<form>
-	<Textarea placeholder="Enter a short memorable name…" label="Persona name" bind:value={name} />
-	<Textarea
-		placeholder="Pitch the persona in one sentence, this should serve as a brief introduction…"
-		label="Persona pitch"
-		bind:value={pitch}
+		<svelte:fragment slot="buttons">
+			<Button
+				variant="secondary"
+				label="Cancel"
+				icon={Close}
+				on:click={() => (showWarningModal = false)}
+			/>
+			<Button icon={ArrowRight} variant="primary" label="Leave" on:click={() => history.back()} />
+		</svelte:fragment>
+	</InfoScreen>
+{:else if state === 'edit_text'}
+	<PersonaEditText
+		bind:name={persona.name}
+		bind:pitch={persona.pitch}
+		bind:description={persona.description}
+		title="Create persona"
+		onSubmit={() => {
+			state = 'edit_images'
+		}}
+		{onCancel}
 	/>
-	<Textarea
-		placeholder="Describe the persona in more details, provide additional context and help anyone understand the concept of this persona…"
-		label="Persona description"
-		bind:value={description}
-	/>
-
-	<div class="btns">
-		<Button label="Cancel" icon={Close} on:click={() => history.back()} />
-
-		<!-- NEEDS CONDITION TO DISABLE/ENABLE -->
-
+{:else if state === 'edit_images'}
+	<PersonaDetail
+		name={persona.name}
+		pitch={persona.pitch}
+		description={persona.description}
+		bind:picture={persona.picture}
+		bind:cover={persona.cover}
+		canEditPictures
+		onBack={() => {
+			state = 'edit_text'
+		}}
+	>
 		<Button
-			label="Proceed"
-			icon={ArrowRight}
-			variant="primary"
-			disabled
-			on:click={() => {
-				$personas.draft
-			}}
+			slot="button_primary"
+			variant="secondary"
+			label="Edit text"
+			icon={Edit}
+			on:click={onCancel}
 		/>
-	</div>
-</form>
+		<Button
+			slot="button_other"
+			variant="primary"
+			label="Save changes"
+			icon={Checkmark}
+			disabled={!persona.picture || !persona.cover}
+			on:click={savePersona}
+		/>
+		<p>Please provide at least a cover image.</p>
+		<a href="/" target="_blank">Learn more →</a>
+	</PersonaDetail>
+{:else}
+	<InfoScreen title="All changes saved">
+		<div>
+			<h1>This persona is saved as a draft (not public)</h1>
+			<p>
+				You will see it on your homepage. Before you can make it public you will need to create 5
+				“seed” posts. These posts should serve as inspiring examples for people willing to post with
+				this persona.
+			</p>
+			<a href="/" target="_blank">Learn more</a>
+		</div>
+		<svelte:fragment slot="buttons">
+			<Button variant="secondary" label="Continue later" on:click={() => history.back()} />
+			<Button
+				icon={ArrowRight}
+				variant="primary"
+				label="Proceed"
+				on:click={() =>
+					draftPersonaIndex !== undefined && goto(ROUTES.PERSONA_DRAFT(draftPersonaIndex))}
+			/>
+		</svelte:fragment>
+	</InfoScreen>
+{/if}
 
 <style lang="scss">
-	header {
-		position: sticky;
-		top: 0;
-		left: 0;
-		right: 0;
-		background-color: rgba(var(--color-body-bg-rgb), 0.93);
-		backdrop-filter: blur(3px);
-		z-index: 100;
-		padding: var(--spacing-24);
-		transition: padding 0.2s, box-shadow 0.2s;
-
-		@media (prefers-color-scheme: dark) {
-			box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
-		}
-
-		@media (min-width: 688px) {
-			padding: var(--spacing-48);
-			transition: padding 0.2s;
-		}
-
-		.header-content {
-			position: relative;
-			max-width: 450px;
-			margin-inline: auto;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			transition: max-width 0.2s;
-
-			@media (min-width: 688px) {
-				max-width: 996px;
-				transition: max-width 0.2s;
-			}
-
-			@media (min-width: 1242px) {
-				max-width: 1494px;
-			}
-
-			@media (min-width: 1640px) {
-				max-width: 1992px;
-			}
-
-			@media (min-width: 2038px) {
-				max-width: 2490px;
-			}
-		}
-
-		.btn-undo {
-			position: absolute;
-			inset: 0 0 auto 0;
-		}
-
-		h1 {
-			font-family: var(--font-body);
-			font-weight: 600;
-			font-size: 18px;
-			font-style: normal;
-			text-align: center;
-			line-height: 44px;
-		}
-
-		&.scrolled {
-			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
-			transition: box-shadow 0.2s;
-
-			@media (min-width: 688px) {
-				padding-block: var(--spacing-24);
-				transition: padding 0.2s;
-			}
-		}
-	}
-
-	form {
-		min-height: calc(100dvh - 92px);
-		min-height: calc(100vh - 92px);
-		display: flex;
-		align-items: stretch;
-		justify-content: center;
-		flex-direction: column;
-		gap: var(--spacing-48);
-		max-width: 498px;
-		margin-inline: auto;
-		padding: var(--spacing-24);
-
-		.btns {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			justify-content: center;
-			gap: var(--spacing-12);
-			padding-top: var(--spacing-48);
-		}
-	}
 </style>

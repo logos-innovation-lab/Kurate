@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatDateAndTime } from '$lib/utils'
+	import { formatDateAndTime } from '$lib/utils/format'
 
 	import type { Post } from '$lib/stores/post'
 
