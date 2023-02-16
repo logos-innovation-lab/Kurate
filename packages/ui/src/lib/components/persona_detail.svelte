@@ -4,10 +4,11 @@
 	import Undo from '$lib/components/icons/undo.svelte'
 
 	import Button from '$lib/components/button.svelte'
+	import InputFile from '$lib/components/input-file.svelte'
 
 	import { clipAndResize } from '$lib/utils/image'
 
-	import InputFile from './input-file.svelte'
+	import { MAX_DIMENSIONS } from '$lib/constants'
 
 	export let name: string
 	export let pitch: string
@@ -16,17 +17,6 @@
 	export let picture: string | undefined
 	export let cover: string | undefined
 	export let canEditPictures = false
-
-	const MAX_DIMENSIONS = {
-		PICTURE: {
-			width: 268,
-			height: 268,
-		},
-		COVER: {
-			width: 1024,
-			height: 360,
-		},
-	}
 
 	let coverFiles: FileList | undefined = undefined
 	let pictureFiles: FileList | undefined = undefined
@@ -120,9 +110,9 @@
 			align-items: center;
 
 			img {
-				max-height: 360px;
-				max-width: 100vw;
-				object-fit: fit;
+				width: inherit;
+				height: inherit;
+				object-fit: cover;
 			}
 		}
 	}
@@ -155,9 +145,9 @@
 			justify-content: center;
 			align-items: center;
 			img {
-				max-width: 268px;
-				max-height: 268px;
-				object-fit: fit;
+				width: inherit;
+				height: inherit;
+				object-fit: cover;
 			}
 		}
 		.empty {
