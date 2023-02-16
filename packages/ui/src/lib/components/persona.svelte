@@ -35,6 +35,8 @@
 <style lang="scss">
 	.persona-card-wrapper {
 		width: 100%;
+		display: flex;
+		align-items: flex-end;
 
 		hr {
 			@media (min-width: 688px) {
@@ -51,6 +53,7 @@
 		gap: var(--spacing-12);
 		padding: var(--spacing-24);
 		cursor: pointer;
+		width: 100%;
 		max-width: 498px;
 		margin-inline: auto;
 
