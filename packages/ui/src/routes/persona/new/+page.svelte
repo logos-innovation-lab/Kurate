@@ -1,11 +1,13 @@
 <script lang="ts">
+	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
+	import Checkmark from '$lib/components/icons/checkmark.svelte'
+	import Edit from '$lib/components/icons/edit.svelte'
+	import Undo from '$lib/components/icons/undo.svelte'
+
+	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
 	import PersonaDetail from '$lib/components/persona_detail.svelte'
 
-	import Undo from '$lib/components/icons/undo.svelte'
-	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
-
-	import Button from '$lib/components/button.svelte'
 	import { ROUTES } from '$lib/routes'
 	import { goto } from '$app/navigation'
 	import { personas } from '$lib/stores/persona'
@@ -54,9 +56,22 @@
 		onBack={() => {
 			state = 'edit_text'
 		}}
-		onSubmit={savePersona}
-		{onCancel}
 	>
+		<Button
+			slot="button_primary"
+			variant="secondary"
+			label="Edit text"
+			icon={Edit}
+			on:click={onCancel}
+		/>
+		<Button
+			slot="button_other"
+			variant="primary"
+			label="Save changes"
+			icon={Checkmark}
+			disabled={!persona.picture || !persona.cover}
+			on:click={savePersona}
+		/>
 		<p>Please provide at least a cover image.</p>
 		<a href="/" target="_blank">Learn more →</a>
 	</PersonaDetail>

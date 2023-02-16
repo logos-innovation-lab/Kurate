@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Checkmark from '$lib/components/icons/checkmark.svelte'
-	import Edit from '$lib/components/icons/edit.svelte'
 	import Image from '$lib/components/icons/image.svelte'
 	import Renew from '$lib/components/icons/renew.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
@@ -15,10 +13,8 @@
 	export let pitch: string
 	export let description: string
 	export let onBack: () => void | Promise<void>
-	export let onCancel: () => void | Promise<void>
-	export let onSubmit: () => void | Promise<void>
-	export let picture: string
-	export let cover: string
+	export let picture: string | undefined
+	export let cover: string | undefined
 	export let canEditPictures = false
 
 	const MAX_DIMENSIONS = {
@@ -101,14 +97,8 @@
 <div>{description}</div>
 
 <div class="buttons-bottom">
-	<Button variant="secondary" label="Edit text" icon={Edit} on:click={onCancel} />
-	<Button
-		variant="primary"
-		label="Save changes"
-		icon={Checkmark}
-		disabled={!picture || !cover || !pitch || !description || !name}
-		on:click={onSubmit}
-	/>
+	<slot name="button_primary" />
+	<slot name="button_other" />
 </div>
 
 <slot />
