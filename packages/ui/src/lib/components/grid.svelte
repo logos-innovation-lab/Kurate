@@ -18,25 +18,21 @@
 			padding: 0 var(--spacing-24);
 			transition: padding 0.2s;
 			max-width: 996px;
-			// grid-template-columns: repeat(auto-fit, minmax(min(100%/2, max(320px, 100%/2)), 1fr));
 			grid-template-columns: repeat(2, 1fr);
 		}
 
 		@media (min-width: 1242px) {
 			max-width: 1494px;
-			// grid-template-columns: repeat(auto-fit, minmax(min(100%/3, max(350px, 100%/3)), 1fr));
 			grid-template-columns: repeat(3, 1fr);
 		}
 
 		@media (min-width: 1640px) {
 			max-width: 1992px;
-			// grid-template-columns: repeat(auto-fit, minmax(min(100%/4, max(350px, 100%/4)), 1fr));
 			grid-template-columns: repeat(4, 1fr);
 		}
 
 		@media (min-width: 2038px) {
 			max-width: 2490px;
-			// grid-template-columns: repeat(auto-fit, minmax(min(100%/5, max(350px, 100%/5)), 1fr));
 			grid-template-columns: repeat(5, 1fr);
 		}
 	}
