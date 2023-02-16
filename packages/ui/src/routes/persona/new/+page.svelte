@@ -2,7 +2,6 @@
 	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
-	import Undo from '$lib/components/icons/undo.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
@@ -11,6 +10,7 @@
 	import { ROUTES } from '$lib/routes'
 	import { goto } from '$app/navigation'
 	import { personas } from '$lib/stores/persona'
+	import InfoScreen from '$lib/components/info_screen.svelte'
 
 	let persona = {
 		name: '',
@@ -76,28 +76,27 @@
 		<a href="/" target="_blank">Learn more →</a>
 	</PersonaDetail>
 {:else}
-	<div class="buttons">
-		<Button icon={Undo} variant="primary" on:click={() => goto(ROUTES.HOME)} />
-	</div>
-	<div>
-		<h1>This persona is saved as a draft (not public)</h1>
-		<p>
-			You will see it on your homepage. Before you can make it public you will need to create 5
-			“seed” posts. These posts should serve as inspiring examples for people willing to post with
-			this persona.
-		</p>
-		<a href="/" target="_blank">Learn more</a>
-	</div>
-	<div class="buttons-bottom">
-		<Button variant="secondary" label="Continue later" on:click={() => goto(ROUTES.HOME)} />
-		<Button
-			icon={ArrowRight}
-			variant="primary"
-			label="Proceed"
-			on:click={() =>
-				draftPersonaIndex !== undefined && goto(ROUTES.PERSONA_DRAFT(draftPersonaIndex))}
-		/>
-	</div>
+	<InfoScreen title="All changes saved">
+		<div>
+			<h1>This persona is saved as a draft (not public)</h1>
+			<p>
+				You will see it on your homepage. Before you can make it public you will need to create 5
+				“seed” posts. These posts should serve as inspiring examples for people willing to post with
+				this persona.
+			</p>
+			<a href="/" target="_blank">Learn more</a>
+		</div>
+		<svelte:fragment slot="buttons">
+			<Button variant="secondary" label="Continue later" on:click={() => history.back()} />
+			<Button
+				icon={ArrowRight}
+				variant="primary"
+				label="Proceed"
+				on:click={() =>
+					draftPersonaIndex !== undefined && goto(ROUTES.PERSONA_DRAFT(draftPersonaIndex))}
+			/>
+		</svelte:fragment>
+	</InfoScreen>
 {/if}
 
 <style lang="scss">

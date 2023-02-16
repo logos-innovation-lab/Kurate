@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation'
-
 	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
@@ -16,8 +14,8 @@
 	import { personas } from '$lib/stores/persona'
 	import { tokens } from '$lib/stores/tokens'
 
-	import { ROUTES } from '$lib/routes'
 	import { page } from '$app/stores'
+	import InfoScreen from '$lib/components/info_screen.svelte'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -64,7 +62,7 @@
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 		canEditPictures
-		onBack={() => goto(ROUTES.HOME)}
+		onBack={() => history.back()}
 	>
 		<svelte:fragment slot="button_primary">
 			{#if persona.posts.length < PERSONA_LIMIT}
@@ -116,136 +114,60 @@
 		cancel={() => (state = 'posts')}
 	/>
 {:else if state === 'publish_warning'}
-	<div class="buttons">
-		<Button icon={Undo} variant="primary" on:click={() => goto(ROUTES.HOME)} />
-		<div>Publish persona</div>
-		<div />
-	</div>
-	{#if $tokens.go >= TOKEN_POST_COST}
-		<h1>This will use {TOKEN_POST_COST} GO</h1>
-		<p>People will be able to post with this persona.</p>
-		<a href="/" target="_blank">Learn more</a>
-
-		<h1>Currently available</h1>
-		<span>{$tokens.go} GO</span>
-		<p>Until cycle ends.</p>
-
-		<a href="/" target="_blank">Learn more</a>
-	{:else}
-		<h1>Sorry, you can’t publish now</h1>
-		<p>You need {TOKEN_POST_COST} GO to publish a persona.</p>
-		<a href="/" target="_blank">Learn more</a>
-
-		<h1>Currently available</h1>
-		<span>{$tokens.go} GO</span>
-		<p>Until cycle ends.</p>
-
-		<a href="/" target="_blank">Learn more</a>
-	{/if}
-	<div class="buttons-bottom">
+	<InfoScreen title="Publish persona" onBack={() => history.back()}>
 		{#if $tokens.go >= TOKEN_POST_COST}
-			<Button variant="secondary" label="Cancel" icon={Close} on:click={() => (state = 'text')} />
-			<Button icon={ArrowRight} variant="primary" label="Proceed" on:click={publishPersona} />
+			<div>
+				<h1>This will use {TOKEN_POST_COST} GO</h1>
+				<p>People will be able to post with this persona.</p>
+				<a href="/" target="_blank">Learn more</a>
+			</div>
+			<div>
+				<h1>Currently available</h1>
+				<span>{$tokens.go} GO</span>
+				<p>Until cycle ends.</p>
+
+				<a href="/" target="_blank">Learn more</a>
+			</div>
 		{:else}
-			<Button variant="secondary" label="Back" icon={Undo} on:click={() => (state = 'text')} />
+			<div>
+				<h1>Sorry, you can’t publish now</h1>
+				<p>You need {TOKEN_POST_COST} GO to publish a persona.</p>
+				<a href="/" target="_blank">Learn more</a>
+			</div>
+			<div>
+				<h1>Currently available</h1>
+				<span>{$tokens.go} GO</span>
+				<p>Until cycle ends.</p>
+
+				<a href="/" target="_blank">Learn more</a>
+			</div>
 		{/if}
-	</div>
+
+		<svelte:fragment slot="buttons">
+			{#if $tokens.go >= TOKEN_POST_COST}
+				<Button variant="secondary" label="Cancel" icon={Close} on:click={() => (state = 'text')} />
+				<Button icon={ArrowRight} variant="primary" label="Proceed" on:click={publishPersona} />
+			{:else}
+				<Button variant="secondary" label="Back" icon={Undo} on:click={() => (state = 'text')} />
+			{/if}
+		</svelte:fragment>
+	</InfoScreen>
 {:else}
-	<div class="buttons">
-		<Button icon={Undo} variant="primary" on:click={() => (state = 'publish_warning')} />
-		<div>Publish successful</div>
-		<div />
-	</div>
+	<InfoScreen title="Publish successful" onBack={() => history.back()}>
+		<div>
+			<h1>This persona is now public</h1>
+			<p>
+				Anyone can now submit posts with this persona. All posts will be subject to community review
+				before being published. This persona was added to your favorites on your homepage.
+			</p>
+			<a href="/" target="_blank">Learn more</a>
+		</div>
 
-	<h1>This persona is now public</h1>
-	<p>
-		Anyone can now submit posts with this persona. All posts will be subject to community review
-		before being published. This persona was added to your favorites on your homepage.
-	</p>
-	<a href="/" target="_blank">Learn more</a>
-
-	<div class="buttons-bottom">
-		<Button icon={Checkmark} variant="primary" label="Done" on:click={() => goto(ROUTES.HOME)} />
-	</div>
+		<svelte:fragment slot="buttons">
+			<Button icon={Checkmark} variant="primary" label="Done" on:click={() => history.back()} />
+		</svelte:fragment>
+	</InfoScreen>
 {/if}
 
 <style lang="scss">
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-	}
-	.top {
-		height: 360px;
-		width: 100vw;
-		background-color: #666666;
-		position: absolute;
-		z-index: -1;
-
-		.img {
-			position: absolute;
-			width: inherit;
-			height: inherit;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-
-			img {
-				max-height: 360px;
-				max-width: 100vw;
-				object-fit: fit;
-			}
-		}
-	}
-
-	.buttons {
-		padding: 48px;
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-	}
-
-	.buttons-bottom {
-		padding: 48px;
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		align-items: center;
-	}
-	.avatar {
-		width: 268px;
-		height: 268px;
-		background-color: #c9c9c9;
-		margin: auto;
-
-		.img {
-			position: absolute;
-			width: inherit;
-			height: inherit;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			img {
-				max-width: 268px;
-				max-height: 268px;
-				object-fit: fit;
-			}
-		}
-		.empty {
-			width: inherit;
-			height: inherit;
-			position: absolute;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-		.change {
-			width: inherit;
-			height: inherit;
-			position: absolute;
-			display: flex;
-			justify-content: flex-end;
-			align-items: flex-end;
-			padding: 12px;
-		}
-	}
 </style>
