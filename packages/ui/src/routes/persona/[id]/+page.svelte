@@ -2,8 +2,8 @@
 	import Post from '$lib/components/post.svelte'
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
-	import Undo from '$lib/components/icons/undo.svelte'
 	import Star from '$lib/components/icons/star.svelte'
+	import StarFilled from '$lib/components/icons/star_filled.svelte'
 
 	import { posts } from '$lib/stores/post'
 	import { personas } from '$lib/stores/persona'
@@ -13,6 +13,7 @@
 	import { page } from '$app/stores'
 	import Masonry from '$lib/masonry.svelte'
 	import { ROUTES } from '$lib/routes'
+	import PersonaDetail from '$lib/components/persona_detail.svelte'
 
 	let windowWidth: number = browser ? window.innerWidth : 0
 
@@ -35,26 +36,31 @@
 {#if persona === undefined}
 	<div>There is no persona with group ID {$page.params.id}</div>
 {:else}
-	<div class="wrapper">
-		<div class="top" />
-		<div class="buttons">
-			<Button icon={Undo} variant="primary" on:click={() => history.back()} />
-			<Button icon={Star} variant="primary" label="Add to favorites" />
-		</div>
-		<div class="avatar" />
+	<PersonaDetail
+		name={persona.name}
+		pitch={persona.pitch}
+		description={persona.description}
+		bind:picture={persona.picture}
+		bind:cover={persona.cover}
+	>
+		<svelte:fragment slot="button_top">
+			{#if $personas.favorite.includes($page.params.id)}
+				<Button icon={StarFilled} variant="primary" label="Remove favorite" />
+			{:else}
+				<Button icon={Star} variant="primary" label="Add to favorites" />
+			{/if}
+		</svelte:fragment>
 
-		<div>{persona.name}</div>
-		<div>{persona.pitch}</div>
-		<div>{persona.description}</div>
-
-		{#if $profile.signer !== undefined}
-			<Button
-				variant="primary"
-				label="Submit post"
-				icon={Edit}
-				on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
-			/>
-		{/if}
+		<svelte:fragment slot="button_primary">
+			{#if $profile.signer !== undefined}
+				<Button
+					variant="primary"
+					label="Submit post"
+					icon={Edit}
+					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+				/>
+			{/if}</svelte:fragment
+		>
 
 		{#if $posts.loading}
 			<p>Loading posts...</p>
@@ -67,28 +73,8 @@
 				{/each}
 			</Masonry>
 		{/if}
-	</div>
+	</PersonaDetail>
 {/if}
 
 <style lang="scss">
-	.top {
-		height: 360px;
-		width: 100vw;
-		background-color: #666666;
-		position: absolute;
-		z-index: -1;
-	}
-
-	.buttons {
-		padding: 48px;
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-	}
-	.avatar {
-		width: 268px;
-		height: 268px;
-		background-color: #333;
-		margin: auto;
-	}
 </style>

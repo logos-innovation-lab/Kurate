@@ -13,7 +13,7 @@
 	export let name: string
 	export let pitch: string
 	export let description: string
-	export let onBack: () => void | Promise<void>
+	export let onBack: () => unknown = () => history.back()
 	export let picture: string | undefined
 	export let cover: string | undefined
 	export let canEditPictures = false
@@ -60,6 +60,8 @@
 			label={cover ? 'Change cover' : 'Add cover'}
 			bind:files={coverFiles}
 		/>
+	{:else}
+		<slot name="button_top" />
 	{/if}
 </div>
 <div class="avatar">

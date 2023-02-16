@@ -66,19 +66,21 @@
 				</div>
 			{/if}
 
-			{#if $personas.favorite.size !== 0 && $profile.signer !== undefined}
+			{#if $personas.favorite.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
 					<div class="subtitle">Favorites</div>
 					<hr />
 					<Grid>
-						{#each [...$personas.favorite] as [name, data]}
-							<Persona
-								{name}
-								description={data.description}
-								postsCount={data.postsCount}
-								on:click={() => goto(ROUTES.PERSONA(name))}
-								picture={data.picture}
-							/>
+						{#each $personas.favorite as personaId}
+							{#if $personas.all.get(personaId) !== undefined}
+								<Persona
+									name={$personas.all.get(personaId)?.name}
+									description={$personas.all.get(personaId)?.description}
+									postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
+									on:click={() => goto(ROUTES.PERSONA(personaId))}
+									picture={$personas.all.get(personaId)?.picture}
+								/>
+							{/if}
 						{/each}
 					</Grid>
 				</div>

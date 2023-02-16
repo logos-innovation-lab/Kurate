@@ -19,7 +19,7 @@ export interface DraftPersona extends Omit<Persona, 'postsCount'> {
 
 type PersonaStore = {
 	draft: DraftPersona[]
-	favorite: Map<string, Persona>
+	favorite: string[]
 	all: Map<string, Persona>
 	loading: boolean
 }
@@ -33,7 +33,7 @@ function createPersonaStore(): PersonaStoreWritable {
 	const store = writable<PersonaStore>({
 		all: new Map(),
 		draft: browser && localStorage ? JSON.parse(localStorage.getItem('drafts') ?? '[]') : [],
-		favorite: new Map(),
+		favorite: [],
 		loading: true,
 	})
 
@@ -84,15 +84,15 @@ function createPersonaStore(): PersonaStoreWritable {
 		}
 
 		const all = new Map<string, Persona>()
-		const favorite = new Map<string, Persona>()
+		const favorite: string[] = []
 		all.set('1', chitChat)
 		all.set('2', expats)
 		all.set('3', cats)
 		all.set('4', geoPolitics)
 		all.set('5', controversy)
 
-		favorite.set('3', cats)
-		favorite.set('4', controversy)
+		favorite.push('3')
+		favorite.push('4')
 
 		store.update((state) => ({ ...state, all, favorite, loading: false }))
 	}, 1000)
