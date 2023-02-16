@@ -1,0 +1,191 @@
+<script lang="ts">
+	import Checkmark from '$lib/components/icons/checkmark.svelte'
+	import Edit from '$lib/components/icons/edit.svelte'
+	import Image from '$lib/components/icons/image.svelte'
+	import Renew from '$lib/components/icons/renew.svelte'
+	import Undo from '$lib/components/icons/undo.svelte'
+
+	import Button from '$lib/components/button.svelte'
+
+	import { clipAndResize } from '$lib/utils/image'
+
+	import InputFile from './input-file.svelte'
+
+	export let name: string
+	export let pitch: string
+	export let description: string
+	export let onBack: () => void | Promise<void>
+	export let onCancel: () => void | Promise<void>
+	export let onSubmit: () => void | Promise<void>
+	export let picture: string
+	export let cover: string
+	export let canEditPictures = false
+
+	const MAX_DIMENSIONS = {
+		PICTURE: {
+			width: 268,
+			height: 268,
+		},
+		COVER: {
+			width: 1024,
+			height: 360,
+		},
+	}
+
+	let coverFiles: FileList | undefined = undefined
+	let pictureFiles: FileList | undefined = undefined
+
+	async function resizePersonaPicture(p?: File) {
+		try {
+			picture = p
+				? await clipAndResize(p, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
+				: picture
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	async function resizePersonaCover(c?: File) {
+		try {
+			cover = c
+				? await clipAndResize(c, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
+				: cover
+		} catch (error) {
+			console.error(error)
+		}
+	}
+	$: canEditPictures && resizePersonaPicture(pictureFiles && pictureFiles[0])
+	$: canEditPictures && resizePersonaCover(coverFiles && coverFiles[0])
+</script>
+
+<div class="top">
+	{#if cover}
+		<div class="img">
+			<img src={cover} alt="profile" />
+		</div>
+	{/if}
+</div>
+<div class="buttons">
+	<Button icon={Undo} variant="primary" on:click={onBack} />
+	{#if canEditPictures}
+		<InputFile
+			icon={cover ? Renew : Image}
+			variant="primary"
+			label={cover ? 'Change cover' : 'Add cover'}
+			bind:files={coverFiles}
+		/>
+	{/if}
+</div>
+<div class="avatar">
+	{#if picture}
+		<div class="img">
+			<img src={picture} alt="profile" />
+		</div>
+		{#if canEditPictures}
+			<div class="change">
+				<InputFile icon={Renew} variant="primary" bind:files={pictureFiles} />
+			</div>
+		{/if}
+		<div class="change">
+			<InputFile icon={Renew} variant="primary" bind:files={pictureFiles} />
+		</div>
+	{:else if canEditPictures}
+		<div class="empty">
+			<InputFile icon={Image} variant="primary" label="Add picture" bind:files={pictureFiles} />
+		</div>
+	{/if}
+</div>
+
+<div>{name}</div>
+<div>{pitch}</div>
+<div>{description}</div>
+
+<div class="buttons-bottom">
+	<Button variant="secondary" label="Edit text" icon={Edit} on:click={onCancel} />
+	<Button
+		variant="primary"
+		label="Save changes"
+		icon={Checkmark}
+		disabled={!picture || !cover || !pitch || !description || !name}
+		on:click={onSubmit}
+	/>
+</div>
+
+<slot />
+
+<style lang="scss">
+	.top {
+		height: 360px;
+		width: 100vw;
+		background-color: #666666;
+		position: absolute;
+		z-index: -1;
+
+		.img {
+			position: absolute;
+			width: inherit;
+			height: inherit;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			img {
+				max-height: 360px;
+				max-width: 100vw;
+				object-fit: fit;
+			}
+		}
+	}
+
+	.buttons {
+		padding: 48px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	.buttons-bottom {
+		padding: 48px;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+	}
+	.avatar {
+		width: 268px;
+		height: 268px;
+		background-color: #c9c9c9;
+		margin: auto;
+
+		.img {
+			position: absolute;
+			width: inherit;
+			height: inherit;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			img {
+				max-width: 268px;
+				max-height: 268px;
+				object-fit: fit;
+			}
+		}
+		.empty {
+			width: inherit;
+			height: inherit;
+			position: absolute;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.change {
+			width: inherit;
+			height: inherit;
+			position: absolute;
+			display: flex;
+			justify-content: flex-end;
+			align-items: flex-end;
+			padding: 12px;
+		}
+	}
+</style>

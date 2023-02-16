@@ -25,7 +25,7 @@ type PersonaStore = {
 }
 
 export interface PersonaStoreWritable extends Writable<PersonaStore> {
-	addDraft: (draft: DraftPersona) => void
+	addDraft: (draft: DraftPersona) => Promise<number>
 	updateDraft: (index: number, draft: DraftPersona) => void
 }
 
@@ -100,15 +100,19 @@ function createPersonaStore(): PersonaStoreWritable {
 	return {
 		...store,
 		addDraft: (draftPersona: DraftPersona) => {
-			store.update(({ draft, ...state }) => {
-				const newDraft = [...draft, draftPersona]
+			return new Promise((resolve) =>
+				store.update(({ draft, ...state }) => {
+					const newDraft = [...draft, draftPersona]
 
-				if (browser && localStorage) {
-					localStorage.setItem('drafts', JSON.stringify(newDraft))
-				}
+					if (browser && localStorage) {
+						localStorage.setItem('drafts', JSON.stringify(newDraft))
+					}
 
-				return { ...state, draft: newDraft }
-			})
+					resolve(newDraft.length - 1)
+
+					return { ...state, draft: newDraft }
+				}),
+			)
 		},
 		updateDraft: (index: number, draftPersona: DraftPersona) => {
 			store.update(({ draft, ...state }) => {
