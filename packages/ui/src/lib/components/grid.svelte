@@ -1,20 +1,18 @@
 <script lang="ts">
-	
 </script>
 
 <div class="grid">
-    <slot />
+	<slot />
 </div>
-
 
 <style lang="scss">
 	.grid {
 		display: grid;
 		grid-auto-columns: auto;
 		grid-template-columns: 100%;
-		grid-auto-rows: auto;		
-    	margin-inline: auto;
-		
+		grid-auto-rows: auto;
+		margin-inline: auto;
+
 		// decided to use max-width here to make it easier to match the page headers' width
 		@media (min-width: 688px) {
 			padding: 0 var(--spacing-24);
@@ -37,6 +35,5 @@
 			max-width: 2490px;
 			grid-template-columns: repeat(auto-fit, minmax(min(100%/5, max(350px, 100%/5)), 1fr));
 		}
-
 	}
 </style>

@@ -71,25 +71,24 @@
 			transition: padding 0.2s;
 			max-width: 498px;
 			margin-inline: auto;
-			
+
 			@media (min-width: 688px) {
 				padding: var(--spacing-48);
 				max-width: 996px;
 				transition: padding 0.2s;
 			}
-	
+
 			@media (min-width: 1242px) {
 				max-width: 1494px;
 			}
-	
+
 			@media (min-width: 1640px) {
 				max-width: 1992px;
 			}
-	
+
 			@media (min-width: 2038px) {
 				max-width: 2490px;
 			}
-
 		}
 
 		.header-title {
