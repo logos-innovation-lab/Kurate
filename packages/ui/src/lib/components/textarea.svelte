@@ -86,9 +86,12 @@
 
 				&:focus,
 				&.content {
-					background-color: #ffffff;
+					background-color: #000;
 					transition: background-color 0.2s;
 					outline: none;
+					@media (prefers-color-scheme: light) {
+						background-color: #ffffff;
+					}
 				}
 
 				&.content {
