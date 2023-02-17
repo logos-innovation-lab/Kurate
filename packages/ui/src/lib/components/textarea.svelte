@@ -1,8 +1,41 @@
 <script lang="ts">
+	import { onDestroy, onMount } from 'svelte'
+
 	export let value = ''
 	export let placeholder = ''
 	export let label = ''
+
 	let placeholderHeight: number
+	let textarea: HTMLTextAreaElement
+
+	const resizeEvents = ['change']
+	const delayedResizeEvents = ['cut', 'paste', 'drop', 'keydown']
+
+	function resize() {
+		textarea.style.height = 'auto'
+		textarea.style.height = `${Math.max(placeholderHeight, textarea.scrollHeight)}px`
+	}
+
+	function delayedResize() {
+		setTimeout(resize, 0)
+	}
+
+	// The resize mechanism is heavily inspired by https://stackoverflow.com/a/5346855
+	onMount(() => {
+		resizeEvents.forEach((eventName) => textarea.addEventListener(eventName, resize))
+		delayedResizeEvents.forEach((eventName) => textarea.addEventListener(eventName, delayedResize))
+		resize()
+	})
+
+	// This cleans up all the listeners from the textarea element when the component is about to be destroyed
+	onDestroy(() => {
+		if (!textarea) return
+
+		resizeEvents.forEach((eventName) => textarea.removeEventListener(eventName, resize))
+		delayedResizeEvents.forEach((eventName) =>
+			textarea.removeEventListener(eventName, delayedResize),
+		)
+	})
 </script>
 
 <label>
@@ -14,11 +47,7 @@
 		>
 			{placeholder}
 		</div>
-		<textarea
-			bind:value
-			class={value != '' ? 'content' : ''}
-			style={`${value != '' ? 'min-height: ' + placeholderHeight : ''}px;`}
-		/>
+		<textarea bind:value bind:this={textarea} class={value != '' ? 'content' : ''} />
 	</div>
 </label>
 
@@ -35,11 +64,13 @@
 			position: relative;
 			width: 100%;
 			height: fit-content;
+
 			.placeholder-text {
 				font-size: var(--font-size-lg);
 				color: var(--grey-300);
 				width: 100%;
 				height: fit-content;
+
 				&.hide {
 					display: none;
 				}
@@ -55,9 +86,12 @@
 
 				&:focus,
 				&.content {
-					background-color: #ffffff;
+					background-color: #000;
 					transition: background-color 0.2s;
 					outline: none;
+					@media (prefers-color-scheme: light) {
+						background-color: #ffffff;
+					}
 				}
 
 				&.content {
