@@ -3,7 +3,7 @@
 
 	let cls: string | undefined = undefined
 	export { cls as class }
-	export let variant: 'secondary' | 'primary' = 'secondary'
+	export let variant: 'secondary' | 'primary' | 'overlay' = 'secondary'
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 	export let label: string | undefined = undefined
 	export let disabled: boolean | undefined = undefined
@@ -143,6 +143,29 @@
 			&:hover:not(:disabled) {
 				transition: border-color 0.2s, background-color 0.2s;
 			}
+		}
+	}
+	.overlay {
+		background-color: rgba(var(--color-black-rgb), 0.5);
+		border-color: transparent;
+		backdrop-filter: blur(var(--blur));
+		color: var(--color-body-bg);
+
+		& :global(svg) {
+			fill: var(--color-body-bg);
+		}
+		&:disabled {
+			color: var(--grey-300);
+
+			& :global(svg) {
+				fill: var(--grey-300);
+			}
+		}
+
+		&:active:not(:disabled),
+		&:hover:not(:disabled) {
+			background-color: var(--color-black-rgb);
+			transition: background-color 0.2s;
 		}
 	}
 </style>
