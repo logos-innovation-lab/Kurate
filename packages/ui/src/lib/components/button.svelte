@@ -77,6 +77,8 @@
 
 		&:active:not(:disabled),
 		&:hover:not(:disabled) {
+			border-color: var(--color-black);
+			background-color: var(--color-black);
 			transition: border-color 0.2s, background-color 0.2s;
 		}
 
