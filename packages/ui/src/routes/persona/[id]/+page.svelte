@@ -45,9 +45,9 @@
 	>
 		<svelte:fragment slot="button_top">
 			{#if $personas.favorite.includes($page.params.id)}
-				<Button icon={StarFilled} variant="primary" label="Remove favorite" />
+				<Button icon={StarFilled} variant="overlay" label="Remove favorite" />
 			{:else}
-				<Button icon={Star} variant="primary" label="Add to favorites" />
+				<Button icon={Star} variant="overlay" label="Add to favorites" />
 			{/if}
 		</svelte:fragment>
 

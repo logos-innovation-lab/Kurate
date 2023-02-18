@@ -40,6 +40,7 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
+		gap: var(--spacing-6);
 		font-family: var(--font-body);
 		font-weight: 600;
 		font-size: var(--font-size-normal);
@@ -53,14 +54,14 @@
 	.icon-only {
 		width: 44px;
 
-		.wrapper {
-			margin-right: 0px;
-		}
+		// .wrapper {
+		// 	margin-right: 0px;
+		// }
 	}
 	.wrapper {
 		width: 20px;
 		height: 20px;
-		margin-right: var(--spacing-6);
+		// margin-right: var(--spacing-6);
 	}
 	.primary {
 		color: var(--color-body-bg);

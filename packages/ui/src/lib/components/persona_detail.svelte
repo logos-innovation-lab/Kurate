@@ -52,7 +52,7 @@
 	{/if}
 </div>
 <div class="buttons">
-	<Button icon={Undo} variant="primary" on:click={onBack} />
+	<Button icon={Undo} variant="overlay" on:click={onBack} />
 	{#if canEditPictures}
 		<InputFile
 			icon={cover ? Renew : Image}
@@ -97,16 +97,21 @@
 
 <style lang="scss">
 	.top {
-		height: 360px;
+		position: absolute;
+		aspect-ratio: 16/9;
+		max-height: 342px;
 		width: 100vw;
 		background-color: #666666;
-		position: absolute;
 		z-index: -1;
+
+		@media (min-width: 688px) {
+			aspect-ratio: none;
+			height: 342px;
+		}
 
 		.img {
 			position: absolute;
-			width: inherit;
-			height: inherit;
+			inset: 0 0 0 0;
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -120,35 +125,41 @@
 	}
 
 	.buttons {
-		padding: 48px;
+		inset: 0 0 auto;
+		padding: var(--spacing-24);
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
+		z-index: 1;
+
+			@media (min-width: 688px) {
+				padding: var(--spacing-48);
+			}
 	}
 
-	.buttons-bottom {
-		padding: 48px;
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		align-items: center;
-	}
 	.avatar {
-		width: 268px;
-		height: 268px;
-		background-color: #c9c9c9;
-		margin: auto;
+		width: 100vw;
+		aspect-ratio: 16/9;
+		max-height: 360px;
 
 		.img {
-			position: absolute;
-			width: inherit;
-			height: inherit;
+			aspect-ratio: 1;
+			height: calc(calc(100vw / 1.777) - 68px);
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			background-color: #c9c9c9;
+			margin-inline: auto;
+
+			@media (min-width: 608px) {
+				height: 274px;
+			}
+
+			@media (min-width: 688px) {
+				height: 250px;
+			}
 			img {
-				width: inherit;
-				height: inherit;
+				aspect-ratio: 1;
 				object-fit: cover;
 			}
 		}
@@ -169,5 +180,13 @@
 			align-items: flex-end;
 			padding: 12px;
 		}
+	}
+	.buttons-bottom {
+		position: relative;
+		padding: 48px;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
 	}
 </style>
