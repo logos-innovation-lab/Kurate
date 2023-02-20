@@ -8,43 +8,109 @@
 	export let post: Post
 </script>
 
-<div class={`root ${cls}`}>
-	<div class="content-wrapper">
-		<div class="user-info">
-			<div class="faded">{formatDateAndTime(post.timestamp)}</div>
+<div class="post-card-wrapper">
+	<div class={`root ${cls}`}>
+		<div class="content-wrapper">
+			<div class="imgs" >
+
+				<!-- I HARD CODED SOME IMAGES TO STYLE THE SECTION AND LEFT THEM TO SHOW THE STRUCTURE IN USE -->
+				<!-- MORE THAN 3 IMAGES SHOULD HAVE A "PLUS" ICON OVER THE THIRD WITH COUNT OF EXTRA IMAGES -->
+
+				<!-- <div>
+					<img src="https://via.placeholder.com/600x1000"  alt="image"/>
+				</div>
+				<div>
+					<img src="https://via.placeholder.com/400x840"  alt="image"/>
+				</div>
+				<div>
+					<img src="https://via.placeholder.com/800x300"  alt="image"/>
+				</div> -->
+			</div>
+			<div class="post-content">{post.text}</div>
+			<div class="user-info">
+				<div class="faded">{formatDateAndTime(post.timestamp)}</div>
+			</div>
 		</div>
-		<div class="post-content">{post.text}</div>
 	</div>
+	<hr />	
 </div>
 
 <style lang="scss">
-	.root {
-		border-bottom: 1px solid var(--grey-200);
-		padding: var(--spacing-12);
+	.post-card-wrapper {
+		width: 100%;
 		display: flex;
-		gap: var(--spacing-12);
-		flex-direction: row;
-		break-inside: avoid-column;
+		flex-direction: column;
+		align-items: flex-end;
 
-		@media (min-width: 640px) {
-			border: none;
-			outline-style: solid;
-			outline-width: 1px;
-			outline-color: var(--grey-200);
-			outline-offset: -0.5px;
+		hr {
+			@media (min-width: 688px) {
+				display: none;
+			}
+		}
+	}
+
+	.root {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		justify-content: flex-start;
+		flex-wrap: nowrap;
+		gap: var(--spacing-12);
+		padding: var(--spacing-24);
+		cursor: pointer;
+		width: 100%;
+		max-width: 498px;
+		margin-inline: auto;
+
+		@media (min-width: 1242px) {
+			min-width: 350px;
+		}
+
+		&:hover {
+			background-color: var(--grey-150);
 		}
 
 		@media (prefers-color-scheme: dark) {
-			border-bottom-color: var(--grey-500);
-			outline-color: var(--grey-500);
 		}
 	}
-	.user-img {
-		flex-shrink: 0;
+
+	.imgs {
+		display: flex;
+		flex-direction: row;
+		gap: var(--spacing-6);
+		justify-content: flex-start;
+		align-items: center;
+		flex-wrap: nowrap;
+		
+		div {
+			img {
+				max-height: 300px;
+			}
+			&:not(:only-child) img {
+			aspect-ratio: 1;
+			object-fit: cover;
+		}
+		}
+
+		/* one item */
+		div:first-child:nth-last-child(1) {
+			width: 100%;
+		}
+
+		/* two items */
+		div:first-child:nth-last-child(2),
+		div:first-child:nth-last-child(2) ~ div {
+			width: 50%;
+		}
+
+		/* three items */
+		div:first-child:nth-last-child(3),
+		div:first-child:nth-last-child(3) ~ div {
+			width: 33.3333%;
+		}
+
 	}
-	.content-wrapper {
-		flex-grow: 1;
-	}
+
 	.user-info {
 		display: flex;
 		flex-direction: row;
@@ -52,15 +118,16 @@
 		margin-bottom: var(--spacing-3);
 		font-size: var(--font-size-sm);
 	}
+
+	.content-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-6);
+	}
+
 	.post-content {
 		font-family: var(--font-serif);
 		line-height: 1.38;
-	}
-	.faded {
-		color: var(--grey-300);
-		@media (prefers-color-scheme: dark) {
-			color: var(--grey-400);
-		}
 	}
 
 	@keyframes newpost {
@@ -76,4 +143,23 @@
 		animation-duration: 2.5s;
 		animation-timing-function: ease-out;
 	}
+
+	@media (prefers-color-scheme: dark) {
+		.root {
+			&:not(:last-child) {
+				border-bottom-color: var(--grey-500);
+			}
+
+			&:hover {
+				background-color: var(--grey-500);
+			}
+		}
+
+		:global(svg) {
+			fill: var(--grey-100);
+			width: 16px;
+			height: 16px;
+		}
+	}
+	
 </style>

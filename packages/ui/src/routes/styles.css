@@ -5,11 +5,6 @@
 	--font-mono: 'Source Code Pro';
 	--font-serif: 'Source Serif Pro';
 
-	--font-size-normal: 16px;
-	--font-size-lg: 18px;
-	--font-size-sm: 14px;
-	--font-size-xs: 12px;
-
 	--font-weight-normal: 400;
 	--font-weight-sb: 600;
 
@@ -38,12 +33,46 @@
 
 	--blur: 3px;
 
+	--font-size-xl: 18px;
+	--font-size-lg: 16px;
+	--font-size-normal: 14px;
+	--font-size-sm: 12px;
+	--font-size-xs: 12px;
+
 	--container-width: 100%;
 }
 
-@media (min-width: 1280px) {
+h1,
+h2,
+h3 {
+	font-family: var(--font-body);
+	font-weight: var(--font-weight-sb);
+	font-style: normal;
+	line-height: 1;
+}
+
+h1 {
+	font-size: var(--font-size-xl);
+}
+
+h2 {
+	font-size: var(--font-size-lg);
+}
+
+h3 {
+	font-size: var(--font-size-normal);
+}
+
+.text-large {
+	font-size: var(--font-size-lg);
+}
+
+@media (min-width: 398px) {
 	:root {
-		--container-width: 1280px;
+		--font-size-xl: 20px;
+		--font-size-lg: 18px;
+		--font-size-normal: 16px;
+		--font-size-sm: 14px;
 	}
 }
 
@@ -63,7 +92,7 @@ body {
 	color: var(--color-body-text);
 	background-color: var(--color-body-bg);
 	font-family: var(--font-body);
-	font-weight: 400;
+	font-weight: var(--font-weight-normal);
 }
 
 *,
@@ -89,8 +118,23 @@ video {
 
 hr {
 	border: none;
+	width: 100%;
 	height: 1px;
 	background-color: var(--grey-200);
+}
+
+/* THIS CLASS SHOULD BE REMOVED WHEN NO LONGER NEEDED */
+.note {
+	background-color: palevioletred;
+	color: white;
+	text-align: center;
+	padding: var(--spacing-24);
+}
+
+@media (min-width: 1280px) {
+	:root {
+		--container-width: 1280px;
+	}
 }
 
 @media (prefers-color-scheme: dark) {

@@ -3,35 +3,36 @@
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 	import Star from '$lib/components/icons/star.svelte'
+	import Wallet from '$lib/components/icons/wallet.svelte'
 	import StarFilled from '$lib/components/icons/star_filled.svelte'
+	import Hourglass from '$lib/components/icons/hourglass.svelte'
+	import Grid from '$lib/components/grid.svelte'
+	import PersonaDetail from '$lib/components/persona_detail.svelte'
 
 	import { posts } from '$lib/stores/post'
 	import { personas } from '$lib/stores/persona'
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
-	import { browser } from '$app/environment'
 	import { page } from '$app/stores'
-	import Masonry from '$lib/masonry.svelte'
 	import { ROUTES } from '$lib/routes'
-	import PersonaDetail from '$lib/components/persona_detail.svelte'
+	import { connectWallet } from '$lib/services'
 
-	let windowWidth: number = browser ? window.innerWidth : 0
+	
+	
+	const persona = $personas.all.get($page.params.id)
 
-	function getMasonryColumnWidth(windowInnerWidth: number) {
-		if (windowInnerWidth < 739) return '100%'
-		if (windowInnerWidth < 1060) return 'minmax(min(100%/2, max(320px, 100%/2)), 1fr)'
-		if (windowInnerWidth < 1381) return 'minmax(min(100%/3, max(320px, 100%/3)), 1fr)'
-		if (windowInnerWidth < 1702) return 'minmax(min(100%/4, max(320px, 100%/4)), 1fr)'
-		if (windowInnerWidth < 2023) return 'minmax(min(100%/5, max(320px, 100%/5)), 1fr)'
-		if (windowInnerWidth < 2560) return 'minmax(min(100%/6, max(320px, 100%/6)), 1fr)'
-		if (windowInnerWidth < 3009) return 'minmax(min(100%/7, max(320px, 100%/7)), 1fr)'
-		return 'minmax(323px, 1fr)'
+	const handleConnect = async () => {
+		try {
+			const signer = await connectWallet()
+			const address = await signer.getAddress()
+
+			$profile = { signer, address }
+		} catch (err) {
+			console.error(err)
+		}
 	}
 
-	const persona = $personas.all.get($page.params.id)
 </script>
-
-<svelte:window bind:innerWidth={windowWidth} />
 
 {#if persona === undefined}
 	<div>There is no persona with group ID {$page.params.id}</div>
@@ -40,41 +41,66 @@
 		name={persona.name}
 		pitch={persona.pitch}
 		description={persona.description}
+		postsCount={persona.postsCount}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 	>
 		<svelte:fragment slot="button_top">
-			{#if $personas.favorite.includes($page.params.id)}
+			{#if $profile.signer !== undefined}				
+				{#if $personas.favorite.includes($page.params.id)}
 				<Button icon={StarFilled} variant="overlay" label="Remove favorite" />
-			{:else}
+				{:else}
 				<Button icon={Star} variant="overlay" label="Add to favorites" />
+				{/if}
 			{/if}
 		</svelte:fragment>
 
+		
 		<svelte:fragment slot="button_primary">
 			{#if $profile.signer !== undefined}
-				<Button
-					variant="primary"
-					label="Submit post"
-					icon={Edit}
-					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
-				/>
-			{/if}</svelte:fragment
-		>
+			<Button
+			variant="primary"
+			label="Submit post"
+			icon={Edit}
+			on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+			/>
+			{:else}
+					<Button
+						variant="primary"
+						label="Connect to post"
+						icon={Wallet}
+						on:click={() => handleConnect()}
+						/>
+						{/if}
+					</svelte:fragment>
+
+					<div class="note">"Review pending" button needs action</div>
+					
+					<svelte:fragment slot="button_other">
+						<!-- NEED TO ADD CORRECT ACTION HERE -->
+						<Button
+						label="Review pending"
+						icon={Hourglass}
+						
+						/>
+					</svelte:fragment>
+
+		<div class="note">place filter component here (under construction)</div>
 
 		{#if $posts.loading}
 			<p>Loading posts...</p>
 		{:else if $posts.posts.length == 0}
 			<p>There are no posts yet</p>
 		{:else}
-			<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={$posts.posts}>
+			<Grid>
 				{#each $posts.posts as post}
 					<Post {post} />
 				{/each}
-			</Masonry>
+			</Grid>
 		{/if}
 	</PersonaDetail>
 {/if}
 
 <style lang="scss">
+
 </style>

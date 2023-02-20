@@ -11,6 +11,7 @@
 		grid-auto-columns: auto;
 		grid-template-columns: 100%;
 		grid-auto-rows: auto;
+		align-items: end;
 		margin-inline: auto;
 
 		// decided to use max-width here to make it easier to match the page headers' width
