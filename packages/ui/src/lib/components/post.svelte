@@ -11,8 +11,7 @@
 <div class="post-card-wrapper">
 	<div class={`root ${cls}`}>
 		<div class="content-wrapper">
-			<div class="imgs" >
-
+			<div class="imgs">
 				<!-- I HARD CODED SOME IMAGES TO STYLE THE SECTION AND LEFT THEM TO SHOW THE STRUCTURE IN USE -->
 				<!-- MORE THAN 3 IMAGES SHOULD HAVE A "PLUS" ICON OVER THE THIRD WITH COUNT OF EXTRA IMAGES -->
 
@@ -32,7 +31,7 @@
 			</div>
 		</div>
 	</div>
-	<hr />	
+	<hr />
 </div>
 
 <style lang="scss">
@@ -81,15 +80,15 @@
 		justify-content: flex-start;
 		align-items: center;
 		flex-wrap: nowrap;
-		
+
 		div {
 			img {
 				max-height: 300px;
 			}
 			&:not(:only-child) img {
-			aspect-ratio: 1;
-			object-fit: cover;
-		}
+				aspect-ratio: 1;
+				object-fit: cover;
+			}
 		}
 
 		/* one item */
@@ -108,7 +107,6 @@
 		div:first-child:nth-last-child(3) ~ div {
 			width: 33.3333%;
 		}
-
 	}
 
 	.user-info {
@@ -161,5 +159,4 @@
 			height: 16px;
 		}
 	}
-	
 </style>

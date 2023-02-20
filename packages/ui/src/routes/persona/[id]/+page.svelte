@@ -17,8 +17,6 @@
 	import { ROUTES } from '$lib/routes'
 	import { connectWallet } from '$lib/services'
 
-	
-	
 	const persona = $personas.all.get($page.params.id)
 
 	const handleConnect = async () => {
@@ -31,7 +29,6 @@
 			console.error(err)
 		}
 	}
-
 </script>
 
 {#if persona === undefined}
@@ -46,44 +43,39 @@
 		bind:cover={persona.cover}
 	>
 		<svelte:fragment slot="button_top">
-			{#if $profile.signer !== undefined}				
+			{#if $profile.signer !== undefined}
 				{#if $personas.favorite.includes($page.params.id)}
-				<Button icon={StarFilled} variant="overlay" label="Remove favorite" />
+					<Button icon={StarFilled} variant="overlay" label="Remove favorite" />
 				{:else}
-				<Button icon={Star} variant="overlay" label="Add to favorites" />
+					<Button icon={Star} variant="overlay" label="Add to favorites" />
 				{/if}
 			{/if}
 		</svelte:fragment>
 
-		
 		<svelte:fragment slot="button_primary">
 			{#if $profile.signer !== undefined}
-			<Button
-			variant="primary"
-			label="Submit post"
-			icon={Edit}
-			on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
-			/>
+				<Button
+					variant="primary"
+					label="Submit post"
+					icon={Edit}
+					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+				/>
 			{:else}
-					<Button
-						variant="primary"
-						label="Connect to post"
-						icon={Wallet}
-						on:click={() => handleConnect()}
-						/>
-						{/if}
-					</svelte:fragment>
+				<Button
+					variant="primary"
+					label="Connect to post"
+					icon={Wallet}
+					on:click={() => handleConnect()}
+				/>
+			{/if}
+		</svelte:fragment>
 
-					<div class="note">"Review pending" button needs action</div>
-					
-					<svelte:fragment slot="button_other">
-						<!-- NEED TO ADD CORRECT ACTION HERE -->
-						<Button
-						label="Review pending"
-						icon={Hourglass}
-						
-						/>
-					</svelte:fragment>
+		<div class="note">"Review pending" button needs action</div>
+
+		<svelte:fragment slot="button_other">
+			<!-- NEED TO ADD CORRECT ACTION HERE -->
+			<Button label="Review pending" icon={Hourglass} />
+		</svelte:fragment>
 
 		<div class="note">place filter component here (under construction)</div>
 
@@ -102,5 +94,4 @@
 {/if}
 
 <style lang="scss">
-
 </style>

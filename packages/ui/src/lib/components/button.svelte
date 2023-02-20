@@ -167,8 +167,8 @@
 			}
 		}
 	}
-	.overlay {		
-		background-color: rgba(0,0,0, 0.5);
+	.overlay {
+		background-color: rgba(0, 0, 0, 0.5);
 		border-color: transparent;
 		backdrop-filter: blur(var(--blur));
 		color: var(--color-body-bg);

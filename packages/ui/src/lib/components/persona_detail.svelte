@@ -2,11 +2,11 @@
 	import Image from '$lib/components/icons/image.svelte'
 	import Renew from '$lib/components/icons/renew.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
-	import UserMultiple from './icons/user-multiple.svelte'	
+	import UserMultiple from './icons/user-multiple.svelte'
 	import Forum from './icons/forum.svelte'
 	import Button from '$lib/components/button.svelte'
 	import InputFile from '$lib/components/input-file.svelte'
-	
+
 	import { clipAndResize } from '$lib/utils/image'
 	import { MAX_DIMENSIONS } from '$lib/constants'
 
@@ -145,9 +145,9 @@
 		justify-content: space-between;
 		z-index: 1;
 
-			@media (min-width: 688px) {
-				padding: var(--spacing-48);
-			}
+		@media (min-width: 688px) {
+			padding: var(--spacing-48);
+		}
 	}
 
 	.avatar {
@@ -249,12 +249,12 @@
 		justify-content: center;
 		align-items: center;
 		gap: var(--spacing-12);
-		border-bottom: 1px solid var(--grey-200);		
+		border-bottom: 1px solid var(--grey-200);
 	}
 
 	@media (prefers-color-scheme: dark) {
 		.buttons-bottom {
-			border-bottom: 1px solid var(--grey-500)
+			border-bottom: 1px solid var(--grey-500);
 		}
 	}
 </style>
