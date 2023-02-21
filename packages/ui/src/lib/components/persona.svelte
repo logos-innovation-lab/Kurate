@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Card from '$lib/components/grid-card.svelte'
 	import UserMultiple from './icons/user-multiple.svelte'
 	import Forum from './icons/forum.svelte'
 
@@ -10,39 +11,42 @@
 	export let picture: string | undefined
 </script>
 
-<div class="persona-card-wrapper">
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div class={`root ${cls}`} on:click>
-		<div class="picture"><img src={picture} alt="persona" /></div>
-		<div class="details">
-			<div class="header">{name}</div>
-			<div class="description">{description}</div>
-			<div class="post-count">
-				<div>
-					<UserMultiple size={18} />
-					{postsCount}
-				</div>
-				<div>
-					<Forum size={18} />
-					{postsCount}
-				</div>
+
+<Card on:click>
+	<div class="picture"><img src={picture} alt="persona" /></div>
+	<div class="details">
+		<div class="header">{name}</div>
+		<div class="description">{description}</div>
+		<div class="post-count">
+			<div>
+				<UserMultiple size={18} />
+				{postsCount}
+			</div>
+			<div>
+				<Forum size={18} />
+				{postsCount}
 			</div>
 		</div>
 	</div>
-	<hr />
-</div>
+</Card>
 
 <style lang="scss">
 	.persona-card-wrapper {
 		width: 100%;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: flex-end;
+		justify-content: flex-end;
 
 		hr {
 			@media (min-width: 688px) {
 				display: none;
 			}
+		}
+
+		&:hover {
+			background-color: var(--grey-150);
 		}
 	}
 	.root {
@@ -57,16 +61,10 @@
 		width: 100%;
 		max-width: 498px;
 		margin-inline: auto;
+		
 
 		@media (min-width: 1242px) {
 			min-width: 350px;
-		}
-
-		&:hover {
-			background-color: var(--grey-150);
-		}
-
-		@media (prefers-color-scheme: dark) {
 		}
 	}
 
