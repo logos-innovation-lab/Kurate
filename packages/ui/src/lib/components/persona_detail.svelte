@@ -188,7 +188,7 @@
 		// 	justify-content: center;
 		// 	align-items: center;
 		// }
-		.emtpty,
+		// .emtpty,
 		.change {
 			position: absolute;
 			inset: auto 50% 50%;
@@ -257,20 +257,5 @@
 			border-bottom: 1px solid var(--grey-500);
 		}
 	
-	}
-
-	.persona-info {
-		text-align: center;
-		.name {
-
-		}
-
-		.pitch {
-
-		}
-
-		.description {
-			font-family: var(--font-serif);
-		}
 	}
 </style>
