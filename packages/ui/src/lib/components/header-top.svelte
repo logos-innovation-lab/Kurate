@@ -101,7 +101,6 @@
 
 		&.scrolled {
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
-			// border-bottom: none;
 			transition: box-shadow 0.2s;
 
 			.header-content {
@@ -110,11 +109,9 @@
 					transition: padding 0.2s;
 				}
 			}
-		}
-
-		@media (prefers-color-scheme: dark) {
-			// border-bottom-color: var(--grey-500);
-			box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
+			@media (prefers-color-scheme: dark) {
+				box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
+			}
 		}
 	}
 </style>
