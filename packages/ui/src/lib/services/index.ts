@@ -1,15 +1,12 @@
-import { ethers, providers, Signer, type BigNumberish, type ContractTransaction } from 'ethers'
-import { Identity } from '@semaphore-protocol/identity'
+import { ethers, providers, Signer, type ContractTransaction } from 'ethers'
 import { Group, type Member } from '@semaphore-protocol/group'
-import { generateProof, verifyProof, type FullProof } from '@semaphore-protocol/proof'
+import { verifyProof, type FullProof } from '@semaphore-protocol/proof'
+import { generateIdentity } from 'zkitter-js'
 
-import zkeyFilePath from '$lib/assets/semaphore.zkey?url'
-import wasmFilePath from '$lib/assets/semaphore.wasm?url'
-
-import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '$lib/assets/typechain'
-import { GLOBAL_ANONYMOUS_FEED_ADDRESS, GROUP_ID } from '$lib/constants'
-import type { BytesLike, Hexable } from 'ethers/lib/utils'
-import type { PromiseOrValue } from '$lib/assets/typechain/common'
+import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '../assets/typechain'
+import { GLOBAL_ANONYMOUS_FEED_ADDRESS, GROUP_ID } from '../constants'
+import { Strategy, ZkIdentity } from '@zk-kit/identity'
+import { generateECDHKeyPairFromhex, sha256, signWithP256 } from '../utils/crypto'
 
 type WindowWithEthereum = Window &
 	typeof globalThis & { ethereum: providers.ExternalProvider | providers.JsonRpcFetchFunc }
@@ -24,13 +21,37 @@ export function canConnectWallet() {
 	return Boolean((window as WindowWithEthereum)?.ethereum)
 }
 
-export async function createIdentity(signer: Signer, secret: string) {
-	const identitySeed = await signer.signMessage(secret)
-	return new Identity(identitySeed)
+export async function createIdentity(signer: Signer, nonce = 0) {
+	const identity = await generateIdentity(nonce, signer.signMessage.bind(signer))
+
+	const ecdhseed = await signWithP256(identity.priv, 'signing for ecdh - 0')
+	const ecdhHex = await sha256(ecdhseed)
+	const keyPair = await generateECDHKeyPairFromhex(ecdhHex)
+
+	const zkseed = await signWithP256(identity.priv, 'signing for zk identity - 0')
+	const zkHex = await sha256(zkseed)
+	const zkIdentity = new ZkIdentity(Strategy.MESSAGE, zkHex)
+
+	return {
+		zkIdentity,
+		ecdh: keyPair,
+	}
 }
 
 export function getGlobalAnonymousFeed(signer?: Signer): GlobalAnonymousFeed {
 	return new GlobalAnonymousFeed__factory(signer).attach(GLOBAL_ANONYMOUS_FEED_ADDRESS)
+}
+
+export async function fetchGroups(
+	globalAnonymousFeedContract: GlobalAnonymousFeed,
+): Promise<string[]> {
+	const events = await globalAnonymousFeedContract.queryFilter(
+		globalAnonymousFeedContract.filters.NewGroup(null),
+	)
+
+	return events.map((e) => {
+		return e.args.groupId.toHexString()
+	})
 }
 
 export async function getContractGroup(
@@ -50,44 +71,27 @@ export function joinGroupOffChain(group: Group, member: Member): void {
 	group.addMember(member)
 }
 
+export async function createNewPersona(
+	globalAnonymousFeed: GlobalAnonymousFeed,
+	identityCommitment: string,
+): Promise<ContractTransaction> {
+	const randBuf = crypto.getRandomValues(new Uint8Array(32))
+	const hex = '0x' + Buffer.from(randBuf).toString('hex')
+	return globalAnonymousFeed.createAndJoin(hex, identityCommitment)
+}
+
 export async function joinGroupOnChain(
 	globalAnonymousFeed: GlobalAnonymousFeed,
-	identityCommitment: Member,
+	groupId: string,
+	identityCommitment: string,
 ): Promise<ContractTransaction> {
-	return globalAnonymousFeed.joinGroup(identityCommitment)
+	return globalAnonymousFeed.joinGroup(groupId, identityCommitment)
 }
 
 export function getRandomExternalNullifier() {
 	return ethers.utils.keccak256(ethers.utils.toUtf8Bytes(crypto.randomUUID()))
 }
 
-export async function generateGroupProof(
-	group: Group,
-	identity: Identity,
-	signal: string,
-	externalNullifier: BytesLike | Hexable | number | bigint,
-): Promise<FullProof> {
-	return generateProof(identity, group, externalNullifier, signal, {
-		zkeyFilePath,
-		wasmFilePath,
-	})
-}
-
 export async function validateProofOffChain(proof: FullProof, treeDepth = 20): Promise<boolean> {
 	return verifyProof(proof, treeDepth)
-}
-
-export function validateProofOnChain(
-	globalAnonymousFeed: GlobalAnonymousFeed,
-	fullProof: FullProof,
-	message: string,
-	externalNullifier: PromiseOrValue<BigNumberish>,
-): Promise<ContractTransaction> {
-	return globalAnonymousFeed.sendMessage(
-		message,
-		fullProof.merkleTreeRoot,
-		fullProof.nullifierHash,
-		externalNullifier,
-		fullProof.proof,
-	)
 }

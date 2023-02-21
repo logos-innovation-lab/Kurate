@@ -1,7 +1,15 @@
 import { browser } from '$app/environment'
+import type { ZkIdentity } from '@zk-kit/identity'
 
 export function formatAddress(address: string, digits = 4) {
 	return `${address.substring(0, digits + 2)}…${address.substring(address.length - digits - 1)}`
+}
+
+export function formatZKIdentity(zkIdentity: ZkIdentity, digits = 4) {
+	const idCommitment = '0x' + zkIdentity.genIdentityCommitment().toString(16)
+	return `${idCommitment.substring(0, digits + 2)}…${idCommitment.substring(
+		idCommitment.length - digits - 1,
+	)}`
 }
 
 export function formatDateFromNow(timestamp: number) {
@@ -24,7 +32,7 @@ export function formatDateFromNow(timestamp: number) {
 }
 
 export function formatDateAndTime(timestamp: number) {
-	if (!browser) {
+	if (browser) {
 		return ''
 	}
 	const locale = navigator.language

@@ -16,6 +16,8 @@
 
 	import { page } from '$app/stores'
 	import InfoScreen from '$lib/components/info_screen.svelte'
+	import { profile } from '$lib/stores/profile'
+	import { createNewPersona, getGlobalAnonymousFeed } from '$lib/services'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -29,7 +31,15 @@
 
 	let state: 'text' | 'posts' | 'post_new' | 'publish_warning' | 'publish_success' = 'posts'
 
-	function publishPersona() {
+	const signer = $profile.signer
+	const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
+
+	async function publishPersona() {
+		if (!$profile.zkIdentity) throw new Error('no zkIdentity')
+		await createNewPersona(
+			globalAnonymousFeed,
+			'0x' + $profile.zkIdentity.genIdentityCommitment().toString(16)
+		)
 		$tokens.go -= TOKEN_POST_COST
 		state = 'publish_success'
 	}

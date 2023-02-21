@@ -2,62 +2,52 @@
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
-	import {
-		createIdentity,
-		generateGroupProof,
-		getContractGroup,
-		getGlobalAnonymousFeed,
-		getRandomExternalNullifier,
-		joinGroupOffChain,
-		joinGroupOnChain,
-	} from '$lib/services/index'
-	import { posts } from '$lib/stores/post'
-	import { hashPost, createPost } from '$lib/services/posts'
-	import { getWaku } from '$lib/services/waku'
 	import PostNew from '$lib/components/post_new.svelte'
+  import {page } from '$app/stores'
+  import {createRLNProof, Post} from "zkitter-js";
+  import {zkitter} from "$lib/stores/zkitter";
 
-	async function submit(postText: string) {
-		try {
-			const signer = $profile.signer
-			if (!signer) throw new Error('no signer')
+  async function submit(content: string) {
+    try {
+        const zkIdentity = $profile.zkIdentity
+        const client = $zkitter.client
 
-			const defaultIdentity = 'anonymous'
+        if (!client) throw new Error('zkitter is not initialized')
+        if (!zkIdentity) throw new Error('no zkIdentity')
 
-			const identity = await createIdentity(signer, defaultIdentity)
+        const post = new Post({
+            type: 'POST' as any,
+            subtype: '' as any,
+            creator: '',
+            payload: {
+              content,
+            },
+        });
 
-			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
-			const group = await getContractGroup(globalAnonymousFeed)
+        const groupAdapter = client.services.groups.groups['kurate'];
+        const groupId = $page.params.id
+        const identityCommitment = zkIdentity.genIdentityCommitment()
+        await groupAdapter.sync()
+        // @ts-ignore
+        const tree = await groupAdapter.tree(groupId)
+        const merklePath = tree.createProof(tree.indexOf(identityCommitment))
+        const proof = await createRLNProof(post.hash(), zkIdentity, merklePath)
 
-			const commitment = identity.commitment
+        await client.services.pubsub.publish(post, {
+          type: 'rln' as any,
+          proof,
+          groupId,
+        })
 
-			if (!group.members.includes(commitment)) {
-				joinGroupOffChain(group, commitment)
-				const txres = await joinGroupOnChain(globalAnonymousFeed, commitment)
-				console.log(txres)
-			}
+        goto(ROUTES.HOME)
+    } catch (error) {
+        console.error(error)
+    }
+  }
 
-			const post = { text: postText }
-			const signal = hashPost(post)
-
-			const externalNullifier = getRandomExternalNullifier()
-			const proof = await generateGroupProof(group, identity, signal, externalNullifier)
-
-			const waku = await getWaku()
-			await createPost(waku, post, proof)
-
-			posts.add({
-				timestamp: Date.now(),
-				text: postText,
-			})
-			goto(ROUTES.HOME)
-		} catch (error) {
-			console.error(error)
-		}
-	}
-
-	function cancel() {
-		history.back()
-	}
+  function cancel() {
+    history.back()
+  }
 </script>
 
 <PostNew {submit} {cancel} />

@@ -14,9 +14,65 @@
 	import Search from '$lib/components/icons/search.svelte'
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
 	import Add from '$lib/components/icons/add.svelte'
+	import type { Signer } from 'ethers'
+	import type {Zkitter} from 'zkitter-js'
+	import {zkitter} from "$lib/stores/zkitter";
+	import { getGlobalAnonymousFeed } from '$lib/services'
+	import { GroupAdapter } from '$lib/utils/groupAdapter'
+
 
 	let filterText = ''
 	let showChat = false
+	let signer: Signer | undefined = undefined
+	let zkitterClient: Zkitter | undefined = undefined
+
+	profile.subscribe(async () => {
+		if ($profile.signer) {
+			signer = $profile.signer
+			await maybeInitZkitter();
+		}
+	})
+
+	zkitter.subscribe(async () => {
+		if ($zkitter.client) {
+			zkitterClient = $zkitter.client
+			await maybeInitZkitter();
+		}
+	})
+
+
+	async function maybeInitZkitter() {
+		if (!zkitterClient || !signer || !$zkitter.client) return
+
+		const globalAnonymousFeed = getGlobalAnonymousFeed($profile.signer || {} as any)
+		const client = $zkitter.client
+		const groupAdapter = new GroupAdapter({
+			globalAnonymousFeed,
+			db: client.db,
+		})
+		client.services.groups.addGroup(groupAdapter as any)
+
+		client.on('Zkitter.NewMessageCreated', async (msg, proof) => {
+			console.log(msg, proof);
+		})
+
+		await groupAdapter.sync()
+		await client.subscribe()
+
+		for (let groupId of Object.keys(groupAdapter.groups)) {
+			if (!$personas.all.has(groupId)) {
+				$personas.all.set(groupId, {
+					groupId: groupId,
+					name: '',
+					pitch: '',
+					description: '',
+					postsCount: 0,
+				})
+			}
+		}
+
+		personas.update((state) => ({ ...state, all: $personas.all }))
+	}
 
 	function createDraft() {
 		goto(ROUTES.PERSONA_NEW)

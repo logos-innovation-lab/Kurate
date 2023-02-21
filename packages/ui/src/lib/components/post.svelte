@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { formatDateAndTime } from '$lib/utils/format'
-
-	import type { Post } from '$lib/stores/post'
+	import type { Post } from "zkitter-js";
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -11,9 +10,9 @@
 <div class={`root ${cls}`}>
 	<div class="content-wrapper">
 		<div class="user-info">
-			<div class="faded">{formatDateAndTime(post.timestamp)}</div>
+			<div class="faded">{formatDateAndTime(post.createdAt.getTime())}</div>
 		</div>
-		<div class="post-content">{post.text}</div>
+		<div class="post-content">{post.payload.content}</div>
 	</div>
 </div>
 

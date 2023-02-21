@@ -1,11 +1,11 @@
 <script lang="ts">
-	import Post from '$lib/components/post.svelte'
+	import PostComponent from '$lib/components/post.svelte'
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 	import Star from '$lib/components/icons/star.svelte'
 	import StarFilled from '$lib/components/icons/star_filled.svelte'
 
-	import { posts } from '$lib/stores/post'
+	// import { posts } from '$lib/stores/post'
 	import { personas } from '$lib/stores/persona'
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
@@ -14,6 +14,7 @@
 	import Masonry from '$lib/masonry.svelte'
 	import { ROUTES } from '$lib/routes'
 	import PersonaDetail from '$lib/components/persona_detail.svelte'
+	import { zkitter } from '$lib/stores/zkitter'
 
 	let windowWidth: number = browser ? window.innerWidth : 0
 
@@ -28,7 +29,20 @@
 		return 'minmax(323px, 1fr)'
 	}
 
-	const persona = $personas.all.get($page.params.id)
+	const persona = $personas.all.get($page.params.groupId)
+	let posts: any[] = [];
+
+	zkitter.subscribe(async () => {
+		if ($zkitter.client) {
+			posts = await $zkitter.client.getHomefeed({
+				addresses: {},
+				groups: {
+					[$page.params.groupId]: true,
+				}
+			})
+		}
+	})
+
 </script>
 
 <svelte:window bind:innerWidth={windowWidth} />
@@ -62,14 +76,12 @@
 			{/if}</svelte:fragment
 		>
 
-		{#if $posts.loading}
-			<p>Loading posts...</p>
-		{:else if $posts.posts.length == 0}
+		{#if posts.length == 0}
 			<p>There are no posts yet</p>
 		{:else}
-			<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={$posts.posts}>
-				{#each $posts.posts as post}
-					<Post {post} />
+			<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={posts}>
+				{#each posts as post}
+					<PostComponent {post} />
 				{/each}
 			</Masonry>
 		{/if}
