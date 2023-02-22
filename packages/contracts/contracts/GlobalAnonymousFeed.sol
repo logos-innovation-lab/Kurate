@@ -21,7 +21,7 @@ contract GlobalAnonymousFeed {
     }
 
     function createGroup(uint256 groupId) external {
-        semaphore.createGroup(groupId, 15, address(this));
+        semaphore.createGroup(groupId, 20, address(this));
         groups[groupId] = true;
         emit NewGroup(groupId);
     }

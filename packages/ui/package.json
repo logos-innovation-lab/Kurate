@@ -41,6 +41,7 @@
 		"browser-or-node": "^2.1.1",
 		"browserify": "^17.0.0",
 		"css-loader": "^6.7.3",
+		"dotenv-webpack": "^8.0.1",
 		"elliptic": "^6.5.4",
 		"eslint": "^8.33.0",
 		"eslint-config-prettier": "^8.6.0",

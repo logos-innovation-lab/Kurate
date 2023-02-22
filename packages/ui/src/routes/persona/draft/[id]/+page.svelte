@@ -16,6 +16,8 @@
 
 	import { page } from "../../../../lib/stores/route";
 	import InfoScreen from '../../../../lib/components/info_screen.svelte'
+	import {getGlobalAnonymousFeed, createNewPersona} from "../../../../lib/services";
+	import {profile} from "../../../../lib/stores/profile";
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -29,9 +31,14 @@
 
 	let state: 'text' | 'posts' | 'post_new' | 'publish_warning' | 'publish_success' = 'posts'
 
-	function publishPersona() {
-		$tokens.go -= TOKEN_POST_COST
-		state = 'publish_success'
+	const signer = $profile.signer
+	const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
+
+	console.log(globalAnonymousFeed);
+	async function publishPersona() {
+		console.log(await createNewPersona(globalAnonymousFeed))
+		// $tokens.go -= TOKEN_POST_COST
+		// state = 'publish_success'
 	}
 </script>
 

@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin')
 const path = require('path')
+const Dotenv = require('dotenv-webpack')
 
 const mode = process.env.NODE_ENV || 'development'
 const prod = mode === 'production'
@@ -79,6 +80,7 @@ module.exports = {
     },
     mode,
     plugins: [
+        new Dotenv(),
         new webpack.ProvidePlugin({
             Buffer: ['buffer', 'Buffer'],
         }),

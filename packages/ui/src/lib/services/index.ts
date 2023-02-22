@@ -64,6 +64,12 @@ export function joinGroupOffChain(group: Group, member: Member): void {
 	group.addMember(member)
 }
 
+export async function createNewPersona(globalAnonymousFeed: GlobalAnonymousFeed): Promise<ContractTransaction> {
+	const randBuf = crypto.getRandomValues(new Uint8Array(32));
+	const hex = '0x' + Buffer.from(randBuf).toString('hex');
+	return globalAnonymousFeed.createGroup(hex)
+}
+
 export async function joinGroupOnChain(
 	globalAnonymousFeed: GlobalAnonymousFeed,
 	identityCommitment: Member,

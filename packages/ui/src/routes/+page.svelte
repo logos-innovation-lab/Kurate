@@ -18,6 +18,8 @@
 	let filterText = ''
 	let showChat = false
 
+	console.log($personas.draft);
+
 	function createDraft() {
 		goto(ROUTES.PERSONA_NEW)
 	}

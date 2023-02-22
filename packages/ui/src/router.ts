@@ -29,7 +29,7 @@ router(ROUTES.PERSONA(':groupId'), (ctx) => {
   )
 })
 
-router(ROUTES.PERSONA_DRAFT(':groupId'), (ctx) => {
+router(ROUTES.PERSONA_DRAFT(':id'), (ctx) => {
   return import(/* webpackChunkName: "index" */ './routes/persona/draft/[id]/+page.svelte').then(module =>
     page.set({
       component: module.default,
@@ -38,7 +38,7 @@ router(ROUTES.PERSONA_DRAFT(':groupId'), (ctx) => {
   )
 })
 
-router(ROUTES.POST_NEW(':groupId'), (ctx) => {
+router(ROUTES.POST_NEW(':id'), (ctx) => {
   return import(/* webpackChunkName: "index" */ './routes/persona/[id]/post/new/+page.svelte').then(module =>
     page.set({
       component: module.default,
