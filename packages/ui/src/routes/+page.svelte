@@ -66,6 +66,11 @@
 			db: client.db,
 		})
 		client.services.groups.addGroup(groupAdapter as any)
+
+		client.on('Zkitter.NewMessageCreated', async (msg, proof) => {
+			console.log(msg, proof);
+		})
+
 		await groupAdapter.sync()
 		await client.subscribe()
 

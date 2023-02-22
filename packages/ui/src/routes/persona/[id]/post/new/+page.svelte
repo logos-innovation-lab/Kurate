@@ -1,63 +1,54 @@
 <script lang="ts">
-	import { profile } from '../../../../../lib/stores/profile'
-	import goto from 'page'
-	import { ROUTES } from '../../../../../lib/routes'
-	import {
-		createIdentity,
-		generateGroupProof,
-		getContractGroup,
-		getGlobalAnonymousFeed,
-		getRandomExternalNullifier,
-		joinGroupOffChain,
-		joinGroupOnChain,
-	} from '../../../../../lib/services'
-	import { posts } from '../../../../../lib/stores/post'
-	import { hashPost, createPost } from '../../../../../lib/services/posts'
-	import { getWaku } from '../../../../../lib/services/waku'
-	import PostNew from '../../../../../lib/components/post_new.svelte'
+  import {profile} from '../../../../../lib/stores/profile'
+  import PostNew from '../../../../../lib/components/post_new.svelte'
+  import {page} from "../../../../../lib/stores/route";
+  import {createRLNProof, Post} from "zkitter-js";
+  import {zkitter} from "../../../../../lib/stores/zkitter";
+  import goto from 'page';
+  import {ROUTES} from "../../../../../lib/routes";
 
-	async function submit(postText: string) {
-		try {
-			const signer = $profile.signer
-			if (!signer) throw new Error('no signer')
+  async function submit(content: string) {
+    try {
+        const zkIdentity = $profile.zkIdentity
+        const client = $zkitter.client
 
-			const defaultIdentity = 'anonymous'
+        if (!client) throw new Error('zkitter is not initialized')
+        if (!zkIdentity) throw new Error('no zkIdentity')
 
-			const identity = await createIdentity(signer, defaultIdentity)
+        const post = new Post({
+            type: 'POST' as any,
+            subtype: '' as any,
+            creator: '',
+            payload: {
+              content,
+            },
+        });
 
-			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
-			const group = await getContractGroup(globalAnonymousFeed)
+        const groupAdapter = client.services.groups.groups['kurate'];
+        const groupId = $page.params.id
+        const identityCommitment = zkIdentity.genIdentityCommitment()
+        const idCommitmentHex = '0x' + identityCommitment.toString(16)
+        await groupAdapter.sync()
+        // @ts-ignore
+        const tree = await groupAdapter.tree(groupId)
+        const merklePath = await tree.createProof(tree.indexOf(identityCommitment))
+        const proof = await createRLNProof(post.hash(), zkIdentity, merklePath)
 
-			const commitment = identity.commitment
+        await client.services.pubsub.publish(post, {
+          type: 'rln' as any,
+          proof,
+          groupId,
+        })
 
-			if (!group.members.includes(commitment)) {
-				joinGroupOffChain(group, commitment)
-				const txres = await joinGroupOnChain(globalAnonymousFeed, commitment)
-				console.log(txres)
-			}
+        goto(ROUTES.HOME)
+    } catch (error) {
+        console.error(error)
+    }
+  }
 
-			const post = { text: postText }
-			const signal = hashPost(post)
-
-			const externalNullifier = getRandomExternalNullifier()
-			const proof = await generateGroupProof(group, identity, signal, externalNullifier)
-
-			const waku = await getWaku()
-			await createPost(waku, post, proof)
-
-			posts.add({
-				timestamp: Date.now(),
-				text: postText,
-			})
-			goto(ROUTES.HOME)
-		} catch (error) {
-			console.error(error)
-		}
-	}
-
-	function cancel() {
-		history.back()
-	}
+  function cancel() {
+    history.back()
+  }
 </script>
 
 <PostNew {submit} {cancel} />

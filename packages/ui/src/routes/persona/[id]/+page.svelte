@@ -5,7 +5,6 @@
 	import Star from '../../../lib/components/icons/star.svelte'
 	import StarFilled from '../../../lib/components/icons/star_filled.svelte'
 
-	import { posts } from '../../../lib/stores/post'
 	import { personas } from '../../../lib/stores/persona'
 	import { profile } from '../../../lib/stores/profile'
 	import goto from 'page'
@@ -14,6 +13,7 @@
 	import Masonry from '../../../lib/masonry.svelte'
 	import { ROUTES } from '../../../lib/routes'
 	import PersonaDetail from '../../../lib/components/persona_detail.svelte'
+	import {zkitter} from "../../../lib/stores/zkitter";
 
 	let windowWidth: number = isBrowser ? window.innerWidth : 0
 
@@ -29,12 +29,25 @@
 	}
 
 	const persona = $personas.all.get($page.params.groupId)
+	let posts = [];
+
+	zkitter.subscribe(async () => {
+		if ($zkitter.client) {
+			posts = await $zkitter.client.getHomefeed({
+				addresses: {},
+				groups: {
+					[$page.params.groupId]: true,
+				}
+			})
+		}
+	})
+
 </script>
 
 <svelte:window bind:innerWidth={windowWidth} />
 
 {#if persona === undefined}
-	<div>There is no persona with group ID {$page.params.id}</div>
+	<div>There is no persona with group ID {$page.params.groupId}</div>
 {:else}
 	<PersonaDetail
 		name={persona.name}
@@ -44,7 +57,7 @@
 		bind:cover={persona.cover}
 	>
 		<svelte:fragment slot="button_top">
-			{#if $personas.favorite.includes($page.params.id)}
+			{#if $personas.favorite.includes($page.params.groupId)}
 				<Button icon={StarFilled} variant="primary" label="Remove favorite" />
 			{:else}
 				<Button icon={Star} variant="primary" label="Add to favorites" />
@@ -57,18 +70,16 @@
 					variant="primary"
 					label="Submit post"
 					icon={Edit}
-					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+					on:click={() => goto(ROUTES.POST_NEW($page.params.groupId))}
 				/>
 			{/if}</svelte:fragment
 		>
 
-		{#if $posts.loading}
-			<p>Loading posts...</p>
-		{:else if $posts.posts.length == 0}
+		{#if posts.length == 0}
 			<p>There are no posts yet</p>
 		{:else}
-			<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={$posts.posts}>
-				{#each $posts.posts as post}
+			<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={posts}>
+				{#each posts as post}
 					<Post {post} />
 				{/each}
 			</Masonry>

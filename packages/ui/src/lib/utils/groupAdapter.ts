@@ -11,6 +11,8 @@ export class GroupAdapter extends EventEmitter2 {
 
   globalAnonymousFeed: GlobalAnonymousFeed
 
+  groupId = 'kurate'
+
   groups: {
     [groupId: string]: string;
   }
