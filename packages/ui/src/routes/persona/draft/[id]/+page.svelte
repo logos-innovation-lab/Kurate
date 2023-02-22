@@ -34,11 +34,13 @@
 	const signer = $profile.signer
 	const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
 
-	console.log(globalAnonymousFeed);
 	async function publishPersona() {
-		console.log(await createNewPersona(globalAnonymousFeed))
-		// $tokens.go -= TOKEN_POST_COST
-		// state = 'publish_success'
+		await createNewPersona(
+			globalAnonymousFeed,
+			'0x' + $profile.zkIdentity.genIdentityCommitment().toString(16)
+		)
+		$tokens.go -= TOKEN_POST_COST
+		state = 'publish_success'
 	}
 </script>
 

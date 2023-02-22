@@ -47,6 +47,16 @@ export function getGlobalAnonymousFeed(signer?: Signer): GlobalAnonymousFeed {
 	return new GlobalAnonymousFeed__factory(signer).attach(GLOBAL_ANONYMOUS_FEED_ADDRESS)
 }
 
+export async function fetchGroups(globalAnonymousFeedContract: GlobalAnonymousFeed): Promise<string[]> {
+	const events = await globalAnonymousFeedContract.queryFilter(
+		globalAnonymousFeedContract.filters.NewGroup(null),
+	)
+
+	return events.map(e => {
+		return e.args.groupId.toHexString();
+	});
+}
+
 export async function getContractGroup(
 	globalAnonymousFeedContract: GlobalAnonymousFeed,
 ): Promise<Group> {
@@ -64,17 +74,21 @@ export function joinGroupOffChain(group: Group, member: Member): void {
 	group.addMember(member)
 }
 
-export async function createNewPersona(globalAnonymousFeed: GlobalAnonymousFeed): Promise<ContractTransaction> {
-	const randBuf = crypto.getRandomValues(new Uint8Array(32));
-	const hex = '0x' + Buffer.from(randBuf).toString('hex');
-	return globalAnonymousFeed.createGroup(hex)
+export async function createNewPersona(
+	globalAnonymousFeed: GlobalAnonymousFeed,
+	identityCommitment: string
+): Promise<ContractTransaction> {
+	const randBuf = crypto.getRandomValues(new Uint8Array(32))
+	const hex = '0x' + Buffer.from(randBuf).toString('hex')
+	return globalAnonymousFeed.createAndJoin(hex, identityCommitment)
 }
 
 export async function joinGroupOnChain(
 	globalAnonymousFeed: GlobalAnonymousFeed,
-	identityCommitment: Member,
+	groupId: string,
+	identityCommitment: string,
 ): Promise<ContractTransaction> {
-	return globalAnonymousFeed.joinGroup(identityCommitment)
+	return globalAnonymousFeed.joinGroup(groupId, identityCommitment)
 }
 
 export function getRandomExternalNullifier() {

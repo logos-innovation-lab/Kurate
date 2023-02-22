@@ -29,6 +29,7 @@ import type {
 
 export interface GlobalAnonymousFeedInterface extends utils.Interface {
   functions: {
+    "createAndJoin(uint256,uint256)": FunctionFragment;
     "createGroup(uint256)": FunctionFragment;
     "groupMembers(uint256,uint256)": FunctionFragment;
     "groups(uint256)": FunctionFragment;
@@ -38,6 +39,7 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "createAndJoin"
       | "createGroup"
       | "groupMembers"
       | "groups"
@@ -45,6 +47,10 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
       | "semaphore"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "createAndJoin",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
   encodeFunctionData(
     functionFragment: "createGroup",
     values: [PromiseOrValue<BigNumberish>]
@@ -63,6 +69,10 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "semaphore", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "createAndJoin",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "createGroup",
     data: BytesLike
@@ -129,6 +139,12 @@ export interface GlobalAnonymousFeed extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    createAndJoin(
+      groupId: PromiseOrValue<BigNumberish>,
+      identityCommitment: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     createGroup(
       groupId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -153,6 +169,12 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     semaphore(overrides?: CallOverrides): Promise<[string]>;
   };
+
+  createAndJoin(
+    groupId: PromiseOrValue<BigNumberish>,
+    identityCommitment: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   createGroup(
     groupId: PromiseOrValue<BigNumberish>,
@@ -179,6 +201,12 @@ export interface GlobalAnonymousFeed extends BaseContract {
   semaphore(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
+    createAndJoin(
+      groupId: PromiseOrValue<BigNumberish>,
+      identityCommitment: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     createGroup(
       groupId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -219,6 +247,12 @@ export interface GlobalAnonymousFeed extends BaseContract {
   };
 
   estimateGas: {
+    createAndJoin(
+      groupId: PromiseOrValue<BigNumberish>,
+      identityCommitment: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     createGroup(
       groupId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -245,6 +279,12 @@ export interface GlobalAnonymousFeed extends BaseContract {
   };
 
   populateTransaction: {
+    createAndJoin(
+      groupId: PromiseOrValue<BigNumberish>,
+      identityCommitment: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     createGroup(
       groupId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }

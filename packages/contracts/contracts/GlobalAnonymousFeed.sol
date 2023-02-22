@@ -39,4 +39,9 @@ contract GlobalAnonymousFeed {
         groupMembers[groupId][identityCommitment] = true;
         emit NewIdentity(groupId, identityCommitment);
     }
+
+    function createAndJoin(uint256 groupId, uint256 identityCommitment) external {
+        this.createGroup(groupId);
+        this.joinGroup(groupId, identityCommitment);
+    }
 }

@@ -14,11 +14,35 @@
 	import Search from '../lib/components/icons/search.svelte'
 	import SettingsView from '../lib/components/icons/settings-view.svelte'
 	import Add from '../lib/components/icons/add.svelte'
+	import {getGlobalAnonymousFeed, fetchGroups} from "../lib/services";
 
 	let filterText = ''
 	let showChat = false
 
-	console.log($personas.draft);
+	profile.subscribe(() => {
+		if ($profile.signer) {
+			const globalAnonymousFeed = getGlobalAnonymousFeed($profile.signer || {} as any)
+			fetchGroups(globalAnonymousFeed).then(async groups => {
+				for (let groupId of groups) {
+					if (!$personas.all.has(groupId)) {
+						console.log(groupId)
+						$personas.all.set(groupId, {
+							groupId: groupId,
+							name: '',
+							pitch: '',
+							description: '',
+							postsCount: 0,
+						})
+					}
+				}
+
+				personas.update((state) => ({ ...state, all: $personas.all }))
+			})
+		}
+	})
+
+
+
 
 	function createDraft() {
 		goto(ROUTES.PERSONA_NEW)
