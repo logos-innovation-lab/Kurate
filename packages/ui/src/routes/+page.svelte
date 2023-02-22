@@ -1,25 +1,25 @@
 <script lang="ts">
-	import HeaderTop from '$lib/components/header-top.svelte'
-	import Persona from '$lib/components/persona.svelte'
-	import Grid from '$lib/components/grid.svelte'
+	import page from 'page'
+	import HeaderTop from '../lib/components/header-top.svelte'
+	import Persona from '../lib/components/persona.svelte'
+	import Grid from '../lib/components/grid.svelte'
 
-	import { profile } from '$lib/stores/profile'
-	import { personas } from '$lib/stores/persona'
-	import { chats } from '$lib/stores/chat'
+	import { profile } from '../lib/stores/profile'
+	import { personas } from '../lib/stores/persona'
+	import { chats } from '../lib/stores/chat'
 
-	import { goto } from '$app/navigation'
-	import { ROUTES } from '$lib/routes'
+	import { ROUTES } from '../lib/routes'
 
-	import Button from '$lib/components/button.svelte'
-	import Search from '$lib/components/icons/search.svelte'
-	import SettingsView from '$lib/components/icons/settings-view.svelte'
-	import Add from '$lib/components/icons/add.svelte'
+	import Button from '../lib/components/button.svelte'
+	import Search from '../lib/components/icons/search.svelte'
+	import SettingsView from '../lib/components/icons/settings-view.svelte'
+	import Add from '../lib/components/icons/add.svelte'
 
 	let filterText = ''
 	let showChat = false
 
 	function createDraft() {
-		goto(ROUTES.PERSONA_NEW)
+		page(ROUTES.PERSONA_NEW)
 	}
 </script>
 
@@ -58,7 +58,7 @@
 								name={draftPersona.name}
 								description={draftPersona.description}
 								postsCount={draftPersona.posts.length}
-								on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
+								on:click={() => page(ROUTES.PERSONA_DRAFT(index))}
 								picture={draftPersona.picture}
 							/>
 						{/each}
@@ -77,7 +77,7 @@
 									name={$personas.all.get(personaId)?.name}
 									description={$personas.all.get(personaId)?.description}
 									postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
-									on:click={() => goto(ROUTES.PERSONA(personaId))}
+									on:click={() => page(ROUTES.PERSONA(personaId))}
 									picture={$personas.all.get(personaId)?.picture}
 								/>
 							{/if}
@@ -112,7 +112,7 @@
 						name={data.name}
 						description={data.description}
 						postsCount={data.postsCount}
-						on:click={() => goto(ROUTES.PERSONA(groupId))}
+						on:click={() => page(ROUTES.PERSONA(groupId))}
 						picture={data.picture}
 					/>
 				{:else}

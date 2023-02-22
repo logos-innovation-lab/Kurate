@@ -1,7 +1,7 @@
 import { writable, type Writable } from 'svelte/store'
 import type { Identity } from '@semaphore-protocol/identity'
 import type { Post } from './post'
-import { browser } from '$app/environment'
+import { isBrowser } from 'browser-or-node'
 
 interface Persona {
 	identity?: Identity
@@ -32,7 +32,7 @@ export interface PersonaStoreWritable extends Writable<PersonaStore> {
 function createPersonaStore(): PersonaStoreWritable {
 	const store = writable<PersonaStore>({
 		all: new Map(),
-		draft: browser && localStorage ? JSON.parse(localStorage.getItem('drafts') ?? '[]') : [],
+		draft: isBrowser && localStorage ? JSON.parse(localStorage.getItem('drafts') ?? '[]') : [],
 		favorite: [],
 		loading: true,
 	})
@@ -104,7 +104,7 @@ function createPersonaStore(): PersonaStoreWritable {
 				store.update(({ draft, ...state }) => {
 					const newDraft = [...draft, draftPersona]
 
-					if (browser && localStorage) {
+					if (isBrowser && localStorage) {
 						localStorage.setItem('drafts', JSON.stringify(newDraft))
 					}
 
@@ -118,7 +118,7 @@ function createPersonaStore(): PersonaStoreWritable {
 			store.update(({ draft, ...state }) => {
 				draft[index] = draftPersona
 
-				if (browser && localStorage) {
+				if (isBrowser && localStorage) {
 					localStorage.setItem('drafts', JSON.stringify(draft))
 				}
 

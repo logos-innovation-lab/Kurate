@@ -1,6 +1,6 @@
 import { writable, type Writable } from 'svelte/store'
-import { getWaku } from '$lib/services/waku'
-import { subscribeToPosts } from '$lib/services/posts'
+import { getWaku } from '../services/waku'
+import { subscribeToPosts } from '../services/posts'
 
 export interface Post {
 	timestamp: number

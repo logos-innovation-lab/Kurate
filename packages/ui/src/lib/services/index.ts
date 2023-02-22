@@ -3,13 +3,13 @@ import { Identity } from '@semaphore-protocol/identity'
 import { Group, type Member } from '@semaphore-protocol/group'
 import { generateProof, verifyProof, type FullProof } from '@semaphore-protocol/proof'
 
-import zkeyFilePath from '$lib/assets/semaphore.zkey?url'
-import wasmFilePath from '$lib/assets/semaphore.wasm?url'
+const zkeyFilePath = ''
+const wasmFilePath = ''
 
-import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '$lib/assets/typechain'
-import { GLOBAL_ANONYMOUS_FEED_ADDRESS, GROUP_ID } from '$lib/constants'
+import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '../assets/typechain'
+import { GLOBAL_ANONYMOUS_FEED_ADDRESS, GROUP_ID } from '../constants'
 import type { BytesLike, Hexable } from 'ethers/lib/utils'
-import type { PromiseOrValue } from '$lib/assets/typechain/common'
+import type { PromiseOrValue } from '../assets/typechain/common'
 
 type WindowWithEthereum = Window &
 	typeof globalThis & { ethereum: providers.ExternalProvider | providers.JsonRpcFetchFunc }

@@ -1,12 +1,12 @@
 <script lang="ts">
+	import page from 'page'
 	import Button from './button.svelte'
 
-	import { goto } from '$app/navigation'
-	import { ROUTES } from '$lib/routes'
+	import { ROUTES } from '../../lib/routes'
 	import Wallet from './icons/wallet.svelte'
-	import { formatAddress } from '$lib/utils/format'
-	import { profile } from '$lib/stores/profile'
-	import { connectWallet } from '$lib/services'
+	import { formatAddress } from '../../lib/utils/format'
+	import { profile } from '../../lib/stores/profile'
+	import { connectWallet } from '../../lib/services'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -38,7 +38,7 @@
 					icon={Wallet}
 					variant={'secondary'}
 					label={formatAddress(address)}
-					on:click={() => goto(ROUTES.PROFILE)}
+					on:click={() => page(ROUTES.PROFILE)}
 				/>
 			{:else}
 				<Button
