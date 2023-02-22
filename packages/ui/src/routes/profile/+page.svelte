@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment'
+	import { isBrowser } from 'browser-or-node'
 	import Button from '../../lib/components/button.svelte'
 	import Logout from '../../lib/components/icons/logout.svelte'
 	import Undo from '../../lib/components/icons/undo.svelte'
@@ -12,7 +12,7 @@
 	let y: number
 
 	let error: Error | undefined = undefined
-	let hasWallet = browser && canConnectWallet()
+	let hasWallet = isBrowser && canConnectWallet()
 
 	const handleConnect = async () => {
 		try {

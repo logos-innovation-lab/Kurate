@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Undo from '$lib/components/icons/undo.svelte'
-	import Close from '$lib/components/icons/close.svelte'
-	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
-	import Button from '$lib/components/button.svelte'
-	import Textarea from '$lib/components/textarea.svelte'
+	import Undo from './icons/undo.svelte'
+	import Close from './icons/close.svelte'
+	import ArrowRight from './icons/arrow-right.svelte'
+	import Button from './button.svelte'
+	import Textarea from './textarea.svelte'
 
 	let y: number
 

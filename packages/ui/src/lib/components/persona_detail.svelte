@@ -1,14 +1,14 @@
 <script lang="ts">
-	import Image from '$lib/components/icons/image.svelte'
-	import Renew from '$lib/components/icons/renew.svelte'
-	import Undo from '$lib/components/icons/undo.svelte'
+	import Image from './icons/image.svelte'
+	import Renew from './icons/renew.svelte'
+	import Undo from './icons/undo.svelte'
 
-	import Button from '$lib/components/button.svelte'
-	import InputFile from '$lib/components/input-file.svelte'
+	import Button from './button.svelte'
+	import InputFile from './input-file.svelte'
 
-	import { clipAndResize } from '$lib/utils/image'
+	import { clipAndResize } from '../utils/image'
 
-	import { MAX_DIMENSIONS } from '$lib/constants'
+	import { MAX_DIMENSIONS } from '../constants'
 
 	export let name: string
 	export let pitch: string

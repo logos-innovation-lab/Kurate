@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { formatDateAndTime } from '$lib/utils/format'
+	import { formatDateAndTime } from '../utils/format'
 
-	import type { Post } from '$lib/stores/post'
+	import type { Post } from '../stores/post'
 
 	let cls: string | undefined = undefined
 	export { cls as class }

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Button from '$lib/components/button.svelte'
-	import Close from '$lib/components/icons/close.svelte'
-	import SendAltFilled from '$lib/components/icons/send-alt-filled.svelte'
-	import InputString from '$lib/components/input-string.svelte'
-	import { profile } from '$lib/stores/profile'
+	import Button from './button.svelte'
+	import Close from './icons/close.svelte'
+	import SendAltFilled from './icons/send-alt-filled.svelte'
+	import InputString from './input-string.svelte'
+	import { profile } from '../stores/profile'
 
 	let cls: string | undefined = undefined
 	export { cls as class }

@@ -1,17 +1,17 @@
 <script lang="ts">
-	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
-	import Checkmark from '$lib/components/icons/checkmark.svelte'
-	import Close from '$lib/components/icons/close.svelte'
-	import Edit from '$lib/components/icons/edit.svelte'
+	import ArrowRight from '../../../lib/components/icons/arrow-right.svelte'
+	import Checkmark from '../../../lib/components/icons/checkmark.svelte'
+	import Close from '../../../lib/components/icons/close.svelte'
+	import Edit from '../../../lib/components/icons/edit.svelte'
 
-	import Button from '$lib/components/button.svelte'
-	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
-	import PersonaDetail from '$lib/components/persona_detail.svelte'
+	import Button from '../../../lib/components/button.svelte'
+	import PersonaEditText from '../../../lib/components/persona_edit_text.svelte'
+	import PersonaDetail from '../../../lib/components/persona_detail.svelte'
 
-	import { ROUTES } from '$lib/routes'
-	import { goto } from '$app/navigation'
-	import { personas } from '$lib/stores/persona'
-	import InfoScreen from '$lib/components/info_screen.svelte'
+	import { ROUTES } from '../../../lib/routes'
+	import goto from 'page'
+	import { personas } from '../../../lib/stores/persona'
+	import InfoScreen from '../../../lib/components/info_screen.svelte'
 
 	let persona = {
 		name: '',

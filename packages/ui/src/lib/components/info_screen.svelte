@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Undo from '$lib/components/icons/undo.svelte'
-	import Button from '$lib/components/button.svelte'
+	import Undo from './icons/undo.svelte'
+	import Button from './button.svelte'
 
 	let y: number
 

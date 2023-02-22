@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { profile } from '$lib/stores/profile'
-	import { goto } from '$app/navigation'
-	import { ROUTES } from '$lib/routes'
+	import { profile } from '../../../../../lib/stores/profile'
+	import goto from 'page'
+	import { ROUTES } from '../../../../../lib/routes'
 	import {
 		createIdentity,
 		generateGroupProof,
@@ -10,11 +10,11 @@
 		getRandomExternalNullifier,
 		joinGroupOffChain,
 		joinGroupOnChain,
-	} from '$lib/services/index'
-	import { posts } from '$lib/stores/post'
-	import { hashPost, createPost } from '$lib/services/posts'
-	import { getWaku } from '$lib/services/waku'
-	import PostNew from '$lib/components/post_new.svelte'
+	} from '../../../../../lib/services'
+	import { posts } from '../../../../../lib/stores/post'
+	import { hashPost, createPost } from '../../../../../lib/services/posts'
+	import { getWaku } from '../../../../../lib/services/waku'
+	import PostNew from '../../../../../lib/components/post_new.svelte'
 
 	async function submit(postText: string) {
 		try {

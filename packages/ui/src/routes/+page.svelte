@@ -1,5 +1,5 @@
 <script lang="ts">
-	import page from 'page'
+	import goto from 'page'
 	import HeaderTop from '../lib/components/header-top.svelte'
 	import Persona from '../lib/components/persona.svelte'
 	import Grid from '../lib/components/grid.svelte'
@@ -19,7 +19,7 @@
 	let showChat = false
 
 	function createDraft() {
-		page(ROUTES.PERSONA_NEW)
+		goto(ROUTES.PERSONA_NEW)
 	}
 </script>
 
@@ -58,7 +58,7 @@
 								name={draftPersona.name}
 								description={draftPersona.description}
 								postsCount={draftPersona.posts.length}
-								on:click={() => page(ROUTES.PERSONA_DRAFT(index))}
+								on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
 								picture={draftPersona.picture}
 							/>
 						{/each}
@@ -77,7 +77,7 @@
 									name={$personas.all.get(personaId)?.name}
 									description={$personas.all.get(personaId)?.description}
 									postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
-									on:click={() => page(ROUTES.PERSONA(personaId))}
+									on:click={() => goto(ROUTES.PERSONA(personaId))}
 									picture={$personas.all.get(personaId)?.picture}
 								/>
 							{/if}
@@ -112,7 +112,7 @@
 						name={data.name}
 						description={data.description}
 						postsCount={data.postsCount}
-						on:click={() => page(ROUTES.PERSONA(groupId))}
+						on:click={() => goto(ROUTES.PERSONA(groupId))}
 						picture={data.picture}
 					/>
 				{:else}

@@ -1,21 +1,21 @@
 <script lang="ts">
-	import Post from '$lib/components/post.svelte'
-	import Button from '$lib/components/button.svelte'
-	import Edit from '$lib/components/icons/edit.svelte'
-	import Star from '$lib/components/icons/star.svelte'
-	import StarFilled from '$lib/components/icons/star_filled.svelte'
+	import Post from '../../../lib/components/post.svelte'
+	import Button from '../../../lib/components/button.svelte'
+	import Edit from '../../../lib/components/icons/edit.svelte'
+	import Star from '../../../lib/components/icons/star.svelte'
+	import StarFilled from '../../../lib/components/icons/star_filled.svelte'
 
-	import { posts } from '$lib/stores/post'
-	import { personas } from '$lib/stores/persona'
-	import { profile } from '$lib/stores/profile'
-	import { goto } from '$app/navigation'
-	import { browser } from '$app/environment'
-	import { page } from '$app/stores'
-	import Masonry from '$lib/masonry.svelte'
-	import { ROUTES } from '$lib/routes'
-	import PersonaDetail from '$lib/components/persona_detail.svelte'
+	import { posts } from '../../../lib/stores/post'
+	import { personas } from '../../../lib/stores/persona'
+	import { profile } from '../../../lib/stores/profile'
+	import goto from 'page'
+	import { isBrowser } from 'browser-or-node'
+	import {page} from "../../../lib/stores/route"
+	import Masonry from '../../../lib/masonry.svelte'
+	import { ROUTES } from '../../../lib/routes'
+	import PersonaDetail from '../../../lib/components/persona_detail.svelte'
 
-	let windowWidth: number = browser ? window.innerWidth : 0
+	let windowWidth: number = isBrowser ? window.innerWidth : 0
 
 	function getMasonryColumnWidth(windowInnerWidth: number) {
 		if (windowInnerWidth < 739) return '100%'
@@ -28,7 +28,7 @@
 		return 'minmax(323px, 1fr)'
 	}
 
-	const persona = $personas.all.get($page.params.id)
+	const persona = $personas.all.get($page.params.groupId)
 </script>
 
 <svelte:window bind:innerWidth={windowWidth} />

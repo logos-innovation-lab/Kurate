@@ -1,21 +1,21 @@
 <script lang="ts">
-	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
-	import Checkmark from '$lib/components/icons/checkmark.svelte'
-	import Close from '$lib/components/icons/close.svelte'
-	import Edit from '$lib/components/icons/edit.svelte'
-	import Undo from '$lib/components/icons/undo.svelte'
+	import ArrowRight from '../../../../lib/components/icons/arrow-right.svelte'
+	import Checkmark from '../../../../lib/components/icons/checkmark.svelte'
+	import Close from '../../../../lib/components/icons/close.svelte'
+	import Edit from '../../../../lib/components/icons/edit.svelte'
+	import Undo from '../../../../lib/components/icons/undo.svelte'
 
-	import Button from '$lib/components/button.svelte'
-	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
-	import PersonaDetail from '$lib/components/persona_detail.svelte'
-	import Post from '$lib/components/post.svelte'
-	import PostNew from '$lib/components/post_new.svelte'
+	import Button from '../../../../lib/components/button.svelte'
+	import PersonaEditText from '../../../../lib/components/persona_edit_text.svelte'
+	import PersonaDetail from '../../../../lib/components/persona_detail.svelte'
+	import Post from '../../../../lib/components/post.svelte'
+	import PostNew from '../../../../lib/components/post_new.svelte'
 
-	import { personas } from '$lib/stores/persona'
-	import { tokens } from '$lib/stores/tokens'
+	import { personas } from '../../../../lib/stores/persona'
+	import { tokens } from '../../../../lib/stores/tokens'
 
-	import { page } from '$app/stores'
-	import InfoScreen from '$lib/components/info_screen.svelte'
+	import { page } from "../../../../lib/stores/route";
+	import InfoScreen from '../../../../lib/components/info_screen.svelte'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
