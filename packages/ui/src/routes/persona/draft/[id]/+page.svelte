@@ -23,6 +23,7 @@
 	import { personas } from '$lib/stores/persona'
 	import { tokens } from '$lib/stores/tokens'
 	import { page } from '$app/stores'
+	import TokenInfo from '$lib/components/token-info.svelte'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -155,15 +156,11 @@
 					<p>This Persona will be live, and everyone will be able to post with it.</p>
 					<p><LearnMore href="/" /></p>
 				</div>
-				<div class="box">
-					<div class="h3">Currently available</div>
-					<div class="go-amt">
-						{$tokens.go}
-					</div>
-					<div class="go">GO</div>
-					<p>Until new cycle begins</p>
-					<LearnMore href="/" />
-				</div>
+				<TokenInfo 
+				title='Currently available' 
+				amount={$tokens.go.toFixed()} 
+				tokenName='GO' 
+				explanation='Until new cycle begins'/>
 			</div>
 		{:else}
 			<div class="token-info">
@@ -175,15 +172,7 @@
 					<p>You need {TOKEN_POST_COST} GO to publish a Persona.</p>
 					<LearnMore href="/" />
 				</div>
-				<div class="box error">
-					<div class="h3">Currently available</div>
-					<div class="go-amt">
-						{$tokens.go}
-					</div>
-					<div class="go">GO</div>
-					<p>Until new cycle begins</p>
-					<LearnMore href="/" />
-				</div>
+				<TokenInfo title='Currently available' amount={$tokens.go.toFixed()} tokenName='GO' explanation='Until new cycle begins' error/>
 			</div>
 		{/if}
 
@@ -239,35 +228,6 @@
 		p,
 		h2 {
 			margin-bottom: var(--spacing-6);
-		}
-	}
-
-	.box {
-		border: 1px solid var(--grey-200);
-		padding: var(--spacing-24);
-		margin-top: var(--spacing-48);
-
-		.go-amt {
-			font-size: 40px;
-			line-height: 1;
-			font-weight: var(--font-weight-sb);
-			margin-top: var(--spacing-12);
-		}
-
-		.go {
-			text-transform: uppercase;
-			font-weight: var(--font-weight-sb);
-			margin-bottom: var(--spacing-12);
-		}
-
-		&.error {
-			border: 1px solid var(--color-red);
-			background-color: rgba(var(--color-red-rgb), 0.05);
-
-			.go-amt,
-			.go {
-				color: var(--color-red);
-			}
 		}
 	}
 

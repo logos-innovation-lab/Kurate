@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { profile } from '$lib/stores/profile'
-	import { goto } from '$app/navigation'
-	import { ROUTES } from '$lib/routes'
 	import {
 		createIdentity,
 		generateGroupProof,
@@ -11,10 +9,23 @@
 		joinGroupOffChain,
 		joinGroupOnChain,
 	} from '$lib/services/index'
+
+	import Checkmark from '$lib/components/icons/checkmark.svelte'
+	import Close from '$lib/components/icons/close.svelte'
+
 	import { posts } from '$lib/stores/post'
 	import { hashPost, createPost } from '$lib/services/posts'
 	import { getWaku } from '$lib/services/waku'
 	import PostNew from '$lib/components/post_new.svelte'
+	import InfoScreen from '$lib/components/info_screen.svelte'
+	import Info from '$lib/components/icons/information.svelte'
+	import LearnMore from '$lib/components/learn-more.svelte'
+	import Button from '$lib/components/button.svelte'
+	import { tokens } from '$lib/stores/tokens'
+	import TokenInfo from '$lib/components/token-info.svelte'
+
+	const TOKEN_POST_COST_REP = 5
+	const TOKEN_POST_COST_GO = 5
 
 	async function submit(postText: string) {
 		try {
@@ -32,8 +43,7 @@
 
 			if (!group.members.includes(commitment)) {
 				joinGroupOffChain(group, commitment)
-				const txres = await joinGroupOnChain(globalAnonymousFeed, commitment)
-				console.log(txres)
+				await joinGroupOnChain(globalAnonymousFeed, commitment)
 			}
 
 			const post = { text: postText }
@@ -49,11 +59,141 @@
 				timestamp: Date.now(),
 				text: postText,
 			})
-			goto(ROUTES.HOME)
+			state = 'post_submitted'
 		} catch (error) {
 			console.error(error)
 		}
 	}
+
+	function onBack() {
+		history.back()
+	}
+
+	let state: 'price_varning' | 'edit' | 'post_submitted' = 'price_varning'
 </script>
 
-<PostNew {submit} />
+{#if state === 'price_varning'}
+	<InfoScreen title="Submit Post" onBack={onBack}>
+		{#if $tokens.go >= TOKEN_POST_COST_GO && $tokens.repTotal - $tokens.repStaked >= TOKEN_POST_COST_REP}
+			<div class="token-info">
+				<div>
+					<div class="icon">
+						<Info size={32} />
+					</div>
+					<h2>This will stake {TOKEN_POST_COST_REP} REP and use {TOKEN_POST_COST_GO} GO</h2>
+					<p>Your post will be submitted to a community vote, and will be published if the majority votes to promote it. If promoted, you will earn {TOKEN_POST_COST_REP} REP. If demoted, you will lose your staked REP.</p>
+					<p><LearnMore href="/" /></p>
+				</div>
+				<div class='side-by-side'>
+				<TokenInfo 
+				title='Available to stake' 
+				amount={($tokens.repTotal - $tokens.repStaked).toFixed()} 
+				tokenName='REP' 
+				explanation={`${$tokens.repStaked} out of ${$tokens.repTotal} staked`}/>					
+					<TokenInfo 
+				title='Currently available' 
+				amount={$tokens.go.toFixed()} 
+				tokenName='GO' 
+				explanation='Until new cycle begins'/>
+					
+				</div>
+			</div>
+		{:else}
+			<div class="token-info">
+				<div>
+					<div class="icon">
+						<Info size={32} />
+					</div>
+					<h2>Sorry, you can't submit a post now</h2>
+					<p>You need {TOKEN_POST_COST_REP} REP to stake and {TOKEN_POST_COST_GO} GO to submit a post.</p>
+					<LearnMore href="/" />
+				</div>
+				<div class='side-by-side'>
+				<TokenInfo 
+					title='Available to stake' 
+					amount={($tokens.repTotal - $tokens.repStaked).toFixed()} 
+					tokenName='REP' 
+					explanation={`${$tokens.repStaked} out of ${$tokens.repTotal} staked`}
+					error={$tokens.repTotal - $tokens.repStaked < TOKEN_POST_COST_REP}
+					/>					
+					<TokenInfo 
+						title='Currently available' 
+						amount={$tokens.go.toFixed()} 
+						tokenName='GO' 
+						explanation='Until new cycle begins'
+					error={$tokens.go < TOKEN_POST_COST_GO}/>
+				</div>
+			</div>
+		{/if}
+		<svelte:fragment slot='buttons'>
+			<Button label="I agree" variant='primary' icon={Checkmark} on:click={() => state='edit'} />
+			<Button label="Nope" icon={Close} on:click={onBack}/>
+		</svelte:fragment>
+	</InfoScreen>
+{:else if state === 'edit'}
+	<PostNew {submit} {onBack} />
+{:else}
+	<InfoScreen title="Post submitted">
+		<div class="token-info">
+			<div class="icon-success">
+				<Checkmark />
+			</div>
+			<h2>Your post is now pending review</h2>
+			<p>
+				Your post has been added to "Persona name's" pending list for community review. If it gets promoted it will be automatically published to "Persona name's" page when the new epoch begins.
+			</p>
+			<LearnMore href="/" />
+		</div>
+
+		<svelte:fragment slot="buttons">
+			<Button icon={Checkmark} variant="primary" label="Done" on:click={() => history.back()} />
+		</svelte:fragment>
+	</InfoScreen>
+{/if}
+
+<style lang="scss">
+	.side-by-side {
+		display: flex;
+		flex-direction: row;
+	}
+
+	.token-info {
+		text-align: center;
+
+		.icon {
+			margin-bottom: var(--spacing-12);
+		}
+
+		p,
+		h2 {
+			margin-bottom: var(--spacing-6);
+		}
+	}
+
+	.icon-success {
+		position: relative;
+		display: inline-block;
+		margin-bottom: var(--spacing-12);
+
+		:global(svg) {
+			fill: var(--color-body-bg);
+		}
+
+		:global(polygon) {
+			stroke: #fff;
+			stroke-width: 1px;
+		}
+
+		&::before {
+			position: absolute;
+			content: '';
+			inset: -4px auto auto -6px;
+			background-color: var(--color-success);
+			border-radius: 50%;
+			width: 28px;
+			height: 28px;
+			transform: translateX(2px);
+			z-index: -1;
+		}
+	}
+</style>
