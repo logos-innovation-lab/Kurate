@@ -1,7 +1,7 @@
 import { ethers, providers, Signer, type BigNumberish, type ContractTransaction } from 'ethers'
-import { Identity } from '@semaphore-protocol/identity'
 import { Group, type Member } from '@semaphore-protocol/group'
 import { generateProof, verifyProof, type FullProof } from '@semaphore-protocol/proof'
+import { generateIdentity } from "zkitter-js";
 
 const zkeyFilePath = ''
 const wasmFilePath = ''
@@ -10,6 +10,8 @@ import { GlobalAnonymousFeed__factory, type GlobalAnonymousFeed } from '../asset
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, GROUP_ID } from '../constants'
 import type { BytesLike, Hexable } from 'ethers/lib/utils'
 import type { PromiseOrValue } from '../assets/typechain/common'
+import { Strategy, ZkIdentity } from '@zk-kit/identity';
+import {generateECDHKeyPairFromhex, sha256, signWithP256} from "../utils/crypto";
 
 type WindowWithEthereum = Window &
 	typeof globalThis & { ethereum: providers.ExternalProvider | providers.JsonRpcFetchFunc }
@@ -24,9 +26,21 @@ export function canConnectWallet() {
 	return Boolean((window as WindowWithEthereum)?.ethereum)
 }
 
-export async function createIdentity(signer: Signer, secret: string) {
-	const identitySeed = await signer.signMessage(secret)
-	return new Identity(identitySeed)
+export async function createIdentity(signer: Signer, nonce = 0) {
+	const identity = await generateIdentity(nonce, signer.signMessage.bind(signer))
+
+	const ecdhseed = await signWithP256(identity.priv, 'signing for ecdh - 0');
+	const ecdhHex = await sha256(ecdhseed);
+	const keyPair = await generateECDHKeyPairFromhex(ecdhHex);
+
+	const zkseed = await signWithP256(identity.priv, 'signing for zk identity - 0');
+	const zkHex = await sha256(zkseed);
+	const zkIdentity = new ZkIdentity(Strategy.MESSAGE, zkHex);
+
+	return {
+		zkIdentity,
+		ecdh: keyPair,
+	};
 }
 
 export function getGlobalAnonymousFeed(signer?: Signer): GlobalAnonymousFeed {

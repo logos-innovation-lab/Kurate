@@ -6,7 +6,7 @@
 	import Wallet from './icons/wallet.svelte'
 	import { formatAddress } from '../../lib/utils/format'
 	import { profile } from '../../lib/stores/profile'
-	import { connectWallet } from '../../lib/services'
+	import { connectWallet, createIdentity } from '../../lib/services'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -24,6 +24,16 @@
 			console.error(err)
 		}
 	}
+
+	const handleCreateId = async () => {
+		try {
+			const signer = $profile.signer;
+			const {zkIdentity, ecdh} = await createIdentity(signer);
+			$profile = { ...$profile, zkIdentity, ecdh }
+		} catch (err) {
+			console.error(err)
+		}
+	}
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -33,12 +43,19 @@
 		<h1 class={`header-title ${cls}`}>Kurate</h1>
 
 		<div class="btns">
-			{#if address}
+			{#if address && $profile.zkIdentity && $profile.ecdh}
 				<Button
 					icon={Wallet}
 					variant={'secondary'}
 					label={formatAddress(address)}
 					on:click={() => page(ROUTES.PROFILE)}
+				/>
+			{:else if address && (!$profile.zkIdentity || !$profile.ecdh)}
+				<Button
+					icon={Wallet}
+					variant={'primary'}
+					label={'Create ID'}
+					on:click={() => handleCreateId()}
 				/>
 			{:else}
 				<Button
