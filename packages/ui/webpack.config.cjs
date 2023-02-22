@@ -10,8 +10,12 @@ const mode = process.env.NODE_ENV || 'development'
 const prod = mode === 'production'
 
 module.exports = {
+    target: 'web',
     entry: './src/index.ts',
-
+    // externals: {
+    //     'snarkjs': 'commonjs2 snarkjs',
+    //     // '@zk-kit/protocols': 'commonjs2 @zk-kit/protocols',
+    // },
     resolve: {
         extensions: ['.ts', '.mjs', '.js', '.svelte'],
         fallback: {
