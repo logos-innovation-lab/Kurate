@@ -13,7 +13,11 @@ import type {
   Signer,
   utils,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
+import type {
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
   TypedEventFilter,
@@ -71,8 +75,32 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "joinGroup", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "semaphore", data: BytesLike): Result;
 
-  events: {};
+  events: {
+    "NewGroup(uint256)": EventFragment;
+    "NewIdentity(uint256,uint256)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "NewGroup"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewIdentity"): EventFragment;
 }
+
+export interface NewGroupEventObject {
+  groupId: BigNumber;
+}
+export type NewGroupEvent = TypedEvent<[BigNumber], NewGroupEventObject>;
+
+export type NewGroupEventFilter = TypedEventFilter<NewGroupEvent>;
+
+export interface NewIdentityEventObject {
+  groupId: BigNumber;
+  identityCommitment: BigNumber;
+}
+export type NewIdentityEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  NewIdentityEventObject
+>;
+
+export type NewIdentityEventFilter = TypedEventFilter<NewIdentityEvent>;
 
 export interface GlobalAnonymousFeed extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -176,7 +204,19 @@ export interface GlobalAnonymousFeed extends BaseContract {
     semaphore(overrides?: CallOverrides): Promise<string>;
   };
 
-  filters: {};
+  filters: {
+    "NewGroup(uint256)"(groupId?: null): NewGroupEventFilter;
+    NewGroup(groupId?: null): NewGroupEventFilter;
+
+    "NewIdentity(uint256,uint256)"(
+      groupId?: null,
+      identityCommitment?: null
+    ): NewIdentityEventFilter;
+    NewIdentity(
+      groupId?: null,
+      identityCommitment?: null
+    ): NewIdentityEventFilter;
+  };
 
   estimateGas: {
     createGroup(
