@@ -8,6 +8,7 @@
 	import Hourglass from '$lib/components/icons/hourglass.svelte'
 	import Grid from '$lib/components/grid.svelte'
 	import PersonaDetail from '$lib/components/persona_detail.svelte'
+	import Header from '$lib/components/header.svelte'
 
 	import { posts } from '$lib/stores/post'
 	import { personas } from '$lib/stores/persona'
@@ -29,11 +30,33 @@
 			console.error(err)
 		}
 	}
+
+	let y: number
+
 </script>
+
+<svelte:window bind:scrollY={y} />
 
 {#if persona === undefined}
 	<div>There is no persona with group ID {$page.params.id}</div>
 {:else}
+	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
+		<Header title={persona.name}>
+			{#if $profile.signer !== undefined}				
+				<Button
+					variant="primary"					
+					icon={Edit}
+					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+				/>
+			{:else}
+				<Button
+					variant="primary"
+					icon={Wallet}
+					on:click={() => handleConnect()}
+				/>
+			{/if}
+		</Header>
+	</div>
 	<PersonaDetail
 		name={persona.name}
 		pitch={persona.pitch}
@@ -86,7 +109,11 @@
 		{:else}
 			<Grid>
 				{#each $posts.posts as post}
-					<Post {post} />
+					<!-- NEEDS ONCLICK ACTION => SHOULD GO TO POST PAGE -->
+					<Post
+						{post} 
+						on:click
+					/>
 				{/each}
 			</Grid>
 		{/if}
@@ -94,5 +121,15 @@
 {/if}
 
 <style lang="scss">
+	.header {
+		    position: fixed;
+			inset: -100% 0 auto;
+			z-index: 100;
+			transition: inset 0.5s;
 
+		&.scrolled {
+			inset: 0 0 auto;
+			transition: inset 0.3s;
+		}
+	}
 </style>

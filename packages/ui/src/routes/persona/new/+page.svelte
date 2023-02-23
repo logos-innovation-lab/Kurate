@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
+	import ArrowRight from '$lib/components/icons/arrow-right.svelte'	
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
@@ -7,6 +7,7 @@
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
 	import PersonaDetail from '$lib/components/persona_detail.svelte'
+	import LearnMore from '$lib/components/learn-more.svelte'
 
 	import { ROUTES } from '$lib/routes'
 	import { goto } from '$app/navigation'
@@ -37,7 +38,7 @@
 
 {#if showWarningModal}
 	<InfoScreen title="Leaving persona creation" onBack={() => (showWarningModal = false)}>
-		<div>
+		<div class="container info">
 			<h1>Are you sure you want to leave?</h1>
 			<p>
 				You are about to leave the persona creation screenWARNING: If you do so, all changes will be
@@ -93,8 +94,10 @@
 			disabled={!persona.picture || !persona.cover}
 			on:click={savePersona}
 		/>
-		<p>Please provide at least a cover image.</p>
-		<a href="/" target="_blank">Learn more →</a>
+		<div class="container info">
+			<p>Please provide at least a cover image.</p>
+			<LearnMore href="/" />
+		</div>
 	</PersonaDetail>
 {:else}
 	<InfoScreen title="All changes saved">
@@ -104,8 +107,8 @@
 				You will see it on your homepage. Before you can make it public you will need to create 5
 				“seed” posts. These posts should serve as inspiring examples for people willing to post with
 				this persona.
-			</p>
-			<a href="/" target="_blank">Learn more</a>
+			</p>			
+			<LearnMore href="/" />
 		</div>
 		<svelte:fragment slot="buttons">
 			<Button variant="secondary" label="Continue later" on:click={() => history.back()} />
@@ -121,4 +124,5 @@
 {/if}
 
 <style lang="scss">
+	
 </style>

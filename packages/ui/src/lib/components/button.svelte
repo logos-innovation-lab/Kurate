@@ -164,7 +164,7 @@
 
 		&:active:not(:disabled),
 		&:hover:not(:disabled) {
-			background-color: var(--color-black-rgb);
+			background-color: var(--color-black);
 			transition: background-color 0.2s;
 		}
 	}

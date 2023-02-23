@@ -57,8 +57,8 @@
 	{#if canEditPictures}
 		<InputFile
 			icon={cover ? Renew : Image}
-			variant="primary"
-			label={cover ? 'Change cover' : 'Add cover'}
+			variant="overlay"
+			label={cover ? 'Change background' : 'Add background'}
 			bind:files={coverFiles}
 		/>
 	{:else}
@@ -71,21 +71,23 @@
 			<img src={picture} alt="profile" />
 			{#if canEditPictures}
 				<div class="change">
-					<InputFile icon={Renew} variant="primary" bind:files={pictureFiles} />
+					<InputFile icon={Renew} variant="overlay" bind:files={pictureFiles} />
 				</div>
 			{/if}
-			<div class="change">
+			<!-- <div class="change">
 				<InputFile icon={Renew} variant="primary" bind:files={pictureFiles} />
-			</div>
+			</div> -->
 		</div>
 	{:else if canEditPictures}
-		<div class="empty">
-			<InputFile icon={Image} variant="primary" label="Add picture" bind:files={pictureFiles} />
+		<div class="no-img">
+			<div class="empty">
+				<InputFile icon={Image} variant="overlay" label="Add cover" bind:files={pictureFiles} />
+			</div>
 		</div>
 	{/if}
 </div>
 
-<div class="persona-info">
+<div class="persona-info container">
 	<h1 class="name">{name}</h1>
 	<div class="pitch">{pitch}</div>
 	<div class="description">{description}</div>
@@ -116,6 +118,7 @@
 		width: 100vw;
 		background-color: #666666;
 		z-index: -1;
+		overflow: hidden;
 
 		@media (min-width: 688px) {
 			aspect-ratio: none;
@@ -137,16 +140,44 @@
 		}
 	}
 
+	// .buttons {
+	// 	inset: 0 0 auto;
+	// 	padding: var(--spacing-24);
+	// 	display: flex;
+	// 	flex-direction: row;
+	// 	justify-content: space-between;
+	// 	z-index: 1;
+
+	// 	@media (min-width: 688px) {
+	// 		padding: var(--spacing-48);
+	// 	}
+	// }
+
 	.buttons {
-		inset: 0 0 auto;
-		padding: var(--spacing-24);
 		display: flex;
-		flex-direction: row;
 		justify-content: space-between;
-		z-index: 1;
+		align-items: center;
+		padding: var(--spacing-24);
+		transition: padding 0.2s;
+		max-width: 498px;
+		margin-inline: auto;
 
 		@media (min-width: 688px) {
 			padding: var(--spacing-48);
+			max-width: 996px;
+			transition: padding 0.2s;
+		}
+
+		@media (min-width: 1242px) {
+			max-width: 1494px;
+		}
+
+		@media (min-width: 1640px) {
+			max-width: 1992px;
+		}
+
+		@media (min-width: 2038px) {
+			max-width: 2490px;
 		}
 	}
 
@@ -157,6 +188,7 @@
 		position: relative;
 		margin-bottom: var(--spacing-12);
 
+		.no-img, 
 		.img {
 			aspect-ratio: 1;
 			height: calc(calc(100vw / 1.777) - 68px);
@@ -179,25 +211,24 @@
 				object-fit: cover;
 			}
 		}
-		// .empty {
-		// 	position: absolute;
-		// 	// inset: auto auto 50%;
-		// 	width: inherit;
-		// 	height: inherit;
-		// 	display: flex;
-		// 	justify-content: center;
-		// 	align-items: center;
-		// }
-		// .emtpty,
+
+		.empty,
 		.change {
 			position: absolute;
 			inset: auto 50% 50%;
 			transform: translate(-50%, 50%);
-			width: fit-content;
+			width: max-content;
 			height: fit-content;
 			display: flex;
 			justify-content: center;
 			align-items: center;
+		}
+
+		.img {
+			.change {
+				inset: auto var(--spacing-12) var(--spacing-12) auto;
+				transform: none;
+			}
 		}
 	}
 
