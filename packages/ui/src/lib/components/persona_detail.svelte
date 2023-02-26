@@ -2,6 +2,7 @@
 	import Image from '$lib/components/icons/image.svelte'
 	import Renew from '$lib/components/icons/renew.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
+	import Profile from '$lib/components/icons/profile-default.svelte'
 	import UserMultiple from './icons/user-multiple.svelte'
 	import Forum from './icons/forum.svelte'
 	import Button from '$lib/components/button.svelte'
@@ -17,7 +18,7 @@
 	export let picture: string | undefined
 	export let cover: string | undefined
 	export let canEditPictures = false
-	export let postsCount: number
+	export let postsCount: number | undefined = undefined
 
 	let coverFiles: FileList | undefined = undefined
 	let pictureFiles: FileList | undefined = undefined
@@ -58,7 +59,7 @@
 		<InputFile
 			icon={cover ? Renew : Image}
 			variant="overlay"
-			label={cover ? 'Change background' : 'Add background'}
+			label={cover ? 'Change cover' : 'Add cover'}
 			bind:files={coverFiles}
 		/>
 	{:else}
@@ -81,7 +82,10 @@
 	{:else if canEditPictures}
 		<div class="no-img">
 			<div class="empty">
-				<InputFile icon={Image} variant="overlay" label="Add cover" bind:files={pictureFiles} />
+				<InputFile icon={Image} variant="overlay" label="Add profile" bind:files={pictureFiles} />
+			</div>
+			<div class="profile-default">
+				<Profile />
 			</div>
 		</div>
 	{/if}
@@ -120,7 +124,7 @@
 		z-index: -1;
 		overflow: hidden;
 
-		@media (min-width: 688px) {
+		@media (min-width: 608px) {
 			aspect-ratio: none;
 			height: 342px;
 		}
@@ -133,25 +137,11 @@
 			align-items: center;
 
 			img {
-				width: inherit;
-				height: inherit;
+				width: 100%;
 				object-fit: cover;
 			}
 		}
 	}
-
-	// .buttons {
-	// 	inset: 0 0 auto;
-	// 	padding: var(--spacing-24);
-	// 	display: flex;
-	// 	flex-direction: row;
-	// 	justify-content: space-between;
-	// 	z-index: 1;
-
-	// 	@media (min-width: 688px) {
-	// 		padding: var(--spacing-48);
-	// 	}
-	// }
 
 	.buttons {
 		display: flex;
@@ -183,8 +173,6 @@
 
 	.avatar {
 		width: 100vw;
-		// aspect-ratio: 16/9;
-		// max-height: 360px;
 		position: relative;
 		margin-bottom: var(--spacing-12);
 
@@ -215,38 +203,42 @@
 		.empty,
 		.change {
 			position: absolute;
-			inset: auto 50% 50%;
-			transform: translate(-50%, 50%);
+			inset: auto var(--spacing-12) var(--spacing-12) auto;
+			transform: none;
 			width: max-content;
 			height: fit-content;
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			z-index: 10;
 		}
 
-		.img {
-			.change {
-				inset: auto var(--spacing-12) var(--spacing-12) auto;
-				transform: none;
+		.profile-default {
+			position: relative;
+			width: 100%;
+    		height: 100%;
+			:global(svg) {
+				fill: var(--grey-300);				
+				// aspect-ratio: 1;
+				// object-fit: contain;
+				position: absolute;
+				// min-width: 10%;
+				// min-height: 50%;
+				inset: auto;
 			}
 		}
 	}
 
 	.persona-info {
 		text-align: center;
-		padding-inline: var(--spacing-12);
+		// padding-inline: var(--spacing-12);
 		max-width: 738px;
 		margin-inline: auto;
-		// border-bottom: 1px solid var(--grey-200);
 		.name,
 		.pitch,
 		.description {
 			margin-bottom: var(--spacing-12);
 		}
-
-		// .pitch {
-
-		// }
 
 		.description {
 			font-family: var(--font-serif);
@@ -274,19 +266,22 @@
 
 	.buttons-bottom {
 		position: relative;
-		padding: var(--spacing-24) var(--spacing-12);
+		padding: var(--spacing-24);
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
 		align-items: center;
 		gap: var(--spacing-12);
-		border-bottom: 1px solid var(--grey-200);
+		// border-bottom: 1px solid var(--grey-200);
+
+		@media (min-width: 688px) {
+			padding: var(--spacing-48);
+		}
 	}
 
-	@media (prefers-color-scheme: dark) {
-		.buttons-bottom {
-			border-bottom: 1px solid var(--grey-500);
-		}
-	
-	}
+	// @media (prefers-color-scheme: dark) {
+	// 	.buttons-bottom {
+	// 		border-bottom: 1px solid var(--grey-500);
+	// 	}	
+	// }
 </style>

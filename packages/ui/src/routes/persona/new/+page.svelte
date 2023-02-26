@@ -3,11 +3,14 @@
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
+	import Undo from '$lib/components/icons/undo.svelte'
+	import Info from '$lib/components/icons/info.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
 	import PersonaDetail from '$lib/components/persona_detail.svelte'
 	import LearnMore from '$lib/components/learn-more.svelte'
+	import Banner from '$lib/components/message-banner.svelte'
 
 	import { ROUTES } from '$lib/routes'
 	import { goto } from '$app/navigation'
@@ -37,12 +40,17 @@
 </script>
 
 {#if showWarningModal}
-	<InfoScreen title="Leaving persona creation" onBack={() => (showWarningModal = false)}>
+	<InfoScreen title="Leaving Persona creation" onBack={() => (showWarningModal = false)}>
+		<svelte:fragment slot="btn-left">
+			<Button icon={Undo} on:click={() => (showWarningModal = false)} />
+		</svelte:fragment>
 		<div class="container info">
-			<h1>Are you sure you want to leave?</h1>
+			<h2>Are you sure you want to leave?</h2>
 			<p>
-				You are about to leave the persona creation screenWARNING: If you do so, all changes will be
-				lost.
+				You are about to leave the persona creation screen				
+			</p>
+			<p>
+				WARNING: If you do so, all changes will be lost.
 			</p>
 		</div>
 
@@ -68,6 +76,9 @@
 		{onCancel}
 	/>
 {:else if state === 'edit_images'}
+	<Banner icon={Info}>
+		This is a preview of the Persona's page
+	</Banner>
 	<PersonaDetail
 		name={persona.name}
 		pitch={persona.pitch}
@@ -81,22 +92,22 @@
 	>
 		<Button
 			slot="button_primary"
-			variant="secondary"
-			label="Edit text"
-			icon={Edit}
-			on:click={onCancel}
-		/>
-		<Button
-			slot="button_other"
 			variant="primary"
-			label="Save changes"
+			label="Save Persona"
 			icon={Checkmark}
 			disabled={!persona.picture || !persona.cover}
 			on:click={savePersona}
 		/>
+		<Button
+			slot="button_other"
+			variant="secondary"
+			label="Edit Persona details"
+			icon={Edit}
+			on:click={() => state = 'edit_text'}
+		/>
 		<div class="container info">
 			<p>Please provide at least a cover image.</p>
-			<LearnMore href="/" />
+			<!-- <LearnMore href="/" /> -->
 		</div>
 	</PersonaDetail>
 {:else}

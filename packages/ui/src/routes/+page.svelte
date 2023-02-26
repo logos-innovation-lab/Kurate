@@ -49,9 +49,11 @@
 		{:else}
 			{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
-					<div class="subtitle">Draft personas</div>
+					<div class="section-top container">
+						<div class="subtitle">Draft personas</div>
+						<Button icon={Add} label="Create persona" on:click={createDraft} />
+					</div>
 					<hr />
-					<Button icon={Add} label="Create persona" on:click={createDraft} />
 					<Grid>
 						{#each $personas.draft as draftPersona, index}
 							<Persona
@@ -68,7 +70,9 @@
 
 			{#if $personas.favorite.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
-					<div class="subtitle">Favorites</div>
+					<div class="section-top container">
+						<div class="subtitle">Favorites</div>
+					</div>					
 					<hr />
 					<Grid>
 						{#each $personas.favorite as personaId}
@@ -146,20 +150,23 @@
 				border-bottom-color: var(--grey-500);
 			}
 		}
+
+		.section-top {
+			display: flex;
+			align-items: center;
+    		justify-content: space-between;
+			padding-block: var(--spacing-24);
+		}
 	}
 	.subtitle {
-		padding: var(--spacing-24);
 		font-size: var(--font-size-lg);
 		font-weight: var(--font-weight-sb);
-
 		transition: padding 0.2s;
 		max-width: 498px;
-		margin-inline: auto;
 
 		@media (min-width: 688px) {
 			max-width: 996px;
 			transition: padding 0.2s;
-			padding-inline: var(--spacing-48);
 		}
 
 		@media (min-width: 1242px) {

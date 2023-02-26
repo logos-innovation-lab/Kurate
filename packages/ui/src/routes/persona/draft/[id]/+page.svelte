@@ -3,9 +3,11 @@
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
+	import EditPersona from '$lib/components/icons/edit2.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
 	import Info from '$lib/components/icons/info.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
+	import Launch from '$lib/components/icons/launch.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
@@ -15,6 +17,8 @@
 	import LearnMore from '$lib/components/learn-more.svelte'
 	import Header from '$lib/components/header.svelte'
 	import InfoScreen from '$lib/components/info_screen.svelte'
+	import Banner from '$lib/components/message-banner.svelte'
+	import Grid from '$lib/components/grid.svelte'
 
 	import { personas } from '$lib/stores/persona'
 	import { tokens } from '$lib/stores/tokens'
@@ -60,18 +64,36 @@
 
 {#if persona === undefined}
 	<div>No draft persona with id {personaIndex}</div>
-{:else}
-	<div class="info-banner">
-		<Info />
-		This persona is a draft (unpublished)
-	</div>
+{:else if state === 'text'}
+	<PersonaEditText
+		bind:name
+		bind:pitch
+		bind:description
+		title="Edit Persona details"
+		undo={true}
+		onSubmit={() => {
+			persona.name = name
+			persona.pitch = pitch
+			persona.description = description
+			personas.updateDraft(personaIndex, persona)
+			state = 'posts'
+		}}
+		onCancel={() => {
+			state = 'posts'
+		}}
+	/>
+{:else if state === 'posts'}
+	<Banner icon={Info}>
+		This is a preview of the Persona's page
+	</Banner>
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
 		<Header title={persona.name}>
-			{#if $profile.signer !== undefined}				
+			<!-- {#if $profile.signer !== undefined}								
 				<Button
-					variant="primary"					
 					icon={Edit}
-					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+					variant="primary"
+					label=""
+					on:click={() => (state = 'post_new')}
 				/>
 			{:else}
 				<Button
@@ -79,169 +101,167 @@
 					icon={Wallet}
 					on:click={() => handleConnect()}
 				/>
-			{/if}
+			{/if} -->
 		</Header>
 	</div>
-	{#if state === 'text'}
-		<PersonaEditText
-			bind:name
-			bind:pitch
-			bind:description
-			title="Edit persona"
-			onSubmit={() => {
-				persona.name = name
-				persona.pitch = pitch
-				persona.description = description
-				personas.updateDraft(personaIndex, persona)
-				state = 'posts'
-			}}
-			onCancel={() => {
-				state = 'posts'
-			}}
+	<PersonaDetail
+		name={persona.name}
+		pitch={persona.pitch}
+		description={persona.description}
+		bind:picture={persona.picture}
+		bind:cover={persona.cover}
+		canEditPictures
+		onBack={() => history.back()}
+	>
+		<svelte:fragment slot="button_primary">
+			{#if persona.posts.length < PERSONA_LIMIT}
+				<Button
+					icon={Edit}
+					variant="primary"
+					label="Write seed post"
+					on:click={() => (state = 'post_new')}
+				/>
+			{:else}
+				<Button
+					icon={Launch}
+					variant="primary"
+					label="Publish Persona"
+					on:click={() => (state = 'publish_warning')}
+				/>
+			{/if}
+		</svelte:fragment>
+		<Button
+			slot="button_other"
+			variant="secondary"
+			label="Edit Persona details"
+			icon={EditPersona}
+			on:click={() => (state = 'text')}
 		/>
-	{:else if state === 'posts'}
-		<PersonaDetail
-			name={persona.name}
-			pitch={persona.pitch}
-			description={persona.description}
-			bind:picture={persona.picture}
-			bind:cover={persona.cover}
-			canEditPictures
-			onBack={() => history.back()}
-		>
-			<svelte:fragment slot="button_primary">
-				{#if persona.posts.length < PERSONA_LIMIT}
-					<Button
-						icon={Edit}
-						variant="primary"
-						label="Write seed post"
-						on:click={() => (state = 'post_new')}
-					/>
-				{:else}
-					<Button
-						icon={Edit}
-						variant="primary"
-						label="Publish persona"
-						on:click={() => (state = 'publish_warning')}
-					/>
-				{/if}
-			</svelte:fragment>
-			<Button
-				slot="button_other"
-				variant="secondary"
-				label="Edit persona"
-				icon={Edit}
-				on:click={() => (state = 'text')}
-			/>
 
-			<div class="container info">
-				{#if persona.posts.length < PERSONA_LIMIT}
-					<div class="icon-info">
-						<Info size={32} />
-					</div>
-					<p class="h2">{persona.posts.length} out {PERSONA_LIMIT} seed posts added</p>
-					<p>You need {PERSONA_LIMIT} seed posts to publish this persona.</p>
-					<LearnMore href="/" />
-				{:else}
-					<div class="icon-success">
-						<Checkmark size={32} />
-					</div>
-					<p>{PERSONA_LIMIT} out {PERSONA_LIMIT} seed posts added</p>
-					<p>You can publish this persona.</p>
-					<LearnMore href="/" />
-				{/if}
-			</div>
-			<hr/>
-
+		<div class="container info">
+			{#if persona.posts.length < PERSONA_LIMIT}
+				<div class="icon-info">
+					<Info size={32} />
+				</div>
+				<p class="h2">{persona.posts.length} out {PERSONA_LIMIT} seed posts added</p>
+				<p>You need {PERSONA_LIMIT} seed posts to publish this Persona.</p>
+				<LearnMore href="/" />
+			{:else}
+				<div class="icon-success">
+					<Checkmark />
+				</div>
+				<p>{PERSONA_LIMIT} out {PERSONA_LIMIT} seed posts added</p>
+				<p>You can publish this Persona.</p>
+				<LearnMore href="/" />
+			{/if}
+		</div>
+		<hr/>
+		<Grid>
 			{#each persona.posts as post}
 				<Post {post} />
 			{:else}
+				<div class="note">
+					Do we need this "else" which says there are no posts yet? It's not on the design.
+				</div>
 				<div class="container info">
 					<p>There are no posts yet</p>
 				</div>
 			{/each}
-		</PersonaDetail>
-	{:else if state === 'post_new'}
-		<PostNew
-			submit={(postText) => {
-				persona.posts.push({ timestamp: Date.now(), text: postText })
-				personas.updateDraft(personaIndex, persona)
-				state = 'posts'
-			}}
-			cancel={() => (state = 'posts')}
-		/>
-	{:else if state === 'publish_warning'}
-		<InfoScreen title="Publish persona" onBack={() => history.back()}>
-			{#if $tokens.go >= TOKEN_POST_COST}
+		</Grid>
+	</PersonaDetail>
+{:else if state === 'post_new'}
+	<PostNew
+		submit={(postText) => {
+			persona.posts.push({ timestamp: Date.now(), text: postText })
+			personas.updateDraft(personaIndex, persona)
+			state = 'posts'
+		}}
+		label="Save seed post"		
+	/>
+{:else if state === 'publish_warning'}
+	<InfoScreen title={$tokens.go >= TOKEN_POST_COST? 'Publish Persona' : 'Not enough token'} undo={true}>
+		{#if $tokens.go >= TOKEN_POST_COST}
+			<div class="token-info">
 				<div>
-					<h1>This will use {TOKEN_POST_COST} GO</h1>
-					<p>People will be able to post with this persona.</p>
+					<div class="icon">
+						<Info size={32} />
+					</div>					
+					<h2>This will use {TOKEN_POST_COST} GO</h2>
+					<p>This Persona will be live, and everyone will be able to post with it.</p>
+					<p><LearnMore href="/" /></p>
+				</div>
+				<div class="box">
+					<div class="h3">
+						Currently available
+					</div>
+					<div class="go-amt">
+						{$tokens.go}
+					</div>
+					<div class="go">
+						GO
+					</div>
+					<p>Until new cycle begins</p>
 					<LearnMore href="/" />
 				</div>
-				<div>
-					<h1>Currently available</h1>
-					<span>{$tokens.go} GO</span>
-					<p>Until cycle ends.</p>
-
-					<LearnMore href="/" />
-				</div>
-			{:else}
-				<div>
-					<h1>Sorry, you can’t publish now</h1>
-					<p>You need {TOKEN_POST_COST} GO to publish a persona.</p>
-					<LearnMore href="/" />
-				</div>
-				<div>
-					<h1>Currently available</h1>
-					<span>{$tokens.go} GO</span>
-					<p>Until cycle ends.</p>
-
-					<LearnMore href="/" />
-				</div>
-			{/if}
-
-			<svelte:fragment slot="buttons">
-				{#if $tokens.go >= TOKEN_POST_COST}
-					<Button variant="secondary" label="Cancel" icon={Close} on:click={() => (state = 'text')} />
-					<Button icon={ArrowRight} variant="primary" label="Proceed" on:click={publishPersona} />
-				{:else}
-					<Button variant="secondary" label="Back" icon={Undo} on:click={() => (state = 'text')} />
-				{/if}
-			</svelte:fragment>
-		</InfoScreen>
-	{:else}
-		<InfoScreen title="Publish successful" onBack={() => history.back()}>
-			<div>
-				<h1>This persona is now public</h1>
-				<p>
-					Anyone can now submit posts with this persona. All posts will be subject to community review
-					before being published. This persona was added to your favorites on your homepage.
-				</p>
-				<LearnMore href="/" />
 			</div>
+		{:else}
+			<div class="token-info">
+				<div>
+					<div class="icon">
+						<Info size={32} />
+					</div>	
+					<h2>Sorry, you can't publish now</h2>
+					<p>You need {TOKEN_POST_COST} GO to publish a Persona.</p>
+					<LearnMore href="/" />
+				</div>
+				<div class="box error">
+					<div class="h3">
+						Currently available
+					</div>
+					<div class="go-amt">
+						{$tokens.go}
+					</div>
+					<div class="go">
+						GO
+					</div>
+					<p>Until new cycle begins</p>
+					<LearnMore href="/" />
+				</div>
+			</div>
+		{/if}
 
-			<svelte:fragment slot="buttons">
-				<Button icon={Checkmark} variant="primary" label="Done" on:click={() => history.back()} />
-			</svelte:fragment>
-		</InfoScreen>
-	{/if}
+		<svelte:fragment slot="buttons">
+			{#if $tokens.go >= TOKEN_POST_COST}
+				<Button icon={Checkmark} variant="primary" label="I agree" on:click={publishPersona} />
+				<Button variant="secondary" label="Nope" icon={Close} on:click={() => (state = 'text')} />
+			{:else}
+				<Button variant="secondary" label="Back" icon={Undo} on:click={() => (state = 'text')} />
+			{/if}
+		</svelte:fragment>
+	</InfoScreen>
+{:else}
+	 <!-- onBack={() => history.back()} -->
+	<InfoScreen title="Persona published">
+		<div class="token-info">
+			<div class="icon-success">
+				<Checkmark />
+			</div>
+			<h2>This Persona is now public</h2>
+			<p>
+				Anyone can now submit posts with this Persona. All posts will be subject to community review before being published. This Persona was added to your favorites.
+			</p>
+			<LearnMore href="/" />
+		</div>
+
+		<svelte:fragment slot="buttons">
+			<Button icon={Checkmark} variant="primary" label="Done" on:click={() => history.back()} />
+		</svelte:fragment>
+	</InfoScreen>
 {/if}
 
 
 <style lang="scss">
-	.info-banner {
-		position: sticky;
-		inset: 0 0 auto;
-		z-index: 100;
-		background-color: var(--grey-200);
-		padding: var(--spacing-12);		
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-direction: row;
-		gap: var(--spacing-6);
-		font-size: 14px;
-	}
+	
 
 	.header {
 		    position: fixed;
@@ -255,21 +275,79 @@
 		}
 	}
 
-	.container.info .h2 {
-		margin-bottom: var(--spacing-12);
+	.container {
+		&.info {
+			padding-block: var(--spacing-24);
+
+			@media (min-width: 688px) {
+				padding-block: var(--spacing-48);
+			}
+
+			.h2 {
+				margin-bottom: var(--spacing-12);
+			}
+		}
 	}
-	// .icon-info,
+
+	.token-info {
+		text-align: center;
+
+		.icon {
+			margin-bottom: var(--spacing-12);
+		}
+		
+		p, h2 {
+			margin-bottom: var(--spacing-6);
+		}
+	}
+
+	.box {
+		border: 1px solid var(--grey-200);
+		padding: var(--spacing-24);
+		margin-top: var(--spacing-48);
+
+		.go-amt {
+			font-size: 40px;
+			line-height: 1;
+			font-weight: var(--font-weight-sb);
+			margin-top: var(--spacing-12);
+		}
+
+		.go {
+			text-transform: uppercase;
+			font-weight: var(--font-weight-sb);
+			margin-bottom: var(--spacing-12);
+		}
+
+		&.error {
+			border: 1px solid var(--color-red);
+			background-color: rgba(var(--color-red-rgb), 0.05);
+
+			.go-amt,
+			.go {
+				color: var(--color-red);
+			}
+		}
+	}
+	
 	.icon-success {
 		position: relative;
+		display: inline-block;
+		margin-bottom: var(--spacing-12);
 
-		& :global() {
-			fill: var(--color-body-bg);
+		:global(svg) {
+			fill: var(--color-body-bg);			
+		}
+
+		:global(polygon) {
+			stroke: #fff;
+			stroke-width: 1px;
 		}
 
 		&::before {
 			position: absolute;
 			content: "";
-			inset: 2px auto auto;
+			inset: -4px auto auto -6px;
 			background-color: var(--color-success);
 			border-radius: 50%;
 			width: 28px;

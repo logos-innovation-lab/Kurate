@@ -44,7 +44,7 @@
 				<Button
 					icon={Wallet}
 					variant={'primary'}
-					label={'Connect'}
+					label={y === 0 ? 'Connect' : ''}
 					on:click={() => handleConnect()}
 				/>
 			{/if}
@@ -104,10 +104,8 @@
 			transition: box-shadow 0.2s;
 
 			.header-content {
-				@media (min-width: 688px) {
-					padding-block: var(--spacing-24);
-					transition: padding 0.2s;
-				}
+				padding-block: var(--spacing-12);
+				transition: padding 0.2s;
 			}
 			@media (prefers-color-scheme: dark) {
 				box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
