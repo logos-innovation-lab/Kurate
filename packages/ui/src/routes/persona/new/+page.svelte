@@ -41,9 +41,6 @@
 
 {#if showWarningModal}
 	<InfoScreen title="Leaving Persona creation" onBack={() => (showWarningModal = false)}>
-		<svelte:fragment slot="btn-left">
-			<Button icon={Undo} on:click={() => (showWarningModal = false)} />
-		</svelte:fragment>
 		<div class="container info">
 			<h2>Are you sure you want to leave?</h2>
 			<p>You are about to leave the persona creation screen</p>
@@ -69,6 +66,7 @@
 		onSubmit={() => {
 			state = 'edit_images'
 		}}
+		onBack={onCancel}
 		{onCancel}
 	/>
 {:else if state === 'edit_images'}

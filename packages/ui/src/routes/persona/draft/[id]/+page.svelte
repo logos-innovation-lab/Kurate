@@ -69,7 +69,6 @@
 		bind:pitch
 		bind:description
 		title="Edit Persona details"
-		undo={true}
 		onSubmit={() => {
 			persona.name = name
 			persona.pitch = pitch
@@ -174,11 +173,12 @@
 			state = 'posts'
 		}}
 		label="Save seed post"
+		onBack={() => (state = 'posts')}
 	/>
 {:else if state === 'publish_warning'}
 	<InfoScreen
 		title={$tokens.go >= TOKEN_POST_COST ? 'Publish Persona' : 'Not enough token'}
-		undo={true}
+		onBack={() => history.back()}
 	>
 		{#if $tokens.go >= TOKEN_POST_COST}
 			<div class="token-info">

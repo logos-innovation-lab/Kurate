@@ -41,17 +41,15 @@
 {:else}
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
 		<Header title={persona.name}>
-			<svelte:fragment slot="btns">
-				{#if $profile.signer !== undefined}
-					<Button
-						variant="primary"
-						icon={Edit}
-						on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
-					/>
-				{:else}
-					<Button variant="primary" icon={Wallet} on:click={() => handleConnect()} />
-				{/if}
-			</svelte:fragment>
+			{#if $profile.signer !== undefined}
+				<Button
+					variant="primary"
+					icon={Edit}
+					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+				/>
+			{:else}
+				<Button variant="primary" icon={Wallet} on:click={() => handleConnect()} />
+			{/if}
 		</Header>
 	</div>
 	<PersonaDetail

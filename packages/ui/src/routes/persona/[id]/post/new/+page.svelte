@@ -60,4 +60,4 @@
 	}
 </script>
 
-<PostNew {submit} {cancel} />
+<PostNew {submit} />

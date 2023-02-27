@@ -6,7 +6,6 @@
 	// let y: number
 
 	export let title: string
-	export let undo: boolean | undefined = undefined
 
 	export let onBack: () => unknown = () => history.back()
 </script>
@@ -22,11 +21,7 @@
 	</div>
 </header> -->
 
-<Header {title} {undo} on:click={onBack}>
-	<svelte:fragment slot="btn-left">
-		<slot name="btn-left" />
-	</svelte:fragment>
-</Header>
+<Header {title} {onBack} />
 
 <div class="content">
 	<slot />

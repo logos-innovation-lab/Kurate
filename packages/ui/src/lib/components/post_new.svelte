@@ -11,8 +11,8 @@
 
 	let cls: string | undefined = undefined
 	export { cls as class }
-	export let submit: (postText: string) => void | Promise<void>
-	// export let cancel: () => void
+	export let submit: (postText: string) => unknown
+	export let onBack: () => unknown = () => history.back()
 	export let label: string | undefined = 'Publish'
 
 	let postText = ''
@@ -22,7 +22,7 @@
 <svelte:window bind:innerWidth={x} />
 
 <div class={`root ${cls}`}>
-	<Header>
+	<Header {onBack}>
 		<Button icon={Image} />
 		<Button
 			icon={Checkmark}

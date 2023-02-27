@@ -1,15 +1,15 @@
 <script lang="ts">
 	import Button from './button.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
+	import { goto } from '$app/navigation'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
 
 	let y: number
 
-	export let onBack: () => unknown = () => history.back()
+	export let onBack: (() => unknown) | undefined = undefined
 	export let title = ''
-	export let undo: boolean | undefined = undefined
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -17,10 +17,8 @@
 <header class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<div class="content container-full">
 		<div>
-			{#if undo === true}
+			{#if typeof onBack === 'function'}
 				<Button icon={Undo} variant="secondary" on:click={onBack} />
-			{:else}
-				<slot name="btn-left" />
 			{/if}
 		</div>
 
@@ -29,7 +27,7 @@
 		</h1>
 
 		<div class="btns">
-			<slot name="btns" />
+			<slot />
 		</div>
 	</div>
 </header>

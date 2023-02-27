@@ -13,14 +13,14 @@
 	export let pitch = ''
 	export let description = ''
 	export let title: string
-	export let undo: boolean | undefined = undefined
-	export let onCancel: () => void | Promise<void>
-	export let onSubmit: () => void | Promise<void>
+	export let onCancel: () => unknown
+	export let onSubmit: () => unknown
+	export let onBack: undefined | (() => unknown) = undefined
 </script>
 
 <svelte:window bind:scrollY={y} />
 
-<Header {title} {undo} />
+<Header {title} {onBack} />
 
 <form>
 	<Textarea placeholder="Enter a short memorable name…" label="Persona name" bind:value={name} />
