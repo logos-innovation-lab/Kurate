@@ -32,7 +32,6 @@
 	}
 
 	let y: number
-
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -43,20 +42,16 @@
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
 		<Header title={persona.name}>
 			<svelte:fragment slot="btns">
-				{#if $profile.signer !== undefined}				
+				{#if $profile.signer !== undefined}
 					<Button
-						variant="primary"					
+						variant="primary"
 						icon={Edit}
 						on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
 					/>
 				{:else}
-					<Button
-						variant="primary"
-						icon={Wallet}
-						on:click={() => handleConnect()}
-					/>
+					<Button variant="primary" icon={Wallet} on:click={() => handleConnect()} />
 				{/if}
-			</svelte:fragment>			
+			</svelte:fragment>
 		</Header>
 	</div>
 	<PersonaDetail
@@ -112,10 +107,7 @@
 			<Grid>
 				{#each $posts.posts as post}
 					<!-- NEEDS ONCLICK ACTION => SHOULD GO TO POST PAGE -->
-					<Post
-						{post} 
-						on:click
-					/>
+					<Post {post} on:click />
 				{/each}
 			</Grid>
 		{/if}
@@ -124,10 +116,10 @@
 
 <style lang="scss">
 	.header {
-		    position: fixed;
-			inset: -100% 0 auto;
-			z-index: 100;
-			transition: inset 0.5s;
+		position: fixed;
+		inset: -100% 0 auto;
+		z-index: 100;
+		transition: inset 0.5s;
 
 		&.scrolled {
 			inset: 0 0 auto;

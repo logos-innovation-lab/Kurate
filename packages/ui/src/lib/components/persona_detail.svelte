@@ -176,7 +176,7 @@
 		position: relative;
 		margin-bottom: var(--spacing-12);
 
-		.no-img, 
+		.no-img,
 		.img {
 			aspect-ratio: 1;
 			height: calc(calc(100vw / 1.777) - 68px);
@@ -216,9 +216,9 @@
 		.profile-default {
 			position: relative;
 			width: 100%;
-    		height: 100%;
+			height: 100%;
 			:global(svg) {
-				fill: var(--grey-300);				
+				fill: var(--grey-300);
 				// aspect-ratio: 1;
 				// object-fit: contain;
 				position: absolute;
@@ -282,6 +282,6 @@
 	// @media (prefers-color-scheme: dark) {
 	// 	.buttons-bottom {
 	// 		border-bottom: 1px solid var(--grey-500);
-	// 	}	
+	// 	}
 	// }
 </style>

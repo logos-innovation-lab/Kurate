@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ArrowRight from '$lib/components/icons/arrow-right.svelte'	
+	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
@@ -46,12 +46,8 @@
 		</svelte:fragment>
 		<div class="container info">
 			<h2>Are you sure you want to leave?</h2>
-			<p>
-				You are about to leave the persona creation screen				
-			</p>
-			<p>
-				WARNING: If you do so, all changes will be lost.
-			</p>
+			<p>You are about to leave the persona creation screen</p>
+			<p>WARNING: If you do so, all changes will be lost.</p>
 		</div>
 
 		<svelte:fragment slot="buttons">
@@ -76,9 +72,7 @@
 		{onCancel}
 	/>
 {:else if state === 'edit_images'}
-	<Banner icon={Info}>
-		This is a preview of the Persona's page
-	</Banner>
+	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<PersonaDetail
 		name={persona.name}
 		pitch={persona.pitch}
@@ -103,7 +97,7 @@
 			variant="secondary"
 			label="Edit Persona details"
 			icon={Edit}
-			on:click={() => state = 'edit_text'}
+			on:click={() => (state = 'edit_text')}
 		/>
 		<div class="container info">
 			<p>Please provide at least a cover image.</p>
@@ -118,7 +112,7 @@
 				You will see it on your homepage. Before you can make it public you will need to create 5
 				“seed” posts. These posts should serve as inspiring examples for people willing to post with
 				this persona.
-			</p>			
+			</p>
 			<LearnMore href="/" />
 		</div>
 		<svelte:fragment slot="buttons">
@@ -135,5 +129,4 @@
 {/if}
 
 <style lang="scss">
-	
 </style>

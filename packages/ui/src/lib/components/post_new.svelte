@@ -23,11 +23,11 @@
 
 <div class={`root ${cls}`}>
 	<Header>
-		<Button icon={Image}/>
-		<Button 
-			icon={Checkmark} 
-			variant="primary" 
-			label={label} 
+		<Button icon={Image} />
+		<Button
+			icon={Checkmark}
+			variant="primary"
+			{label}
 			on:click={() => submit(postText)}
 			disabled={!$profile.signer}
 		/>

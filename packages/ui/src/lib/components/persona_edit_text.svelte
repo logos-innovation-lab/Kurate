@@ -20,7 +20,7 @@
 
 <svelte:window bind:scrollY={y} />
 
-<Header title={title} undo={undo} />
+<Header {title} {undo} />
 
 <form>
 	<Textarea placeholder="Enter a short memorable name…" label="Persona name" bind:value={name} />
@@ -43,7 +43,7 @@
 			disabled={!name || !pitch || !description}
 			on:click={onSubmit}
 		/>
-		
+
 		<Button label="Cancel" icon={Close} on:click={onCancel} />
 	</div>
 </form>

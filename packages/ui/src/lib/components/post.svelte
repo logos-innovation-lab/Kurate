@@ -14,13 +14,13 @@
 			<!-- MORE THAN 3 IMAGES SHOULD HAVE A "PLUS" ICON OVER THE THIRD WITH COUNT OF EXTRA IMAGES -->
 
 			<div>
-				<img src="https://via.placeholder.com/300x500"  alt="Placeholder for testing"/>
+				<img src="https://via.placeholder.com/300x500" alt="Placeholder for testing" />
 			</div>
 			<div>
-				<img src="https://via.placeholder.com/400x840"  alt="Placeholder for testing"/>
+				<img src="https://via.placeholder.com/400x840" alt="Placeholder for testing" />
 			</div>
 			<div>
-				<img src="https://via.placeholder.com/100x75"  alt="Placeholder for testing"/>
+				<img src="https://via.placeholder.com/100x75" alt="Placeholder for testing" />
 			</div>
 		</div>
 		<div class="post-content">{post.text}</div>
@@ -47,7 +47,7 @@
 				aspect-ratio: 1;
 				object-fit: cover;
 				width: 100%;
-    			height: 100%;
+				height: 100%;
 			}
 		}
 

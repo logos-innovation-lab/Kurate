@@ -22,7 +22,7 @@
 	</div>
 </header> -->
 
-<Header title={title} undo={undo}  on:click={onBack}>
+<Header {title} {undo} on:click={onBack}>
 	<svelte:fragment slot="btn-left">
 		<slot name="btn-left" />
 	</svelte:fragment>

@@ -1,6 +1,5 @@
-<script lang="ts">	
+<script lang="ts">
 </script>
-
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="root card-wrapper" on:click>
@@ -41,7 +40,6 @@
 		width: 100%;
 		max-width: 498px;
 		margin-inline: auto;
-		
 
 		@media (min-width: 1242px) {
 			min-width: 350px;

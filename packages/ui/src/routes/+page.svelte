@@ -72,7 +72,7 @@
 				<div class="section-wrapper">
 					<div class="section-top container">
 						<div class="subtitle">Favorites</div>
-					</div>					
+					</div>
 					<hr />
 					<Grid>
 						{#each $personas.favorite as personaId}
@@ -154,7 +154,7 @@
 		.section-top {
 			display: flex;
 			align-items: center;
-    		justify-content: space-between;
+			justify-content: space-between;
 			padding-block: var(--spacing-24);
 		}
 	}

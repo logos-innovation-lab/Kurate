@@ -6,8 +6,8 @@
 	export let arrow: boolean | undefined = undefined
 </script>
 
-<a class="root" href={href} target={target}>
-	Learn more 
+<a class="root" {href} {target}>
+	Learn more
 	{#if arrow === true}
 		<ArrowRight size={12} />
 	{/if}

@@ -6,14 +6,14 @@
 	export { cls as class }
 
 	let y: number
-	
+
 	export let onBack: () => unknown = () => history.back()
 	export let title = ''
 	export let undo: boolean | undefined = undefined
 </script>
 
 <svelte:window bind:scrollY={y} />
-			
+
 <header class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<div class="content container-full">
 		<div>
@@ -73,7 +73,7 @@
 				}
 				&:last-child {
 					display: flex;
-    				justify-content: flex-end;
+					justify-content: flex-end;
 				}
 			}
 
@@ -88,7 +88,6 @@
 				flex-direction: row;
 				gap: var(--spacing-12);
 			}
-
 
 			// @media (min-width: 688px) {
 			// 	padding: var(--spacing-48);
@@ -125,7 +124,7 @@
 
 			// .content {
 			// 	@media (min-width: 688px) {
-			// 		padding: var(--spacing-12);					
+			// 		padding: var(--spacing-12);
 			// 		transition: padding 0.2s;
 			// 	}
 			// }

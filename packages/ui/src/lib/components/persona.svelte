@@ -10,7 +10,6 @@
 	export let picture: string | undefined
 </script>
 
-
 <Card on:click>
 	<div class="picture"><img src={picture} alt="persona" /></div>
 	<div class="details">
@@ -30,7 +29,6 @@
 </Card>
 
 <style lang="scss">
-	
 	.picture {
 		flex: 0 0 90px;
 		aspect-ratio: 1;

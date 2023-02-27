@@ -5,7 +5,7 @@
 
 <div class="info-banner">
 	<svelte:component this={icon} />
-	<slot/>	
+	<slot />
 </div>
 
 <style lang="scss">
@@ -14,7 +14,7 @@
 		inset: 0 0 auto;
 		z-index: 100;
 		background-color: var(--grey-200);
-		padding: var(--spacing-12);		
+		padding: var(--spacing-12);
 		display: flex;
 		align-items: center;
 		justify-content: center;

@@ -28,7 +28,6 @@
 	import { connectWallet } from '$lib/services'
 	import { goto } from '$app/navigation'
 
-
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
 
@@ -83,9 +82,7 @@
 		}}
 	/>
 {:else if state === 'posts'}
-	<Banner icon={Info}>
-		This is a preview of the Persona's page
-	</Banner>
+	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
 		<Header title={persona.name}>
 			<!-- {#if $profile.signer !== undefined}								
@@ -155,7 +152,7 @@
 				<LearnMore href="/" />
 			{/if}
 		</div>
-		<hr/>
+		<hr />
 		<Grid>
 			{#each persona.posts as post}
 				<Post {post} />
@@ -176,30 +173,29 @@
 			personas.updateDraft(personaIndex, persona)
 			state = 'posts'
 		}}
-		label="Save seed post"		
+		label="Save seed post"
 	/>
 {:else if state === 'publish_warning'}
-	<InfoScreen title={$tokens.go >= TOKEN_POST_COST? 'Publish Persona' : 'Not enough token'} undo={true}>
+	<InfoScreen
+		title={$tokens.go >= TOKEN_POST_COST ? 'Publish Persona' : 'Not enough token'}
+		undo={true}
+	>
 		{#if $tokens.go >= TOKEN_POST_COST}
 			<div class="token-info">
 				<div>
 					<div class="icon">
 						<Info size={32} />
-					</div>					
+					</div>
 					<h2>This will use {TOKEN_POST_COST} GO</h2>
 					<p>This Persona will be live, and everyone will be able to post with it.</p>
 					<p><LearnMore href="/" /></p>
 				</div>
 				<div class="box">
-					<div class="h3">
-						Currently available
-					</div>
+					<div class="h3">Currently available</div>
 					<div class="go-amt">
 						{$tokens.go}
 					</div>
-					<div class="go">
-						GO
-					</div>
+					<div class="go">GO</div>
 					<p>Until new cycle begins</p>
 					<LearnMore href="/" />
 				</div>
@@ -209,21 +205,17 @@
 				<div>
 					<div class="icon">
 						<Info size={32} />
-					</div>	
+					</div>
 					<h2>Sorry, you can't publish now</h2>
 					<p>You need {TOKEN_POST_COST} GO to publish a Persona.</p>
 					<LearnMore href="/" />
 				</div>
 				<div class="box error">
-					<div class="h3">
-						Currently available
-					</div>
+					<div class="h3">Currently available</div>
 					<div class="go-amt">
 						{$tokens.go}
 					</div>
-					<div class="go">
-						GO
-					</div>
+					<div class="go">GO</div>
 					<p>Until new cycle begins</p>
 					<LearnMore href="/" />
 				</div>
@@ -240,7 +232,7 @@
 		</svelte:fragment>
 	</InfoScreen>
 {:else}
-	 <!-- onBack={() => history.back()} -->
+	<!-- onBack={() => history.back()} -->
 	<InfoScreen title="Persona published">
 		<div class="token-info">
 			<div class="icon-success">
@@ -248,7 +240,8 @@
 			</div>
 			<h2>This Persona is now public</h2>
 			<p>
-				Anyone can now submit posts with this Persona. All posts will be subject to community review before being published. This Persona was added to your favorites.
+				Anyone can now submit posts with this Persona. All posts will be subject to community review
+				before being published. This Persona was added to your favorites.
 			</p>
 			<LearnMore href="/" />
 		</div>
@@ -259,15 +252,12 @@
 	</InfoScreen>
 {/if}
 
-
 <style lang="scss">
-	
-
 	.header {
-		    position: fixed;
-			inset: -100% 0 auto;
-			z-index: 50;
-			transition: inset 0.5s;
+		position: fixed;
+		inset: -100% 0 auto;
+		z-index: 50;
+		transition: inset 0.5s;
 
 		&.scrolled {
 			inset: 44px 0 auto;
@@ -295,8 +285,9 @@
 		.icon {
 			margin-bottom: var(--spacing-12);
 		}
-		
-		p, h2 {
+
+		p,
+		h2 {
 			margin-bottom: var(--spacing-6);
 		}
 	}
@@ -329,14 +320,14 @@
 			}
 		}
 	}
-	
+
 	.icon-success {
 		position: relative;
 		display: inline-block;
 		margin-bottom: var(--spacing-12);
 
 		:global(svg) {
-			fill: var(--color-body-bg);			
+			fill: var(--color-body-bg);
 		}
 
 		:global(polygon) {
@@ -346,7 +337,7 @@
 
 		&::before {
 			position: absolute;
-			content: "";
+			content: '';
 			inset: -4px auto auto -6px;
 			background-color: var(--color-success);
 			border-radius: 50%;
