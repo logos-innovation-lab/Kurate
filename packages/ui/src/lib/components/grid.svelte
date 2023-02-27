@@ -13,8 +13,7 @@
 		grid-auto-rows: auto;
 		align-items: end;
 		margin-inline: auto;
-
-		// decided to use max-width here to make it easier to match the page headers' width
+		
 		@media (min-width: 688px) {
 			padding: 0 var(--spacing-24);
 			transition: padding 0.2s;

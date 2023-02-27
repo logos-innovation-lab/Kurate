@@ -3,7 +3,6 @@
 	import { formatDateAndTime } from '$lib/utils/format'
 	import type { Post } from '$lib/stores/post'
 
-	let cls: string | undefined = undefined
 	export let post: Post
 </script>
 

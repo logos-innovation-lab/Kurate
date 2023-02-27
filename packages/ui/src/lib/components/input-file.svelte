@@ -57,7 +57,6 @@
 	.wrapper {
 		width: 20px;
 		height: 20px;
-		// margin-right: var(--spacing-6);
 	}
 	.primary {
 		color: var(--color-body-bg);

@@ -2,11 +2,12 @@
 	import Image from '$lib/components/icons/image.svelte'
 	import Renew from '$lib/components/icons/renew.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
-	import Profile from '$lib/components/icons/profile-default.svelte'
 	import UserMultiple from './icons/user-multiple.svelte'
 	import Forum from './icons/forum.svelte'
+	import Profile from '$lib/components/profile-default.svelte'
 	import Button from '$lib/components/button.svelte'
 	import InputFile from '$lib/components/input-file.svelte'
+	import Container from '$lib/components/container.svelte'
 
 	import { clipAndResize } from '$lib/utils/image'
 	import { MAX_DIMENSIONS } from '$lib/constants'
@@ -75,9 +76,6 @@
 					<InputFile icon={Renew} variant="overlay" bind:files={pictureFiles} />
 				</div>
 			{/if}
-			<!-- <div class="change">
-				<InputFile icon={Renew} variant="primary" bind:files={pictureFiles} />
-			</div> -->
 		</div>
 	{:else if canEditPictures}
 		<div class="no-img">
@@ -91,21 +89,23 @@
 	{/if}
 </div>
 
-<div class="persona-info container">
-	<h1 class="name">{name}</h1>
-	<div class="pitch">{pitch}</div>
-	<div class="description">{description}</div>
-	<div class="post-count">
-		<div>
-			<UserMultiple size={18} />
-			{postsCount}
-		</div>
-		<div>
-			<Forum size={18} />
-			{postsCount}
+<Container>
+	<div class="persona-info">
+		<h1 class="name">{name}</h1>
+		<div class="pitch">{pitch}</div>
+		<div class="description">{description}</div>
+		<div class="post-count">
+			<div>
+				<UserMultiple size={18} />
+				{postsCount}
+			</div>
+			<div>
+				<Forum size={18} />
+				{postsCount}
+			</div>
 		</div>
 	</div>
-</div>
+</Container>
 
 <div class="buttons-bottom">
 	<slot name="button_primary" />
@@ -149,26 +149,11 @@
 		align-items: center;
 		padding: var(--spacing-24);
 		transition: padding 0.2s;
-		// max-width: 498px;
-		// margin-inline: auto;
 
 		@media (min-width: 688px) {
 			padding: var(--spacing-48);
-			// max-width: 996px;
 			transition: padding 0.2s;
 		}
-
-		// @media (min-width: 1242px) {
-		// 	max-width: 1494px;
-		// }
-
-		// @media (min-width: 1640px) {
-		// 	max-width: 1992px;
-		// }
-
-		// @media (min-width: 2038px) {
-		// 	max-width: 2490px;
-		// }
 	}
 
 	.avatar {
@@ -219,11 +204,7 @@
 			height: 100%;
 			:global(svg) {
 				fill: var(--grey-300);
-				// aspect-ratio: 1;
-				// object-fit: contain;
 				position: absolute;
-				// min-width: 10%;
-				// min-height: 50%;
 				inset: auto;
 			}
 		}
@@ -231,13 +212,14 @@
 
 	.persona-info {
 		text-align: center;
-		// padding-inline: var(--spacing-12);
 		max-width: 738px;
 		margin-inline: auto;
 		.name,
 		.pitch,
 		.description {
 			margin-bottom: var(--spacing-12);
+			max-width: 498px;
+			margin-inline: auto;
 		}
 
 		.description {
@@ -272,7 +254,6 @@
 		justify-content: center;
 		align-items: center;
 		gap: var(--spacing-12);
-		// border-bottom: 1px solid var(--grey-200);
 
 		@media (min-width: 688px) {
 			padding: var(--spacing-48);

@@ -4,6 +4,7 @@
 	export let value = ''
 	export let placeholder = ''
 	export let label = ''
+	export let autofocus = false
 
 	let placeholderHeight: number
 	let textarea: HTMLTextAreaElement
@@ -47,7 +48,8 @@
 		>
 			{placeholder}
 		</div>
-		<textarea bind:value bind:this={textarea} class={value != '' ? 'content' : ''} />
+		<!-- svelte-ignore a11y-autofocus -->
+		<textarea bind:value bind:this={textarea} class={value != '' ? 'content' : ''} {autofocus} />
 	</div>
 </label>
 
@@ -95,12 +97,7 @@
 
 				&:focus,
 				&.content {
-					// background-color: #000;
-					// transition: background-color 0.2s;
 					outline: none;
-					// @media (prefers-color-scheme: light) {
-					// 	background-color: #ffffff;
-					// }
 				}
 
 				&.content {

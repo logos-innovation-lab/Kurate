@@ -3,14 +3,15 @@
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
-	import Undo from '$lib/components/icons/undo.svelte'
-	import Info from '$lib/components/icons/info.svelte'
+	import Info from '$lib/components/icons/information.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
 	import PersonaDetail from '$lib/components/persona_detail.svelte'
 	import LearnMore from '$lib/components/learn-more.svelte'
 	import Banner from '$lib/components/message-banner.svelte'
+	import Container from '$lib/components/container.svelte'
+	import InfoBox from '$lib/components/info-box.svelte'
 
 	import { ROUTES } from '$lib/routes'
 	import { goto } from '$app/navigation'
@@ -41,11 +42,13 @@
 
 {#if showWarningModal}
 	<InfoScreen title="Leaving Persona creation" onBack={() => (showWarningModal = false)}>
-		<div class="container info">
-			<h2>Are you sure you want to leave?</h2>
-			<p>You are about to leave the persona creation screen</p>
-			<p>WARNING: If you do so, all changes will be lost.</p>
-		</div>
+		<Container>
+			<InfoBox>
+				<h2>Are you sure you want to leave?</h2>
+				<p>You are about to leave the persona creation screen</p>
+				<p>WARNING: If you do so, all changes will be lost.</p>
+			</InfoBox>
+		</Container>
 
 		<svelte:fragment slot="buttons">
 			<Button
@@ -97,10 +100,11 @@
 			icon={Edit}
 			on:click={() => (state = 'edit_text')}
 		/>
-		<div class="container info">
-			<p>Please provide at least a cover image.</p>
-			<!-- <LearnMore href="/" /> -->
-		</div>
+		<Container>
+			<InfoBox>
+				<p>Please provide a profile picture and a cover image.</p>
+			</InfoBox>
+		</Container>
 	</PersonaDetail>
 {:else}
 	<InfoScreen title="All changes saved">

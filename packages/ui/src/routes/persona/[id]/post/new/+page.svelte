@@ -54,10 +54,6 @@
 			console.error(error)
 		}
 	}
-
-	function cancel() {
-		history.back()
-	}
 </script>
 
 <PostNew {submit} />

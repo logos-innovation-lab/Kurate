@@ -1,7 +1,13 @@
 <script lang="ts">
+	import Search from '$lib/components/icons/search.svelte'
+	import SettingsView from '$lib/components/icons/settings-view.svelte'
+	import Add from '$lib/components/icons/add.svelte'
+
 	import HeaderTop from '$lib/components/header-top.svelte'
 	import Persona from '$lib/components/persona.svelte'
 	import Grid from '$lib/components/grid.svelte'
+	import Button from '$lib/components/button.svelte'
+	import Container from '$lib/components/container.svelte'
 
 	import { profile } from '$lib/stores/profile'
 	import { personas } from '$lib/stores/persona'
@@ -9,11 +15,6 @@
 
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
-
-	import Button from '$lib/components/button.svelte'
-	import Search from '$lib/components/icons/search.svelte'
-	import SettingsView from '$lib/components/icons/settings-view.svelte'
-	import Add from '$lib/components/icons/add.svelte'
 
 	let filterText = ''
 	let showChat = false
@@ -49,9 +50,11 @@
 		{:else}
 			{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
-					<div class="section-top container">
-						<div class="subtitle">Draft personas</div>
-						<Button icon={Add} label="Create persona" on:click={createDraft} />
+					<div class="section-top">
+						<Container class="flex">
+							<div class="subtitle">Draft personas</div>
+							<Button icon={Add} label="Create persona" on:click={createDraft} />
+						</Container>
 					</div>
 					<hr />
 					<Grid>
@@ -70,8 +73,10 @@
 
 			{#if $personas.favorite.length !== 0 && $profile.signer !== undefined}
 				<div class="section-wrapper">
-					<div class="section-top container">
-						<div class="subtitle">Favorites</div>
+					<div class="section-top">
+						<Container>
+							<div class="subtitle">Favorites</div>
+						</Container>
 					</div>
 					<hr />
 					<Grid>
@@ -152,10 +157,13 @@
 		}
 
 		.section-top {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
 			padding-block: var(--spacing-24);
+
+			:global(.flex) {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
 		}
 	}
 	.subtitle {

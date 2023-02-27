@@ -1,13 +1,11 @@
 <script lang="ts">
-	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
-	import EditPersona from '$lib/components/icons/edit2.svelte'
+	import EditPersona from '$lib/components/icons/request-quote.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
-	import Info from '$lib/components/icons/info.svelte'
-	import Wallet from '$lib/components/icons/wallet.svelte'
-	import Launch from '$lib/components/icons/launch.svelte'
+	import Info from '$lib/components/icons/information.svelte'
+	import Launch from '$lib/components/icons/rocket.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
@@ -19,14 +17,12 @@
 	import InfoScreen from '$lib/components/info_screen.svelte'
 	import Banner from '$lib/components/message-banner.svelte'
 	import Grid from '$lib/components/grid.svelte'
+	import Container from '$lib/components/container.svelte'
+	import InfoBox from '$lib/components/info-box.svelte'
 
 	import { personas } from '$lib/stores/persona'
 	import { tokens } from '$lib/stores/tokens'
-	import { profile } from '$lib/stores/profile'
 	import { page } from '$app/stores'
-	import { ROUTES } from '$lib/routes'
-	import { connectWallet } from '$lib/services'
-	import { goto } from '$app/navigation'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -45,18 +41,8 @@
 		state = 'publish_success'
 	}
 
-	const handleConnect = async () => {
-		try {
-			const signer = await connectWallet()
-			const address = await signer.getAddress()
-
-			$profile = { signer, address }
-		} catch (err) {
-			console.error(err)
-		}
-	}
-
 	let y: number
+	export let onBack: () => unknown = () => history.back()
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -83,22 +69,7 @@
 {:else if state === 'posts'}
 	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
-		<Header title={persona.name}>
-			<!-- {#if $profile.signer !== undefined}								
-				<Button
-					icon={Edit}
-					variant="primary"
-					label=""
-					on:click={() => (state = 'post_new')}
-				/>
-			{:else}
-				<Button
-					variant="primary"
-					icon={Wallet}
-					on:click={() => handleConnect()}
-				/>
-			{/if} -->
-		</Header>
+		<Header title={persona.name} {onBack} />
 	</div>
 	<PersonaDetail
 		name={persona.name}
@@ -133,35 +104,29 @@
 			icon={EditPersona}
 			on:click={() => (state = 'text')}
 		/>
-
-		<div class="container info">
-			{#if persona.posts.length < PERSONA_LIMIT}
-				<div class="icon-info">
-					<Info size={32} />
-				</div>
-				<p class="h2">{persona.posts.length} out {PERSONA_LIMIT} seed posts added</p>
-				<p>You need {PERSONA_LIMIT} seed posts to publish this Persona.</p>
-				<LearnMore href="/" />
-			{:else}
-				<div class="icon-success">
-					<Checkmark />
-				</div>
-				<p>{PERSONA_LIMIT} out {PERSONA_LIMIT} seed posts added</p>
-				<p>You can publish this Persona.</p>
-				<LearnMore href="/" />
-			{/if}
-		</div>
 		<hr />
+		<Container>
+			<InfoBox>
+				{#if persona.posts.length < PERSONA_LIMIT}
+					<div class="icon-info">
+						<Info size={32} />
+					</div>
+					<p class="h2">{persona.posts.length} out {PERSONA_LIMIT} seed posts added</p>
+					<p>You need {PERSONA_LIMIT} seed posts to publish this Persona.</p>
+					<LearnMore href="/" />
+				{:else}
+					<div class="icon-success">
+						<Checkmark />
+					</div>
+					<p>{PERSONA_LIMIT} out {PERSONA_LIMIT} seed posts added</p>
+					<p>You can publish this Persona.</p>
+					<LearnMore href="/" />
+				{/if}
+			</InfoBox>
+		</Container>
 		<Grid>
 			{#each persona.posts as post}
 				<Post {post} />
-			{:else}
-				<div class="note">
-					Do we need this "else" which says there are no posts yet? It's not on the design.
-				</div>
-				<div class="container info">
-					<p>There are no posts yet</p>
-				</div>
 			{/each}
 		</Grid>
 	</PersonaDetail>
@@ -232,7 +197,6 @@
 		</svelte:fragment>
 	</InfoScreen>
 {:else}
-	<!-- onBack={() => history.back()} -->
 	<InfoScreen title="Persona published">
 		<div class="token-info">
 			<div class="icon-success">
@@ -262,20 +226,6 @@
 		&.scrolled {
 			inset: 44px 0 auto;
 			transition: inset 0.3s;
-		}
-	}
-
-	.container {
-		&.info {
-			padding-block: var(--spacing-24);
-
-			@media (min-width: 688px) {
-				padding-block: var(--spacing-48);
-			}
-
-			.h2 {
-				margin-bottom: var(--spacing-12);
-			}
 		}
 	}
 

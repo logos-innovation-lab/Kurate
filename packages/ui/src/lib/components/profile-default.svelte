@@ -1,8 +1,4 @@
 <script lang="ts">
-	import type { IconProps } from '$lib/types'
-
-	type $$Props = IconProps
-
 	let cls: string | undefined = undefined
 	export { cls as class }
 </script>

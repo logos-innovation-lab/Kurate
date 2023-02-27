@@ -32,6 +32,8 @@
 	}
 
 	let y: number
+
+	export let onBack: () => unknown = () => history.back()
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -40,7 +42,7 @@
 	<div>There is no persona with group ID {$page.params.id}</div>
 {:else}
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
-		<Header title={persona.name}>
+		<Header title={persona.name} {onBack}>
 			{#if $profile.signer !== undefined}
 				<Button
 					variant="primary"
@@ -88,14 +90,12 @@
 			{/if}
 		</svelte:fragment>
 
-		<div class="note">"Review pending" button needs action</div>
-
 		<svelte:fragment slot="button_other">
 			<!-- NEED TO ADD CORRECT ACTION HERE -->
 			<Button label="Review pending" icon={Hourglass} />
 		</svelte:fragment>
 
-		<div class="note">place filter component here (under construction)</div>
+		<!-- PLACE FILTER COMPONENT HERE -->
 
 		{#if $posts.loading}
 			<p>Loading posts...</p>

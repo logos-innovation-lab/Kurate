@@ -141,47 +141,6 @@ a {
 	text-decoration: underline;
 }
 
-.container {
-	padding: 0 var(--spacing-24);
-	transition: padding 0.2s;
-	max-width: 498px;
-	margin-inline: auto;
-}
-
-.container.info {
-	text-align: center;
-}
-
-.container.info p {
-	margin-bottom: var(--spacing-6);
-}
-
-@media (min-width: 688px) {
-	.container {
-		padding: 0 var(--spacing-48);
-		max-width: 996px;
-		/* transition: padding 0.2s; */
-	}
-}
-
-@media (min-width: 1242px) {
-	.container {
-		max-width: 1494px;
-	}
-}
-
-@media (min-width: 1640px) {
-	.container {
-		max-width: 1992px;
-	}
-}
-
-@media (min-width: 2038px) {
-	.container {
-		max-width: 2490px;
-	}
-}
-
 /* THIS CLASS SHOULD BE REMOVED WHEN NO LONGER NEEDED */
 .note {
 	background-color: palevioletred;

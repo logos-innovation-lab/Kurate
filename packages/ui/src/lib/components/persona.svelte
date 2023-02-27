@@ -3,7 +3,6 @@
 	import UserMultiple from './icons/user-multiple.svelte'
 	import Forum from './icons/forum.svelte'
 
-	let cls: string | undefined = undefined
 	export let name: string | undefined
 	export let description: string | undefined
 	export let postsCount: number
