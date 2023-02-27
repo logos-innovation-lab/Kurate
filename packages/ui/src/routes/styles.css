@@ -160,7 +160,7 @@ a {
 	.container {
 		padding: 0 var(--spacing-48);
 		max-width: 996px;
-		transition: padding 0.2s;
+		/* transition: padding 0.2s; */
 	}
 }
 

@@ -15,7 +15,7 @@
 <svelte:window bind:scrollY={y} />
 			
 <header class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}>
-	<div class="content container">
+	<div class="content container-full">
 		<div>
 			{#if undo === true}
 				<Button icon={Undo} variant="secondary" on:click={onBack} />
@@ -45,7 +45,7 @@
 		transition: box-shadow 0.2s;
 		z-index: 100;
 		margin-inline: -10px;
-		padding-inline: 10px;
+		padding-inline: 22px;
 		padding-block: var(--spacing-24);
 
 		@media (min-width: 688px) {
@@ -60,7 +60,7 @@
 			align-items: center;
 			gap: var(--spacing-12);
 			// margin-inline: 10px;
-			// padding: var(--spacing-24);
+			// padding-inline: var(--spacing-24);
 			// transition: padding 0.2s;
 			// max-width: 498px;
 			// margin-inline: auto;
@@ -114,7 +114,7 @@
 			font-weight: 600;
 			font-size: 18px;
 			font-style: normal;
-			text-align: left;
+			text-align: center;
 		}
 
 		&.scrolled {
@@ -124,10 +124,10 @@
 			transition: box-shadow 0.2s;
 
 			// .content {
-				@media (min-width: 688px) {
-					padding-block: var(--spacing-24);
-					transition: padding 0.2s;
-				}
+			// 	@media (min-width: 688px) {
+			// 		padding: var(--spacing-12);					
+			// 		transition: padding 0.2s;
+			// 	}
 			// }
 			@media (prefers-color-scheme: dark) {
 				box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
