@@ -17,7 +17,6 @@
 </div>
 
 <style lang="scss">
-
 	.content {
 		min-height: calc(100dvh - 92px);
 		min-height: calc(100vh - 92px);
