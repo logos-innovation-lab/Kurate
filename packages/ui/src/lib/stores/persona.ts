@@ -37,7 +37,6 @@ function createPersonaStore(): PersonaStoreWritable {
 	})
 
 	setTimeout(async () => {
-
 		const all = new Map<string, Persona>()
 		const favorite: string[] = []
 

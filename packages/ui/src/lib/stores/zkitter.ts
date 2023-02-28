@@ -1,8 +1,9 @@
+import { browser } from '$app/environment'
 import { writable, type Writable } from 'svelte/store'
-import { Zkitter } from 'zkitter-js'
+import * as ZK from 'zkitter-js'
 
 interface ZkitterData {
-	client?: Zkitter
+	client?: ZK.Zkitter
 }
 
 export type ZkitterStore = Writable<ZkitterData>
@@ -10,9 +11,12 @@ export type ZkitterStore = Writable<ZkitterData>
 function createZkitterStore(): ZkitterStore {
 	const store = writable<ZkitterData>({})
 
-	Zkitter.initialize().then((zkitter) => {
-		store.update((state) => ({ ...state, client: zkitter }))
-	})
+	// FIXME: figure out why ZK can sometimes be undefined
+	if (browser && ZK) {
+		ZK.Zkitter.initialize().then((zkitter) => {
+			store.update((state) => ({ ...state, client: zkitter }))
+		})
+	}
 
 	return store
 }

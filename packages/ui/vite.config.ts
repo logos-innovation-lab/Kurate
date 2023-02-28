@@ -1,9 +1,9 @@
 import { sveltekit } from '@sveltejs/kit/vite'
-import type { UserConfig } from 'vite'
+import { defineConfig } from 'vite'
 import inject from '@rollup/plugin-inject'
 import stdLibBrowser from 'node-stdlib-browser'
 
-const config: UserConfig = {
+export default defineConfig({
 	plugins: [
 		sveltekit(),
 		{
@@ -24,6 +24,4 @@ const config: UserConfig = {
 	optimizeDeps: {
 		include: ['buffer', 'process'],
 	},
-}
-
-export default config
+})
