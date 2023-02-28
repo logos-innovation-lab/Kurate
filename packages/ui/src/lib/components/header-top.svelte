@@ -44,7 +44,7 @@
 				<Button
 					icon={Wallet}
 					variant={'primary'}
-					label={'Connect'}
+					label={y === 0 ? 'Connect' : ''}
 					on:click={() => handleConnect()}
 				/>
 			{/if}
@@ -59,7 +59,7 @@
 		left: 0;
 		right: 0;
 		background-color: rgba(var(--color-body-bg-rgb), 0.93);
-		backdrop-filter: blur(3px);
+		backdrop-filter: blur(var(--blur));
 		transition: box-shadow 0.2s;
 		z-index: 100;
 
@@ -69,25 +69,10 @@
 			align-items: center;
 			padding: var(--spacing-24);
 			transition: padding 0.2s;
-			max-width: 498px;
-			margin-inline: auto;
 
 			@media (min-width: 688px) {
 				padding: var(--spacing-48);
-				max-width: 996px;
 				transition: padding 0.2s;
-			}
-
-			@media (min-width: 1242px) {
-				max-width: 1494px;
-			}
-
-			@media (min-width: 1640px) {
-				max-width: 1992px;
-			}
-
-			@media (min-width: 2038px) {
-				max-width: 2490px;
 			}
 		}
 
@@ -104,10 +89,8 @@
 			transition: box-shadow 0.2s;
 
 			.header-content {
-				@media (min-width: 688px) {
-					padding-block: var(--spacing-24);
-					transition: padding 0.2s;
-				}
+				padding-block: var(--spacing-12);
+				transition: padding 0.2s;
 			}
 			@media (prefers-color-scheme: dark) {
 				box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);

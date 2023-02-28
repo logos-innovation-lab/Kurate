@@ -43,6 +43,7 @@
 		font-weight: 600;
 		font-size: var(--font-size-normal);
 		transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+		white-space: nowrap;
 
 		&:disabled {
 			cursor: not-allowed;
@@ -99,7 +100,7 @@
 		}
 	}
 	.secondary {
-		background-color: var(--color-body-bg);
+		background-color: transparent;
 		border-color: var(--grey-200);
 		color: var(--color-body-text);
 
@@ -164,7 +165,7 @@
 
 		&:active:not(:disabled),
 		&:hover:not(:disabled) {
-			background-color: var(--color-black-rgb);
+			background-color: var(--color-black);
 			transition: background-color 0.2s;
 		}
 	}

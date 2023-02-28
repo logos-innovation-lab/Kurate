@@ -3,51 +3,72 @@
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 	import Star from '$lib/components/icons/star.svelte'
+	import Wallet from '$lib/components/icons/wallet.svelte'
 	import StarFilled from '$lib/components/icons/star_filled.svelte'
+	import Hourglass from '$lib/components/icons/hourglass.svelte'
+	import Grid from '$lib/components/grid.svelte'
+	import PersonaDetail from '$lib/components/persona_detail.svelte'
+	import Header from '$lib/components/header.svelte'
 
 	import { posts } from '$lib/stores/post'
 	import { personas } from '$lib/stores/persona'
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
-	import { browser } from '$app/environment'
 	import { page } from '$app/stores'
-	import Masonry from '$lib/masonry.svelte'
 	import { ROUTES } from '$lib/routes'
-	import PersonaDetail from '$lib/components/persona_detail.svelte'
-
-	let windowWidth: number = browser ? window.innerWidth : 0
-
-	function getMasonryColumnWidth(windowInnerWidth: number) {
-		if (windowInnerWidth < 739) return '100%'
-		if (windowInnerWidth < 1060) return 'minmax(min(100%/2, max(320px, 100%/2)), 1fr)'
-		if (windowInnerWidth < 1381) return 'minmax(min(100%/3, max(320px, 100%/3)), 1fr)'
-		if (windowInnerWidth < 1702) return 'minmax(min(100%/4, max(320px, 100%/4)), 1fr)'
-		if (windowInnerWidth < 2023) return 'minmax(min(100%/5, max(320px, 100%/5)), 1fr)'
-		if (windowInnerWidth < 2560) return 'minmax(min(100%/6, max(320px, 100%/6)), 1fr)'
-		if (windowInnerWidth < 3009) return 'minmax(min(100%/7, max(320px, 100%/7)), 1fr)'
-		return 'minmax(323px, 1fr)'
-	}
+	import { connectWallet } from '$lib/services'
 
 	const persona = $personas.all.get($page.params.id)
+
+	const handleConnect = async () => {
+		try {
+			const signer = await connectWallet()
+			const address = await signer.getAddress()
+
+			$profile = { signer, address }
+		} catch (err) {
+			console.error(err)
+		}
+	}
+
+	let y: number
+
+	export let onBack: () => unknown = () => history.back()
 </script>
 
-<svelte:window bind:innerWidth={windowWidth} />
+<svelte:window bind:scrollY={y} />
 
 {#if persona === undefined}
 	<div>There is no persona with group ID {$page.params.id}</div>
 {:else}
+	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
+		<Header title={persona.name} {onBack}>
+			{#if $profile.signer !== undefined}
+				<Button
+					variant="primary"
+					icon={Edit}
+					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+				/>
+			{:else}
+				<Button variant="primary" icon={Wallet} on:click={() => handleConnect()} />
+			{/if}
+		</Header>
+	</div>
 	<PersonaDetail
 		name={persona.name}
 		pitch={persona.pitch}
 		description={persona.description}
+		postsCount={persona.postsCount}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 	>
 		<svelte:fragment slot="button_top">
-			{#if $personas.favorite.includes($page.params.id)}
-				<Button icon={StarFilled} variant="primary" label="Remove favorite" />
-			{:else}
-				<Button icon={Star} variant="primary" label="Add to favorites" />
+			{#if $profile.signer !== undefined}
+				{#if $personas.favorite.includes($page.params.id)}
+					<Button icon={StarFilled} variant="overlay" label="Remove favorite" />
+				{:else}
+					<Button icon={Star} variant="overlay" label="Add to favorites" />
+				{/if}
 			{/if}
 		</svelte:fragment>
 
@@ -59,22 +80,48 @@
 					icon={Edit}
 					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
 				/>
-			{/if}</svelte:fragment
-		>
+			{:else}
+				<Button
+					variant="primary"
+					label="Connect to post"
+					icon={Wallet}
+					on:click={() => handleConnect()}
+				/>
+			{/if}
+		</svelte:fragment>
+
+		<svelte:fragment slot="button_other">
+			<!-- NEED TO ADD CORRECT ACTION HERE -->
+			<Button label="Review pending" icon={Hourglass} />
+		</svelte:fragment>
+
+		<!-- PLACE FILTER COMPONENT HERE -->
 
 		{#if $posts.loading}
 			<p>Loading posts...</p>
 		{:else if $posts.posts.length == 0}
 			<p>There are no posts yet</p>
 		{:else}
-			<Masonry gridGap="0" colWidth={getMasonryColumnWidth(windowWidth)} items={$posts.posts}>
+			<Grid>
 				{#each $posts.posts as post}
-					<Post {post} />
+					<!-- NEEDS ONCLICK ACTION => SHOULD GO TO POST PAGE -->
+					<Post {post} on:click />
 				{/each}
-			</Masonry>
+			</Grid>
 		{/if}
 	</PersonaDetail>
 {/if}
 
 <style lang="scss">
+	.header {
+		position: fixed;
+		inset: -100% 0 auto;
+		z-index: 100;
+		transition: inset 0.5s;
+
+		&.scrolled {
+			inset: 0 0 auto;
+			transition: inset 0.3s;
+		}
+	}
 </style>

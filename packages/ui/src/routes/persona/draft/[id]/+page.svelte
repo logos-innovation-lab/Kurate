@@ -1,21 +1,28 @@
 <script lang="ts">
-	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
+	import EditPersona from '$lib/components/icons/request-quote.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
+	import Info from '$lib/components/icons/information.svelte'
+	import Launch from '$lib/components/icons/rocket.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
 	import PersonaDetail from '$lib/components/persona_detail.svelte'
 	import Post from '$lib/components/post.svelte'
 	import PostNew from '$lib/components/post_new.svelte'
+	import LearnMore from '$lib/components/learn-more.svelte'
+	import Header from '$lib/components/header.svelte'
+	import InfoScreen from '$lib/components/info_screen.svelte'
+	import Banner from '$lib/components/message-banner.svelte'
+	import Grid from '$lib/components/grid.svelte'
+	import Container from '$lib/components/container.svelte'
+	import InfoBox from '$lib/components/info-box.svelte'
 
 	import { personas } from '$lib/stores/persona'
 	import { tokens } from '$lib/stores/tokens'
-
 	import { page } from '$app/stores'
-	import InfoScreen from '$lib/components/info_screen.svelte'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -33,7 +40,12 @@
 		$tokens.go -= TOKEN_POST_COST
 		state = 'publish_success'
 	}
+
+	let y: number
+	export let onBack: () => unknown = () => history.back()
 </script>
+
+<svelte:window bind:scrollY={y} />
 
 {#if persona === undefined}
 	<div>No draft persona with id {personaIndex}</div>
@@ -42,7 +54,7 @@
 		bind:name
 		bind:pitch
 		bind:description
-		title="Edit persona"
+		title="Edit Persona details"
 		onSubmit={() => {
 			persona.name = name
 			persona.pitch = pitch
@@ -55,6 +67,10 @@
 		}}
 	/>
 {:else if state === 'posts'}
+	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
+	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
+		<Header title={persona.name} {onBack} />
+	</div>
 	<PersonaDetail
 		name={persona.name}
 		pitch={persona.pitch}
@@ -74,9 +90,9 @@
 				/>
 			{:else}
 				<Button
-					icon={Edit}
+					icon={Launch}
 					variant="primary"
-					label="Publish persona"
+					label="Publish Persona"
 					on:click={() => (state = 'publish_warning')}
 				/>
 			{/if}
@@ -84,26 +100,35 @@
 		<Button
 			slot="button_other"
 			variant="secondary"
-			label="Edit persona"
-			icon={Edit}
+			label="Edit Persona details"
+			icon={EditPersona}
 			on:click={() => (state = 'text')}
 		/>
-
-		{#if persona.posts.length < PERSONA_LIMIT}
-			<p>{persona.posts.length} out {PERSONA_LIMIT} seed posts added</p>
-			<p>You need {PERSONA_LIMIT} seed posts to publish this persona.</p>
-			<a href="/" target="_blank">Learn more</a>
-		{:else}
-			<p>{PERSONA_LIMIT} out {PERSONA_LIMIT} seed posts added</p>
-			<p>You can publish this persona.</p>
-			<a href="/" target="_blank">Learn more</a>
-		{/if}
-
-		{#each persona.posts as post}
-			<Post {post} />
-		{:else}
-			<p>There are no posts yet</p>
-		{/each}
+		<hr />
+		<Container>
+			<InfoBox>
+				{#if persona.posts.length < PERSONA_LIMIT}
+					<div class="icon-info">
+						<Info size={32} />
+					</div>
+					<p class="h2">{persona.posts.length} out {PERSONA_LIMIT} seed posts added</p>
+					<p>You need {PERSONA_LIMIT} seed posts to publish this Persona.</p>
+					<LearnMore href="/" />
+				{:else}
+					<div class="icon-success">
+						<Checkmark />
+					</div>
+					<p>{PERSONA_LIMIT} out {PERSONA_LIMIT} seed posts added</p>
+					<p>You can publish this Persona.</p>
+					<LearnMore href="/" />
+				{/if}
+			</InfoBox>
+		</Container>
+		<Grid>
+			{#each persona.posts as post}
+				<Post {post} />
+			{/each}
+		</Grid>
 	</PersonaDetail>
 {:else if state === 'post_new'}
 	<PostNew
@@ -112,56 +137,77 @@
 			personas.updateDraft(personaIndex, persona)
 			state = 'posts'
 		}}
-		cancel={() => (state = 'posts')}
+		label="Save seed post"
+		onBack={() => (state = 'posts')}
 	/>
 {:else if state === 'publish_warning'}
-	<InfoScreen title="Publish persona" onBack={() => history.back()}>
+	<InfoScreen
+		title={$tokens.go >= TOKEN_POST_COST ? 'Publish Persona' : 'Not enough token'}
+		onBack={() => history.back()}
+	>
 		{#if $tokens.go >= TOKEN_POST_COST}
-			<div>
-				<h1>This will use {TOKEN_POST_COST} GO</h1>
-				<p>People will be able to post with this persona.</p>
-				<a href="/" target="_blank">Learn more</a>
-			</div>
-			<div>
-				<h1>Currently available</h1>
-				<span>{$tokens.go} GO</span>
-				<p>Until cycle ends.</p>
-
-				<a href="/" target="_blank">Learn more</a>
+			<div class="token-info">
+				<div>
+					<div class="icon">
+						<Info size={32} />
+					</div>
+					<h2>This will use {TOKEN_POST_COST} GO</h2>
+					<p>This Persona will be live, and everyone will be able to post with it.</p>
+					<p><LearnMore href="/" /></p>
+				</div>
+				<div class="box">
+					<div class="h3">Currently available</div>
+					<div class="go-amt">
+						{$tokens.go}
+					</div>
+					<div class="go">GO</div>
+					<p>Until new cycle begins</p>
+					<LearnMore href="/" />
+				</div>
 			</div>
 		{:else}
-			<div>
-				<h1>Sorry, you can’t publish now</h1>
-				<p>You need {TOKEN_POST_COST} GO to publish a persona.</p>
-				<a href="/" target="_blank">Learn more</a>
-			</div>
-			<div>
-				<h1>Currently available</h1>
-				<span>{$tokens.go} GO</span>
-				<p>Until cycle ends.</p>
-
-				<a href="/" target="_blank">Learn more</a>
+			<div class="token-info">
+				<div>
+					<div class="icon">
+						<Info size={32} />
+					</div>
+					<h2>Sorry, you can't publish now</h2>
+					<p>You need {TOKEN_POST_COST} GO to publish a Persona.</p>
+					<LearnMore href="/" />
+				</div>
+				<div class="box error">
+					<div class="h3">Currently available</div>
+					<div class="go-amt">
+						{$tokens.go}
+					</div>
+					<div class="go">GO</div>
+					<p>Until new cycle begins</p>
+					<LearnMore href="/" />
+				</div>
 			</div>
 		{/if}
 
 		<svelte:fragment slot="buttons">
 			{#if $tokens.go >= TOKEN_POST_COST}
-				<Button variant="secondary" label="Cancel" icon={Close} on:click={() => (state = 'text')} />
-				<Button icon={ArrowRight} variant="primary" label="Proceed" on:click={publishPersona} />
+				<Button icon={Checkmark} variant="primary" label="I agree" on:click={publishPersona} />
+				<Button variant="secondary" label="Nope" icon={Close} on:click={() => (state = 'text')} />
 			{:else}
 				<Button variant="secondary" label="Back" icon={Undo} on:click={() => (state = 'text')} />
 			{/if}
 		</svelte:fragment>
 	</InfoScreen>
 {:else}
-	<InfoScreen title="Publish successful" onBack={() => history.back()}>
-		<div>
-			<h1>This persona is now public</h1>
+	<InfoScreen title="Persona published">
+		<div class="token-info">
+			<div class="icon-success">
+				<Checkmark />
+			</div>
+			<h2>This Persona is now public</h2>
 			<p>
-				Anyone can now submit posts with this persona. All posts will be subject to community review
-				before being published. This persona was added to your favorites on your homepage.
+				Anyone can now submit posts with this Persona. All posts will be subject to community review
+				before being published. This Persona was added to your favorites.
 			</p>
-			<a href="/" target="_blank">Learn more</a>
+			<LearnMore href="/" />
 		</div>
 
 		<svelte:fragment slot="buttons">
@@ -171,4 +217,84 @@
 {/if}
 
 <style lang="scss">
+	.header {
+		position: fixed;
+		inset: -100% 0 auto;
+		z-index: 50;
+		transition: inset 0.5s;
+
+		&.scrolled {
+			inset: 44px 0 auto;
+			transition: inset 0.3s;
+		}
+	}
+
+	.token-info {
+		text-align: center;
+
+		.icon {
+			margin-bottom: var(--spacing-12);
+		}
+
+		p,
+		h2 {
+			margin-bottom: var(--spacing-6);
+		}
+	}
+
+	.box {
+		border: 1px solid var(--grey-200);
+		padding: var(--spacing-24);
+		margin-top: var(--spacing-48);
+
+		.go-amt {
+			font-size: 40px;
+			line-height: 1;
+			font-weight: var(--font-weight-sb);
+			margin-top: var(--spacing-12);
+		}
+
+		.go {
+			text-transform: uppercase;
+			font-weight: var(--font-weight-sb);
+			margin-bottom: var(--spacing-12);
+		}
+
+		&.error {
+			border: 1px solid var(--color-red);
+			background-color: rgba(var(--color-red-rgb), 0.05);
+
+			.go-amt,
+			.go {
+				color: var(--color-red);
+			}
+		}
+	}
+
+	.icon-success {
+		position: relative;
+		display: inline-block;
+		margin-bottom: var(--spacing-12);
+
+		:global(svg) {
+			fill: var(--color-body-bg);
+		}
+
+		:global(polygon) {
+			stroke: #fff;
+			stroke-width: 1px;
+		}
+
+		&::before {
+			position: absolute;
+			content: '';
+			inset: -4px auto auto -6px;
+			background-color: var(--color-success);
+			border-radius: 50%;
+			width: 28px;
+			height: 28px;
+			transform: translateX(2px);
+			z-index: -1;
+		}
+	}
 </style>

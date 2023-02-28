@@ -7,7 +7,7 @@
 	export let disabled: boolean | undefined = undefined
 	export let label: string | undefined = undefined
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
-	export let variant: 'secondary' | 'primary' = 'secondary'
+	export let variant: 'secondary' | 'primary' | 'overlay' = 'secondary'
 </script>
 
 <label class={`root ${variant} ${cls}`}>
@@ -28,9 +28,6 @@
 		padding-left: var(--spacing-12);
 		padding-right: var(--spacing-12);
 		height: 44px;
-		outline-width: 1px;
-		outline-style: solid;
-		outline-offset: -1px;
 		border-width: 1px;
 		border-style: solid;
 		box-sizing: border-box;
@@ -40,11 +37,11 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
+		gap: var(--spacing-6);
 		font-family: var(--font-body);
 		font-weight: 600;
 		font-size: var(--font-size-normal);
-		transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
-			outline-offset 0.1s, background-color 0.2s, color 0.2s;
+		transition: border-color 0.2s, background-color 0.2s, color 0.2s;
 
 		&:disabled {
 			cursor: not-allowed;
@@ -60,11 +57,9 @@
 	.wrapper {
 		width: 20px;
 		height: 20px;
-		margin-right: var(--spacing-6);
 	}
 	.primary {
 		color: var(--color-body-bg);
-		outline-color: var(--color-body-text);
 		border-color: var(--color-body-text);
 		background-color: var(--color-body-text);
 
@@ -75,22 +70,19 @@
 		&:disabled {
 			background-color: var(--grey-200);
 			border-color: var(--grey-200);
-			outline-color: var(--grey-200);
 			color: var(--color-body-bg);
 		}
 
 		&:active:not(:disabled),
 		&:hover:not(:disabled) {
-			outline-width: 3px;
-			transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
-				outline-offset 0.1s;
+			border-color: var(--color-black);
+			background-color: var(--color-black);
+			transition: border-color 0.2s, background-color 0.2s;
 		}
 
 		@media (prefers-color-scheme: dark) {
 			&:disabled {
-				background-color: var(--grey-500);
-				border-color: transparent;
-				outline-color: transparent;
+				background-color: var(--grey-200);
 				color: var(--color-body-bg);
 
 				& :global(svg) {
@@ -100,16 +92,13 @@
 
 			&:active:not(:disabled),
 			&:hover:not(:disabled) {
-				outline-width: 3px;
-				transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
-					outline-offset 0.1s;
+				transition: border-color 0.2s, background-color 0.2s;
 			}
 		}
 	}
 	.secondary {
 		background-color: var(--color-body-bg);
-		border-color: transparent;
-		outline-color: var(--grey-200);
+		border-color: var(--grey-200);
 		color: var(--color-body-text);
 
 		& :global(svg) {
@@ -126,19 +115,13 @@
 
 		&:active:not(:disabled),
 		&:hover:not(:disabled) {
-			outline-width: 1px;
-			outline-color: var(--color-body-text);
-			outline-offset: 2px;
-			transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
-				outline-offset 0.1s;
+			background-color: var(--grey-150);
+			transition: border-color 0.2s, background-color 0.2s;
 		}
 
 		@media (prefers-color-scheme: dark) {
 			background-color: var(--color-body-bg);
-			// border-color: var(--color-body-text);
-			outline-width: 1px;
-			outline-offset: 0px;
-			outline-color: var(--grey-500);
+			border-color: var(--color-body-text);
 			color: var(--color-body-text);
 
 			& :global(svg) {
@@ -147,8 +130,6 @@
 
 			&:disabled {
 				background-color: var(--color-body-bg);
-				outline-color: var(--grey-500);
-				border-color: transparent;
 				color: var(--grey-500);
 
 				& :global(svg) {
@@ -158,11 +139,31 @@
 
 			&:active:not(:disabled),
 			&:hover:not(:disabled) {
-				outline-offset: 2px;
-				border-color: transparent;
-				transition: outline-width 0.1s, outline-color 0.1s, outline-style 0.1s, border-color 0.1s,
-					outline-offset 0.1s;
+				transition: border-color 0.2s, background-color 0.2s;
 			}
+		}
+	}
+	.overlay {
+		background-color: rgba(var(--color-black-rgb), 0.5);
+		border-color: transparent;
+		backdrop-filter: blur(var(--blur));
+		color: var(--color-body-bg);
+
+		& :global(svg) {
+			fill: var(--color-body-bg);
+		}
+		&:disabled {
+			color: var(--grey-300);
+
+			& :global(svg) {
+				fill: var(--grey-300);
+			}
+		}
+
+		&:active:not(:disabled),
+		&:hover:not(:disabled) {
+			background-color: var(--color-black);
+			transition: background-color 0.2s;
 		}
 	}
 </style>

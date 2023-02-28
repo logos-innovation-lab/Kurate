@@ -1,14 +1,9 @@
 :root {
-	color-scheme: light dark;
+	/* color-scheme: light dark; */
 
 	--font-body: 'Source Sans Pro';
 	--font-mono: 'Source Code Pro';
 	--font-serif: 'Source Serif Pro';
-
-	--font-size-normal: 16px;
-	--font-size-lg: 18px;
-	--font-size-sm: 14px;
-	--font-size-xs: 12px;
 
 	--font-weight-normal: 400;
 	--font-weight-sb: 600;
@@ -19,6 +14,10 @@
 	--color-body-text-rgb: 24, 24, 24;
 	--color-black: #000000;
 	--color-black-rgb: 0, 0, 0;
+	--color-red: #ff0000;
+	--color-red-rgb: 255, 0, 0;
+
+	--color-success: #12bb10;
 
 	--grey-100: #f0f0f0;
 	--grey-150: #f9f9f9;
@@ -38,12 +37,54 @@
 	--spacing-24: 24px;
 	--spacing-48: 48px;
 
+	--blur: 3px;
+
+	--font-size-xl: 18px;
+	--font-size-lg: 16px;
+	--font-size-normal: 14px;
+	--font-size-sm: 12px;
+	--font-size-xs: 12px;
+
 	--container-width: 100%;
 }
 
-@media (min-width: 1280px) {
+h1:not(:empty),
+h2:not(:empty),
+h3:not(:empty),
+.h1:not(:empty),
+.h2:not(:empty),
+.h3:not(:empty) {
+	font-family: var(--font-body);
+	font-weight: var(--font-weight-sb);
+	font-style: normal;
+	line-height: 1;
+}
+
+h1:not(:empty),
+.h1:not(:empty) {
+	font-size: var(--font-size-xl);
+}
+
+h2:not(:empty),
+.h2:not(:empty) {
+	font-size: var(--font-size-lg);
+}
+
+h3:not(:empty),
+.h3:not(:empty) {
+	font-size: var(--font-size-normal);
+}
+
+.text-large {
+	font-size: var(--font-size-lg);
+}
+
+@media (min-width: 398px) {
 	:root {
-		--container-width: 1280px;
+		--font-size-xl: 20px;
+		--font-size-lg: 18px;
+		--font-size-normal: 16px;
+		--font-size-sm: 14px;
 	}
 }
 
@@ -63,7 +104,8 @@ body {
 	color: var(--color-body-text);
 	background-color: var(--color-body-bg);
 	font-family: var(--font-body);
-	font-weight: 400;
+	font-weight: var(--font-weight-normal);
+	font-size: var(--font-size-normal);
 }
 
 *,
@@ -80,7 +122,7 @@ body {
 
 img,
 picture,
-svg,
+/* svg, */
 video {
 	display: block;
 	max-width: 100%;
@@ -89,11 +131,31 @@ video {
 
 hr {
 	border: none;
+	width: 100%;
 	height: 1px;
 	background-color: var(--grey-200);
 }
 
-@media (prefers-color-scheme: dark) {
+a {
+	color: var(--color-black);
+	text-decoration: underline;
+}
+
+/* THIS CLASS SHOULD BE REMOVED WHEN NO LONGER NEEDED */
+.note {
+	background-color: palevioletred;
+	color: white;
+	text-align: center;
+	padding: var(--spacing-24);
+}
+
+@media (min-width: 1280px) {
+	:root {
+		--container-width: 1280px;
+	}
+}
+
+/* @media (prefers-color-scheme: dark) {
 	:root {
 		--success-highlight: #052b05;
 		--color-body-bg: #000000;
@@ -108,4 +170,4 @@ hr {
 	hr {
 		background-color: var(--grey-500);
 	}
-}
+} */
