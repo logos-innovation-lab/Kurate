@@ -72,6 +72,7 @@ importers:
       '@fontsource/source-code-pro': ^4.5.14
       '@fontsource/source-sans-pro': ^4.5.11
       '@fontsource/source-serif-pro': ^4.5.9
+      '@multiformats/multiaddr': ^11.4.0
       '@playwright/test': 1.30.0
       '@rollup/plugin-inject': ^5.0.3
       '@semaphore-protocol/group': 3.0.0
@@ -110,6 +111,7 @@ importers:
       '@fontsource/source-code-pro': 4.5.14
       '@fontsource/source-sans-pro': 4.5.11
       '@fontsource/source-serif-pro': 4.5.9
+      '@multiformats/multiaddr': 11.4.0
       '@playwright/test': 1.30.0
       '@rollup/plugin-inject': 5.0.3
       '@semaphore-protocol/group': 3.0.0
@@ -975,7 +977,7 @@ packages:
       '@libp2p/interface-peer-id': 1.1.2
       '@libp2p/interfaces': 3.3.1
       '@libp2p/logger': 2.0.5
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
       err-code: 3.0.1
     transitivePeerDependencies:
       - supports-color
@@ -1002,7 +1004,7 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@libp2p/interfaces': 3.3.1
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1023,7 +1025,7 @@ packages:
       '@libp2p/interface-connection': 3.0.8
       '@libp2p/interface-peer-id': 2.0.1
       '@libp2p/interfaces': 3.3.1
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1047,7 +1049,7 @@ packages:
     dependencies:
       '@libp2p/interface-peer-id': 2.0.1
       '@libp2p/interfaces': 3.3.1
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
       it-stream-types: 1.0.5
       uint8arraylist: 2.4.3
     transitivePeerDependencies:
@@ -1120,7 +1122,7 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@libp2p/interface-peer-id': 2.0.1
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1144,7 +1146,7 @@ packages:
       '@libp2p/interface-peer-info': 1.0.8
       '@libp2p/interface-record': 2.0.6
       '@libp2p/interfaces': 3.3.1
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1197,7 +1199,7 @@ packages:
     dependencies:
       '@libp2p/interface-connection': 3.0.8
       '@libp2p/interfaces': 3.3.1
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
       it-stream-types: 1.0.5
     transitivePeerDependencies:
       - supports-color
@@ -1308,7 +1310,7 @@ packages:
       '@libp2p/logger': 2.0.5
       '@libp2p/peer-id': 1.1.18
       '@libp2p/utils': 3.0.4
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
       err-code: 3.0.1
       interface-datastore: 7.0.4
       it-all: 2.0.0
@@ -1339,7 +1341,7 @@ packages:
       '@libp2p/logger': 2.0.5
       '@libp2p/peer-id': 1.1.18
       '@libp2p/peer-record': 4.0.5
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
       err-code: 3.0.1
       interface-datastore: 7.0.4
       it-all: 1.0.6
@@ -1371,7 +1373,7 @@ packages:
       '@libp2p/peer-collections': 2.2.2
       '@libp2p/peer-id': 1.1.18
       '@libp2p/topology': 3.0.2
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
       abortable-iterator: 4.0.2
       err-code: 3.0.1
       it-length-prefixed: 8.0.4
@@ -1413,7 +1415,7 @@ packages:
       '@libp2p/interface-connection': 3.0.8
       '@libp2p/interface-peer-store': 1.2.8
       '@libp2p/logger': 2.0.5
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
       abortable-iterator: 4.0.2
       err-code: 3.0.1
       is-loopback-addr: 2.0.1
@@ -1434,7 +1436,7 @@ packages:
       '@libp2p/logger': 2.0.5
       '@libp2p/utils': 3.0.4
       '@multiformats/mafmt': 11.1.0
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
       '@multiformats/multiaddr-to-uri': 9.0.2
       abortable-iterator: 4.0.2
       err-code: 3.0.1
@@ -1480,7 +1482,7 @@ packages:
     resolution: {integrity: sha512-ZGuP26SIbBZutDN/QhqGwuu7b1zTO9DLvG4l3fh15ambPmcwS811MQIyW+d+9Vl7ASheB0qJq0sJrMKsHS3dXA==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1489,7 +1491,7 @@ packages:
     resolution: {integrity: sha512-vrWmfFadmix5Ab9l//oRQdQ7O3J5bGJpJRMSm21bHlQB0XV4xtNU6vMZBVXeu3Su79LgflEp37cjTFE3yKf3Hw==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@multiformats/multiaddr': 11.0.7
+      '@multiformats/multiaddr': 11.4.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -1508,14 +1510,14 @@ packages:
       - supports-color
     dev: true
 
-  /@multiformats/multiaddr/11.0.7:
-    resolution: {integrity: sha512-rCqYS3Qz/dm4H/1Lvda11OBZf1tH8rst69GWK9jDy8AY+3n+NBBdErA/SRtdcRx6hPtQ8lAB5UhHlzIVbViv1Q==}
+  /@multiformats/multiaddr/11.4.0:
+    resolution: {integrity: sha512-rLIhSOCKQhm/fCjg+5tVM9xrtjbZjZKJg6bb65YbFsNoPSYhweEohXO8Pkg2xbRy3NqVEVkS+8DB/+VhNvjd5Q==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@chainsafe/is-ip': 2.0.1
       dns-over-http-resolver: 2.1.1
       err-code: 3.0.1
-      multiformats: 10.0.3
+      multiformats: 11.0.1
       uint8arrays: 4.0.3
       varint: 6.0.0
     transitivePeerDependencies:
