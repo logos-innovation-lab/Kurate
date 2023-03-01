@@ -44,14 +44,12 @@
 	<InfoScreen title="Leaving Persona creation" onBack={() => (showWarningModal = false)}>
 		<Container>
 			<InfoBox>
-				<svelte:fragment slot="content">
-					<div class="icon">
-						<Info size={32} />
-					</div>
-					<h2>Are you sure you want to leave?</h2>
-					<p>You are about to leave the persona creation screen.</p>
-					<p>WARNING: If you do so, all changes will be lost.</p>
-				</svelte:fragment>
+				<div class="icon">
+					<Info size={32} />
+				</div>
+				<h2>Are you sure you want to leave?</h2>
+				<p>You are about to leave the persona creation screen.</p>
+				<p>WARNING: If you do so, all changes will be lost.</p>
 				<svelte:fragment slot="buttons">
 					<Button
 						variant="secondary"
@@ -111,9 +109,7 @@
 		/>
 		<Container>
 			<InfoBox>
-				<svelte:fragment slot="content">
-					<p>Please provide a profile picture and a cover image.</p>
-				</svelte:fragment>
+				<p>Please provide a profile picture and a cover image.</p>
 			</InfoBox>
 		</Container>
 	</PersonaDetail>
@@ -121,18 +117,16 @@
 	<InfoScreen title="All changes saved">
 		<Container>
 			<InfoBox>
-				<svelte:fragment slot="content">
-					<div class="icon">
-						<Info size={32} />
-					</div>
-					<h2>This persona is saved as a draft (not public)</h2>
-					<p>
-						You will see it on your homepage. Before you can make it public you will need to create
-						5 “seed” posts. These posts should serve as inspiring examples for people willing to
-						post with this persona.
-					</p>
-					<LearnMore href="/" />
-				</svelte:fragment>
+				<div class="icon">
+					<Info size={32} />
+				</div>
+				<h2>This persona is saved as a draft (not public)</h2>
+				<p>
+					You will see it on your homepage. Before you can make it public you will need to create 5
+					“seed” posts. These posts should serve as inspiring examples for people willing to post
+					with this persona.
+				</p>
+				<LearnMore href="/" />
 				<svelte:fragment slot="buttons">
 					<Button variant="secondary" label="Continue later" on:click={() => history.back()} />
 					<Button
@@ -147,6 +141,3 @@
 		</Container>
 	</InfoScreen>
 {/if}
-
-<style lang="scss">
-</style>

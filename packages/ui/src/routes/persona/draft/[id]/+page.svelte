@@ -107,23 +107,21 @@
 		<hr />
 		<Container>
 			<InfoBox>
-				<svelte:fragment slot="content">
-					{#if persona.posts.length < PERSONA_LIMIT}
-						<div class="icon">
-							<Info size={32} />
-						</div>
-						<p class="h2">{persona.posts.length} out {PERSONA_LIMIT} seed posts added</p>
-						<p>You need {PERSONA_LIMIT} seed posts to publish this Persona.</p>
-						<LearnMore href="/" />
-					{:else}
-						<div class="icon icon-success">
-							<Checkmark />
-						</div>
-						<p>{PERSONA_LIMIT} out {PERSONA_LIMIT} seed posts added</p>
-						<p>You can publish this Persona.</p>
-						<LearnMore href="/" />
-					{/if}
-				</svelte:fragment>
+				{#if persona.posts.length < PERSONA_LIMIT}
+					<div class="icon">
+						<Info size={32} />
+					</div>
+					<p class="h2">{persona.posts.length} out {PERSONA_LIMIT} seed posts added</p>
+					<p>You need {PERSONA_LIMIT} seed posts to publish this Persona.</p>
+					<LearnMore href="/" />
+				{:else}
+					<div class="icon icon-success">
+						<Checkmark />
+					</div>
+					<p>{PERSONA_LIMIT} out {PERSONA_LIMIT} seed posts added</p>
+					<p>You can publish this Persona.</p>
+					<LearnMore href="/" />
+				{/if}
 			</InfoBox>
 		</Container>
 		<Grid>

@@ -5,7 +5,7 @@
 
 <div class={`info ${cls}`}>
 	<div class="content">
-		<slot name="content" />
+		<slot />
 	</div>
 	{#if $$slots.buttons}
 		<div class="buttons">

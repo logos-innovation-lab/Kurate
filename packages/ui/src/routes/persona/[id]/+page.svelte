@@ -43,9 +43,7 @@
 {#if persona === undefined}
 	<Container>
 		<InfoBox>
-			<svelte:fragment slot="content">
-				<div>There is no persona with group ID {$page.params.id}</div>
-			</svelte:fragment>
+			<div>There is no persona with group ID {$page.params.id}</div>
 		</InfoBox>
 	</Container>
 {:else}
@@ -108,17 +106,13 @@
 		{#if $posts.loading}
 			<Container>
 				<InfoBox>
-					<svelte:fragment slot="content">
-						<p>Loading posts...</p>
-					</svelte:fragment>
+					<p>Loading posts...</p>
 				</InfoBox>
 			</Container>
 		{:else if $posts.posts.length == 0}
 			<Container>
 				<InfoBox>
-					<svelte:fragment slot="content">
-						<p>There are no posts yet</p>
-					</svelte:fragment>
+					<p>There are no posts yet</p>
 				</InfoBox>
 			</Container>
 		{:else}
