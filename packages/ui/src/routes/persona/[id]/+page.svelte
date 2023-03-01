@@ -9,6 +9,8 @@
 	import Grid from '$lib/components/grid.svelte'
 	import PersonaDetail from '$lib/components/persona_detail.svelte'
 	import Header from '$lib/components/header.svelte'
+	import Container from '$lib/components/container.svelte'
+	import InfoBox from '$lib/components/info-box.svelte'
 
 	import { posts } from '$lib/stores/post'
 	import { personas } from '$lib/stores/persona'
@@ -39,7 +41,13 @@
 <svelte:window bind:scrollY={y} />
 
 {#if persona === undefined}
-	<div>There is no persona with group ID {$page.params.id}</div>
+	<Container>
+		<InfoBox>
+			<svelte:fragment slot="content">
+				<div>There is no persona with group ID {$page.params.id}</div>
+			</svelte:fragment>
+		</InfoBox>
+	</Container>
 {:else}
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
 		<Header title={persona.name} {onBack}>
@@ -91,20 +99,32 @@
 		</svelte:fragment>
 
 		<svelte:fragment slot="button_other">
-			<!-- NEED TO ADD CORRECT ACTION HERE -->
+			<!-- TODO: NEED TO ADD CORRECT ACTION HERE -->
 			<Button label="Review pending" icon={Hourglass} />
 		</svelte:fragment>
 
-		<!-- PLACE FILTER COMPONENT HERE -->
+		<!-- TODO: PLACE FILTER COMPONENT HERE -->
 
 		{#if $posts.loading}
-			<p>Loading posts...</p>
+			<Container>
+				<InfoBox>
+					<svelte:fragment slot="content">
+						<p>Loading posts...</p>
+					</svelte:fragment>
+				</InfoBox>
+			</Container>
 		{:else if $posts.posts.length == 0}
-			<p>There are no posts yet</p>
+			<Container>
+				<InfoBox>
+					<svelte:fragment slot="content">
+						<p>There are no posts yet</p>
+					</svelte:fragment>
+				</InfoBox>
+			</Container>
 		{:else}
 			<Grid>
 				{#each $posts.posts as post}
-					<!-- NEEDS ONCLICK ACTION => SHOULD GO TO POST PAGE -->
+					<!-- TODO:  NEEDS ONCLICK ACTION => SHOULD GO TO POST PAGE -->
 					<Post {post} on:click />
 				{/each}
 			</Grid>
