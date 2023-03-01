@@ -33,6 +33,7 @@ jobs:
         run: npx playwright install
 
       - name: Download snark-artifacts
+        working-directory: packages/contracts
         run: pnpm run download:snark-artifacts
 
       - name: Test
