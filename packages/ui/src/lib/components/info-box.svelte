@@ -4,26 +4,44 @@
 </script>
 
 <div class={`info ${cls}`}>
-	<slot />
+	<div class="content">
+		<slot />
+	</div>
+	{#if $$slots.buttons}
+		<div class="buttons">
+			<slot name="buttons" />
+		</div>
+	{/if}
 </div>
 
 <style lang="scss">
 	.info {
-		text-align: center;
 		padding-block: var(--spacing-24);
-		transition: padding 0.2s;
-
-		:global(p) {
-			margin-bottom: var(--spacing-6);
-		}
-
-		:global(.h2) {
-			margin-bottom: var(--spacing-12);
-		}
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-start;
+		gap: var(--spacing-48);
 
 		@media (min-width: 688px) {
 			padding-block: var(--spacing-48);
-			transition: padding 0.2s;
+		}
+		.content {
+			text-align: center;
+			display: flex;
+			flex-direction: column;
+			gap: var(--spacing-6);
+
+			:global(.icon) {
+				margin-bottom: var(--spacing-6);
+			}
+		}
+		.buttons:not(:empty) {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			gap: var(--spacing-12);
 		}
 	}
 </style>

@@ -254,6 +254,7 @@
 		justify-content: center;
 		align-items: center;
 		gap: var(--spacing-12);
+		flex-wrap: wrap;
 
 		@media (min-width: 688px) {
 			padding: var(--spacing-48);

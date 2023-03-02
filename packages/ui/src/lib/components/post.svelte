@@ -39,6 +39,7 @@
 		flex-wrap: nowrap;
 
 		div {
+			flex-basis: 100%;
 			img {
 				max-height: 300px;
 			}
@@ -48,23 +49,6 @@
 				width: 100%;
 				height: 100%;
 			}
-		}
-
-		/* one item */
-		div:first-child:nth-last-child(1) {
-			width: 100%;
-		}
-
-		/* two items */
-		div:first-child:nth-last-child(2),
-		div:first-child:nth-last-child(2) ~ div {
-			width: 50%;
-		}
-
-		/* three items */
-		div:first-child:nth-last-child(3),
-		div:first-child:nth-last-child(3) ~ div {
-			width: 33.3333%;
 		}
 	}
 
