@@ -117,9 +117,8 @@
 			</Container>
 		{:else}
 			<Grid>
-				{#each $posts.posts as post}
-					<!-- TODO:  NEEDS ONCLICK ACTION => SHOULD GO TO POST PAGE -->
-					<Post {post} on:click />
+				{#each $posts.posts as post, index}
+					<Post {post} on:click={() => goto(ROUTES.PERSONA_POST($page.params.id, index))} />
 				{/each}
 			</Grid>
 		{/if}
