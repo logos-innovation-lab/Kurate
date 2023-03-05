@@ -23,9 +23,14 @@
 	import Button from '$lib/components/button.svelte'
 	import { tokens } from '$lib/stores/tokens'
 	import TokenInfo from '$lib/components/token-info.svelte'
+	import Undo from '$lib/components/icons/undo.svelte'
 
+	// FIXME: These should come from some constants
 	const TOKEN_POST_COST_REP = 5
 	const TOKEN_POST_COST_GO = 5
+
+	// FIXME: This should be stored in persona and loaded
+	const TOKEN_POST_MIN_REP = 5
 
 	async function submit(postText: string) {
 		try {
@@ -73,63 +78,104 @@
 </script>
 
 {#if state === 'price_varning'}
-	<InfoScreen title="Submit Post" onBack={onBack}>
-		{#if $tokens.go >= TOKEN_POST_COST_GO && $tokens.repTotal - $tokens.repStaked >= TOKEN_POST_COST_REP}
-			<div class="token-info">
-				<div>
-					<div class="icon">
-						<Info size={32} />
-					</div>
-					<h2>This will stake {TOKEN_POST_COST_REP} REP and use {TOKEN_POST_COST_GO} GO</h2>
-					<p>Your post will be submitted to a community vote, and will be published if the majority votes to promote it. If promoted, you will earn {TOKEN_POST_COST_REP} REP. If demoted, you will lose your staked REP.</p>
-					<p><LearnMore href="/" /></p>
-				</div>
-				<div class='side-by-side'>
-				<TokenInfo 
-				title='Available to stake' 
-				amount={($tokens.repTotal - $tokens.repStaked).toFixed()} 
-				tokenName='REP' 
-				explanation={`${$tokens.repStaked} out of ${$tokens.repTotal} staked`}/>					
-					<TokenInfo 
-				title='Currently available' 
-				amount={$tokens.go.toFixed()} 
-				tokenName='GO' 
-				explanation='Until new cycle begins'/>
-					
-				</div>
-			</div>
-		{:else}
+	{#if $tokens.repTotal < TOKEN_POST_MIN_REP}
+		<InfoScreen title="Not enough REP" {onBack}>
 			<div class="token-info">
 				<div>
 					<div class="icon">
 						<Info size={32} />
 					</div>
 					<h2>Sorry, you can't submit a post now</h2>
-					<p>You need {TOKEN_POST_COST_REP} REP to stake and {TOKEN_POST_COST_GO} GO to submit a post.</p>
+					<p>You need at least {TOKEN_POST_MIN_REP} REP to submit a post through this Persona.</p>
 					<LearnMore href="/" />
 				</div>
-				<div class='side-by-side'>
-				<TokenInfo 
-					title='Available to stake' 
-					amount={($tokens.repTotal - $tokens.repStaked).toFixed()} 
-					tokenName='REP' 
-					explanation={`${$tokens.repStaked} out of ${$tokens.repTotal} staked`}
-					error={$tokens.repTotal - $tokens.repStaked < TOKEN_POST_COST_REP}
-					/>					
-					<TokenInfo 
-						title='Currently available' 
-						amount={$tokens.go.toFixed()} 
-						tokenName='GO' 
-						explanation='Until new cycle begins'
-					error={$tokens.go < TOKEN_POST_COST_GO}/>
+				<TokenInfo
+					title="Available to stake"
+					amount={$tokens.repTotal.toFixed()}
+					tokenName="REP"
+					explanation={`Including staked`}
+					error
+				/>
+			</div>
+			<svelte:fragment slot="buttons">
+				<Button label="Back" icon={Undo} on:click={onBack} />
+			</svelte:fragment>
+		</InfoScreen>
+	{:else if $tokens.go < TOKEN_POST_COST_GO || $tokens.repTotal - $tokens.repStaked < TOKEN_POST_COST_REP}
+		<InfoScreen title="Not enough token" {onBack}>
+			<div class="token-info">
+				<div>
+					<div class="icon">
+						<Info size={32} />
+					</div>
+					<h2>Sorry, you can't submit a post now</h2>
+					<p>
+						You need {TOKEN_POST_COST_REP} REP to stake and {TOKEN_POST_COST_GO} GO to submit a post.
+					</p>
+					<LearnMore href="/" />
+				</div>
+				<div class="side-by-side">
+					<TokenInfo
+						title="Available to stake"
+						amount={($tokens.repTotal - $tokens.repStaked).toFixed()}
+						tokenName="REP"
+						explanation={`${$tokens.repStaked} out of ${$tokens.repTotal} staked`}
+						error={$tokens.repTotal - $tokens.repStaked < TOKEN_POST_COST_REP}
+					/>
+					<TokenInfo
+						title="Currently available"
+						amount={$tokens.go.toFixed()}
+						tokenName="GO"
+						explanation="Until new cycle begins"
+						error={$tokens.go < TOKEN_POST_COST_GO}
+					/>
 				</div>
 			</div>
-		{/if}
-		<svelte:fragment slot='buttons'>
-			<Button label="I agree" variant='primary' icon={Checkmark} on:click={() => state='edit'} />
-			<Button label="Nope" icon={Close} on:click={onBack}/>
-		</svelte:fragment>
-	</InfoScreen>
+			<svelte:fragment slot="buttons">
+				<Button label="Back" icon={Undo} on:click={onBack} />
+			</svelte:fragment>
+		</InfoScreen>
+	{:else}
+		<InfoScreen title="Submit Post" {onBack}>
+			<div class="token-info">
+				<div>
+					<div class="icon">
+						<Info size={32} />
+					</div>
+					<h2>This will stake {TOKEN_POST_COST_REP} REP and use {TOKEN_POST_COST_GO} GO</h2>
+					<p>
+						Your post will be submitted to a community vote, and will be published if the majority
+						votes to promote it. If promoted, you will earn {TOKEN_POST_COST_REP} REP. If demoted, you
+						will lose your staked REP.
+					</p>
+					<p><LearnMore href="/" /></p>
+				</div>
+				<div class="side-by-side">
+					<TokenInfo
+						title="Available to stake"
+						amount={($tokens.repTotal - $tokens.repStaked).toFixed()}
+						tokenName="REP"
+						explanation={`${$tokens.repStaked} out of ${$tokens.repTotal} staked`}
+					/>
+					<TokenInfo
+						title="Currently available"
+						amount={$tokens.go.toFixed()}
+						tokenName="GO"
+						explanation="Until new cycle begins"
+					/>
+				</div>
+			</div>
+			<svelte:fragment slot="buttons">
+				<Button
+					label="I agree"
+					variant="primary"
+					icon={Checkmark}
+					on:click={() => (state = 'edit')}
+				/>
+				<Button label="Nope" icon={Close} on:click={onBack} />
+			</svelte:fragment>
+		</InfoScreen>
+	{/if}
 {:else if state === 'edit'}
 	<PostNew {submit} {onBack} />
 {:else}
@@ -140,7 +186,9 @@
 			</div>
 			<h2>Your post is now pending review</h2>
 			<p>
-				Your post has been added to "Persona name's" pending list for community review. If it gets promoted it will be automatically published to "Persona name's" page when the new epoch begins.
+				Your post has been added to "Persona name's" pending list for community review. If it gets
+				promoted it will be automatically published to "Persona name's" page when the new epoch
+				begins.
 			</p>
 			<LearnMore href="/" />
 		</div>

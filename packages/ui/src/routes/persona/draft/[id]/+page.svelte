@@ -156,11 +156,12 @@
 					<p>This Persona will be live, and everyone will be able to post with it.</p>
 					<p><LearnMore href="/" /></p>
 				</div>
-				<TokenInfo 
-				title='Currently available' 
-				amount={$tokens.go.toFixed()} 
-				tokenName='GO' 
-				explanation='Until new cycle begins'/>
+				<TokenInfo
+					title="Currently available"
+					amount={$tokens.go.toFixed()}
+					tokenName="GO"
+					explanation="Until new cycle begins"
+				/>
 			</div>
 		{:else}
 			<div class="token-info">
@@ -172,7 +173,13 @@
 					<p>You need {TOKEN_POST_COST} GO to publish a Persona.</p>
 					<LearnMore href="/" />
 				</div>
-				<TokenInfo title='Currently available' amount={$tokens.go.toFixed()} tokenName='GO' explanation='Until new cycle begins' error/>
+				<TokenInfo
+					title="Currently available"
+					amount={$tokens.go.toFixed()}
+					tokenName="GO"
+					explanation="Until new cycle begins"
+					error
+				/>
 			</div>
 		{/if}
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import LearnMore from '$lib/components/learn-more.svelte'
 
-	export let title: string 
+	export let title: string
 	export let amount: string
 	export let tokenName: string
 	export let explanation: string
@@ -22,9 +22,9 @@
 		border: 1px solid var(--grey-200);
 		padding: var(--spacing-24);
 		margin-top: var(--spacing-48);
-			flex-basis: 100%;
-			margin-left: 3px;
-			margin-right: 3px;
+		flex-basis: 100%;
+		margin-left: 3px;
+		margin-right: 3px;
 
 		&.first-child {
 			margin-left: 0px;
