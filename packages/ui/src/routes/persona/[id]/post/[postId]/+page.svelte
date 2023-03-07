@@ -9,12 +9,15 @@
 
 	import { posts } from '$lib/stores/post'
 	import { profile } from '$lib/stores/profile'
+	import { chats } from '$lib/stores/chat'
+	import { personas } from '$lib/stores/persona'
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 	import { ROUTES } from '$lib/routes'
 	import { connectWallet } from '$lib/services'
 
 	const post = $posts.posts[$page.params.postId as unknown as number]
+	const persona = $personas.all.get($page.params.id)
 
 	const handleConnect = async () => {
 		try {
@@ -28,8 +31,17 @@
 	}
 
 	const startChat = async () => {
+		if (!persona) return
+
 		// FIXME: this should start chat with this post as first post
-		goto(ROUTES.HOME)
+		$chats.draft = {
+			persona,
+			post,
+			messages: [],
+			closed: false,
+		}
+
+		goto(ROUTES.CHAT_NEW)
 	}
 
 	let y: number
@@ -43,6 +55,12 @@
 	<Container>
 		<InfoBox>
 			<div>There is no post with post ID {$page.params.postId}</div>
+		</InfoBox>
+	</Container>
+{:else if persona === undefined}
+	<Container>
+		<InfoBox>
+			<div>There is no persona with ID {$page.params.id}</div>
 		</InfoBox>
 	</Container>
 {:else}
