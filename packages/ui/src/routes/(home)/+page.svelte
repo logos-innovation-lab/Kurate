@@ -3,7 +3,6 @@
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
 	import Add from '$lib/components/icons/add.svelte'
 
-	import HeaderTop from '$lib/components/header-top.svelte'
 	import Persona from '$lib/components/persona.svelte'
 	import Grid from '$lib/components/grid.svelte'
 	import Button from '$lib/components/button.svelte'
@@ -11,7 +10,6 @@
 
 	import { profile } from '$lib/stores/profile'
 	import { personas } from '$lib/stores/persona'
-	import { chats } from '$lib/stores/chat'
 
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
@@ -24,28 +22,7 @@
 	}
 </script>
 
-<div>
-	<HeaderTop address={$profile.address} />
-
-	<div class="wrapper">
-		{#if $profile.signer !== undefined}
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<div class="nav-wrapper">
-				<nav class={showChat ? 'chats' : ''}>
-					<div class={showChat ? '' : 'active'} on:click={() => (showChat = false)}>Personas</div>
-					<div class={showChat ? 'active' : ''} on:click={() => (showChat = true)}>
-						Chats
-						{#if $chats.unread > 0}
-							<div class="unread">{$chats.unread}</div>
-						{/if}
-					</div>
-				</nav>
-			</div>
-		{/if}
-
-		{#if showChat}
-			<div>Chat not implemented yet</div>
-		{:else if $personas.loading}
+		{#if $personas.loading}
 			<p>Loading personas...</p>
 		{:else}
 			{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
@@ -129,8 +106,6 @@
 				{/each}
 			</Grid>
 		{/if}
-	</div>
-</div>
 
 <style lang="scss">
 	.nav-wrapper {
@@ -193,67 +168,6 @@
 	hr {
 		@media (min-width: 688px) {
 			display: none;
-		}
-	}
-
-	nav {
-		width: 100%;
-		max-width: 450px;
-		height: 50px;
-		margin: auto;
-		border-radius: 25px;
-		background-color: var(--grey-200);
-		display: flex;
-		align-items: center;
-		font-family: var(--font-body);
-		font-size: var(--font-size-normal);
-		font-weight: var(--font-weight-sb);
-		border: solid 3px var(--grey-200);
-		position: relative;
-
-		@media (prefers-color-scheme: dark) {
-			background-color: var(--grey-500);
-			border-color: var(--grey-500);
-		}
-
-		&::before {
-			content: '';
-			position: absolute;
-			inset: 0 50% 0 0;
-			background-color: var(--color-body-bg);
-			padding: 10px;
-			border-radius: 25px;
-			z-index: 0;
-			transition: inset 0.3s;
-		}
-
-		&.chats::before {
-			inset: 0 0 0 50%;
-			transition: inset 0.3s;
-		}
-
-		div {
-			padding: 10px;
-			width: 50%;
-			border-radius: 25px;
-			height: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			cursor: pointer;
-			z-index: 10;
-		}
-
-		.unread {
-			background-color: var(--color-body-text);
-			color: var(--color-body-bg);
-			width: fit-content;
-			height: 20px;
-			padding: 0 7px;
-			margin-left: var(--spacing-6);
-			font-size: var(--font-size-xs);
-			font-weight: var(--font-weight-sb);
-			line-height: 20px;
 		}
 	}
 

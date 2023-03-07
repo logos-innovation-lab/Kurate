@@ -33,7 +33,7 @@
 		{chat}
 		{sendMessage}
 		title={chat.closed ? 'Closed chat' : 'Active chat'}
-		onBack={() => goto(ROUTES.HOME)}
+		onBack={() => goto(ROUTES.CHATS)}
 	/>
 {/if}
 
