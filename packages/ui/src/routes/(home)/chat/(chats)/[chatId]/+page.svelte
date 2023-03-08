@@ -32,7 +32,7 @@
 	<ChatScreen
 		{chat}
 		{sendMessage}
-		title={chat.closed ? 'Closed chat' : 'Active chat'}
+		title={chat.closed ? 'Closed chat' : chat.blocked ? 'Blocked chat' : 'Active chat'}
 		onBack={() => goto(ROUTES.CHATS)}
 	/>
 {/if}

@@ -11,6 +11,7 @@
 
 	import type { Chat } from '$lib/stores/chat'
 	import { formatDateAndTime } from '$lib/utils/format'
+	import LearnMore from './learn-more.svelte'
 
 	export let chat: Chat
 	export let sendMessage: (text: string) => unknown
@@ -46,26 +47,40 @@
 
 		<!-- Chat bubbles -->
 		{#each chat.messages as message}
-			<div class={message.myMessage ? 'my-message' : ''}>
+			<div class={`${message.myMessage ? 'my-message' : ''} ${message.system ? 'system' : ''}`}>
 				<div>{message.text}</div>
 				<div>{formatDateAndTime(message.timestamp)}</div>
+				{#if message.system}
+					<div>This is an automated message</div>
+				{/if}
 			</div>
 		{/each}
+		{#if chat.blocked === true}
+			<h3>Your interlocutor has deleted this chat and blocked you.</h3>
+			<p>You can’t re-open this chat or contact that person.</p>
+			<LearnMore />
+		{:else if chat.closed === true}
+			<h3>This chat is closed.</h3>
+			<p>You can use the menu in the top-right corner to re-open it.</p>
+			<LearnMore />
+		{/if}
 	</div>
 
 	<!-- Chat input -->
-	<div class="chat-input">
-		<Textarea placeholder="Say something" bind:value={messageText} />
-		<div class="chat-buttons">
-			<Button icon={Image} />
-			<Button
-				icon={SendAltFilled}
-				variant="primary"
-				on:click={onSendMessage}
-				disabled={messageText === '' || sending}
-			/>
+	{#if chat.blocked !== true && chat.closed !== true}
+		<div class="chat-input">
+			<Textarea placeholder="Say something" bind:value={messageText} />
+			<div class="chat-buttons">
+				<Button icon={Image} />
+				<Button
+					icon={SendAltFilled}
+					variant="primary"
+					on:click={onSendMessage}
+					disabled={messageText === '' || sending}
+				/>
+			</div>
 		</div>
-	</div>
+	{/if}
 </div>
 
 <style lang="scss">
@@ -84,6 +99,9 @@
 	}
 	.my-message {
 		background-color: lightgrey;
+	}
+	.system {
+		color: grey;
 	}
 
 	.chat-input {

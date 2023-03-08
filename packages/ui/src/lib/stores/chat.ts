@@ -6,6 +6,7 @@ interface Message {
 	timestamp: number
 	text: string
 	myMessage?: boolean
+	system?: boolean
 }
 
 export interface Chat {

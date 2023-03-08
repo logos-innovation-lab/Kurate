@@ -7,9 +7,8 @@
 	import { page } from '$app/stores'
 	import { ROUTES } from '$lib/routes'
 
-	let showChat:boolean
+	let showChat: boolean
 	$: showChat = $page.url.pathname.includes(ROUTES.CHATS)
-	$: console.log($page.url.pathname)
 </script>
 
 <div>

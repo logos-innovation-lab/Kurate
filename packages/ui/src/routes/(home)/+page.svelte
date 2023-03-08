@@ -15,97 +15,96 @@
 	import { ROUTES } from '$lib/routes'
 
 	let filterText = ''
-	let showChat = false
 
 	function createDraft() {
 		goto(ROUTES.PERSONA_NEW)
 	}
 </script>
 
-		{#if $personas.loading}
-			<p>Loading personas...</p>
-		{:else}
-			{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
-				<div class="section-wrapper">
-					<div class="section-top">
-						<Container class="flex">
-							<div class="subtitle">Draft personas</div>
-							<Button icon={Add} label="Create persona" on:click={createDraft} />
-						</Container>
-					</div>
-					<hr />
-					<Grid>
-						{#each $personas.draft as draftPersona, index}
-							<Persona
-								name={draftPersona.name}
-								description={draftPersona.description}
-								postsCount={draftPersona.posts.length}
-								on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
-								picture={draftPersona.picture}
-							/>
-						{/each}
-					</Grid>
-				</div>
-			{/if}
-
-			{#if $personas.favorite.length !== 0 && $profile.signer !== undefined}
-				<div class="section-wrapper">
-					<div class="section-top">
-						<Container>
-							<div class="subtitle">Favorites</div>
-						</Container>
-					</div>
-					<hr />
-					<Grid>
-						{#each $personas.favorite as personaId}
-							{#if $personas.all.get(personaId) !== undefined}
-								<Persona
-									name={$personas.all.get(personaId)?.name}
-									description={$personas.all.get(personaId)?.description}
-									postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
-									on:click={() => goto(ROUTES.PERSONA(personaId))}
-									picture={$personas.all.get(personaId)?.picture}
-								/>
-							{/if}
-						{/each}
-					</Grid>
-				</div>
-			{/if}
-
-			<div class={`personas-wrap ${$profile.signer === undefined ? 'border-top' : ''}`}>
-				<div>
-					<div class="personas-filter">
-						<div class="personas-title">All personas</div>
-						<div class="btns">
-							{#if $profile.signer !== undefined}
-								<Button icon={Add} label="Create persona" on:click={createDraft} />
-							{/if}
-							<Button icon={SettingsView} />
-						</div>
-					</div>
-					<div class="search-field">
-						<Search />
-						<input bind:value={filterText} placeholder="Search..." />
-					</div>
-				</div>
+{#if $personas.loading}
+	<p>Loading personas...</p>
+{:else}
+	{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
+		<div class="section-wrapper">
+			<div class="section-top">
+				<Container class="flex">
+					<div class="subtitle">Draft personas</div>
+					<Button icon={Add} label="Create persona" on:click={createDraft} />
+				</Container>
 			</div>
-
+			<hr />
 			<Grid>
-				{#each [...$personas.all].filter(([, data]) => data.name
-						.toLowerCase()
-						.includes(filterText.toLowerCase())) as [groupId, data]}
+				{#each $personas.draft as draftPersona, index}
 					<Persona
-						name={data.name}
-						description={data.description}
-						postsCount={data.postsCount}
-						on:click={() => goto(ROUTES.PERSONA(groupId))}
-						picture={data.picture}
+						name={draftPersona.name}
+						description={draftPersona.description}
+						postsCount={draftPersona.posts.length}
+						on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
+						picture={draftPersona.picture}
 					/>
-				{:else}
-					<p>There are no personas yet</p>
 				{/each}
 			</Grid>
-		{/if}
+		</div>
+	{/if}
+
+	{#if $personas.favorite.length !== 0 && $profile.signer !== undefined}
+		<div class="section-wrapper">
+			<div class="section-top">
+				<Container>
+					<div class="subtitle">Favorites</div>
+				</Container>
+			</div>
+			<hr />
+			<Grid>
+				{#each $personas.favorite as personaId}
+					{#if $personas.all.get(personaId) !== undefined}
+						<Persona
+							name={$personas.all.get(personaId)?.name}
+							description={$personas.all.get(personaId)?.description}
+							postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
+							on:click={() => goto(ROUTES.PERSONA(personaId))}
+							picture={$personas.all.get(personaId)?.picture}
+						/>
+					{/if}
+				{/each}
+			</Grid>
+		</div>
+	{/if}
+
+	<div class={`personas-wrap ${$profile.signer === undefined ? 'border-top' : ''}`}>
+		<div>
+			<div class="personas-filter">
+				<div class="personas-title">All personas</div>
+				<div class="btns">
+					{#if $profile.signer !== undefined}
+						<Button icon={Add} label="Create persona" on:click={createDraft} />
+					{/if}
+					<Button icon={SettingsView} />
+				</div>
+			</div>
+			<div class="search-field">
+				<Search />
+				<input bind:value={filterText} placeholder="Search..." />
+			</div>
+		</div>
+	</div>
+
+	<Grid>
+		{#each [...$personas.all].filter(([, data]) => data.name
+				.toLowerCase()
+				.includes(filterText.toLowerCase())) as [groupId, data]}
+			<Persona
+				name={data.name}
+				description={data.description}
+				postsCount={data.postsCount}
+				on:click={() => goto(ROUTES.PERSONA(groupId))}
+				picture={data.picture}
+			/>
+		{:else}
+			<p>There are no personas yet</p>
+		{/each}
+	</Grid>
+{/if}
 
 <style lang="scss">
 	.nav-wrapper {

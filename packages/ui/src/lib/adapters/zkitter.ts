@@ -1,4 +1,4 @@
-import { chats } from '$lib/stores/chat'
+import { chats, type Chat } from '$lib/stores/chat'
 import { personas, type Persona } from '$lib/stores/persona'
 import { sleep } from '$lib/utils'
 import type { Adapter } from '.'
@@ -65,10 +65,99 @@ export class ZkitterAdapter implements Adapter {
 
 		personas.update((state) => ({ ...state, all, favorite, loading: false }))
 
+		const chat1: Chat = {
+			persona: controversy,
+			post: {
+				text: '[open] What if radiation is hoax?',
+				timestamp: Date.now() - 9600000,
+			},
+			messages: [
+				{
+					text: 'What leads you to believe it could be a hoax?',
+					timestamp: Date.now() - 3600000,
+					myMessage: true,
+				},
+				{
+					text: 'I mean it clearly is, just like there is no way planes can fly!',
+					timestamp: Date.now() - 3000000,
+				},
+				{
+					text: 'Please stop sharing clearly false information',
+					timestamp: Date.now() - 1600000,
+					myMessage: true,
+				},
+			],
+		}
+
+		const chat2: Chat = {
+			persona: cats,
+			post: {
+				text: '[blocked] What does the cat say',
+				timestamp: Date.now() - 19600000,
+			},
+			blocked: true,
+			messages: [
+				{
+					text: 'Mňau, mňau',
+					timestamp: Date.now() - 13600000,
+					myMessage: true,
+				},
+				{
+					text: 'What the hell is that language...',
+					timestamp: Date.now() - 13000000,
+				},
+				{
+					text: 'Czech',
+					timestamp: Date.now() - 11600000,
+					myMessage: true,
+				},
+				{
+					text: 'Blocked the counterparty',
+					timestamp: Date.now() - 11600000,
+					system: true,
+				},
+			],
+		}
+
+		const chat3: Chat = {
+			persona: expats,
+			post: {
+				text: "[closed] I'll want to learn Spanish, what is the best way to do so?",
+				timestamp: Date.now() - 29600000,
+			},
+			closed: true,
+			messages: [
+				{
+					text: 'What sort of level are you?',
+					timestamp: Date.now() - 23600000,
+					myMessage: true,
+				},
+				{
+					text: 'Pretty much beginner TBH',
+					timestamp: Date.now() - 23000000,
+				},
+				{
+					text: 'Oh OK, then I would suggest to do a course. Maybe in Colombia, I think their Spanish is pretty nice!',
+					timestamp: Date.now() - 21600000,
+					myMessage: true,
+				},
+				{
+					text: 'Thats quite nice suggestion! Thank you!',
+					timestamp: Date.now() - 12600000,
+				},
+				{
+					text: 'Closed the chat',
+					timestamp: Date.now() - 12600000,
+					system: true,
+				},
+			],
+		}
+
 		chats.update((state) => ({
 			...state,
+			chats: [chat1, chat2, chat3],
 			loading: false,
-			unread: 3,
+			unread: 1,
 		}))
 	}
 }
