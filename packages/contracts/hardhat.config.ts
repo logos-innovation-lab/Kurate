@@ -27,6 +27,11 @@ function getNetworks(): NetworksUserConfig {
                 url: process.env.ETHEREUM_URL,
                 chainId: 11155111,
                 accounts
+            },
+            localhost: {
+                url: 'http://127.0.0.1:7545',
+                chainId: 5777,
+                accounts,
             }
         }
     }
