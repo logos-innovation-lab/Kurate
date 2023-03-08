@@ -4,3 +4,6 @@ node_modules/
 cache/
 coverage/
 coverage.json
+.idea
+.DS_Store
+flatten.sol

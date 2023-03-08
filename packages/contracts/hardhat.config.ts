@@ -23,10 +23,21 @@ function getNetworks(): NetworksUserConfig {
                 chainId: 5,
                 accounts
             },
+            // arbitrum goerli
+            agor: {
+                url: 'https://goerli-rollup.arbitrum.io/rpc',
+                chainId: 421613,
+                accounts,
+            },
             sepolia: {
                 url: process.env.ETHEREUM_URL,
                 chainId: 11155111,
                 accounts
+            },
+            localhost: {
+                url: 'http://127.0.0.1:7545',
+                chainId: 1337,
+                accounts,
             }
         }
     }
@@ -56,6 +67,9 @@ const hardhatConfig: HardhatUserConfig = {
     typechain: {
         outDir: config.paths.build.typechain,
         target: "ethers-v5"
+    },
+    mocha: {
+        timeout: 120000
     }
 }
 

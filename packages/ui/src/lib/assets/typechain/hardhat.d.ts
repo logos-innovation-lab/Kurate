@@ -2,122 +2,167 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { ethers } from 'ethers'
+import { ethers } from "ethers";
 import {
-	FactoryOptions,
-	HardhatEthersHelpers as HardhatEthersHelpersBase,
-} from '@nomiclabs/hardhat-ethers/types'
+  FactoryOptions,
+  HardhatEthersHelpers as HardhatEthersHelpersBase,
+} from "@nomiclabs/hardhat-ethers/types";
 
-import * as Contracts from '.'
+import * as Contracts from ".";
 
-declare module 'hardhat/types/runtime' {
-	interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
-		getContractFactory(
-			name: 'Pairing',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.Pairing__factory>
-		getContractFactory(
-			name: 'SemaphoreGroups',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.SemaphoreGroups__factory>
-		getContractFactory(
-			name: 'SemaphoreVerifier',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.SemaphoreVerifier__factory>
-		getContractFactory(
-			name: 'ISemaphore',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.ISemaphore__factory>
-		getContractFactory(
-			name: 'ISemaphoreGroups',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.ISemaphoreGroups__factory>
-		getContractFactory(
-			name: 'ISemaphoreVerifier',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.ISemaphoreVerifier__factory>
-		getContractFactory(
-			name: 'Semaphore',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.Semaphore__factory>
-		getContractFactory(
-			name: 'PoseidonT3',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.PoseidonT3__factory>
-		getContractFactory(
-			name: 'PoseidonT6',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.PoseidonT6__factory>
-		getContractFactory(
-			name: 'GlobalAnonymousFeed',
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<Contracts.GlobalAnonymousFeed__factory>
+declare module "hardhat/types/runtime" {
+  interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
+    getContractFactory(
+      name: "Pairing",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Pairing__factory>;
+    getContractFactory(
+      name: "SemaphoreGroups",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SemaphoreGroups__factory>;
+    getContractFactory(
+      name: "SemaphoreVerifier",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SemaphoreVerifier__factory>;
+    getContractFactory(
+      name: "ISemaphore",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ISemaphore__factory>;
+    getContractFactory(
+      name: "ISemaphoreGroups",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ISemaphoreGroups__factory>;
+    getContractFactory(
+      name: "ISemaphoreVerifier",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ISemaphoreVerifier__factory>;
+    getContractFactory(
+      name: "Semaphore",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Semaphore__factory>;
+    getContractFactory(
+      name: "IUnirep",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IUnirep__factory>;
+    getContractFactory(
+      name: "IVerifier",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IVerifier__factory>;
+    getContractFactory(
+      name: "Polysum",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Polysum__factory>;
+    getContractFactory(
+      name: "Unirep",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Unirep__factory>;
+    getContractFactory(
+      name: "PoseidonT3",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.PoseidonT3__factory>;
+    getContractFactory(
+      name: "PoseidonT6",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.PoseidonT6__factory>;
+    getContractFactory(
+      name: "GlobalAnonymousFeed",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.GlobalAnonymousFeed__factory>;
+    getContractFactory(
+      name: "PoseidonT2",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.PoseidonT2__factory>;
 
-		getContractAt(
-			name: 'Pairing',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.Pairing>
-		getContractAt(
-			name: 'SemaphoreGroups',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.SemaphoreGroups>
-		getContractAt(
-			name: 'SemaphoreVerifier',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.SemaphoreVerifier>
-		getContractAt(
-			name: 'ISemaphore',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.ISemaphore>
-		getContractAt(
-			name: 'ISemaphoreGroups',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.ISemaphoreGroups>
-		getContractAt(
-			name: 'ISemaphoreVerifier',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.ISemaphoreVerifier>
-		getContractAt(
-			name: 'Semaphore',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.Semaphore>
-		getContractAt(
-			name: 'PoseidonT3',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.PoseidonT3>
-		getContractAt(
-			name: 'PoseidonT6',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.PoseidonT6>
-		getContractAt(
-			name: 'GlobalAnonymousFeed',
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<Contracts.GlobalAnonymousFeed>
+    getContractAt(
+      name: "Pairing",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Pairing>;
+    getContractAt(
+      name: "SemaphoreGroups",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SemaphoreGroups>;
+    getContractAt(
+      name: "SemaphoreVerifier",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SemaphoreVerifier>;
+    getContractAt(
+      name: "ISemaphore",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ISemaphore>;
+    getContractAt(
+      name: "ISemaphoreGroups",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ISemaphoreGroups>;
+    getContractAt(
+      name: "ISemaphoreVerifier",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ISemaphoreVerifier>;
+    getContractAt(
+      name: "Semaphore",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Semaphore>;
+    getContractAt(
+      name: "IUnirep",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IUnirep>;
+    getContractAt(
+      name: "IVerifier",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IVerifier>;
+    getContractAt(
+      name: "Polysum",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Polysum>;
+    getContractAt(
+      name: "Unirep",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Unirep>;
+    getContractAt(
+      name: "PoseidonT3",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.PoseidonT3>;
+    getContractAt(
+      name: "PoseidonT6",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.PoseidonT6>;
+    getContractAt(
+      name: "GlobalAnonymousFeed",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.GlobalAnonymousFeed>;
+    getContractAt(
+      name: "PoseidonT2",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.PoseidonT2>;
 
-		// default types
-		getContractFactory(
-			name: string,
-			signerOrOptions?: ethers.Signer | FactoryOptions,
-		): Promise<ethers.ContractFactory>
-		getContractFactory(
-			abi: any[],
-			bytecode: ethers.utils.BytesLike,
-			signer?: ethers.Signer,
-		): Promise<ethers.ContractFactory>
-		getContractAt(
-			nameOrAbi: string | any[],
-			address: string,
-			signer?: ethers.Signer,
-		): Promise<ethers.Contract>
-	}
+    // default types
+    getContractFactory(
+      name: string,
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<ethers.ContractFactory>;
+    getContractFactory(
+      abi: any[],
+      bytecode: ethers.utils.BytesLike,
+      signer?: ethers.Signer
+    ): Promise<ethers.ContractFactory>;
+    getContractAt(
+      nameOrAbi: string | any[],
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<ethers.Contract>;
+  }
 }
