@@ -3,5 +3,6 @@
 		"env": {
 			"ENABLE_VC_BUILD": "1"
 		}
-	}
+	},
+	"routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
 }
