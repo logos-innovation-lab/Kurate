@@ -6,8 +6,6 @@
 	import Add from '$lib/components/icons/add.svelte'
 	import Search from '$lib/components/icons/search.svelte'
 	import Cancel from '$lib/components/icons/close.svelte'
-	import SettingsView from '$lib/components/icons/settings-view.svelte'
-	import Dropdown from '$lib/components/icons/settings-view.svelte'
 
 	let filterQuery = ''
 	let isFocused = false
@@ -15,16 +13,6 @@
 	export let placeholder: string | undefined = 'Search...'
 	export let filterTitle: string | undefined = 'Personas'
 	export let activeFilter: string | undefined = 'All'
-
-	const toggleDropdown = () => {
-		const dropdown = <HTMLElement>document.querySelector('.filter-dropdown')
-		if (dropdown.style.display == 'block') {
-			dropdown.style.display = 'none'
-		} else {
-			dropdown.style.display = 'block'
-		}
-		console.log('toggled')
-	}
 </script>
 
 <div class="root">
@@ -44,13 +32,7 @@
 				{/if}
 
 				<!-- THIS BUTTON OPENS UP A DROPDOWN, IT'S EITHER A COMPONENT (IF ALL DROPDOWNS ARE THE SAME) OR A SLOT -->
-
-				<Button icon={SettingsView} on:click={toggleDropdown} />
-				<div class="filter-dropdown">
-					<Dropdown>
-						<slot />
-					</Dropdown>
-				</div>
+				<slot />
 			</div>
 		</div>
 		<div class="search-field">
@@ -133,17 +115,6 @@
 				flex-direction: row;
 				flex-wrap: nowrap;
 				gap: var(--spacing-12);
-				position: relative;
-
-				.filter-dropdown {
-					position: absolute;
-					inset: 100% 0 auto auto;
-					min-width: min(calc(100vw - 48px), 250px);
-					max-width: max(calc(100vw - 48px), 450px);
-					background-color: green;
-					display: none;
-					z-index: 10;
-				}
 			}
 		}
 

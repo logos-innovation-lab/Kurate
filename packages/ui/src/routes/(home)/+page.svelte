@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Search from '$lib/components/icons/search.svelte'
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
 	import Add from '$lib/components/icons/add.svelte'
 
@@ -13,6 +12,8 @@
 
 	import { goto } from '$app/navigation'
 	import { ROUTES } from '$lib/routes'
+	import Dropdown from '$lib/components/dropdown.svelte'
+	import FilterSection from '$lib/components/filter-section.svelte'
 
 	let filterText = ''
 
@@ -71,23 +72,15 @@
 		</div>
 	{/if}
 
-	<div class={`personas-wrap ${$profile.signer === undefined ? 'border-top' : ''}`}>
-		<div>
-			<div class="personas-filter">
-				<div class="personas-title">All personas</div>
-				<div class="btns">
-					{#if $profile.signer !== undefined}
-						<Button icon={Add} label="Create persona" on:click={createDraft} />
-					{/if}
-					<Button icon={SettingsView} />
-				</div>
-			</div>
-			<div class="search-field">
-				<Search />
-				<input bind:value={filterText} placeholder="Search..." />
-			</div>
-		</div>
-	</div>
+	<FilterSection>
+		<Dropdown
+			icon={SettingsView}
+			options={[
+				{ text: 'Close chat', action: () => console.log('normal') },
+				{ text: 'Delete & block sender...', danger: true, action: () => console.log('danger') },
+			]}
+		/>
+	</FilterSection>
 
 	<Grid>
 		{#each [...$personas.all].filter(([, data]) => data.name
