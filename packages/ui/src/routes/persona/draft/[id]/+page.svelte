@@ -133,8 +133,8 @@
 	</PersonaDetail>
 {:else if state === 'post_new'}
 	<PostNew
-		submit={(postText) => {
-			persona.posts.push({ timestamp: Date.now(), text: postText })
+		submit={(text, images) => {
+			persona.posts.push({ timestamp: Date.now(), text, images })
 			personas.updateDraft(personaIndex, persona)
 			state = 'posts'
 		}}

@@ -17,4 +17,8 @@ export const MAX_DIMENSIONS = {
 		width: 1440,
 		height: 810,
 	},
+	POST_IMAGE: {
+		width: 500,
+		height: 500,
+	},
 }
