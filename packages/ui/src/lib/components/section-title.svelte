@@ -1,17 +1,13 @@
 <script lang="ts">
-	import { profile } from '$lib/stores/profile'
-
 	export let title: string
 </script>
 
 <div class="root">
-	{#if $profile.signer === undefined}
-		<hr />
-	{/if}
-	<div class="filter-wrap">
-		<div class="filter">
-			<div class="filter-title">{title}</div>
-			<div class="filter-btns">
+	<hr />
+	<div class="wrapper">
+		<div class="row">
+			<div class="title">{title}</div>
+			<div class="buttons">
 				<slot name="buttons" />
 			</div>
 		</div>
@@ -22,13 +18,13 @@
 </div>
 
 <style lang="scss">
-	hr {
+	hr:last-child {
 		@media (min-width: 688px) {
 			display: none;
 		}
 	}
 
-	.filter-wrap {
+	.wrapper {
 		padding: var(--spacing-24);
 		transition: padding 0.2s;
 		max-width: 498px;
@@ -52,7 +48,7 @@
 			max-width: 2490px;
 		}
 
-		.filter {
+		.row {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -60,7 +56,7 @@
 			flex-wrap: nowrap;
 			margin-bottom: var(--spacing-12);
 
-			.filter-title {
+			.title {
 				font-size: var(--font-size-lg);
 				font-weight: var(--font-weight-sb);
 				transition: padding 0.2s;
@@ -72,7 +68,7 @@
 				margin-bottom: var(--spacing-24);
 			}
 
-			.filter-btns {
+			.buttons {
 				display: flex;
 				justify-content: space-between;
 				align-items: center;

@@ -1,6 +1,8 @@
 <script lang="ts">
-	import SettingsView from '$lib/components/icons/settings-view.svelte'
 	import Add from '$lib/components/icons/add.svelte'
+	import SettingsView from '$lib/components/icons/settings-view.svelte'
+	import SortAscending from '$lib/components/icons/sort-ascending.svelte'
+	import SortDescending from '$lib/components/icons/sort-descending.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import Dropdown from '$lib/components/dropdown.svelte'
@@ -11,11 +13,9 @@
 
 	import { profile } from '$lib/stores/profile'
 	import { personas } from '$lib/stores/persona'
+	import { ROUTES } from '$lib/routes'
 
 	import { goto } from '$app/navigation'
-	import { ROUTES } from '$lib/routes'
-	import SortAscending from '$lib/components/icons/sort-ascending.svelte'
-	import SortDescending from '$lib/components/icons/sort-descending.svelte'
 
 	let filterQuery = ''
 	let sortAsc = true
@@ -26,7 +26,7 @@
 </script>
 
 {#if $personas.loading}
-	<p>Loading personas...</p>
+	<SectionTitle title="Loading personas..." />
 {:else}
 	{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
 		<SectionTitle title="Draft personas">
@@ -91,12 +91,9 @@
 						},
 					]}
 				/>
-				<Dropdown
+				<Button
 					icon={sortAsc ? SortAscending : SortDescending}
-					options={[
-						{ text: 'Ascending order', action: () => (sortAsc = true) },
-						{ text: 'Descending order', action: () => (sortAsc = false) },
-					]}
+					on:click={() => (sortAsc = !sortAsc)}
 				/>
 			{/if}
 		</svelte:fragment>
