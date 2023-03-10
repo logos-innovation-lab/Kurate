@@ -2,8 +2,8 @@
 	import { goto } from '$app/navigation'
 	import Button from '$lib/components/button.svelte'
 
-	import Card from '$lib/components/grid-card.svelte'
 	import Grid from '$lib/components/grid.svelte'
+	import Chat from '$lib/components/chat.svelte'
 	import Search from '$lib/components/icons/search.svelte'
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
 
@@ -44,18 +44,18 @@
 	</div>
 
 	<div>
-		{#each chats as chat, index}
-			<Grid>
-				<Card on:click={() => goto(ROUTES.CHAT(index))}>
-					<img src={chat.persona.picture} alt={chat.persona.name} />
-					<div>
-						<div>{chat.post.text}</div>
-						<div>{chat.messages[chat.messages.length - 1].text}</div>
-						<div>{formatDateAndTime(chat.messages[chat.messages.length - 1].timestamp)}</div>
-					</div>
-				</Card>
-			</Grid>
-		{/each}
+		<Grid>
+			{#each chats as chat, index}
+				<Chat
+					chatPersonaPicture={chat.persona.picture}
+					chatPersonaName={chat.persona.name}
+					chatPostText={chat.post.text}
+					chatMessage={chat.messages[chat.messages.length - 1].text}
+					timeStamp={formatDateAndTime(chat.messages[chat.messages.length - 1].timestamp)}
+					on:click={() => goto(ROUTES.CHAT(index))}
+				/>
+			{/each}
+		</Grid>
 	</div>
 {/if}
 
