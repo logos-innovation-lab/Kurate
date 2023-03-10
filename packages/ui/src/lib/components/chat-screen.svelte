@@ -34,15 +34,20 @@
 <div class="root">
 	<Header {title} {onBack} />
 	{#if showPost}
-		<h3>Original post</h3>
-		<Button icon={ViewOff} on:click={toggleShowPost} />
-		<Post post={chat.post} />
+		<div class="original-post container">
+			<div class="original-header">
+				<h3>Original post</h3>
+				<Button icon={ViewOff} on:click={toggleShowPost} />
+			</div>
+			<Post post={chat.post} />
+		</div>
+		<hr />
 	{:else}
 		<Button icon={View} label="View original post" on:click={toggleShowPost} />
 	{/if}
 
 	<!-- Extra content -->
-	<div class="center">
+	<div class="container messages">
 		<slot />
 
 		<!-- Chat bubbles -->
@@ -91,7 +96,19 @@
 		height: 100vh;
 	}
 
-	.center {
+	.container {
+		max-width: 450px;
+		margin-inline: auto;
+	}
+
+	.original-post {
+		.original-header {
+			display: flex;
+			justify-content: space-between;
+		}
+	}
+
+	.messages {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
