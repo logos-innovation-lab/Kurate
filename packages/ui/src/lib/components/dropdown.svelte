@@ -13,15 +13,13 @@
 	export let label: string | undefined = undefined
 	export let disabled: boolean | undefined = undefined
 	export let options: DropdownOption[]
-	export let autoclose = true
 
 	let showDropdown = false
 	let dropdownElement: HTMLElement
-	let buttonElement: HTMLElement
 
 	const closeDropdown = (ev: MouseEvent) => {
 		const target = ev.target as unknown as Node
-		if ((!autoclose && dropdownElement.contains(target)) || buttonElement.contains(target)) {
+		if (dropdownElement.contains(target)) {
 			// Clicked on the dropdown button or inside the dropdown
 		} else {
 			// Clicked outside the dropdown
@@ -40,17 +38,17 @@
 	$: if (!showDropdown) dispatch('close')
 </script>
 
-<div bind:this={buttonElement}>
+<div bind:this={dropdownElement}>
 	<Button on:click={() => (showDropdown = !showDropdown)} {label} {icon} {variant} {disabled} />
-</div>
 
-<div class={`root ${cls}`}>
-	<ul class={showDropdown ? '' : 'hidden'} bind:this={dropdownElement}>
-		{#each options as option}
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<li class={option.danger ? 'danger' : ''} on:click={option.action}>{option.text}</li>
-		{/each}
-	</ul>
+	<div class={`root ${cls}`}>
+		<ul class={showDropdown ? '' : 'hidden'}>
+			{#each options as option}
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<li class={option.danger ? 'danger' : ''} on:click={option.action}>{option.text}</li>
+			{/each}
+		</ul>
+	</div>
 </div>
 
 <style lang="scss">
