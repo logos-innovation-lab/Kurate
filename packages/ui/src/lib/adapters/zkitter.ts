@@ -12,6 +12,7 @@ export class ZkitterAdapter implements Adapter {
 			name: 'Chit Chat',
 			pitch: 'We pretty much just say gm all the time.',
 			description: 'We pretty much just say gm all the time.',
+			participantsCount: 437,
 			postsCount: 125,
 			picture:
 				'https://upload.wikimedia.org/wikipedia/commons/4/42/Chit_chat_%28256889331%29.jpg?20191121211426',
@@ -21,6 +22,7 @@ export class ZkitterAdapter implements Adapter {
 			name: 'Expats',
 			pitch: 'Different countries, same work...',
 			description: 'Different countries, same work...',
+			participantsCount: 81,
 			postsCount: 4,
 			picture: 'https://upload.wikimedia.org/wikipedia/commons/8/88/British_expats_countrymap.svg',
 		}
@@ -29,6 +31,7 @@ export class ZkitterAdapter implements Adapter {
 			name: 'Cats',
 			pitch: "Yeah it's the internet, what did you expect?",
 			description: "Yeah it's the internet, what did you expect?",
+			participantsCount: 839,
 			postsCount: 5128,
 			picture:
 				'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Adorable-animal-cat-20787.jpg/1599px-Adorable-animal-cat-20787.jpg?20180518085718',
@@ -38,6 +41,7 @@ export class ZkitterAdapter implements Adapter {
 			name: 'Geo Politics',
 			pitch: `Group full of "seen it all's"`,
 			description: `Group full of "seen it all's"`,
+			participantsCount: 109,
 			postsCount: 53,
 			picture:
 				'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/World_geopolitical_chess.png/1600px-World_geopolitical_chess.png?20200226194321',
@@ -47,6 +51,7 @@ export class ZkitterAdapter implements Adapter {
 			name: 'Controversy',
 			pitch: '...',
 			description: '...',
+			participantsCount: 47,
 			postsCount: 9999,
 			picture:
 				'https://upload.wikimedia.org/wikipedia/en/e/ea/Controversy_legend.gif?20060220215816',

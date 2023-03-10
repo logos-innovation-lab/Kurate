@@ -38,6 +38,7 @@
 					name={draftPersona.name}
 					description={draftPersona.description}
 					postsCount={draftPersona.posts.length}
+					participantsCount={1}
 					on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
 					picture={draftPersona.picture}
 				/>
@@ -54,6 +55,7 @@
 						name={$personas.all.get(personaId)?.name}
 						description={$personas.all.get(personaId)?.description}
 						postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
+						participantsCount={$personas.all.get(personaId)?.participantsCount ?? 0}
 						on:click={() => goto(ROUTES.PERSONA(personaId))}
 						picture={$personas.all.get(personaId)?.picture}
 					/>
@@ -110,6 +112,7 @@
 				name={data.name}
 				description={data.description}
 				postsCount={data.postsCount}
+				participantsCount={data.participantsCount}
 				on:click={() => goto(ROUTES.PERSONA(groupId))}
 				picture={data.picture}
 			/>

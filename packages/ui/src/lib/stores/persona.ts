@@ -10,10 +10,11 @@ export interface Persona {
 	name: string
 	pitch: string
 	description: string
+	participantsCount: number
 	postsCount: number
 }
 
-export interface DraftPersona extends Omit<Persona, 'postsCount'> {
+export interface DraftPersona extends Omit<Persona, 'postsCount' | 'participantsCount'> {
 	posts: Post[]
 }
 
