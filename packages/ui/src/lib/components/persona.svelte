@@ -6,6 +6,7 @@
 	export let name: string | undefined
 	export let description: string | undefined
 	export let postsCount: number
+	export let participantsCount: number
 	export let picture: string | undefined
 </script>
 
@@ -17,7 +18,7 @@
 		<div class="post-count">
 			<div>
 				<UserMultiple size={18} />
-				{postsCount}
+				{participantsCount}
 			</div>
 			<div>
 				<Forum size={18} />
