@@ -75,6 +75,7 @@ export class ZkitterAdapter implements Adapter {
 			post: {
 				text: '[open] What if radiation is hoax?',
 				timestamp: Date.now() - 9600000,
+				images: [],
 			},
 			messages: [
 				{
@@ -99,6 +100,7 @@ export class ZkitterAdapter implements Adapter {
 			post: {
 				text: '[blocked] What does the cat say',
 				timestamp: Date.now() - 19600000,
+				images: ['https://via.placeholder.com/100x75'],
 			},
 			blocked: true,
 			messages: [
@@ -129,6 +131,11 @@ export class ZkitterAdapter implements Adapter {
 			post: {
 				text: "[closed] I'll want to learn Spanish, what is the best way to do so?",
 				timestamp: Date.now() - 29600000,
+				images: [
+					'https://via.placeholder.com/100x75',
+					'https://via.placeholder.com/105x321',
+					'https://via.placeholder.com/119x321',
+				],
 			},
 			closed: true,
 			messages: [

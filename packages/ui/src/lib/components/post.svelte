@@ -9,18 +9,11 @@
 <Card on:click>
 	<div class="content-wrapper">
 		<div class="imgs">
-			<!-- I HARD CODED SOME IMAGES TO STYLE THE SECTION AND LEFT THEM TO SHOW THE STRUCTURE IN USE -->
-			<!-- MORE THAN 3 IMAGES SHOULD HAVE A "PLUS" ICON OVER THE THIRD WITH COUNT OF EXTRA IMAGES -->
-
-			<div>
-				<img src="https://via.placeholder.com/300x500" alt="Placeholder for testing" />
-			</div>
-			<div>
-				<img src="https://via.placeholder.com/400x840" alt="Placeholder for testing" />
-			</div>
-			<div>
-				<img src="https://via.placeholder.com/100x75" alt="Placeholder for testing" />
-			</div>
+			{#each post.images as image}
+				<div>
+					<img src={image} alt="post" />
+				</div>
+			{/each}
 		</div>
 		<div class="post-content">{post.text}</div>
 		<div class="user-info">
