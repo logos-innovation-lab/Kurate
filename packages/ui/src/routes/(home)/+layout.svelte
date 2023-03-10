@@ -36,7 +36,6 @@
 
 <style lang="scss">
 	.nav-wrapper {
-		border-bottom: 1px solid var(--grey-200);
 		padding: 0 var(--spacing-24) var(--spacing-24);
 
 		@media (prefers-color-scheme: dark) {
