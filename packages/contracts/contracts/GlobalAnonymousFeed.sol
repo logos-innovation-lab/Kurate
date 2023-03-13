@@ -2,7 +2,7 @@
 pragma abicoder v2;
 pragma solidity ^0.8.4;
 
-import { Unirep } from '@unirep/contracts/Unirep.sol';
+import { Unirep, IUnirep } from '@unirep/contracts/Unirep.sol';
 import { IGlobalAnonymousFeed } from './IGlobalAnonymousFeed.sol';
 
 contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
@@ -147,7 +147,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             revert MessageAlreadyExist();
         }
 
-        ReputationSignals memory signals = unirep.decodeReputationSignals(
+        IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
             publicSignals
         );
 
@@ -182,7 +182,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             revert MessageAlreadyExist();
         }
 
-        ReputationSignals memory signals = unirep.decodeReputationSignals(
+        IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
             publicSignals
         );
 
