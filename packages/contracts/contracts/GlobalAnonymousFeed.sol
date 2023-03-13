@@ -3,53 +3,24 @@ pragma abicoder v2;
 pragma solidity ^0.8.4;
 
 import { Unirep } from '@unirep/contracts/Unirep.sol';
+import { IGlobalAnonymousFeed } from './IGlobalAnonymousFeed.sol';
 
-struct ReputationSignals {
-    uint256 stateTreeRoot;
-    uint256 epochKey;
-    uint256 graffitiPreImage;
-    uint256 proveGraffiti;
-    uint256 nonce;
-    uint256 epoch;
-    uint256 attesterId;
-    uint256 revealNonce;
-    uint256 proveMinRep;
-    uint256 proveMaxRep;
-    uint256 proveZeroRep;
-    uint256 minRep;
-    uint256 maxRep;
-}
+contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
+    error IdentityNotExist();
 
-struct PostData {
-    bytes32 hash;
-    uint256 epochKey;
-    uint epoch;
-}
+    error MemberAlreadyJoined();
 
-contract KuratePersona {
-    error PostAlreadyExist();
+    error GroupAlreadyExists();
 
-    bytes32 public name;
-    bytes public profileImage;
-    bytes public coverImage;
-    uint256 public pitch;
-    uint256 public description;
-    uint256[5] public seedPosts;
+    error GroupNotCreated();
 
-    address immutable public admin;
+    error MessageAlreadyExist();
 
-    Unirep public unirep;
+    error MessageNotExist();
 
-    // Unirep social's attester ID
-    uint160 immutable public attesterId;
+    address admin;
 
-    mapping(bytes32 => bool[]) votesByPostHash;
-
-    mapping(bytes32 => PostData) proposedPostHashes;
-    bytes32[] proposedPostHashList;
-
-    mapping(bytes32 => PostData) proposedCommentHashes;
-    bytes32[] proposedCommentHashList;
+    uint160 attesterId;
 
     // Positive Reputation field index in Kurate
     uint256 immutable public posRepFieldIndex = 0;
@@ -57,33 +28,32 @@ contract KuratePersona {
     // Nagative Reputation field index in Kurate
     uint256 immutable public negRepFieldIndex = 1;
 
-    event NewPostHash(bytes32 postHash);
+    uint256 immutable public postRep = 5;
+    uint256 immutable public commentRep = 3;
+
+    Unirep public unirep;
+
+    mapping(uint256 => Persona) public personas;
+    uint256[] public personaList;
+
+    mapping(uint256 => mapping(uint256 => bool)) public membersByPersona;
+
+    event NewPersona(uint256 personaId);
+    event NewPersonaMember(uint256 personaId, uint256 identityCommitment);
+
+    /// Restricted to members of the admin role.
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Restricted to admin.");
+        _;
+    }
 
     constructor(
-        address _unirepAddress,
-        bytes32 _name,
-        bytes memory _profileImage,
-        bytes memory _coverImage,
-        uint256 _pitch,
-        uint256 _description,
-        uint256[5] memory _seedPosts
+        address _unirepAddress
     ) {
         unirep = Unirep(_unirepAddress);
         unirep.attesterSignUp(86400);
         attesterId = uint160(address(this));
-
         admin = msg.sender;
-
-        name = _name;
-        profileImage = _profileImage;
-        coverImage = _coverImage;
-        pitch = _pitch;
-        description = _description;
-        seedPosts = _seedPosts;
-    }
-
-    function userSignup(uint256[] memory publicSignals, uint256[8] memory proof) public {
-        unirep.userSignUp(publicSignals, proof);
     }
 
     function attesterCurrentEpoch() public view returns (uint256) {
@@ -94,226 +64,218 @@ contract KuratePersona {
         return unirep.attesterEpochRemainingTime(attesterId);
     }
 
-    function proposePost(
-        bytes32 postHash,
-        uint256[] memory publicSignals,
-        uint256[8] memory proof
-    ) external {
-        if (proposedPostHashes[postHash] != null) {
-            revert PostAlreadyExist();
-        }
-
-        ReputationSignals memory signals = unirep.decodeReputationSignals(
-            publicSignals
-        );
-
-        uint256 minRep = signals.minRep;
-
-        require(signals.attesterId == attesterId, 'invalid attester id');
-        require(minRep >= 5, "not enough reputation");
-
-        unirep.attest(
-            signals.epochKey,
-            signals.epoch,
-            negRepFieldIndex, // field index: posRep
-            5
-        );
-
-        proposedPostHashes[postHash] = PostData(postHash, signals.epochKey, signals.epoch);
-        proposedPostHashList.push(postHash);
-    }
-
-    function proposeComment(
-        bytes32 postHash,
-        uint256[] memory publicSignals,
-        uint256[8] memory proof
-    ) external {
-        if (proposedPostHashes[postHash]) {
-            revert PostAlreadyExist();
-        }
-
-        ReputationSignals memory signals = unirep.decodeReputationSignals(
-            publicSignals
-        );
-
-        uint256 minRep = signals.minRep;
-
-        require(signals.attesterId == attesterId, 'invalid attester id');
-        require(minRep >= 2, "not enough reputation");
-
-        unirep.attest(
-            signals.epochKey,
-            signals.epoch,
-            negRepFieldIndex, // field index: posRep
-            2
-        );
-
-        proposedCommentHashes[postHash] = PostData(postHash, signals.epochKey, signals.epoch);
-        proposedCommentHashList.push(postHash);
-    }
-
-    function castVote(
-        bytes32 postHash,
-        bool isUpvote
-    ) external {
-        require(admin == msg.sender, 'only admin can cast vote');
-        votesByPostHash[postHash].push(isUpvote);
-    }
-
-    function countVoteForPosts() external {
-        for (uint256 i = 0; i <= proposedPostHashList.length; i++) {
-            bytes32 postHash = proposedPostHashList[i];
-            PostData memory postData = proposedPostHashes[postHash];
-            uint256 totalVotes = votesByPostHash[postHash].length;
-            uint256 result = 0;
-
-            if (totalVotes < 3) {
-                unirep.attest(
-                    postData.epochKey,
-                    postData.epoch,
-                    posRepFieldIndex,
-                    5
-                );
-            } else {
-                for (uint256 j = 0; j <= totalVotes; j++) {
-                    if (votesByPostHash[postHash][j]) {
-                        result = result + 1;
-                    } else {
-                        result = result - 1;
-                    }
-                }
-
-                if (result > 0) {
-                    unirep.attest(
-                        postData.epochKey,
-                        postData.epoch,
-                        posRepFieldIndex,
-                        10
-                    );
-
-                    emit NewPostHash(postHash);
-                }
-            }
-
-            delete votesByPostHash[postHash];
-            delete proposedPostHashes[postHash];
-        }
-
-        proposedPostHashList = new bytes32[](0);
-    }
-
-    function countVoteForComments() external {
-        for (uint256 i = 0; i <= proposedCommentHashList.length; i++) {
-            bytes32 postHash = proposedCommentHashList[i];
-            PostData memory postData = proposedCommentHashes[postHash];
-            uint256 totalVotes = votesByPostHash[postHash].length;
-            uint256 result = 0;
-
-            if (totalVotes < 3) {
-                unirep.attest(
-                    postData.epochKey,
-                    postData.epoch,
-                    posRepFieldIndex,
-                    5
-                );
-            } else {
-                for (uint256 j = 0; j <= totalVotes; j++) {
-                    if (votesByPostHash[postHash][j]) {
-                        result = result + 1;
-                    } else {
-                        result = result - 1;
-                    }
-                }
-
-                if (result > 0) {
-                    unirep.attest(
-                        postData.epochKey,
-                        postData.epoch,
-                        posRepFieldIndex,
-                        10
-                    );
-
-                    emit NewPostHash(postHash);
-                }
-            }
-
-            delete votesByPostHash[postHash];
-            delete proposedCommentHashes[postHash];
-        }
-
-        proposedCommentHashList = new bytes32[](0);
-    }
-}
-
-contract GlobalAnonymousFeed {
-    error IdentityAlreadyExists();
-    error GroupAlreadyExists();
-    error GroupNotCreated();
-
-    // Positive Reputation field index in Kurate
-    uint256 immutable public posRepFieldIndex = 0;
-
-    // Nagative Reputation field index in Kurate
-    uint256 immutable public negRepFieldIndex = 1;
-
-    Unirep public unirep;
-
-    KuratePersona[] public personalist;
-
-    event NewPersona(address personaAddress);
-    event NewMember(address personaAddress, uint256 identityCommitment);
-
-    constructor(address _unirepAddress) {
-        unirep = Unirep(_unirepAddress);
-    }
-
     function createPersona(
-        bytes32 _name,
-        bytes calldata _profileImage,
-        bytes calldata _coverImage,
-        uint256 _pitch,
-        uint256 _description,
-        uint256[5] calldata _seedPosts
-    ) external {
-        KuratePersona persona = new KuratePersona(
-            address(unirep),
-            _name,
-            _profileImage,
-            _coverImage,
-            _pitch,
-            _description,
-            _seedPosts
-        );
-        personalist.push(persona);
-        emit NewPersona(address(persona));
+        uint256 personaId,
+        bytes32 name,
+        bytes memory profileImage,
+        bytes memory coverImage,
+        bytes32 pitch,
+        bytes32 description,
+        bytes32[5] memory seedPosts,
+        uint256[] memory publicSignals,
+        uint256[8] memory proof
+    ) onlyAdmin external {
+        if (personas[personaId].personaId > 0) {
+            revert GroupAlreadyExists();
+        }
+
+        Persona storage persona = personas[personaId];
+
+        persona.personaId = personaId;
+        persona.name = name;
+        persona.profileImage = profileImage;
+        persona.coverImage = coverImage;
+        persona.pitch = pitch;
+        persona.description = description;
+        persona.seedPosts = seedPosts;
+
+        personaList.push(personaId);
+
+        emit NewPersona(personaId);
     }
 
+    // @dev Required ZK Proof for first time joining a group.
     function joinPersona(
-        KuratePersona personaAddress,
+        uint256 personaId,
         uint256[] memory publicSignals,
         uint256[8] memory proof
     ) external {
-        personaAddress.userSignup(publicSignals, proof);
-
         uint256 identityCommitment = publicSignals[0];
-        emit NewMember(address(personaAddress), identityCommitment);
+        uint256 _attesterId = publicSignals[2];
+
+        require(_attesterId == attesterId, 'attester id is invalid');
+
+        if (membersByPersona[personaId][identityCommitment]) {
+            revert MemberAlreadyJoined();
+        }
+
+        unirep.userSignUp(publicSignals, proof);
+
+        membersByPersona[personaId][identityCommitment] = true;
+
+        emit NewPersonaMember(personaId, identityCommitment);
+    }
+
+    // @dev use this method if the user already joined a persona before
+    function joinPersona(
+        uint256 personaId,
+        uint256 identityCommitment
+    ) external {
+        // TODO: need to check for global signup
+        if (membersByPersona[personaId][identityCommitment]) {
+            revert MemberAlreadyJoined();
+        }
+
+        membersByPersona[personaId][identityCommitment] = true;
+
+        emit NewPersonaMember(personaId, identityCommitment);
     }
 
     function proposePost(
-        KuratePersona personaAddress,
-        bytes32 contentHash,
+        uint256 personaId,
+        bytes32 messageHash,
         uint256[] memory publicSignals,
         uint256[8] memory proof
-    ) external payable {
-        personaAddress.proposePost(contentHash, publicSignals, proof);
+    ) onlyAdmin external payable {
+        Persona storage persona = personas[personaId];
+
+        if (persona.proposedPosts[messageHash].hash != bytes32(0)) {
+            revert MessageAlreadyExist();
+        }
+
+        if (persona.publishedHash[messageHash]) {
+            revert MessageAlreadyExist();
+        }
+
+        ReputationSignals memory signals = unirep.decodeReputationSignals(
+            publicSignals
+        );
+
+        uint256 minRep = signals.minRep;
+        require(signals.attesterId == attesterId, 'invalid attester id');
+        require(minRep >= postRep, "not enough reputation");
+
+        unirep.attest(
+            signals.epochKey,
+            signals.epoch,
+            negRepFieldIndex,
+            postRep
+        );
+
+        persona.proposedPosts[messageHash] = PostData(messageHash, signals.epochKey, signals.epoch);
+        persona.proposedPostlist.push(messageHash);
     }
 
     function proposeComment(
-        KuratePersona personaAddress,
-        bytes32 contentHash,
+        uint256 personaId,
+        bytes32 messageHash,
         uint256[] memory publicSignals,
         uint256[8] memory proof
-    ) external payable {
-        personaAddress.proposeComment(contentHash, publicSignals, proof);
+    ) onlyAdmin external payable {
+        Persona storage persona = personas[personaId];
+
+        if (persona.proposedComments[messageHash].hash != bytes32(0)) {
+            revert MessageAlreadyExist();
+        }
+
+        if (persona.publishedHash[messageHash]) {
+            revert MessageAlreadyExist();
+        }
+
+        ReputationSignals memory signals = unirep.decodeReputationSignals(
+            publicSignals
+        );
+
+        uint256 minRep = signals.minRep;
+        require(signals.attesterId == attesterId, 'invalid attester id');
+        require(minRep >= commentRep, "not enough reputation");
+
+        unirep.attest(
+            signals.epochKey,
+            signals.epoch,
+            negRepFieldIndex,
+            commentRep
+        );
+
+        persona.proposedComments[messageHash] = PostData(messageHash, signals.epochKey, signals.epoch);
+        persona.proposedCommentlist.push(messageHash);
+    }
+
+    function vote(
+        uint256 personaId,
+        bytes32 messageHash,
+        bool isUpvote
+    ) onlyAdmin external  {
+        Persona storage persona = personas[personaId];
+
+        if (persona.proposedPosts[messageHash].hash == bytes32(0)) {
+            revert MessageNotExist();
+        }
+
+        VoteMeta storage voteMeta = persona.votesByMessageHash[messageHash];
+        voteMeta.total = voteMeta.total + 1;
+        voteMeta.score = isUpvote ? voteMeta.score + 1 : voteMeta.score - 1;
+    }
+
+    // @dev need to test gas fee in testnet, theoretically this should not be too expensive since removing data will refund gas
+    function tallyVotesForPersona(Persona storage persona) internal {
+        for (uint256 i = 0; i <= persona.proposedPostlist.length; i++) {
+            bytes32 postHash = persona.proposedPostlist[i];
+            PostData storage postData = persona.proposedPosts[postHash];
+            VoteMeta storage postVoteMeta = persona.votesByMessageHash[postHash];
+
+            if (postVoteMeta.total < 3 || postVoteMeta.score == 0) {
+                unirep.attest(
+                    postData.epochKey,
+                    postData.epoch,
+                    posRepFieldIndex,
+                    postRep
+                );
+            } else if (postVoteMeta.score > 0) {
+                unirep.attest(
+                    postData.epochKey,
+                    postData.epoch,
+                    posRepFieldIndex,
+                    postRep * 2
+                );
+            }
+
+            delete persona.proposedPostlist[i];
+            delete persona.proposedPosts[postHash];
+            delete persona.votesByMessageHash[postHash];
+        }
+
+        for (uint256 j = 0; j <= persona.proposedCommentlist.length; j++) {
+            bytes32 commenHash = persona.proposedCommentlist[j];
+            PostData storage commenData = persona.proposedComments[commenHash];
+            VoteMeta storage commenVoteMeta = persona.votesByMessageHash[commenHash];
+
+            if (commenVoteMeta.total < 3 || commenVoteMeta.score == 0) {
+                unirep.attest(
+                    commenData.epochKey,
+                        commenData.epoch,
+                    posRepFieldIndex,
+                    commentRep
+                );
+            } else if (commenVoteMeta.score > 0) {
+                unirep.attest(
+                    commenData.epochKey,
+                        commenData.epoch,
+                    posRepFieldIndex,
+                    commentRep * 2
+                );
+            }
+
+            delete persona.proposedCommentlist[j];
+            delete persona.proposedComments[commenHash];
+            delete persona.votesByMessageHash[commenHash];
+        }
+    }
+
+    function finalizeEpoch() public {
+        for (uint256 i = 0; i <= personaList.length; i++) {
+            Persona storage persona = personas[personaList[i]];
+            tallyVotesForPersona(persona);
+        }
     }
 }
