@@ -1,8 +1,10 @@
 <script lang="ts">
+	let cls: string | undefined = undefined
+	export { cls as class }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="root card-wrapper" on:click>
+<div class={`root card-wrapper ${cls}`} on:click>
 	<div class="card">
 		<slot />
 	</div>
