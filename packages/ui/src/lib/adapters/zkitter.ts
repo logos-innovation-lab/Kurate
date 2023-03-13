@@ -1,3 +1,4 @@
+import { browser } from '$app/environment'
 import { chats, type Chat } from '$lib/stores/chat'
 import { personas, type Persona } from '$lib/stores/persona'
 import { sleep } from '$lib/utils'
@@ -58,17 +59,13 @@ export class ZkitterAdapter implements Adapter {
 		}
 
 		const all = new Map<string, Persona>()
-		const favorite: string[] = []
 		all.set('1', chitChat)
 		all.set('2', expats)
 		all.set('3', cats)
 		all.set('4', geoPolitics)
 		all.set('5', controversy)
 
-		favorite.push('3')
-		favorite.push('4')
-
-		personas.update((state) => ({ ...state, all, favorite, loading: false }))
+		personas.update((state) => ({ ...state, all, loading: false }))
 
 		const chat1: Chat = {
 			persona: controversy,
@@ -171,5 +168,33 @@ export class ZkitterAdapter implements Adapter {
 			loading: false,
 			unread: 1,
 		}))
+	}
+	addPersonaToFavorite(groupId: string): Promise<void> {
+		return new Promise((resolve) => {
+			personas.update(({ favorite, ...store }) => {
+				const favoriteNew = [...favorite, groupId]
+
+				if (browser && localStorage) {
+					localStorage.setItem('favorite', JSON.stringify(favoriteNew))
+				}
+
+				resolve()
+				return { ...store, favorite: favoriteNew }
+			})
+		})
+	}
+	removePersonaFromFavorite(groupId: string): Promise<void> {
+		return new Promise((resolve) => {
+			personas.update(({ favorite, ...store }) => {
+				const favoriteNew = favorite.filter((s) => s !== groupId)
+
+				if (browser && localStorage) {
+					localStorage.setItem('favorite', JSON.stringify(favoriteNew))
+				}
+
+				resolve()
+				return { ...store, favorite: favoriteNew }
+			})
+		})
 	}
 }
