@@ -12,11 +12,11 @@
 	import Banner from '$lib/components/message-banner.svelte'
 	import Container from '$lib/components/container.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
+	import InfoScreen from '$lib/components/info_screen.svelte'
 
 	import { ROUTES } from '$lib/routes'
 	import { goto } from '$app/navigation'
-	import { personas } from '$lib/stores/persona'
-	import InfoScreen from '$lib/components/info_screen.svelte'
+	import adapter from '$lib/adapters'
 
 	let persona = {
 		name: '',
@@ -35,7 +35,7 @@
 	}
 
 	async function savePersona() {
-		draftPersonaIndex = await personas.addDraft({ ...persona, posts: [] })
+		draftPersonaIndex = await adapter.addPersonaDraft({ ...persona, posts: [] })
 		state = 'confirm'
 	}
 </script>

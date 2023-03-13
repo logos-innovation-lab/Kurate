@@ -24,6 +24,7 @@
 	import { tokens } from '$lib/stores/tokens'
 	import { page } from '$app/stores'
 	import TokenInfo from '$lib/components/token-info.svelte'
+	import adapter from '$lib/adapters'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -60,7 +61,7 @@
 			persona.name = name
 			persona.pitch = pitch
 			persona.description = description
-			personas.updateDraft(personaIndex, persona)
+			adapter.updatePersonaDraft(personaIndex, persona)
 			state = 'posts'
 		}}
 		onCancel={() => {
@@ -135,7 +136,7 @@
 	<PostNew
 		submit={(text, images) => {
 			persona.posts.push({ timestamp: Date.now(), text, images })
-			personas.updateDraft(personaIndex, persona)
+			adapter.updatePersonaDraft(personaIndex, persona)
 			state = 'posts'
 		}}
 		label="Save seed post"
