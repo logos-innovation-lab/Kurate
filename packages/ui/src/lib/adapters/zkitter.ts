@@ -1,7 +1,6 @@
-import { browser } from '$app/environment'
 import { chats, type Chat } from '$lib/stores/chat'
 import { personas, type DraftPersona, type Persona } from '$lib/stores/persona'
-import { sleep } from '$lib/utils'
+import { getFromLocalStorage, saveToLocalStorage, sleep } from '$lib/utils'
 import type { Adapter } from '.'
 
 export class ZkitterAdapter implements Adapter {
@@ -65,9 +64,8 @@ export class ZkitterAdapter implements Adapter {
 		all.set('4', geoPolitics)
 		all.set('5', controversy)
 
-		const draft = browser && localStorage ? JSON.parse(localStorage.getItem('drafts') ?? '[]') : []
-		const favorite =
-			browser && localStorage ? JSON.parse(localStorage.getItem('favorite') ?? '[]') : []
+		const draft = getFromLocalStorage('drafts', [])
+		const favorite = getFromLocalStorage('favorite', [])
 
 		personas.set({ all, draft, favorite, loading: false })
 
@@ -178,9 +176,7 @@ export class ZkitterAdapter implements Adapter {
 			personas.update(({ favorite, ...store }) => {
 				const favoriteNew = [...favorite, groupId]
 
-				if (browser && localStorage) {
-					localStorage.setItem('favorite', JSON.stringify(favoriteNew))
-				}
+				saveToLocalStorage('favorite', favoriteNew)
 
 				resolve()
 				return { ...store, favorite: favoriteNew }
@@ -192,9 +188,7 @@ export class ZkitterAdapter implements Adapter {
 			personas.update(({ favorite, ...store }) => {
 				const favoriteNew = favorite.filter((s) => s !== groupId)
 
-				if (browser && localStorage) {
-					localStorage.setItem('favorite', JSON.stringify(favoriteNew))
-				}
+				saveToLocalStorage('favorite', favoriteNew)
 
 				resolve()
 				return { ...store, favorite: favoriteNew }
@@ -206,9 +200,7 @@ export class ZkitterAdapter implements Adapter {
 			personas.update(({ draft, ...state }) => {
 				const newDraft = [...draft, draftPersona]
 
-				if (browser && localStorage) {
-					localStorage.setItem('drafts', JSON.stringify(newDraft))
-				}
+				saveToLocalStorage('drafts', newDraft)
 
 				resolve(newDraft.length - 1)
 
@@ -221,9 +213,7 @@ export class ZkitterAdapter implements Adapter {
 			personas.update(({ draft, ...state }) => {
 				draft[index] = draftPersona
 
-				if (browser && localStorage) {
-					localStorage.setItem('drafts', JSON.stringify(draft))
-				}
+				saveToLocalStorage('drafts', draft)
 
 				resolve()
 
