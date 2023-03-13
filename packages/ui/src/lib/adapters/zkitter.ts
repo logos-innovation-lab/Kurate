@@ -1,6 +1,6 @@
 import { browser } from '$app/environment'
 import { chats, type Chat } from '$lib/stores/chat'
-import { personas, type Persona } from '$lib/stores/persona'
+import { personas, type DraftPersona, type Persona } from '$lib/stores/persona'
 import { sleep } from '$lib/utils'
 import type { Adapter } from '.'
 
@@ -65,7 +65,11 @@ export class ZkitterAdapter implements Adapter {
 		all.set('4', geoPolitics)
 		all.set('5', controversy)
 
-		personas.update((state) => ({ ...state, all, loading: false }))
+		const draft = browser && localStorage ? JSON.parse(localStorage.getItem('drafts') ?? '[]') : []
+		const favorite =
+			browser && localStorage ? JSON.parse(localStorage.getItem('favorite') ?? '[]') : []
+
+		personas.set({ all, draft, favorite, loading: false })
 
 		const chat1: Chat = {
 			persona: controversy,
@@ -196,5 +200,35 @@ export class ZkitterAdapter implements Adapter {
 				return { ...store, favorite: favoriteNew }
 			})
 		})
+	}
+	addPersonaDraft(draftPersona: DraftPersona): Promise<number> {
+		return new Promise((resolve) =>
+			personas.update(({ draft, ...state }) => {
+				const newDraft = [...draft, draftPersona]
+
+				if (browser && localStorage) {
+					localStorage.setItem('drafts', JSON.stringify(newDraft))
+				}
+
+				resolve(newDraft.length - 1)
+
+				return { ...state, draft: newDraft }
+			}),
+		)
+	}
+	updatePersonaDraft(index: number, draftPersona: DraftPersona): Promise<void> {
+		return new Promise((resolve) =>
+			personas.update(({ draft, ...state }) => {
+				draft[index] = draftPersona
+
+				if (browser && localStorage) {
+					localStorage.setItem('drafts', JSON.stringify(draft))
+				}
+
+				resolve()
+
+				return { ...state, draft }
+			}),
+		)
 	}
 }
