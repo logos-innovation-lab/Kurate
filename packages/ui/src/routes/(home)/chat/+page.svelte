@@ -92,12 +92,12 @@
 			border-bottom: none;
 		}
 
-		@media (prefers-color-scheme: dark) {
-			&.border-top {
-				border-top-color: var(--grey-500);
-			}
-			border-bottom-color: var(--grey-500);
-		}
+		// @media (prefers-color-scheme: dark) {
+		// 	&.border-top {
+		// 		border-top-color: var(--grey-500);
+		// 	}
+		// 	border-bottom-color: var(--grey-500);
+		// }
 
 		.personas-filter {
 			display: flex;

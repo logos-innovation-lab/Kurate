@@ -16,8 +16,8 @@
 
 	import type { Chat } from '$lib/stores/chat'
 	import { formatDateAndTime } from '$lib/utils/format'
-	import { personas } from '$lib/stores/persona'
-	import { page } from '$app/stores'
+	// import { personas } from '$lib/stores/persona'
+	// import { page } from '$app/stores'
 
 	export let chat: Chat
 	export let sendMessage: (text: string) => unknown
