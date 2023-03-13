@@ -27,9 +27,16 @@ interface IGlobalAnonymousFeed {
         uint epoch;
     }
 
+    struct VoterData {
+        uint256 epochKey;
+        uint epoch;
+    }
+
     struct VoteMeta {
         uint256 score;
         uint256 total;
+        VoterData[] upvoters;
+        VoterData[] downvoters;
     }
 
     struct Persona {

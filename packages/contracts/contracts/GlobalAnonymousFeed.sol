@@ -30,6 +30,9 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
     uint256 immutable public postRep = 5;
     uint256 immutable public commentRep = 3;
+    uint256 immutable public postReward = 5;
+    uint256 immutable public commentReward = 3;
+    uint256 immutable public voterReward = 1;
 
     Unirep public unirep;
 
@@ -37,6 +40,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
     uint256[] public personaList;
 
     mapping(uint256 => mapping(uint256 => bool)) public membersByPersona;
+    mapping(uint256 => bool) public members;
 
     event NewPersona(uint256 personaId);
     event NewPersonaMember(uint256 personaId, uint256 identityCommitment);
@@ -105,12 +109,13 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
         require(_attesterId == attesterId, 'attester id is invalid');
 
-        if (membersByPersona[personaId][identityCommitment]) {
+        if (membersByPersona[personaId][identityCommitment] || members[identityCommitment]) {
             revert MemberAlreadyJoined();
         }
 
         unirep.userSignUp(publicSignals, proof);
 
+        members[identityCommitment] = true;
         membersByPersona[personaId][identityCommitment] = true;
 
         emit NewPersonaMember(personaId, identityCommitment);
@@ -121,7 +126,8 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         uint256 personaId,
         uint256 identityCommitment
     ) external {
-        // TODO: need to check for global signup
+        require(members[identityCommitment], 'member must join unirep first');
+
         if (membersByPersona[personaId][identityCommitment]) {
             revert MemberAlreadyJoined();
         }
@@ -151,9 +157,13 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             publicSignals
         );
 
+        finalizeEpochIfNeeded(signals.epoch);
+
         uint256 minRep = signals.minRep;
         require(signals.attesterId == attesterId, 'invalid attester id');
         require(minRep >= postRep, "not enough reputation");
+
+        unirep.verifyReputationProof(publicSignals, proof);
 
         unirep.attest(
             signals.epochKey,
@@ -182,13 +192,17 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             revert MessageAlreadyExist();
         }
 
+
         IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
             publicSignals
         );
+        finalizeEpochIfNeeded(signals.epoch);
 
         uint256 minRep = signals.minRep;
         require(signals.attesterId == attesterId, 'invalid attester id');
         require(minRep >= commentRep, "not enough reputation");
+
+        unirep.verifyReputationProof(publicSignals, proof);
 
         unirep.attest(
             signals.epochKey,
@@ -204,7 +218,9 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
     function vote(
         uint256 personaId,
         bytes32 messageHash,
-        bool isUpvote
+        bool isUpvote,
+        uint256[] memory publicSignals,
+        uint256[8] memory proof
     ) onlyAdmin external  {
         Persona storage persona = personas[personaId];
 
@@ -212,9 +228,34 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             revert MessageNotExist();
         }
 
+        IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
+            publicSignals
+        );
+
+        finalizeEpochIfNeeded(signals.epoch);
+
+        unirep.verifyReputationProof(publicSignals, proof);
+
         VoteMeta storage voteMeta = persona.votesByMessageHash[messageHash];
         voteMeta.total = voteMeta.total + 1;
         voteMeta.score = isUpvote ? voteMeta.score + 1 : voteMeta.score - 1;
+
+        if (isUpvote) {
+            voteMeta.upvoters.push(VoterData(signals.epochKey, signals.epoch));
+        } else {
+            voteMeta.downvoters.push(VoterData(signals.epochKey, signals.epoch));
+        }
+    }
+
+    function rewardVoters(VoterData[] memory voterDataList) internal {
+        for (uint256 k = 0; k <= voterDataList.length; k++) {
+            unirep.attest(
+                voterDataList[k].epochKey,
+                voterDataList[k].epoch,
+                posRepFieldIndex,
+                voterReward
+            );
+        }
     }
 
     // @dev need to test gas fee in testnet, theoretically this should not be too expensive since removing data will refund gas
@@ -238,6 +279,9 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
                     posRepFieldIndex,
                     postRep * 2
                 );
+                rewardVoters(postVoteMeta.upvoters);
+            } else if (postVoteMeta.score < 0) {
+                rewardVoters(postVoteMeta.downvoters);
             }
 
             delete persona.proposedPostlist[i];
@@ -246,36 +290,41 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         }
 
         for (uint256 j = 0; j <= persona.proposedCommentlist.length; j++) {
-            bytes32 commenHash = persona.proposedCommentlist[j];
-            PostData storage commenData = persona.proposedComments[commenHash];
-            VoteMeta storage commenVoteMeta = persona.votesByMessageHash[commenHash];
+            bytes32 commentHash = persona.proposedCommentlist[j];
+            PostData storage commentData = persona.proposedComments[commentHash];
+            VoteMeta storage commentVoteMeta = persona.votesByMessageHash[commentHash];
 
-            if (commenVoteMeta.total < 3 || commenVoteMeta.score == 0) {
+            if (commentVoteMeta.total < 3 || commentVoteMeta.score == 0) {
                 unirep.attest(
-                    commenData.epochKey,
-                        commenData.epoch,
+                    commentData.epochKey,
+                    commentData.epoch,
                     posRepFieldIndex,
                     commentRep
                 );
-            } else if (commenVoteMeta.score > 0) {
+            } else if (commentVoteMeta.score > 0) {
                 unirep.attest(
-                    commenData.epochKey,
-                        commenData.epoch,
+                    commentData.epochKey,
+                    commentData.epoch,
                     posRepFieldIndex,
                     commentRep * 2
                 );
+                rewardVoters(commentVoteMeta.upvoters);
+            } else if (commentVoteMeta.score < 0) {
+                rewardVoters(commentVoteMeta.downvoters);
             }
 
             delete persona.proposedCommentlist[j];
-            delete persona.proposedComments[commenHash];
-            delete persona.votesByMessageHash[commenHash];
+            delete persona.proposedComments[commentHash];
+            delete persona.votesByMessageHash[commentHash];
         }
     }
 
-    function finalizeEpoch() public {
-        for (uint256 i = 0; i <= personaList.length; i++) {
-            Persona storage persona = personas[personaList[i]];
-            tallyVotesForPersona(persona);
+    function finalizeEpochIfNeeded(uint256 epoch) public {
+        if (epoch < attesterCurrentEpoch()) {
+            for (uint256 i = 0; i <= personaList.length; i++) {
+                Persona storage persona = personas[personaList[i]];
+                tallyVotesForPersona(persona);
+            }
         }
     }
 }

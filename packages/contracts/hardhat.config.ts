@@ -23,6 +23,12 @@ function getNetworks(): NetworksUserConfig {
                 chainId: 5,
                 accounts
             },
+            // arbitrum goerli
+            agor: {
+                url: 'https://goerli-rollup.arbitrum.io/rpc',
+                chainId: 421613,
+                accounts
+            },
             sepolia: {
                 url: process.env.ETHEREUM_URL,
                 chainId: 11155111,
