@@ -34,7 +34,7 @@ function createPersonaStore(): PersonaStoreWritable {
 	const store = writable<PersonaStore>({
 		all: new Map(),
 		draft: browser && localStorage ? JSON.parse(localStorage.getItem('drafts') ?? '[]') : [],
-		favorite: [],
+		favorite: browser && localStorage ? JSON.parse(localStorage.getItem('favorite') ?? '[]') : [],
 		loading: true,
 	})
 
