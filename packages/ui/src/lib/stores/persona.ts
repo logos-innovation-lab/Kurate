@@ -1,7 +1,6 @@
 import { writable, type Writable } from 'svelte/store'
 import type { Identity } from '@semaphore-protocol/identity'
 import type { Post } from './post'
-import { browser } from '$app/environment'
 
 export interface Persona {
 	identity?: Identity
@@ -10,10 +9,11 @@ export interface Persona {
 	name: string
 	pitch: string
 	description: string
+	participantsCount: number
 	postsCount: number
 }
 
-export interface DraftPersona extends Omit<Persona, 'postsCount'> {
+export interface DraftPersona extends Omit<Persona, 'postsCount' | 'participantsCount'> {
 	posts: Post[]
 }
 
@@ -24,48 +24,15 @@ type PersonaStore = {
 	loading: boolean
 }
 
-export interface PersonaStoreWritable extends Writable<PersonaStore> {
-	addDraft: (draft: DraftPersona) => Promise<number>
-	updateDraft: (index: number, draft: DraftPersona) => void
-}
-
-function createPersonaStore(): PersonaStoreWritable {
+function createPersonaStore(): Writable<PersonaStore> {
 	const store = writable<PersonaStore>({
 		all: new Map(),
-		draft: browser && localStorage ? JSON.parse(localStorage.getItem('drafts') ?? '[]') : [],
+		draft: [],
 		favorite: [],
 		loading: true,
 	})
 
-	return {
-		...store,
-		addDraft: (draftPersona: DraftPersona) => {
-			return new Promise((resolve) =>
-				store.update(({ draft, ...state }) => {
-					const newDraft = [...draft, draftPersona]
-
-					if (browser && localStorage) {
-						localStorage.setItem('drafts', JSON.stringify(newDraft))
-					}
-
-					resolve(newDraft.length - 1)
-
-					return { ...state, draft: newDraft }
-				}),
-			)
-		},
-		updateDraft: (index: number, draftPersona: DraftPersona) => {
-			store.update(({ draft, ...state }) => {
-				draft[index] = draftPersona
-
-				if (browser && localStorage) {
-					localStorage.setItem('drafts', JSON.stringify(draft))
-				}
-
-				return { ...state, draft }
-			})
-		},
-	}
+	return store
 }
 
 export const personas = createPersonaStore()

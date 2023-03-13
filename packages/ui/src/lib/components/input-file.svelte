@@ -8,6 +8,7 @@
 	export let label: string | undefined = undefined
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 	export let variant: 'secondary' | 'primary' | 'overlay' = 'secondary'
+	export let multiple = false
 </script>
 
 <label class={`root ${variant} ${cls}`}>
@@ -20,7 +21,7 @@
 		{label}
 	{/if}
 	<!-- svelte-ignore a11y-missing-attribute -->
-	<input type="file" {disabled} bind:files hidden />
+	<input type="file" {disabled} bind:files hidden {multiple} />
 </label>
 
 <style lang="scss">

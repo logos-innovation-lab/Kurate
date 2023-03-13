@@ -19,6 +19,7 @@
 	import { page } from '$app/stores'
 	import { ROUTES } from '$lib/routes'
 	import { connectWallet } from '$lib/services'
+	import adapter from '$lib/adapters'
 
 	const persona = $personas.all.get($page.params.id)
 
@@ -34,8 +35,10 @@
 	}
 
 	let y: number
+	let onBack = () => history.back()
 
-	export let onBack: () => unknown = () => history.back()
+	const addToFavorite = () => adapter.addPersonaToFavorite($page.params.id, persona)
+	const removeFromFavorite = () => adapter.removePersonaFromFavorite($page.params.id, persona)
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -71,9 +74,14 @@
 		<svelte:fragment slot="button_top">
 			{#if $profile.signer !== undefined}
 				{#if $personas.favorite.includes($page.params.id)}
-					<Button icon={StarFilled} variant="overlay" label="Remove favorite" />
+					<Button
+						icon={StarFilled}
+						variant="overlay"
+						label="Remove favorite"
+						on:click={removeFromFavorite}
+					/>
 				{:else}
-					<Button icon={Star} variant="overlay" label="Add to favorites" />
+					<Button icon={Star} variant="overlay" label="Add to favorites" on:click={addToFavorite} />
 				{/if}
 			{/if}
 		</svelte:fragment>

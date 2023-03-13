@@ -32,7 +32,7 @@
 	// FIXME: This should be stored in persona and loaded
 	const TOKEN_POST_MIN_REP = 5
 
-	async function submit(postText: string) {
+	async function submit(postText: string, images: string[]) {
 		try {
 			const signer = $profile.signer
 			if (!signer) throw new Error('no signer')
@@ -63,6 +63,7 @@
 			posts.add({
 				timestamp: Date.now(),
 				text: postText,
+				images,
 			})
 			state = 'post_submitted'
 		} catch (error) {
