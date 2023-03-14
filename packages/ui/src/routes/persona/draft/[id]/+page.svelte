@@ -19,6 +19,7 @@
 	import Grid from '$lib/components/grid.svelte'
 	import Container from '$lib/components/container.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
+	import Divider from '$lib/components/divider.svelte'
 
 	import { personas } from '$lib/stores/persona'
 	import { tokens } from '$lib/stores/tokens'
@@ -106,7 +107,7 @@
 			icon={EditPersona}
 			on:click={() => (state = 'text')}
 		/>
-		<hr />
+		<Divider />
 		<Container>
 			<InfoBox>
 				{#if persona.posts.length < PERSONA_LIMIT}

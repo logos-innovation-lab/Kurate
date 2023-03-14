@@ -1,9 +1,10 @@
 <script lang="ts">
 	export let title: string
+	import Divider from '$lib/components/divider.svelte'
 </script>
 
 <div class="root">
-	<hr />
+	<Divider visible="desktop" />
 	<div class="wrapper">
 		<div class="row">
 			<div class="title">{title}</div>
@@ -14,16 +15,10 @@
 
 		<slot />
 	</div>
-	<hr />
+	<Divider visible="mobile" />
 </div>
 
 <style lang="scss">
-	hr:last-child {
-		@media (min-width: 688px) {
-			display: none;
-		}
-	}
-
 	.wrapper {
 		padding: var(--spacing-24);
 		transition: padding 0.2s;
