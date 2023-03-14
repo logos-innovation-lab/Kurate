@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment'
 	import type { ComponentConstructor, DropdownOption, IconProps } from '$lib/types'
 	import Button from './button.svelte'
+	import Checkmark from '$lib/components/icons/checkmark.svelte'
 
 	const dispatch = createEventDispatcher()
 
@@ -44,8 +45,14 @@
 	<div class={`root ${cls}`}>
 		<ul class={showDropdown ? '' : 'hidden'}>
 			{#each options as option}
+				<!-- TODO: add "active" class to <li> when selected to make checkmark work -->
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<li class={option.danger ? 'danger' : ''} on:click={option.action}>{option.text}</li>
+				<li class={option.danger ? 'danger' : ''} on:click={option.action}>
+					{option.text}
+					<span class="selected">
+						<Checkmark size={16} />
+					</span>
+				</li>
 			{/each}
 		</ul>
 	</div>
@@ -61,10 +68,11 @@
 			min-width: min(calc(100vw - 48px), 250px);
 			max-width: max(calc(100vw - 48px), 450px);
 			z-index: 10;
-			border-radius: 22px;
+			border-radius: var(--spacing-24);
 			backdrop-filter: blur(3px);
-			box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.25);
-			background-color: rgba(255, 255, 255, 0.93);
+			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
+			background-color: rgba(var(--color-body-bg-rgb), 0.93);
+			overflow: hidden;
 
 			&.hidden {
 				display: none;
@@ -74,28 +82,34 @@
 				padding: var(--spacing-12);
 				list-style: none;
 				cursor: pointer;
+				position: relative;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
 
 				&.danger {
-					color: red; // FIXME: wrong color, I'm sure
+					color: var(--color-red);
 				}
 
 				&:hover {
-					background-color: green; // FIXME: wrong color, I'm sure
-
-					&:first-child {
-						border-radius: 22px 22px 0px 0px;
-					}
-
-					&:last-child {
-						border-radius: 0px 0px 22px 22px;
-					}
+					background-color: var(--grey-150);
 				}
 
 				&:not(:last-child) {
 					border-bottom: 1px solid var(--grey-200);
 
-					@media (prefers-color-scheme: dark) {
-						background-color: var(--grey-500);
+					// @media (prefers-color-scheme: dark) {
+					// 	background-color: var(--grey-500);
+					// }
+				}
+
+				.selected {
+					display: none;
+				}
+				&.active {
+					.selected {
+						display: flex;
+						align-items: center;
 					}
 				}
 			}
