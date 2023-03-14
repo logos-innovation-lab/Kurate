@@ -7,7 +7,7 @@
 	<div class="card">
 		<slot />
 	</div>
-	<Divider HideOnDesktop />
+	<Divider visible="mobile" />
 </div>
 
 <style lang="scss">

@@ -29,7 +29,7 @@
 				</nav>
 			</div>
 		{/if}
-		<Divider HideOnDesktop />
+		<Divider visible="mobile" />
 
 		<slot />
 	</div>

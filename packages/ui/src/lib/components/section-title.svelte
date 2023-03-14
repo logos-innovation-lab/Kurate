@@ -4,9 +4,7 @@
 </script>
 
 <div class="root">
-	<div class="desktop-only">
-		<Divider />
-	</div>
+	<Divider visible="desktop" />
 	<div class="wrapper">
 		<div class="row">
 			<div class="title">{title}</div>
@@ -17,18 +15,10 @@
 
 		<slot />
 	</div>
-	<Divider HideOnDesktop />
+	<Divider visible="mobile" />
 </div>
 
 <style lang="scss">
-	.desktop-only {
-		display: none;
-
-		@media (min-width: 688px) {
-			display: block;
-		}
-	}
-
 	.wrapper {
 		padding: var(--spacing-24);
 		transition: padding 0.2s;

@@ -1,8 +1,8 @@
 <script lang="ts">
-	export let HideOnDesktop: boolean | undefined = undefined
+	export let visible: 'always' | 'desktop' | 'mobile' = 'always'
 </script>
 
-<hr class={HideOnDesktop ? 'hide-on-desktop' : ''} />
+<hr class={visible} />
 
 <style lang="scss">
 	hr {
@@ -11,7 +11,12 @@
 		height: 1px;
 		background-color: var(--grey-200);
 
-		&.hide-on-desktop {
+		&.desktop {
+			@media (max-width: 687.98px) {
+				display: none;
+			}
+		}
+		&.mobile {
 			@media (min-width: 688px) {
 				display: none;
 			}
