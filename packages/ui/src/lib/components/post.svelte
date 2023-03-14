@@ -3,11 +3,14 @@
 	import { formatDateAndTime } from '$lib/utils/format'
 	import type { Post } from '$lib/stores/post'
 
+	let cls: string | undefined = undefined
+	export { cls as class }
+
 	export let post: Post
 </script>
 
-<Card on:click>
-	<div class="content-wrapper">
+<Card on:click class={` ${cls}`}>
+	<div class={`content-wrapper`}>
 		<div class="imgs">
 			{#each post.images as image}
 				<div>
@@ -62,5 +65,11 @@
 	.post-content {
 		font-family: var(--font-serif);
 		line-height: 1.38;
+	}
+
+	:global(.detail) {
+		.post-content {
+			font-size: var(--font-size-lg);
+		}
 	}
 </style>
