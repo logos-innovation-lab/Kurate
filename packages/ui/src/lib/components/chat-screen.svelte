@@ -10,7 +10,7 @@
 	import Post from '$lib/components/post.svelte'
 	import Textarea from '$lib/components/textarea.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
-	// import Persona from '$lib/components/persona.svelte'
+	import Persona from '$lib/components/persona.svelte'
 	import SingleColumn from '$lib/components/single-column.svelte'
 	import LearnMore from './learn-more.svelte'
 
@@ -50,15 +50,13 @@
 				</div>
 			</SingleColumn>
 			<Post class="detail" post={chat.post} />
-			<!-- {#if persona !== undefined}
-				<p>persona</p>
-				<Persona
-					name={persona.name}
-					description={persona.description}
-					postsCount={persona.postsCount}
-					picture={persona.picture}
-				/>
-			{/if} -->
+			<Persona
+				name={chat.persona.name}
+				description={chat.persona.description}
+				postsCount={chat.persona.postsCount}
+				picture={chat.persona.picture}
+				participantsCount={chat.persona.participantsCount}
+			/>
 		{:else}
 			<div class="btn">
 				<Button icon={View} label="View original post" on:click={toggleShowPost} />
