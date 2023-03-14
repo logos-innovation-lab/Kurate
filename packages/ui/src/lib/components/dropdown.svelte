@@ -88,6 +88,8 @@
 				justify-content: space-between;
 				align-items: center;
 				gap: var(--spacing-24);
+				font-family: var(--font-serif);
+				font-size: var(--font-size-lg);
 
 				&.danger {
 					color: var(--color-red);
