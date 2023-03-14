@@ -17,18 +17,27 @@
 	import { ROUTES } from '$lib/routes'
 	import { formatDateAndTime } from '$lib/utils/format'
 
-	let openChats: Chat[]
-	let closedChats: Chat[] = $chatsStore.chats.filter((c) => c.blocked || c.closed)
+	interface ChatListItem {
+		chat: Chat
+		id: number
+	}
+
+	let openChats: ChatListItem[]
+	let closedChats: ChatListItem[] = $chatsStore.chats
+		.map((chat, id) => ({ chat, id }))
+		.filter(({ chat }) => chat.blocked || chat.closed)
 	let sortAsc = true
 	let filterQuery = ''
 
 	$: openChats = $chatsStore.chats
-		.filter((c) => !c.blocked && !c.closed)
+		.map((chat, id) => ({ chat, id }))
 		.filter(
-			(chat) =>
-				chat.persona.name.includes(filterQuery) ||
-				chat.post.text.includes(filterQuery) ||
-				chat.messages[chat.messages.length - 1].text.includes(filterQuery),
+			({ chat }) =>
+				!chat.blocked &&
+				!chat.closed &&
+				(chat.persona.name.includes(filterQuery) ||
+					chat.post.text.includes(filterQuery) ||
+					chat.messages[chat.messages.length - 1].text.includes(filterQuery)),
 		)
 </script>
 
@@ -72,14 +81,14 @@
 		<Search bind:filterQuery />
 	</SectionTitle>
 	<Grid>
-		{#each openChats as chat, index}
+		{#each openChats as { chat, id }}
 			<ChatComponent
 				chatPersonaPicture={chat.persona.picture}
 				chatPersonaName={chat.persona.name}
 				chatPostText={chat.post.text}
 				chatMessage={chat.messages[chat.messages.length - 1].text}
 				timeStamp={formatDateAndTime(chat.messages[chat.messages.length - 1].timestamp)}
-				on:click={() => goto(ROUTES.CHAT(index))}
+				on:click={() => goto(ROUTES.CHAT(id))}
 			/>
 		{/each}
 	</Grid>
@@ -87,14 +96,14 @@
 	{#if closedChats.length > 0}
 		<SectionTitle title="Closed chats" />
 		<Grid>
-			{#each closedChats as chat, index}
+			{#each closedChats as { chat, id }}
 				<ChatComponent
 					chatPersonaPicture={chat.persona.picture}
 					chatPersonaName={chat.persona.name}
 					chatPostText={chat.post.text}
 					chatMessage={chat.messages[chat.messages.length - 1].text}
 					timeStamp={formatDateAndTime(chat.messages[chat.messages.length - 1].timestamp)}
-					on:click={() => goto(ROUTES.CHAT(index))}
+					on:click={() => goto(ROUTES.CHAT(id))}
 				/>
 			{/each}
 		</Grid>
