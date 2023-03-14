@@ -1,5 +1,6 @@
 <script lang="ts">
 	import HeaderTop from '$lib/components/header-top.svelte'
+	import Divider from '$lib/components/divider.svelte'
 
 	import { profile } from '$lib/stores/profile'
 	import { chats } from '$lib/stores/chat'
@@ -13,7 +14,6 @@
 
 <div>
 	<HeaderTop address={$profile.address} />
-
 	<div class="wrapper">
 		{#if $profile.signer !== undefined}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -29,6 +29,7 @@
 				</nav>
 			</div>
 		{/if}
+		<Divider HideOnDesktop />
 
 		<slot />
 	</div>

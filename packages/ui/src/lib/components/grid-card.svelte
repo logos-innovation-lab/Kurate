@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Divider from '$lib/components/divider.svelte'
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -6,7 +7,7 @@
 	<div class="card">
 		<slot />
 	</div>
-	<hr />
+	<Divider HideOnDesktop />
 </div>
 
 <style lang="scss">
@@ -17,12 +18,6 @@
 		flex-direction: column;
 		align-items: flex-end;
 		justify-content: flex-end;
-
-		hr {
-			@media (min-width: 688px) {
-				display: none;
-			}
-		}
 
 		&:hover {
 			background-color: var(--grey-150);

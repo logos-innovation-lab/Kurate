@@ -1,9 +1,12 @@
 <script lang="ts">
 	export let title: string
+	import Divider from '$lib/components/divider.svelte'
 </script>
 
 <div class="root">
-	<hr />
+	<div class="desktop-only">
+		<Divider />
+	</div>
 	<div class="wrapper">
 		<div class="row">
 			<div class="title">{title}</div>
@@ -14,13 +17,15 @@
 
 		<slot />
 	</div>
-	<hr />
+	<Divider HideOnDesktop />
 </div>
 
 <style lang="scss">
-	hr:last-child {
+	.desktop-only {
+		display: none;
+
 		@media (min-width: 688px) {
-			display: none;
+			display: block;
 		}
 	}
 
