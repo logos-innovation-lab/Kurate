@@ -47,7 +47,10 @@
 			{#each options as option}
 				<!-- TODO: add "active" class to <li> when selected to make checkmark work -->
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<li class={option.danger ? 'danger' : ''} on:click={option.action}>
+				<li
+					class={`${option.disabled ? 'disabled' : ''} ${option.danger ? 'danger' : ''}`}
+					on:click={option.action}
+				>
 					{option.text}
 					{#if option.active}
 						<span class="selected">
@@ -101,6 +104,11 @@
 
 				&:hover {
 					background-color: var(--grey-150);
+				}
+
+				&.disabled {
+					color: var(--grey-200);
+					cursor: not-allowed;
 				}
 
 				&:not(:last-child) {

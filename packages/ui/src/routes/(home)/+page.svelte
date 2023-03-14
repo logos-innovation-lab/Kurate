@@ -74,6 +74,9 @@
 						{
 							text: 'Sort by date of creation',
 							action: () => console.log('Sort by date of creation'),
+							active: true,
+							disabled: true,
+							danger: true,
 						},
 						{
 							text: 'Sort by recent activity',

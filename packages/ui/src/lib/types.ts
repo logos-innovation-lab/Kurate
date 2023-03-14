@@ -15,5 +15,6 @@ export interface DropdownOption {
 	text: string
 	danger?: boolean
 	active?: boolean
+	disabled?: boolean
 	action: () => unknown
 }
