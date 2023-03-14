@@ -49,9 +49,11 @@
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<li class={option.danger ? 'danger' : ''} on:click={option.action}>
 					{option.text}
-					<span class="selected">
-						<Checkmark size={16} />
-					</span>
+					{#if option.active}
+						<span class="selected">
+							<Checkmark size={16} />
+						</span>
+					{/if}
 				</li>
 			{/each}
 		</ul>
@@ -65,10 +67,9 @@
 		ul {
 			position: absolute;
 			inset: 100% 0 auto auto;
-			min-width: min(calc(100vw - 48px), 250px);
+			min-width: min(calc(100vw - 48px), 275px);
 			max-width: max(calc(100vw - 48px), 450px);
 			z-index: 10;
-			border-radius: var(--spacing-24);
 			backdrop-filter: blur(3px);
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
 			background-color: rgba(var(--color-body-bg-rgb), 0.93);
@@ -86,6 +87,7 @@
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
+				gap: var(--spacing-24);
 
 				&.danger {
 					color: var(--color-red);
@@ -104,13 +106,8 @@
 				}
 
 				.selected {
-					display: none;
-				}
-				&.active {
-					.selected {
-						display: flex;
-						align-items: center;
-					}
+					display: flex;
+					align-items: center;
 				}
 			}
 		}

@@ -14,5 +14,6 @@ export interface IconProps {
 export interface DropdownOption {
 	text: string
 	danger?: boolean
+	active?: boolean
 	action: () => unknown
 }
