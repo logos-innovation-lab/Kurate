@@ -1,9 +1,10 @@
 <script lang="ts">
 	import type { ComponentConstructor, IconProps } from '$lib/types'
+	export let variant: 'info' | 'danger' = 'info'
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 </script>
 
-<div class="info-banner">
+<div class={`info-banner ${variant}`}>
 	<svelte:component this={icon} />
 	<slot />
 </div>
@@ -13,7 +14,6 @@
 		position: sticky;
 		inset: 0 0 auto;
 		z-index: 100;
-		background-color: var(--grey-200);
 		padding: var(--spacing-12);
 		display: flex;
 		align-items: center;
@@ -21,5 +21,20 @@
 		flex-direction: row;
 		gap: var(--spacing-6);
 		font-size: 14px;
+		font-weight: var(--font-weight-sb);
+
+		&.info {
+			color: (--color-body-text);
+			background-color: var(--grey-200);
+		}
+
+		&.danger {
+			background-color: rgba(var(--color-red-rgb), 0.05);
+			color: var(--color-red);
+
+			:global(svg) {
+				fill: var(--color-red);
+			}
+		}
 	}
 </style>
