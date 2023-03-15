@@ -202,11 +202,16 @@
 			position: relative;
 			width: 100%;
 			height: 100%;
+
 			:global(svg) {
 				fill: var(--grey-300);
 				position: absolute;
 				inset: auto;
 			}
+			// :global(svg path) {
+			// 	width: 100%;
+			// 	height: 100%;
+			// }
 		}
 	}
 
