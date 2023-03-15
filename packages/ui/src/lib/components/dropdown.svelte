@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount, createEventDispatcher } from 'svelte'
 	import { browser } from '$app/environment'
-	import type { ComponentConstructor, DropdownOption, IconProps } from '$lib/types'
+	import type { ComponentConstructor, IconProps } from '$lib/types'
 	import Button from './button.svelte'
 
 	const dispatch = createEventDispatcher()
@@ -12,7 +12,6 @@
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 	export let label: string | undefined = undefined
 	export let disabled: boolean | undefined = undefined
-	export let options: DropdownOption[]
 
 	let showDropdown = false
 	let dropdownElement: HTMLElement
@@ -43,10 +42,7 @@
 
 	<div class={`root ${cls}`}>
 		<ul class={showDropdown ? '' : 'hidden'}>
-			{#each options as option}
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<li class={option.danger ? 'danger' : ''} on:click={option.action}>{option.text}</li>
-			{/each}
+			<slot />
 		</ul>
 	</div>
 </div>
@@ -61,43 +57,17 @@
 			min-width: min(calc(100vw - 48px), 250px);
 			max-width: max(calc(100vw - 48px), 450px);
 			z-index: 10;
-			border-radius: 22px;
 			backdrop-filter: blur(3px);
-			box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.25);
-			background-color: rgba(255, 255, 255, 0.93);
+			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
+			background-color: rgba(var(--color-body-bg-rgb), 0.93);
+			overflow: hidden;
+
+			@media (min-width: 450px) {
+				min-width: min(calc(100vw - 48px), 350px);
+			}
 
 			&.hidden {
 				display: none;
-			}
-
-			li {
-				padding: var(--spacing-12);
-				list-style: none;
-				cursor: pointer;
-
-				&.danger {
-					color: red; // FIXME: wrong color, I'm sure
-				}
-
-				&:hover {
-					background-color: green; // FIXME: wrong color, I'm sure
-
-					&:first-child {
-						border-radius: 22px 22px 0px 0px;
-					}
-
-					&:last-child {
-						border-radius: 0px 0px 22px 22px;
-					}
-				}
-
-				&:not(:last-child) {
-					border-bottom: 1px solid var(--grey-200);
-
-					@media (prefers-color-scheme: dark) {
-						background-color: var(--grey-500);
-					}
-				}
 			}
 		}
 	}

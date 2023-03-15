@@ -6,6 +6,7 @@
 
 	import Button from '$lib/components/button.svelte'
 	import Dropdown from '$lib/components/dropdown.svelte'
+	import DropdownItem from '$lib/components/dropdown-item.svelte'
 	import Grid from '$lib/components/grid.svelte'
 	import Persona from '$lib/components/persona.svelte'
 	import SectionTitle from '$lib/components/section-title.svelte'
@@ -19,6 +20,7 @@
 
 	let filterQuery = ''
 	let sortAsc = true
+	let sortBy: 'date' | 'activity' | 'participantsCount' | 'postsCount' | 'alphabetical' = 'date'
 
 	function createDraft() {
 		goto(ROUTES.PERSONA_NEW)
@@ -68,31 +70,29 @@
 		<svelte:fragment slot="buttons">
 			{#if $profile.signer !== undefined}
 				<Button icon={Add} label="Create persona" on:click={createDraft} />
-				<Dropdown
-					icon={SettingsView}
-					options={[
-						{
-							text: 'Sort by date of creation',
-							action: () => console.log('Sort by date of creation'),
-						},
-						{
-							text: 'Sort by recent activity',
-							action: () => console.log('Sort by recent activity'),
-						},
-						{
-							text: 'Sort by number of participants',
-							action: () => console.log('Sort by number of participants'),
-						},
-						{
-							text: 'Sort by number of posts',
-							action: () => console.log('Sort by number of posts'),
-						},
-						{
-							text: 'Sort by name (alphabetical)',
-							action: () => console.log('Sort by name (alphabetical)'),
-						},
-					]}
-				/>
+				<Dropdown icon={SettingsView}>
+					<DropdownItem active={sortBy === 'date'} on:click={() => (sortBy = 'date')}>
+						Sort by date of creation
+					</DropdownItem>
+					<DropdownItem active={sortBy === 'activity'} on:click={() => (sortBy = 'activity')}>
+						Sort by recent activity
+					</DropdownItem>
+					<DropdownItem
+						active={sortBy === 'participantsCount'}
+						on:click={() => (sortBy = 'participantsCount')}
+					>
+						Sort by number of participants
+					</DropdownItem>
+					<DropdownItem active={sortBy === 'postsCount'} on:click={() => (sortBy = 'postsCount')}>
+						Sort by number of posts
+					</DropdownItem>
+					<DropdownItem
+						active={sortBy === 'alphabetical'}
+						on:click={() => (sortBy = 'alphabetical')}
+					>
+						Sort by name (alphabetical)
+					</DropdownItem>
+				</Dropdown>
 				<Button
 					icon={sortAsc ? SortAscending : SortDescending}
 					on:click={() => (sortAsc = !sortAsc)}
