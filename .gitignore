@@ -6,3 +6,4 @@ coverage/
 coverage.json
 .idea
 .DS_Store
+flatten.sol

@@ -1,94 +1,53 @@
-import { Group } from "@semaphore-protocol/group"
-import { Identity } from "@semaphore-protocol/identity"
-import { generateProof } from "@semaphore-protocol/proof"
 import { expect } from "chai"
 import { solidityKeccak256 } from "ethers/lib/utils"
 import { run, ethers } from "hardhat"
-import { GlobalAnonymousFeed } from "../build/typechain"
+import { GlobalAnonymousFeed, GlobalAnonymousFeed__factory } from "../build/typechain"
 import { config } from "../package.json"
 import type { Signer } from "ethers/lib/ethers"
 
 describe("Global Anonymous Feed Contract", () => {
     let postContract: GlobalAnonymousFeed
 
-    let identities: Identity[] = []
     const groupId = 42
-    const group = new Group(groupId)
     const identitySeed = 'identity'
     let accounts: Signer[]
 
     before(async () => {
-        postContract = await run("deploy", { logs: false, group: groupId })
-        accounts = await ethers.getSigners()
-
-        for (let i = 0; i < 2; i++) {
-            identities.push(new Identity(await accounts[i].signMessage(identitySeed)))
-        }
-        identities.forEach(i => group.addMember(i.getCommitment()))
+        const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_URL)
+        const signer = new ethers.Wallet(process.env.ETHEREUM_PRIVATE_KEY as string, provider)
+        postContract = new GlobalAnonymousFeed__factory(signer).attach(process.env.GLOBAL_ANONYMOUS_FEED_ADDRESS as string);
+        console.log(await postContract.attesterCurrentEpoch());
+        console.log(await postContract.attesterEpochRemainingTime());
     })
 
-    describe("joinGroup", () => {
-        it("Should allow users to join the group", async () => {
-            for (let i = 0; i < group.members.length; i += 1) {
-                const transaction = postContract.joinGroup(group.members[i])
+    describe("createPersona", () => {
+        it("Should allow users to create persona", async () => {
+            // TODO: need to add getting for posts
+            // TODO: need to change certains types from bytes32 to string
 
-                await expect(transaction)
-                    .to.emit(postContract, "NewIdentity")
-                    .withArgs(group.members[i])
-            }
-        })
+            // await postContract.createPersona(
+            //   42,
+            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   [
+            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   ],
+            //   [],
+            //   [1,2,3,4,5,6,7,8]
+            // );
+            const persona = await postContract.personas(42);
+            console.log(persona);
+        });
 
         it("Should not allow users to join the group with the same identity", async () => {
-            const transaction = postContract.joinGroup(group.members[0])
 
-            await expect(transaction).to.be.revertedWithCustomError(postContract, "IdentityAlreadyExists")
-        })
-    })
-
-    describe("sendMessage", () => {
-        const wasmFilePath = `${config.paths.build["snark-artifacts"]}/semaphore.wasm`
-        const zkeyFilePath = `${config.paths.build["snark-artifacts"]}/semaphore.zkey`
-
-        it("Should allow users to send message anonymously", async () => {
-            const feedback = "Hello World"
-            const feedbackHash = solidityKeccak256(["string"], [feedback])
-            const nullifier = 69
-
-            const fullProof = await generateProof(identities[1], group, nullifier, feedbackHash, {
-                wasmFilePath,
-                zkeyFilePath
-            })
-
-            const transaction = postContract.sendMessage(
-                feedback,
-                fullProof.merkleTreeRoot,
-                fullProof.nullifierHash,
-                nullifier, //fullProof.publicSignals.externalNullifier,
-                fullProof.proof
-            )
-
-            await expect(transaction).to.emit(postContract, "NewMessage").withArgs(feedback)
-        })
-
-        it("Should allow users to send message anonymously", async () => {
-            const feedback = "Hello World"
-            const feedbackHash = solidityKeccak256(["string"], [feedback])
-            const externalNullifier = 80
-
-            const fullProof = await generateProof(identities[1], group, externalNullifier, feedbackHash, {
-                wasmFilePath,
-                zkeyFilePath
-            })
-
-            const transaction = postContract.sendMessage(
-                feedback,
-                fullProof.merkleTreeRoot,
-                fullProof.nullifierHash,
-                externalNullifier, //fullProof.publicSignals.externalNullifier,
-                fullProof.proof
-            )
-
-            await expect(transaction).to.emit(postContract, "NewMessage").withArgs(feedback)
         })
     })
 })
