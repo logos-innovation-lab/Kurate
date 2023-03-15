@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { ComponentConstructor, IconProps } from '$lib/types'
-	export let style: 'info' | 'danger' = 'info'
+	export let variant: 'info' | 'danger' = 'info'
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 </script>
 
-<div class={`info-banner ${style}`}>
+<div class={`info-banner ${variant}`}>
 	<svelte:component this={icon} />
 	<slot />
 </div>
