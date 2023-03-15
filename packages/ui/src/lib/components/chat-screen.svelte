@@ -11,6 +11,7 @@
 	import Textarea from '$lib/components/textarea.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
 	import Persona from '$lib/components/persona.svelte'
+	import Divider from '$lib/components/divider.svelte'
 	import SingleColumn from '$lib/components/single-column.svelte'
 	import LearnMore from './learn-more.svelte'
 
@@ -63,7 +64,7 @@
 			</div>
 		{/if}
 	</div>
-	<hr />
+	<Divider />
 
 	<!-- Extra content -->
 	<div class="messages">
@@ -89,7 +90,7 @@
 			{/each}
 		</SingleColumn>
 		{#if chat.blocked === true}
-			<hr />
+			<Divider />
 			<SingleColumn>
 				<InfoBox>
 					<div class="icon">
@@ -101,7 +102,7 @@
 				</InfoBox>
 			</SingleColumn>
 		{:else if chat.closed === true}
-			<hr />
+			<Divider />
 			<SingleColumn>
 				<InfoBox>
 					<div class="icon">
