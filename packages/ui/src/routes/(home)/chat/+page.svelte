@@ -8,6 +8,7 @@
 	import Button from '$lib/components/button.svelte'
 	import ChatComponent from '$lib/components/chat.svelte'
 	import Dropdown from '$lib/components/dropdown.svelte'
+	import DropdownItem from '$lib/components/dropdown-item.svelte'
 	import Grid from '$lib/components/grid.svelte'
 	import Search from '$lib/components/search.svelte'
 	import SectionTitle from '$lib/components/section-title.svelte'
@@ -20,6 +21,7 @@
 	let openChats: Chat[]
 	let closedChats: Chat[] = $chatsStore.chats.filter((c) => c.blocked || c.closed)
 	let sortAsc = true
+	let sortBy: 'date' | 'activity' | 'alphabetical' = 'date'
 	let filterQuery = ''
 
 	$: openChats = $chatsStore.chats
@@ -39,31 +41,17 @@
 {:else}
 	<SectionTitle title="Active chats">
 		<svelte:fragment slot="buttons">
-			<Dropdown
-				icon={SettingsView}
-				options={[
-					{
-						text: 'Sort by date of creation',
-						action: () => console.log('Sort by date of creation'),
-					},
-					{
-						text: 'Sort by recent activity',
-						action: () => console.log('Sort by recent activity'),
-					},
-					{
-						text: 'Sort by number of participants',
-						action: () => console.log('Sort by number of participants'),
-					},
-					{
-						text: 'Sort by number of posts',
-						action: () => console.log('Sort by number of posts'),
-					},
-					{
-						text: 'Sort by name (alphabetical)',
-						action: () => console.log('Sort by name (alphabetical)'),
-					},
-				]}
-			/>
+			<Dropdown icon={SettingsView}>
+				<DropdownItem active={sortBy === 'date'} on:click={() => (sortBy = 'date')}>
+					Sort by date of creation
+				</DropdownItem>
+				<DropdownItem active={sortBy === 'activity'} on:click={() => (sortBy = 'activity')}>
+					Sort by recent activity
+				</DropdownItem>
+				<DropdownItem active={sortBy === 'alphabetical'} on:click={() => (sortBy = 'alphabetical')}>
+					Sort by name (alphabetical)
+				</DropdownItem>
+			</Dropdown>
 			<Button
 				icon={sortAsc ? SortAscending : SortDescending}
 				on:click={() => (sortAsc = !sortAsc)}

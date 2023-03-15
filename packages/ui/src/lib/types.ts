@@ -10,11 +10,3 @@ export interface IconProps {
 	size?: number
 	class?: string
 }
-
-export interface DropdownOption {
-	text: string
-	danger?: boolean
-	active?: boolean
-	disabled?: boolean
-	action: () => unknown
-}
