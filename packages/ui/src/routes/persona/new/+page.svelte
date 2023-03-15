@@ -80,7 +80,7 @@
 		{onCancel}
 	/>
 {:else if state === 'edit_images'}
-	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
+	<Banner style="danger" icon={Info}>This is a preview of the Persona's page</Banner>
 	<PersonaDetail
 		name={persona.name}
 		pitch={persona.pitch}
