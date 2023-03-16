@@ -262,12 +262,13 @@
 		&::before {
 			position: absolute;
 			content: '';
-			inset: -4px auto auto -6px;
+			inset: -4px auto auto auto;
 			background-color: var(--color-success);
 			border-radius: 50%;
 			width: 28px;
 			height: 28px;
-			transform: translateX(2px);
+			// transform: translateX(2px);
+			transform: translate(-4px, 0px);
 			z-index: -1;
 		}
 	}
