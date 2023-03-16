@@ -6,7 +6,7 @@ task("deploy", "Deploy a GlobalAnonymousFeed contract")
   .setAction(async ({ logs, unirep: unirepAddress }, { ethers, run }) => {
 
     const globalAnonymousFeedFactory = await ethers.getContractFactory("GlobalAnonymousFeed");
-    const globalAnonymousFeedContract = await globalAnonymousFeedFactory.deploy('0x6354F74F29982190B0a830Ac46E279B03d5e169c');
+    const globalAnonymousFeedContract = await globalAnonymousFeedFactory.deploy('0x5e5384c3EA26185BADF41d6980397eB4D36b850e');
 
     await globalAnonymousFeedContract.deployed();
 

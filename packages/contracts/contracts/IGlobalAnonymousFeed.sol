@@ -41,12 +41,11 @@ interface IGlobalAnonymousFeed {
 
     struct Persona {
         uint256 personaId;
-        bytes32 name;
-        bytes profileImage;
-        bytes coverImage;
+        string name;
+        string profileImage;
+        string coverImage;
         bytes32 pitch;
         bytes32 description;
-        bytes32[5] seedPosts;
         mapping(bytes32 => bool) publishedHash;
         mapping(bytes32 => VoteMeta) votesByMessageHash;
         mapping(bytes32 => PostData) proposedPosts;

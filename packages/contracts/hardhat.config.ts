@@ -36,7 +36,7 @@ function getNetworks(): NetworksUserConfig {
             },
             localhost: {
                 url: 'http://127.0.0.1:7545',
-                chainId: 5777,
+                chainId: 1337,
                 accounts,
             }
         }
@@ -67,6 +67,9 @@ const hardhatConfig: HardhatUserConfig = {
     typechain: {
         outDir: config.paths.build.typechain,
         target: "ethers-v5"
+    },
+    mocha: {
+        timeout: 9999999999
     }
 }
 

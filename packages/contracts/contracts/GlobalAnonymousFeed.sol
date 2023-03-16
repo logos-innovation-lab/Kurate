@@ -20,7 +20,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
     address admin;
 
-    uint160 attesterId;
+    uint160 public attesterId;
 
     // Positive Reputation field index in Kurate
     uint256 immutable public posRepFieldIndex = 0;
@@ -28,6 +28,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
     // Nagative Reputation field index in Kurate
     uint256 immutable public negRepFieldIndex = 1;
 
+    uint256 immutable public createPersonaRep = 10;
     uint256 immutable public postRep = 5;
     uint256 immutable public commentRep = 3;
     uint256 immutable public postReward = 5;
@@ -44,6 +45,8 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
     event NewPersona(uint256 personaId);
     event NewPersonaMember(uint256 personaId, uint256 identityCommitment);
+    event NewPersonaPost(uint256 personaId, bytes32 postHash);
+    event NewPersonaComment(uint256 personaId, bytes32 postHash, bytes32 commentHash);
 
     /// Restricted to members of the admin role.
     modifier onlyAdmin() {
@@ -70,14 +73,63 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
     function createPersona(
         uint256 personaId,
-        bytes32 name,
-        bytes memory profileImage,
-        bytes memory coverImage,
+        string memory name,
+        string memory profileImage,
+        string memory coverImage,
         bytes32 pitch,
         bytes32 description,
         bytes32[5] memory seedPosts,
         uint256[] memory publicSignals,
         uint256[8] memory proof
+    ) onlyAdmin external {
+        if (personas[personaId].personaId > 0) {
+            revert GroupAlreadyExists();
+        }
+
+        IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
+            publicSignals
+        );
+
+        finalizeEpochIfNeeded(signals.epoch);
+
+        uint256 minRep = signals.minRep;
+        require(minRep >= createPersonaRep, "not enough reputation");
+
+        unirep.verifyReputationProof(publicSignals, proof);
+
+        unirep.attest(
+            signals.epochKey,
+            signals.epoch,
+            negRepFieldIndex,
+            createPersonaRep
+        );
+
+        Persona storage persona = personas[personaId];
+
+        persona.personaId = personaId;
+        persona.name = name;
+        persona.profileImage = profileImage;
+        persona.coverImage = coverImage;
+        persona.pitch = pitch;
+        persona.description = description;
+
+        personaList.push(personaId);
+
+        emit NewPersona(personaId);
+
+        for (uint256 i = 0; i < seedPosts.length; i++) {
+            emit NewPersonaPost(personaId, seedPosts[i]);
+        }
+    }
+
+    function createPersona(
+        uint256 personaId,
+        string memory name,
+        string memory profileImage,
+        string memory coverImage,
+        bytes32 pitch,
+        bytes32 description,
+        bytes32[5] memory seedPosts
     ) onlyAdmin external {
         if (personas[personaId].personaId > 0) {
             revert GroupAlreadyExists();
@@ -91,11 +143,19 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         persona.coverImage = coverImage;
         persona.pitch = pitch;
         persona.description = description;
-        persona.seedPosts = seedPosts;
 
         personaList.push(personaId);
 
         emit NewPersona(personaId);
+
+        for (uint256 i = 0; i < seedPosts.length; i++) {
+            emit NewPersonaPost(personaId, seedPosts[i]);
+        }
+//        emit NewPersonaPost(personaId, seedPosts[0]);
+//        emit NewPersonaPost(personaId, seedPosts[1]);
+//        emit NewPersonaPost(personaId, seedPosts[2]);
+//        emit NewPersonaPost(personaId, seedPosts[3]);
+//        emit NewPersonaPost(personaId, seedPosts[4]);
     }
 
     // @dev Required ZK Proof for first time joining a group.
@@ -105,9 +165,6 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         uint256[8] memory proof
     ) external {
         uint256 identityCommitment = publicSignals[0];
-        uint256 _attesterId = publicSignals[2];
-
-        require(_attesterId == attesterId, 'attester id is invalid');
 
         if (membersByPersona[personaId][identityCommitment] || members[identityCommitment]) {
             revert MemberAlreadyJoined();
