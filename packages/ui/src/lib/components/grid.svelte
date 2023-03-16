@@ -15,7 +15,7 @@
 		margin-inline: auto;
 
 		@media (min-width: 688px) {
-			padding: 0 var(--spacing-24);
+			padding: 0 var(--spacing-24) var(--spacing-24);
 			transition: padding 0.2s;
 			max-width: 996px;
 			grid-template-columns: repeat(2, 1fr);
