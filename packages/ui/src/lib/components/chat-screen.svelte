@@ -4,6 +4,7 @@
 	import Image from '$lib/components/icons/image.svelte'
 	import SendAltFilled from '$lib/components/icons/send-alt-filled.svelte'
 	import Info from '$lib/components/icons/information.svelte'
+	import Menu from '$lib/components/icons/overflow-menu-vertical.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import Header from '$lib/components/header.svelte'
@@ -12,6 +13,8 @@
 	import InfoBox from '$lib/components/info-box.svelte'
 	import Persona from '$lib/components/persona.svelte'
 	import Divider from '$lib/components/divider.svelte'
+	import Dropdown from '$lib/components/dropdown.svelte'
+	import DropdownItem from '$lib/components/dropdown-item.svelte'
 	import SingleColumn from '$lib/components/single-column.svelte'
 	import LearnMore from './learn-more.svelte'
 
@@ -41,7 +44,28 @@
 </script>
 
 <div class="root">
-	<Header {title} {onBack} />
+	<Header {title} {onBack}>
+		<!-- TODO: add actions to dropdown buttons -->
+		<Dropdown icon={Menu}>
+			{#if chat.blocked === true}
+				<DropdownItem on:click={() => console.log('delete for me')}>Delete for me</DropdownItem>
+				<DropdownItem on:click={() => console.log('delete & block')} danger>
+					Delete & block sender...
+				</DropdownItem>
+			{:else if chat.closed === true}
+				<DropdownItem on:click={() => console.log('re-open')}>Re-open chat</DropdownItem>
+				<DropdownItem on:click={() => console.log('delete for me')}>Delete for me</DropdownItem>
+				<DropdownItem on:click={() => console.log('delete & block')} danger>
+					Delete & block sender...
+				</DropdownItem>
+			{:else}
+				<DropdownItem on:click={() => console.log('close')}>Close chat</DropdownItem>
+				<DropdownItem on:click={() => console.log('delete & block')} danger>
+					Delete & block sender...
+				</DropdownItem>
+			{/if}
+		</Dropdown>
+	</Header>
 	<div class="original-post">
 		{#if showPost}
 			<SingleColumn>
