@@ -4,6 +4,7 @@
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 	import Info from '$lib/components/icons/information.svelte'
+	import Undo from '$lib/components/icons/undo.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
@@ -26,7 +27,7 @@
 		cover: '',
 	}
 
-	let state: 'edit_text' | 'edit_images' | 'confirm' = 'edit_text'
+	let state: 'add_text' | 'edit_text' | 'edit_images' | 'confirm' | 'discard_warning' = 'add_text'
 	let showWarningModal = false
 	let draftPersonaIndex: number | undefined
 
@@ -67,18 +68,71 @@
 			</InfoBox>
 		</Container>
 	</InfoScreen>
+{:else if state === 'add_text'}
+	<PersonaEditText
+		bind:name={persona.name}
+		bind:pitch={persona.pitch}
+		bind:description={persona.description}
+		title="Create Persona"
+	>
+		<Button
+			label="Proceed"
+			icon={Checkmark}
+			variant="primary"
+			disabled={!persona.name || !persona.pitch || !persona.description}
+			on:click={() => {
+				state = 'edit_images'
+			}}
+		/>
+
+		<Button label="Cancel" icon={Close} on:click={onCancel} />
+	</PersonaEditText>
 {:else if state === 'edit_text'}
 	<PersonaEditText
 		bind:name={persona.name}
 		bind:pitch={persona.pitch}
 		bind:description={persona.description}
-		title="Create persona"
-		onSubmit={() => {
-			state = 'edit_images'
-		}}
-		onBack={onCancel}
-		{onCancel}
-	/>
+		title="Edit Persona details"
+	>
+		<Button
+			label="Save edits"
+			icon={Checkmark}
+			variant="primary"
+			disabled={!persona.name || !persona.pitch || !persona.description}
+			on:click={() => {
+				state = 'edit_images'
+			}}
+		/>
+
+		<Button label="Discard changes" icon={Close} on:click={() => (state = 'discard_warning')} />
+	</PersonaEditText>
+{:else if state === 'discard_warning'}
+	<InfoScreen title="Discard changes">
+		<div class="token-info">
+			<div>
+				<div class="icon">
+					<Info size={32} />
+				</div>
+				<h2>Discard changes?</h2>
+				<LearnMore href="/" />
+			</div>
+		</div>
+
+		<svelte:fragment slot="buttons">
+			<Button
+				icon={Checkmark}
+				variant="primary"
+				label="Discard changes"
+				on:click={() => (state = 'edit_images')}
+			/>
+			<Button
+				variant="secondary"
+				label="Continue editing"
+				icon={Undo}
+				on:click={() => (state = 'edit_text')}
+			/>
+		</svelte:fragment>
+	</InfoScreen>
 {:else if state === 'edit_images'}
 	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<PersonaDetail
@@ -143,3 +197,18 @@
 		</Container>
 	</InfoScreen>
 {/if}
+
+<style lang="scss">
+	.token-info {
+		text-align: center;
+
+		.icon {
+			margin-bottom: var(--spacing-12);
+		}
+
+		p,
+		h2 {
+			margin-bottom: var(--spacing-6);
+		}
+	}
+</style>

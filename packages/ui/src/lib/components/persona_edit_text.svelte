@@ -11,8 +11,6 @@
 	export let pitch = ''
 	export let description = ''
 	export let title: string
-	export let onCancel: () => unknown
-	export let onSubmit: () => unknown
 	export let onBack: undefined | (() => unknown) = undefined
 </script>
 
@@ -34,15 +32,7 @@
 	/>
 
 	<div class="btns">
-		<Button
-			label="Proceed"
-			icon={Checkmark}
-			variant="primary"
-			disabled={!name || !pitch || !description}
-			on:click={onSubmit}
-		/>
-
-		<Button label="Cancel" icon={Close} on:click={onCancel} />
+		<slot />
 	</div>
 </form>
 

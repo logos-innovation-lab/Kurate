@@ -38,7 +38,13 @@
 	let pitch = persona?.pitch
 	let description = persona?.description
 
-	let state: 'text' | 'posts' | 'post_new' | 'publish_warning' | 'publish_success' = 'posts'
+	let state:
+		| 'text'
+		| 'posts'
+		| 'post_new'
+		| 'publish_warning'
+		| 'publish_success'
+		| 'discard_warning' = 'posts'
 
 	async function publishPersona() {
 		if (!$profile.signer) return
@@ -56,22 +62,29 @@
 {#if persona === undefined}
 	<div>No draft persona with id {personaIndex}</div>
 {:else if state === 'text'}
-	<PersonaEditText
-		bind:name
-		bind:pitch
-		bind:description
-		title="Edit Persona details"
-		onSubmit={() => {
-			persona.name = name
-			persona.pitch = pitch
-			persona.description = description
-			adapter.updatePersonaDraft(personaIndex, persona)
-			state = 'posts'
-		}}
-		onCancel={() => {
-			state = 'posts'
-		}}
-	/>
+	<PersonaEditText bind:name bind:pitch bind:description title="Edit Persona details">
+		<Button
+			label="Save"
+			icon={Checkmark}
+			variant="primary"
+			disabled={!name || !pitch || !description}
+			on:click={() => {
+				persona.name = name
+				persona.pitch = pitch
+				persona.description = description
+				adapter.updatePersonaDraft(personaIndex, persona)
+				state = 'posts'
+			}}
+		/>
+
+		<Button
+			label="Cancel"
+			icon={Close}
+			on:click={() => {
+				state = 'discard_warning'
+			}}
+		/>
+	</PersonaEditText>
 {:else if state === 'posts'}
 	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
@@ -197,6 +210,33 @@
 			{:else}
 				<Button variant="secondary" label="Back" icon={Undo} on:click={() => (state = 'text')} />
 			{/if}
+		</svelte:fragment>
+	</InfoScreen>
+{:else if state === 'discard_warning'}
+	<InfoScreen title="Discard changes">
+		<div class="token-info">
+			<div>
+				<div class="icon">
+					<Info size={32} />
+				</div>
+				<h2>Discard changes?</h2>
+				<LearnMore href="/" />
+			</div>
+		</div>
+
+		<svelte:fragment slot="buttons">
+			<Button
+				icon={Checkmark}
+				variant="primary"
+				label="Discard changes"
+				on:click={() => (state = 'posts')}
+			/>
+			<Button
+				variant="secondary"
+				label="Continue editing"
+				icon={Undo}
+				on:click={() => (state = 'text')}
+			/>
 		</svelte:fragment>
 	</InfoScreen>
 {:else}
