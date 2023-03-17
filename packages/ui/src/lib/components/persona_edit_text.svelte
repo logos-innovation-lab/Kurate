@@ -1,9 +1,6 @@
 <script lang="ts">
-	import Close from '$lib/components/icons/close.svelte'
-	import Button from '$lib/components/button.svelte'
 	import Textarea from '$lib/components/textarea.svelte'
 	import Header from '$lib/components/header.svelte'
-	import Checkmark from './icons/checkmark.svelte'
 
 	let y: number
 
