@@ -13,4 +13,3 @@
 	<circle cx="16" cy="16" r="2" />
 	<circle cx="16" cy="24" r="2" />
 </svg>
-
