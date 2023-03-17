@@ -27,6 +27,10 @@
 		cover: '',
 	}
 
+	let name = ''
+	let pitch = ''
+	let description = ''
+
 	let state: 'add_text' | 'edit_text' | 'edit_images' | 'confirm' | 'discard_warning' = 'add_text'
 	let showWarningModal = false
 	let draftPersonaIndex: number | undefined
@@ -88,23 +92,37 @@
 		<Button label="Cancel" icon={Close} on:click={onCancel} />
 	</PersonaEditText>
 {:else if state === 'edit_text'}
-	<PersonaEditText
-		bind:name={persona.name}
-		bind:pitch={persona.pitch}
-		bind:description={persona.description}
-		title="Edit Persona details"
-	>
+	<PersonaEditText bind:name bind:pitch bind:description title="Edit Persona details">
 		<Button
 			label="Save edits"
 			icon={Checkmark}
 			variant="primary"
-			disabled={!persona.name || !persona.pitch || !persona.description}
+			disabled={persona.name === name &&
+				persona.pitch === pitch &&
+				persona.description === description}
 			on:click={() => {
+				persona.name = name
+				persona.pitch = pitch
+				persona.description = description
 				state = 'edit_images'
 			}}
 		/>
 
-		<Button label="Discard changes" icon={Close} on:click={() => (state = 'discard_warning')} />
+		<Button
+			label="Discard changes"
+			icon={Close}
+			on:click={() => {
+				if (
+					persona.name === name &&
+					persona.pitch === pitch &&
+					persona.description === description
+				) {
+					state = 'edit_images'
+				} else {
+					state = 'discard_warning'
+				}
+			}}
+		/>
 	</PersonaEditText>
 {:else if state === 'discard_warning'}
 	<InfoScreen title="Discard changes">
@@ -127,7 +145,7 @@
 					icon={Undo}
 					on:click={() => (state = 'edit_text')}
 				/>
-				<Button label="Leave Persona creation" icon={Close} on:click={onCancel} />
+				<!-- <Button label="Leave Persona creation" icon={Close} on:click={onCancel} /> -->
 			</svelte:fragment>
 		</InfoBox>
 	</InfoScreen>
@@ -142,9 +160,7 @@
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 		canEditPictures
-		onBack={() => {
-			state = 'edit_text'
-		}}
+		onBack={() => (showWarningModal = true)}
 	>
 		<Button
 			slot="button_primary"
@@ -159,7 +175,12 @@
 			variant="secondary"
 			label="Edit Persona details"
 			icon={Edit}
-			on:click={() => (state = 'edit_text')}
+			on:click={() => {
+				name = persona.name
+				pitch = persona.pitch
+				description = persona.description
+				state = 'edit_text'
+			}}
 		/>
 		<Container>
 			<InfoBox>

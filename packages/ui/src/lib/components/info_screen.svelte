@@ -5,7 +5,7 @@
 	let y: number
 	export { cls as class }
 	export let title: string
-	export let onBack: () => unknown = () => history.back()
+	export let onBack: (() => unknown) | undefined = undefined
 </script>
 
 <svelte:window bind:scrollY={y} />

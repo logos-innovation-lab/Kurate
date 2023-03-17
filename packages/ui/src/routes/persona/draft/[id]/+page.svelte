@@ -27,6 +27,8 @@
 	import TokenInfo from '$lib/components/token-info.svelte'
 	import adapter from '$lib/adapters'
 	import { profile } from '$lib/stores/profile'
+	import { goto } from '$app/navigation'
+	import { ROUTES } from '$lib/routes'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -88,7 +90,7 @@
 {:else if state === 'posts'}
 	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
-		<Header title={persona.name} {onBack} />
+		<Header title={persona.name} onBack={() => goto(ROUTES.HOME)} />
 	</div>
 	<PersonaDetail
 		name={persona.name}
@@ -99,7 +101,7 @@
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 		canEditPictures
-		onBack={() => history.back()}
+		onBack={() => goto(ROUTES.HOME)}
 	>
 		<svelte:fragment slot="button_primary">
 			{#if persona.posts.length < PERSONA_LIMIT}
