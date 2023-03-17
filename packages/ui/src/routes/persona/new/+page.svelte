@@ -108,30 +108,28 @@
 	</PersonaEditText>
 {:else if state === 'discard_warning'}
 	<InfoScreen title="Discard changes">
-		<div class="token-info">
-			<div>
-				<div class="icon">
-					<Info size={32} />
-				</div>
-				<h2>Discard changes?</h2>
-				<LearnMore href="/" />
+		<InfoBox>
+			<div class="icon">
+				<Info size={32} />
 			</div>
-		</div>
-
-		<svelte:fragment slot="buttons">
-			<Button
-				icon={Checkmark}
-				variant="primary"
-				label="Discard changes"
-				on:click={() => (state = 'edit_images')}
-			/>
-			<Button
-				variant="secondary"
-				label="Continue editing"
-				icon={Undo}
-				on:click={() => (state = 'edit_text')}
-			/>
-		</svelte:fragment>
+			<h2>Discard changes?</h2>
+			<LearnMore href="/" />
+			<svelte:fragment slot="buttons">
+				<Button
+					icon={Checkmark}
+					variant="primary"
+					label="Discard changes"
+					on:click={() => (state = 'edit_images')}
+				/>
+				<Button
+					variant="secondary"
+					label="Continue editing"
+					icon={Undo}
+					on:click={() => (state = 'edit_text')}
+				/>
+				<Button label="Leave Persona creation" icon={Close} on:click={onCancel} />
+			</svelte:fragment>
+		</InfoBox>
 	</InfoScreen>
 {:else if state === 'edit_images'}
 	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
@@ -197,18 +195,3 @@
 		</Container>
 	</InfoScreen>
 {/if}
-
-<style lang="scss">
-	.token-info {
-		text-align: center;
-
-		.icon {
-			margin-bottom: var(--spacing-12);
-		}
-
-		p,
-		h2 {
-			margin-bottom: var(--spacing-6);
-		}
-	}
-</style>
