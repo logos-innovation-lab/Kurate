@@ -29,7 +29,7 @@
 
 <svelte:window bind:scrollY={y} />
 
-<Header title="Account" {onBack} />
+<Header title="Account" onBack={() => history.back()} />
 <div class="content">
 	{#if $profile.signer === undefined}
 		<div class="wallet-icon-wrapper">
