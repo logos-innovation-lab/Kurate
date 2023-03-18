@@ -25,7 +25,6 @@
 		}
 	}
 
-	export let onBack: () => unknown = () => history.back()
 </script>
 
 <svelte:window bind:scrollY={y} />
