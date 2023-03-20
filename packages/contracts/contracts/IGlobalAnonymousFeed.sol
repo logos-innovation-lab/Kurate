@@ -25,6 +25,7 @@ interface IGlobalAnonymousFeed {
         bytes32 hash;
         uint256 epochKey;
         uint epoch;
+        bool isAdmin;
     }
 
     struct VoterData {

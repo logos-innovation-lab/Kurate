@@ -55,10 +55,11 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
     }
 
     constructor(
-        address _unirepAddress
+        address _unirepAddress,
+        uint256 epochLength
     ) {
         unirep = Unirep(_unirepAddress);
-        unirep.attesterSignUp(86400);
+        unirep.attesterSignUp(epochLength); // 86400 (1d) for prod, suggest 120 (2m) for dev on ganache
         attesterId = uint160(address(this));
         admin = msg.sender;
     }
@@ -69,6 +70,48 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
     function attesterEpochRemainingTime() public view returns (uint256) {
         return unirep.attesterEpochRemainingTime(attesterId);
+    }
+
+    function grantReputation(
+        uint256 rep,
+        uint256[] memory publicSignals,
+        uint256[8] memory proof
+    ) onlyAdmin external {
+        IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
+            publicSignals
+        );
+
+        finalizeEpochIfNeeded(signals.epoch);
+
+        unirep.verifyReputationProof(publicSignals, proof);
+
+        unirep.attest(
+            signals.epochKey,
+            signals.epoch,
+            posRepFieldIndex,
+            rep
+        );
+    }
+
+    function slashReputation(
+        uint256 rep,
+        uint256[] memory publicSignals,
+        uint256[8] memory proof
+    ) onlyAdmin external {
+        IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
+            publicSignals
+        );
+
+        finalizeEpochIfNeeded(signals.epoch);
+
+        unirep.verifyReputationProof(publicSignals, proof);
+
+        unirep.attest(
+            signals.epochKey,
+            signals.epoch,
+            negRepFieldIndex,
+            rep
+        );
     }
 
     function createPersona(
@@ -151,11 +194,6 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         for (uint256 i = 0; i < seedPosts.length; i++) {
             emit NewPersonaPost(personaId, seedPosts[i]);
         }
-//        emit NewPersonaPost(personaId, seedPosts[0]);
-//        emit NewPersonaPost(personaId, seedPosts[1]);
-//        emit NewPersonaPost(personaId, seedPosts[2]);
-//        emit NewPersonaPost(personaId, seedPosts[3]);
-//        emit NewPersonaPost(personaId, seedPosts[4]);
     }
 
     // @dev Required ZK Proof for first time joining a group.
@@ -229,7 +267,25 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             postRep
         );
 
-        persona.proposedPosts[messageHash] = PostData(messageHash, signals.epochKey, signals.epoch);
+        persona.proposedPosts[messageHash] = PostData(messageHash, signals.epochKey, signals.epoch, false);
+        persona.proposedPostlist.push(messageHash);
+    }
+
+    function proposePost(
+        uint256 personaId,
+        bytes32 messageHash
+    ) onlyAdmin external payable {
+        Persona storage persona = personas[personaId];
+
+        if (persona.proposedPosts[messageHash].hash != bytes32(0)) {
+            revert MessageAlreadyExist();
+        }
+
+        if (persona.publishedHash[messageHash]) {
+            revert MessageAlreadyExist();
+        }
+
+        persona.proposedPosts[messageHash] = PostData(messageHash, 0, 0, true);
         persona.proposedPostlist.push(messageHash);
     }
 
@@ -268,7 +324,25 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             commentRep
         );
 
-        persona.proposedComments[messageHash] = PostData(messageHash, signals.epochKey, signals.epoch);
+        persona.proposedComments[messageHash] = PostData(messageHash, signals.epochKey, signals.epoch, false);
+        persona.proposedCommentlist.push(messageHash);
+    }
+
+    function proposeComment(
+        uint256 personaId,
+        bytes32 messageHash
+    ) onlyAdmin external payable {
+        Persona storage persona = personas[personaId];
+
+        if (persona.proposedComments[messageHash].hash != bytes32(0)) {
+            revert MessageAlreadyExist();
+        }
+
+        if (persona.publishedHash[messageHash]) {
+            revert MessageAlreadyExist();
+        }
+
+        persona.proposedComments[messageHash] = PostData(messageHash, 0, 0, true);
         persona.proposedCommentlist.push(messageHash);
     }
 
@@ -305,7 +379,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
     }
 
     function rewardVoters(VoterData[] memory voterDataList) internal {
-        for (uint256 k = 0; k <= voterDataList.length; k++) {
+        for (uint256 k = 0; k < voterDataList.length; k++) {
             unirep.attest(
                 voterDataList[k].epochKey,
                 voterDataList[k].epoch,
@@ -317,25 +391,29 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
     // @dev need to test gas fee in testnet, theoretically this should not be too expensive since removing data will refund gas
     function tallyVotesForPersona(Persona storage persona) internal {
-        for (uint256 i = 0; i <= persona.proposedPostlist.length; i++) {
+        for (uint256 i = 0; i < persona.proposedPostlist.length; i++) {
             bytes32 postHash = persona.proposedPostlist[i];
             PostData storage postData = persona.proposedPosts[postHash];
             VoteMeta storage postVoteMeta = persona.votesByMessageHash[postHash];
 
             if (postVoteMeta.total < 3 || postVoteMeta.score == 0) {
-                unirep.attest(
-                    postData.epochKey,
-                    postData.epoch,
-                    posRepFieldIndex,
-                    postRep
-                );
+                if (!postData.isAdmin) {
+                    unirep.attest(
+                        postData.epochKey,
+                        postData.epoch,
+                        posRepFieldIndex,
+                        postRep
+                    );
+                }
             } else if (postVoteMeta.score > 0) {
-                unirep.attest(
-                    postData.epochKey,
-                    postData.epoch,
-                    posRepFieldIndex,
-                    postRep * 2
-                );
+                if (!postData.isAdmin) {
+                    unirep.attest(
+                        postData.epochKey,
+                        postData.epoch,
+                        posRepFieldIndex,
+                        postRep * 2
+                    );
+                }
                 rewardVoters(postVoteMeta.upvoters);
             } else if (postVoteMeta.score < 0) {
                 rewardVoters(postVoteMeta.downvoters);
@@ -346,25 +424,29 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             delete persona.votesByMessageHash[postHash];
         }
 
-        for (uint256 j = 0; j <= persona.proposedCommentlist.length; j++) {
+        for (uint256 j = 0; j < persona.proposedCommentlist.length; j++) {
             bytes32 commentHash = persona.proposedCommentlist[j];
             PostData storage commentData = persona.proposedComments[commentHash];
             VoteMeta storage commentVoteMeta = persona.votesByMessageHash[commentHash];
 
             if (commentVoteMeta.total < 3 || commentVoteMeta.score == 0) {
-                unirep.attest(
-                    commentData.epochKey,
-                    commentData.epoch,
-                    posRepFieldIndex,
-                    commentRep
-                );
+                if (!commentData.isAdmin) {
+                    unirep.attest(
+                        commentData.epochKey,
+                        commentData.epoch,
+                        posRepFieldIndex,
+                        commentRep
+                    );
+                }
             } else if (commentVoteMeta.score > 0) {
-                unirep.attest(
-                    commentData.epochKey,
-                    commentData.epoch,
-                    posRepFieldIndex,
-                    commentRep * 2
-                );
+                if (!commentData.isAdmin) {
+                    unirep.attest(
+                        commentData.epochKey,
+                        commentData.epoch,
+                        posRepFieldIndex,
+                        commentRep * 2
+                    );
+                }
                 rewardVoters(commentVoteMeta.upvoters);
             } else if (commentVoteMeta.score < 0) {
                 rewardVoters(commentVoteMeta.downvoters);
@@ -378,7 +460,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
     function finalizeEpochIfNeeded(uint256 epoch) public {
         if (epoch < attesterCurrentEpoch()) {
-            for (uint256 i = 0; i <= personaList.length; i++) {
+            for (uint256 i = 0; i < personaList.length; i++) {
                 Persona storage persona = personas[personaList[i]];
                 tallyVotesForPersona(persona);
             }

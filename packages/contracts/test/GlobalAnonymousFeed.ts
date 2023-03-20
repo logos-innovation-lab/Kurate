@@ -74,27 +74,28 @@ describe("Global Anonymous Feed Contract", () => {
             // TODO: add ability to migrate admin
             // TODO: emit events for new post
 
-            console.log(await postContract.attesterId())
-            // console.log(await postContract.queryFilter(postContract.filters.NewPersonaPost()))
+            console.log(await postContract.queryFilter(postContract.filters.NewPersonaPost()))
 
-            // await postContract["createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])"](
-            //   42,
-            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //   [
-            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-            //   ],
-            //   { gasLimit: 6721974 }
-            // );
             const persona = await postContract.personas(42);
             console.log(persona);
+            if (persona.personaId.toNumber() === 0) {
+                await postContract["createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])"](
+                  42,
+                  '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                  '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                  '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                  '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                  '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                  [
+                    '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                    '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                    '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                    '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                    '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+                  ],
+                  { gasLimit: 6721974 }
+                );
+            }
         });
 
         it("Should allow users to join a group", async () => {
@@ -111,25 +112,23 @@ describe("Global Anonymous Feed Contract", () => {
             );
 
             const signupProof = new SignupProof(publicSignals, proof);
-            console.log(signupProof);
-            // await postContract["joinPersona(uint256,uint256[],uint256[8])"](
-            //   42,
-            //   signupProof.publicSignals,
-            //   signupProof.proof,
-            //   { gasLimit: 6721974 }
-            // );
+            const memberSignedUp = await postContract.membersByPersona(42, signupProof.publicSignals[0]);
+
             console.log(zkIdentity.genIdentityCommitment().toString())
-            console.log(await postContract.membersByPersona(42, signupProof.publicSignals[0]))
+
+            if (!memberSignedUp) {
+                await postContract["joinPersona(uint256,uint256[],uint256[8])"](
+                  42,
+                  signupProof.publicSignals,
+                  signupProof.proof,
+                  { gasLimit: 6721974 }
+                );
+            }
+
         })
 
         it("Should allow users to propose a post", async () => {
             console.log(await postContract.unirep())
-            // const synchronizer = new Synchronizer({
-            //     attesterId: (await postContract.attesterId()).toBigInt(),
-            //     unirepAddress: await postContract.unirep(),
-            //     prover: defaultProver,
-            //     provider,
-            // })
             const state = new UserState({
                 prover: defaultProver, // a circuit prover
                 attesterId: (await postContract.attesterId()).toBigInt(),
@@ -139,14 +138,81 @@ describe("Global Anonymous Feed Contract", () => {
 
             await state.sync.start();
             await state.waitForSync();
+            console.log('hash signed up', await state.hasSignedUp())
             const repProofs = await state.genProveReputationProof({});
-            await postContract.proposePost(
-              42,
-              '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
-              repProofs.publicSignals,
-              repProofs.proof,
-              { gasLimit: 6721974 }
-          )
+            // await postContract["proposePost(uint256,bytes32)"](
+            //   42,
+            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   { gasLimit: 6721974 },
+            // );
+        })
+
+        it("Should allow users to propose a comment", async () => {
+            console.log(await postContract.unirep())
+            const state = new UserState({
+                prover: defaultProver, // a circuit prover
+                attesterId: (await postContract.attesterId()).toBigInt(),
+                unirepAddress: await postContract.unirep(),
+                provider, // an ethers.js provider
+            }, zkIdentity)
+
+            await state.sync.start();
+            await state.waitForSync();
+            console.log('hash signed up', await state.hasSignedUp())
+            const repProofs = await state.genProveReputationProof({});
+            // await postContract["proposeComment(uint256,bytes32)"](
+            //   42,
+            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   { gasLimit: 6721974 },
+            // );
+        })
+
+        it("Should allow users to vote", async () => {
+            console.log(await postContract.unirep())
+            const state = new UserState({
+                prover: defaultProver, // a circuit prover
+                attesterId: (await postContract.attesterId()).toBigInt(),
+                unirepAddress: await postContract.unirep(),
+                provider, // an ethers.js provider
+            }, zkIdentity)
+
+            await state.sync.start();
+            await state.waitForSync();
+            console.log('hash signed up', await state.hasSignedUp())
+            const repProofs = await state.genProveReputationProof({});
+            // await postContract.vote(
+            //   42,
+            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   true,
+            //   repProofs.publicSignals,
+            //   repProofs.proof,
+            //   { gasLimit: 6721974 },
+            // );
+        })
+
+        it("Should tally vote", async () => {
+            console.log(await postContract.unirep())
+            const state = new UserState({
+                prover: defaultProver, // a circuit prover
+                attesterId: (await postContract.attesterId()).toBigInt(),
+                unirepAddress: await postContract.unirep(),
+                provider, // an ethers.js provider
+            }, zkIdentity)
+
+            await state.sync.start();
+            await state.waitForSync();
+            console.log('hash signed up', await state.hasSignedUp())
+            const repProofs = await state.genProveReputationProof({});
+            console.log(await postContract.attesterCurrentEpoch())
+            console.log(await postContract.attesterEpochRemainingTime())
+            // await postContract.vote(
+            //   42,
+            //   '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
+            //   true,
+            //   repProofs.publicSignals,
+            //   repProofs.proof,
+            //   { gasLimit: 6721974 },
+            // );
         })
     })
 })
