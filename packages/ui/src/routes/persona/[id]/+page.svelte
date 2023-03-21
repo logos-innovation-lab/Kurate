@@ -6,6 +6,10 @@
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import StarFilled from '$lib/components/icons/star_filled.svelte'
 	import Hourglass from '$lib/components/icons/hourglass.svelte'
+	import SettingsView from '$lib/components/icons/settings-view.svelte'
+	import SortAscending from '$lib/components/icons/sort-ascending.svelte'
+	import SortDescending from '$lib/components/icons/sort-descending.svelte'
+
 	import Grid from '$lib/components/grid.svelte'
 	import PersonaDetail from '$lib/components/persona_detail.svelte'
 	import Header from '$lib/components/header.svelte'
@@ -18,27 +22,38 @@
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 	import { ROUTES } from '$lib/routes'
-	import { connectWallet } from '$lib/services'
 	import adapter from '$lib/adapters'
+	import { canConnectWallet } from '$lib/services'
+	import { onDestroy, onMount } from 'svelte'
+	import SectionTitle from '$lib/components/section-title.svelte'
+	import Dropdown from '$lib/components/dropdown.svelte'
+	import DropdownItem from '$lib/components/dropdown-item.svelte'
+	import Search from '$lib/components/search.svelte'
 
-	const persona = $personas.all.get($page.params.id)
+	const groupId = $page.params.id
+	const persona = $personas.all.get(groupId)
+	let personaPosts = $posts.data.get(groupId)
+	let showPending = false
+	let sortAsc = true
+	let sortBy: 'date' | 'alphabetical' = 'date'
+	let filterQuery = ''
+	let unsubscribe: () => unknown
 
-	const handleConnect = async () => {
-		try {
-			const signer = await connectWallet()
-			const address = await signer.getAddress()
+	onMount(() => {
+		adapter.subscribePersonaPosts(groupId).then(unsub => unsubscribe = unsub)
+	})
 
-			$profile = { signer, address }
-		} catch (err) {
-			console.error(err)
-		}
-	}
+	onDestroy(() => {
+		if (unsubscribe) unsubscribe()
+	})
 
 	let y: number
 	let onBack = () => history.back()
 
-	const addToFavorite = () => adapter.addPersonaToFavorite($page.params.id, persona)
-	const removeFromFavorite = () => adapter.removePersonaFromFavorite($page.params.id, persona)
+	const addToFavorite = () => adapter.addPersonaToFavorite(groupId, persona)
+	const removeFromFavorite = () => adapter.removePersonaFromFavorite(groupId, persona)
+
+	$: personaPosts = $posts.data.get(groupId)
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -46,7 +61,7 @@
 {#if persona === undefined}
 	<Container>
 		<InfoBox>
-			<div>There is no persona with group ID {$page.params.id}</div>
+			<div>There is no persona with group ID {groupId}</div>
 		</InfoBox>
 	</Container>
 {:else}
@@ -56,10 +71,15 @@
 				<Button
 					variant="primary"
 					icon={Edit}
-					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+					on:click={() => goto(ROUTES.POST_NEW(groupId))}
 				/>
 			{:else}
-				<Button variant="primary" icon={Wallet} on:click={() => handleConnect()} />
+				<Button
+					variant="primary"
+					icon={Wallet}
+					on:click={adapter.signIn}
+					disabled={!canConnectWallet()}
+				/>
 			{/if}
 		</Header>
 	</div>
@@ -70,10 +90,11 @@
 		postsCount={persona.postsCount}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
+		onBack={() => {showPending ? showPending = false : goto(ROUTES.HOME)}}
 	>
 		<svelte:fragment slot="button_top">
 			{#if $profile.signer !== undefined}
-				{#if $personas.favorite.includes($page.params.id)}
+				{#if $personas.favorite.includes(groupId)}
 					<Button
 						icon={StarFilled}
 						variant="overlay"
@@ -92,32 +113,57 @@
 					variant="primary"
 					label="Submit post"
 					icon={Edit}
-					on:click={() => goto(ROUTES.POST_NEW($page.params.id))}
+					on:click={() => goto(ROUTES.POST_NEW(groupId))}
 				/>
 			{:else}
 				<Button
 					variant="primary"
 					label="Connect to post"
 					icon={Wallet}
-					on:click={() => handleConnect()}
+					on:click={adapter.signIn}
+					disabled={!canConnectWallet()}
 				/>
 			{/if}
 		</svelte:fragment>
 
 		<svelte:fragment slot="button_other">
-			<!-- TODO: NEED TO ADD CORRECT ACTION HERE -->
-			<Button label="Review pending" icon={Hourglass} />
+			{#if !showPending}
+				<Button label="Review pending" icon={Hourglass} on:click={() => showPending = true} />
+			{/if}
 		</svelte:fragment>
 
-		<!-- TODO: PLACE FILTER COMPONENT HERE -->
+		<SectionTitle title={showPending ? 'All pending posts' : 'All posts'}>
+		<svelte:fragment slot="buttons">
+			{#if $profile.signer !== undefined}
+				<Dropdown icon={SettingsView}>
+					<DropdownItem active={sortBy === 'date'} on:click={() => (sortBy = 'date')}>
+						Sort by date of creation
+					</DropdownItem>
+					<DropdownItem
+						active={sortBy === 'alphabetical'}
+						on:click={() => (sortBy = 'alphabetical')}
+					>
+						Sort by name (alphabetical)
+					</DropdownItem>
+				</Dropdown>
+				<Button
+					icon={sortAsc ? SortAscending : SortDescending}
+					on:click={() => (sortAsc = !sortAsc)}
+				/>
+			{/if}
+		</svelte:fragment>
+		{#if $profile.signer !== undefined}
+			<Search bind:filterQuery />
+		{/if}
+	</SectionTitle>
 
-		{#if $posts.loading}
+		{#if !personaPosts || personaPosts.loading}
 			<Container>
 				<InfoBox>
 					<p>Loading posts...</p>
 				</InfoBox>
 			</Container>
-		{:else if $posts.posts.length == 0}
+		{:else if (showPending ? personaPosts.pending : personaPosts.approved).length == 0}
 			<Container>
 				<InfoBox>
 					<p>There are no posts yet</p>
@@ -125,8 +171,19 @@
 			</Container>
 		{:else}
 			<Grid>
-				{#each $posts.posts as post, index}
-					<Post {post} on:click={() => goto(ROUTES.PERSONA_POST($page.params.id, index))} />
+				{#each showPending ? personaPosts.pending : personaPosts.approved as post, index}
+					<Post {post} on:click={() => !showPending && goto(ROUTES.PERSONA_POST(groupId, index))}>
+							{#if showPending}
+							{#if post.yourVote === '+'}
+								<Button variant='secondary' label='You promoted this' />
+							{:else if post.yourVote === '-'}
+								<Button variant='secondary' label='You demoted this' />
+							{:else}
+								<Button variant='secondary' label='Promote' on:click={() => adapter.voteOnPost(groupId, index, '+')} />
+								<Button variant='secondary' label='Demote' on:click={() => adapter.voteOnPost(groupId, index, '-')} />
+							{/if}
+							{/if}
+					</Post>
 				{/each}
 			</Grid>
 		{/if}

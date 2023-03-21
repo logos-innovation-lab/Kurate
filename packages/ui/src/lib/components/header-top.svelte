@@ -5,25 +5,14 @@
 	import { ROUTES } from '$lib/routes'
 	import Wallet from './icons/wallet.svelte'
 	import { formatAddress } from '$lib/utils/format'
-	import { profile } from '$lib/stores/profile'
-	import { connectWallet } from '$lib/services'
+	import adapter from '$lib/adapters'
+	import { canConnectWallet } from '$lib/services'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
 
 	let y: number
 	export let address: string | undefined = undefined
-
-	const handleConnect = async () => {
-		try {
-			const signer = await connectWallet()
-			const address = await signer.getAddress()
-
-			$profile = { signer, address }
-		} catch (err) {
-			console.error(err)
-		}
-	}
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -45,7 +34,8 @@
 					icon={Wallet}
 					variant={'primary'}
 					label={y === 0 ? 'Connect' : ''}
-					on:click={() => handleConnect()}
+					on:click={adapter.signIn}
+					disabled={!canConnectWallet()}
 				/>
 			{/if}
 		</div>

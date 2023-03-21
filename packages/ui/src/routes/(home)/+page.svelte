@@ -38,7 +38,7 @@
 			{#each $personas.draft as draftPersona, index}
 				<Persona
 					name={draftPersona.name}
-					description={draftPersona.description}
+					pitch={draftPersona.pitch}
 					postsCount={draftPersona.posts.length}
 					participantsCount={1}
 					on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
@@ -55,7 +55,7 @@
 				{#if $personas.all.get(personaId) !== undefined}
 					<Persona
 						name={$personas.all.get(personaId)?.name}
-						description={$personas.all.get(personaId)?.description}
+						pitch={$personas.all.get(personaId)?.pitch}
 						postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
 						participantsCount={$personas.all.get(personaId)?.participantsCount ?? 0}
 						on:click={() => goto(ROUTES.PERSONA(personaId))}
@@ -110,7 +110,7 @@
 				.includes(filterQuery.toLowerCase())) as [groupId, data]}
 			<Persona
 				name={data.name}
-				description={data.description}
+				pitch={data.pitch}
 				postsCount={data.postsCount}
 				participantsCount={data.participantsCount}
 				on:click={() => goto(ROUTES.PERSONA(groupId))}

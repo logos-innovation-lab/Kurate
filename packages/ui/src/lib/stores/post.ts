@@ -1,52 +1,55 @@
 import { writable, type Writable } from 'svelte/store'
-import { getWaku } from '$lib/services/waku'
-import { subscribeToPosts } from '$lib/services/posts'
 
 export interface Post {
 	timestamp: number
 	text: string
 	images: string[]
+	yourVote?: '+' | '-'
 }
 
 interface PostData {
-	posts: Post[]
-	loading: boolean
+	data: Map<string, { approved: Post[]; pending: Post[]; loading: boolean }>
 }
 
 export interface PostStore extends Writable<PostData> {
-	add: (post: Post) => void
-}
-
-async function fetchPosts() {
-	// TODO: Move this to some global store / injected depencency somehow
-	const waku = await getWaku()
-
-	// Fetch posts
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const unsubscribe = await subscribeToPosts(
-		waku,
-		(post) => {
-			posts.add({
-				text: post.text,
-				timestamp: Date.now(),
-				images: [],
-			})
-		},
-		undefined,
-		() => posts.update((state) => ({ ...state, loading: false })),
-	)
+	setLoading: (groupId: string, loading: boolean) => void
+	addPending: (post: Post, groupId: string) => void
+	addApproved: (post: Post, groupId: string) => void
 }
 
 function createPostStore(): PostStore {
-	const store = writable<PostData>({ posts: [], loading: true })
-	fetchPosts()
+	const store = writable<PostData>({ data: new Map() })
 
 	return {
 		...store,
-		add: (post: Post) => {
-			store.update(({ posts, ...state }) => {
-				const newPosts = [post, ...posts]
-				return { ...state, posts: newPosts }
+		setLoading: (groupId, loading) => {
+			store.update(({ data }) => {
+				const personaPostData = data.get(groupId)
+				const approved = personaPostData?.approved ?? []
+				const pending = personaPostData?.pending ?? []
+				data.set(groupId, { loading, approved, pending })
+
+				return { data }
+			})
+		},
+		addPending: (post: Post, groupId: string) => {
+			store.update(({ data }) => {
+				const personaPostData = data.get(groupId)
+				const pending = [post, ...(personaPostData?.pending ?? [])]
+				const approved = personaPostData?.approved ?? []
+				data.set(groupId, { loading: false, approved, pending })
+
+				return { data }
+			})
+		},
+		addApproved: (post: Post, groupId: string) => {
+			store.update(({ data }) => {
+				const personaPostData = data.get(groupId)
+				const pending = personaPostData?.pending ?? []
+				const approved = [post, ...(personaPostData?.approved ?? [])]
+				data.set(groupId, { loading: false, approved, pending })
+
+				return { data }
 			})
 		},
 	}

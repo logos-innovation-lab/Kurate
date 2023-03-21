@@ -1,30 +1,17 @@
 <script lang="ts">
-	import { browser } from '$app/environment'
 	import Button from '$lib/components/button.svelte'
 	import Header from '$lib/components/header.svelte'
 	import Logout from '$lib/components/icons/logout.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import WalletInfo from '$lib/components/wallet-info.svelte'
 	import { formatAddress } from '$lib/utils/format'
-	import { connectWallet, canConnectWallet } from '$lib/services'
+	import { canConnectWallet } from '$lib/services'
 	import { profile } from '$lib/stores/profile'
+	import adapter from '$lib/adapters'
 
 	let y: number
 
 	let error: Error | undefined = undefined
-	let hasWallet = browser && canConnectWallet()
-
-	const handleConnect = async () => {
-		try {
-			const signer = await connectWallet()
-			const address = await signer.getAddress()
-
-			$profile = { signer, address }
-		} catch (err) {
-			error = err as Error
-		}
-	}
-
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -40,11 +27,11 @@
 				variant="primary"
 				icon={Wallet}
 				label="Connect wallet to post"
-				on:click={handleConnect}
-				disabled={!hasWallet}
+				on:click={adapter.signIn}
+				disabled={!canConnectWallet()}
 			/>
 			<span class="connect-info">
-				{#if hasWallet}
+				{#if canConnectWallet()}
 					Connect a wallet to access or create your account.
 				{:else}
 					Please install a web3 wallet to access or create your account.

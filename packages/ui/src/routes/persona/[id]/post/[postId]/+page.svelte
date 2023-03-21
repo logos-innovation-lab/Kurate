@@ -14,24 +14,14 @@
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 	import { ROUTES } from '$lib/routes'
-	import { connectWallet } from '$lib/services'
+	import adapter from '$lib/adapters'
+	import { canConnectWallet } from '$lib/services'
 
-	const post = $posts.posts[$page.params.postId as unknown as number]
+	const post = $posts.data.get($page.params.id)?.approved[$page.params.postId as unknown as number]
 	const persona = $personas.all.get($page.params.id)
 
-	const handleConnect = async () => {
-		try {
-			const signer = await connectWallet()
-			const address = await signer.getAddress()
-
-			$profile = { signer, address }
-		} catch (err) {
-			console.error(err)
-		}
-	}
-
 	const startChat = async () => {
-		if (!persona) return
+		if (!persona || !post) return
 
 		// FIXME: this should start chat with this post as first post
 		$chats.draft = {
@@ -71,7 +61,12 @@
 		{#if $profile.signer !== undefined}
 			<Button variant="primary" label="Chat with poster" icon={ChatBot} on:click={startChat} />
 		{:else}
-			<Button variant="primary" icon={Wallet} on:click={() => handleConnect()} />
+			<Button
+				variant="primary"
+				icon={Wallet}
+				on:click={adapter.signIn}
+				disabled={!canConnectWallet()}
+			/>
 		{/if}
 	</div>
 {/if}

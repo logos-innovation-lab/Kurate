@@ -2,19 +2,20 @@
 	import Card from '$lib/components/grid-card.svelte'
 	import UserMultiple from './icons/user-multiple.svelte'
 	import Forum from './icons/forum.svelte'
+	import adapter from '$lib/adapters'
 
 	export let name: string | undefined
-	export let description: string | undefined
+	export let pitch: string | undefined
 	export let postsCount: number
 	export let participantsCount: number
 	export let picture: string | undefined
 </script>
 
 <Card on:click>
-	<div class="picture"><img src={picture} alt="persona" /></div>
+	<div class="picture"><img src={picture ? adapter.getPicture(picture) :undefined} alt="persona" /></div>
 	<div class="details">
 		<div class="header">{name}</div>
-		<div class="description">{description}</div>
+		<div class="description">{pitch}</div>
 		<div class="post-count">
 			<div>
 				<UserMultiple size={18} />

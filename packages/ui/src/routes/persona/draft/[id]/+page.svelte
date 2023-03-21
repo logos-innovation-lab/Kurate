@@ -26,6 +26,7 @@
 	import { page } from '$app/stores'
 	import TokenInfo from '$lib/components/token-info.svelte'
 	import adapter from '$lib/adapters'
+	import { profile } from '$lib/stores/profile'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -39,8 +40,10 @@
 
 	let state: 'text' | 'posts' | 'post_new' | 'publish_warning' | 'publish_success' = 'posts'
 
-	function publishPersona() {
-		$tokens.go -= TOKEN_POST_COST
+	async function publishPersona() {
+		if (!$profile.signer) return
+
+		await adapter.publishPersona(persona, $profile.signer)
 		state = 'publish_success'
 	}
 

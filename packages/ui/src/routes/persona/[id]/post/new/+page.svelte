@@ -1,21 +1,9 @@
 <script lang="ts">
 	import { profile } from '$lib/stores/profile'
-	import {
-		createIdentity,
-		generateGroupProof,
-		getContractGroup,
-		getGlobalAnonymousFeed,
-		getRandomExternalNullifier,
-		joinGroupOffChain,
-		joinGroupOnChain,
-	} from '$lib/services/index'
 
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 
-	import { posts } from '$lib/stores/post'
-	import { hashPost, createPost } from '$lib/services/posts'
-	import { getWaku } from '$lib/services/waku'
 	import PostNew from '$lib/components/post_new.svelte'
 	import InfoScreen from '$lib/components/info_screen.svelte'
 	import Info from '$lib/components/icons/information.svelte'
@@ -24,6 +12,8 @@
 	import { tokens } from '$lib/stores/tokens'
 	import TokenInfo from '$lib/components/token-info.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
+	import adapter from '$lib/adapters'
+	import { page } from '$app/stores'
 
 	// FIXME: These should come from some constants
 	const TOKEN_POST_COST_REP = 5
@@ -37,34 +27,8 @@
 			const signer = $profile.signer
 			if (!signer) throw new Error('no signer')
 
-			const defaultIdentity = 'anonymous'
+			await adapter.publishPost($page.params.id, postText, images, signer)
 
-			const identity = await createIdentity(signer, defaultIdentity)
-
-			const globalAnonymousFeed = getGlobalAnonymousFeed(signer)
-			const group = await getContractGroup(globalAnonymousFeed)
-
-			const commitment = identity.commitment
-
-			if (!group.members.includes(commitment)) {
-				joinGroupOffChain(group, commitment)
-				await joinGroupOnChain(globalAnonymousFeed, commitment)
-			}
-
-			const post = { text: postText }
-			const signal = hashPost(post)
-
-			const externalNullifier = getRandomExternalNullifier()
-			const proof = await generateGroupProof(group, identity, signal, externalNullifier)
-
-			const waku = await getWaku()
-			await createPost(waku, post, proof)
-
-			posts.add({
-				timestamp: Date.now(),
-				text: postText,
-				images,
-			})
 			state = 'post_submitted'
 		} catch (error) {
 			console.error(error)
