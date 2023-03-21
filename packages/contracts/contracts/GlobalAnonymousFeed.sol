@@ -45,6 +45,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
     event NewPersona(uint256 personaId);
     event NewPersonaMember(uint256 personaId, uint256 identityCommitment);
+    event NewMember(uint256 identityCommitment);
     event NewPersonaPost(uint256 personaId, bytes32 postHash);
     event NewPersonaComment(uint256 personaId, bytes32 postHash, bytes32 commentHash);
 
@@ -72,6 +73,21 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         return unirep.attesterEpochRemainingTime(attesterId);
     }
 
+    function sealEpoch(
+        uint256 epoch,
+        uint256[] memory publicSignals,
+        uint256[8] memory proof
+    ) external {
+        unirep.sealEpoch(epoch, attesterId, publicSignals, proof);
+    }
+
+    function userStateTransition(
+        uint256[] memory publicSignals,
+        uint256[8] memory proof
+    ) external {
+        unirep.userStateTransition(publicSignals, proof);
+    }
+
     function grantReputation(
         uint256 rep,
         uint256[] memory publicSignals,
@@ -80,8 +96,6 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
             publicSignals
         );
-
-        finalizeEpochIfNeeded(signals.epoch);
 
         unirep.verifyReputationProof(publicSignals, proof);
 
@@ -101,8 +115,6 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
             publicSignals
         );
-
-        finalizeEpochIfNeeded(signals.epoch);
 
         unirep.verifyReputationProof(publicSignals, proof);
 
@@ -459,11 +471,11 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
     }
 
     function finalizeEpochIfNeeded(uint256 epoch) public {
-        if (epoch < attesterCurrentEpoch()) {
+//        if (epoch < attesterCurrentEpoch()) {
             for (uint256 i = 0; i < personaList.length; i++) {
                 Persona storage persona = personas[personaList[i]];
                 tallyVotesForPersona(persona);
             }
-        }
+//        }
     }
 }
