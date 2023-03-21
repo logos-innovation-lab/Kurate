@@ -208,14 +208,14 @@ describe("Global Anonymous Feed Contract", () => {
             await state.sync.start();
             await state.waitForSync();
 
-            const repProofs = await state.genProveReputationProof({ minRep: 20 });
+            const repProofs = await state.genProveReputationProof({ minRep: 5 });
             console.log(repProofs);
             // await postContract.grantReputation(10, repProofs.publicSignals, repProofs.proof,  { gasLimit: 6721974 });
 
             // console.log('hash signed up', await state.hasSignedUp())
             const epochKeyProof = await state.genEpochKeyProof();
             console.log('epochProof', epochKeyProof);
-            // 0: 16053914734401543965342226360798892330630836996303385286139398585918516262775
+            // 0: 17728354178999301073371515482194745330493547547209297507880220090338173829563
             // const ust = await state.genUserStateTransitionProof({});
             // console.log(ust);
             // await postContract.userStateTransition(ust.publicSignals, ust.proof, { gasLimit: 6721974 });
