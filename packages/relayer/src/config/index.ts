@@ -1,0 +1,1 @@
+export const GLOBAL_ANONYMOUS_FEED_ADDRESS = "0x0";

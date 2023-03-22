@@ -1,0 +1,42 @@
+{
+  "name": "relayer",
+  "version": "1.0.0",
+  "description": "This project was bootstrapped with Fastify-CLI.",
+  "main": "app.ts",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
+    "start": "npm run build:ts && fastify start -l info dist/app.js",
+    "build:ts": "tsc",
+    "watch:ts": "tsc -w",
+    "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
+    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
+    "typechain": "typechain ../contracts/build/contracts/contracts/GlobalAnonymousFeed.sol/GlobalAnonymousFeed.json --target ethers-v5 --out-dir src/abi --show-stack-traces"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/autoload": "^5.0.0",
+    "@fastify/sensible": "^5.0.0",
+    "fastify": "^4.0.0",
+    "fastify-cli": "^5.7.1",
+    "fastify-plugin": "^4.0.0",
+    "rlnjs": "^2.0.6",
+    "zkitter-js": "^1.1.11"
+  },
+  "devDependencies": {
+    "@fastify/type-provider-json-schema-to-ts": "^2.2.2",
+    "@types/node": "^18.0.0",
+    "@types/tap": "^15.0.5",
+    "concurrently": "^7.0.0",
+    "fastify-tsconfig": "^1.0.1",
+    "prettier": "^2.8.4",
+    "tap": "^16.1.0",
+    "ts-node": "^10.4.0",
+    "typechain": "^8.1.1",
+    "typescript": "^4.5.4"
+  }
+}
