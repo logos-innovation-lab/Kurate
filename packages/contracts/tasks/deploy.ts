@@ -15,4 +15,4 @@ task("deploy", "Deploy a GlobalAnonymousFeed contract")
     }
 
     return globalAnonymousFeedContract;
-  })
+ })
