@@ -29,9 +29,6 @@ jobs:
       - name: Install dependenciess
         run: pnpm install --frozen-lockfile
 
-      - name: Install browser runners
-        run: npx playwright install
-
       - name: Download snark-artifacts
         working-directory: packages/contracts
         run: pnpm run download:snark-artifacts
