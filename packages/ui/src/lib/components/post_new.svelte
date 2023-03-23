@@ -33,8 +33,14 @@
 		try {
 			const imgs = []
 			for (let i = 0; i < files.length; i++) {
-				imgs.push(await adapter.uploadPicture(
-					await resize(files[i], MAX_DIMENSIONS.POST_IMAGE.width, MAX_DIMENSIONS.POST_IMAGE.height)),
+				imgs.push(
+					await adapter.uploadPicture(
+						await resize(
+							files[i],
+							MAX_DIMENSIONS.POST_IMAGE.width,
+							MAX_DIMENSIONS.POST_IMAGE.height,
+						),
+					),
 				)
 			}
 			images = [...images, ...imgs]

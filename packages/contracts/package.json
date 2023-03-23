@@ -4,11 +4,11 @@
     "private": true,
     "main": "index.js",
     "scripts": {
-        "start": "npm run compile && npm run deploy -- --network localhost",
+        "start": "pnpm run compile && pnpm run deploy -- --network localhost",
         "start:blockchain": "hardhat node",
         "compile": "hardhat compile",
         "download:snark-artifacts": "hardhat run scripts/download-snark-artifacts.ts",
-        "deploy": "npm run compile && hardhat deploy",
+        "deploy": "pnpm run compile && hardhat deploy",
         "test": "hardhat test",
         "test:report-gas": "REPORT_GAS=true hardhat test",
         "test:coverage": "hardhat coverage",
@@ -18,6 +18,7 @@
     "devDependencies": {
         "@nomicfoundation/hardhat-chai-matchers": "^1.0.5",
         "@nomiclabs/hardhat-ethers": "^2.2.2",
+        "@openzeppelin/contracts": "^4.8.1",
         "@semaphore-protocol/group": "3.0.0",
         "@semaphore-protocol/hardhat": "3.0.0",
         "@semaphore-protocol/identity": "3.0.0",
@@ -37,10 +38,12 @@
         "solhint": "^3.3.8",
         "solidity-coverage": "^0.8.2",
         "ts-node": "^10.9.1",
-        "typechain": "^8.1.1"
+        "typechain": "^8.1.1",
+        "typescript": "^4.9.5"
     },
     "dependencies": {
-        "@semaphore-protocol/contracts": "3.0.0"
+        "@semaphore-protocol/contracts": "3.0.0",
+        "@zk-kit/incremental-merkle-tree.sol": "^1.3.3"
     },
     "config": {
         "solidity": {

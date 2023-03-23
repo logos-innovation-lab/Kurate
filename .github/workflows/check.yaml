@@ -16,26 +16,28 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
       - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install npm deps
-        # Hardhat is missing some dependencies on linux due to https://github.com/npm/cli/issues/4828
-        run: rm -rf package-lock.json && npm install
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
 
-      - name: Install browser runners
-        run: npx playwright install
+      - name: Install dependenciess
+        run: pnpm install --frozen-lockfile
 
       - name: Download snark-artifacts
-        run: npm run download:snark-artifacts --workspaces --if-present
+        working-directory: packages/contracts
+        run: pnpm run download:snark-artifacts
 
       - name: Test
-        run: npm run test --workspaces --if-present
+        run: pnpm run test
 
       - name: Check the build
-        run: npm run check --workspaces --if-present
+        run: pnpm run check
 
       - name: Code linting
-        run: npm run lint --workspaces --if-present
+        run: pnpm run lint

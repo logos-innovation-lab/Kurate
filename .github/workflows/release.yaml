@@ -17,11 +17,17 @@ jobs:
         with:
           node-version: 18
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
       - name: Install npm deps
-        run: npm ci
+        working-directory: packages/ui
+        run: pnpm i --frozen-lockfile
 
       - name: Build
-        run: cd packages/ui && npm run build
+        working-directory: packages/ui
+        run: pnpm run build
 
       - uses: aquiladev/ipfs-action@v0.3.1
         with:

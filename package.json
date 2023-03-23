@@ -1,13 +1,19 @@
 {
-  "name": "root",
+  "name": "@logos-labs/kurate-monorepo",
   "private": true,
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "test": "pnpm --stream -r test",
+    "check": "pnpm --stream -r check",
+    "lint": "pnpm --stream -r lint"
+  },
   "workspaces": [
     "packages/*"
   ],
-  "devDependencies": {
-    "lerna": "^6.4.1"
-  },
   "dependencies": {
     "dotenv": "^16.0.3"
+  },
+  "engines": {
+    "node": "16.x - 19.x"
   }
 }

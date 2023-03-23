@@ -29,7 +29,9 @@
 	async function resizePersonaPicture(p?: File) {
 		try {
 			picture = p
-				? await adapter.uploadPicture(await clipAndResize(p, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height))
+				? await adapter.uploadPicture(
+						await clipAndResize(p, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height),
+				  )
 				: picture
 		} catch (error) {
 			console.error(error)
@@ -39,7 +41,9 @@
 	async function resizePersonaCover(c?: File) {
 		try {
 			cover = c
-				? await adapter.uploadPicture(await clipAndResize(c, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height))
+				? await adapter.uploadPicture(
+						await clipAndResize(c, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height),
+				  )
 				: cover
 		} catch (error) {
 			console.error(error)
