@@ -76,6 +76,7 @@ export class InMemoryAndIPFS implements Adapter {
 
 	async start() {
 		const storedPersonas = new Map<string, Persona>(getFromLocalStorage('personas', []))
+		const draftPersonas = getFromLocalStorage('drafts', [])
 		const storedChats = getFromLocalStorage('chats', [])
 		const storedPosts = new Map<string, { approved: Post[]; pending: Post[]; loading: boolean }>(
 			getFromLocalStorage('posts', []),
@@ -91,6 +92,7 @@ export class InMemoryAndIPFS implements Adapter {
 			return {
 				...state,
 				all: storedPersonas,
+				draft: draftPersonas,
 				loading: false,
 			}
 		})
