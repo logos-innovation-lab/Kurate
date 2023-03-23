@@ -15,13 +15,13 @@
 		<div class="imgs">
 			{#each post.images as image, index}
 				{#if index <= 5}
-				<div>
-					<img src={adapter.getPicture(image)} alt="post" />
-					<!-- TODO: add check and functionality to 'more images' badge -->
-					{#if index === 5 && post.images.length > 6}
-						<div class="more">+{post.images.length - 6}</div>
-					{/if}
-				</div>
+					<div>
+						<img src={adapter.getPicture(image)} alt="post" />
+						<!-- TODO: add check and functionality to 'more images' badge -->
+						{#if index === 5 && post.images.length > 6}
+							<div class="more">+{post.images.length - 6}</div>
+						{/if}
+					</div>
 				{/if}
 			{/each}
 		</div>
@@ -30,7 +30,7 @@
 			<div class="faded">{formatDateAndTime(post.timestamp)}</div>
 		</div>
 		<!-- FIXME: not sure this is correct -->
-		<div style='display: flex; flex-direction: row;'>
+		<div style="display: flex; flex-direction: row;">
 			<slot />
 		</div>
 	</div>

@@ -40,7 +40,7 @@
 	let unsubscribe: () => unknown
 
 	onMount(() => {
-		adapter.subscribePersonaPosts(groupId).then(unsub => unsubscribe = unsub)
+		adapter.subscribePersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
 	})
 
 	onDestroy(() => {
@@ -68,11 +68,7 @@
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
 		<Header title={persona.name} {onBack}>
 			{#if $profile.signer !== undefined}
-				<Button
-					variant="primary"
-					icon={Edit}
-					on:click={() => goto(ROUTES.POST_NEW(groupId))}
-				/>
+				<Button variant="primary" icon={Edit} on:click={() => goto(ROUTES.POST_NEW(groupId))} />
 			{:else}
 				<Button
 					variant="primary"
@@ -91,7 +87,9 @@
 		participantsCount={persona.participantsCount}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
-		onBack={() => {showPending ? showPending = false : goto(ROUTES.HOME)}}
+		onBack={() => {
+			showPending ? (showPending = false) : goto(ROUTES.HOME)
+		}}
 	>
 		<svelte:fragment slot="button_top">
 			{#if $profile.signer !== undefined}
@@ -129,34 +127,34 @@
 
 		<svelte:fragment slot="button_other">
 			{#if !showPending}
-				<Button label="Review pending" icon={Hourglass} on:click={() => showPending = true} />
+				<Button label="Review pending" icon={Hourglass} on:click={() => (showPending = true)} />
 			{/if}
 		</svelte:fragment>
 
 		<SectionTitle title={showPending ? 'All pending posts' : 'All posts'}>
-		<svelte:fragment slot="buttons">
+			<svelte:fragment slot="buttons">
+				{#if $profile.signer !== undefined}
+					<Dropdown icon={SettingsView}>
+						<DropdownItem active={sortBy === 'date'} on:click={() => (sortBy = 'date')}>
+							Sort by date of creation
+						</DropdownItem>
+						<DropdownItem
+							active={sortBy === 'alphabetical'}
+							on:click={() => (sortBy = 'alphabetical')}
+						>
+							Sort by name (alphabetical)
+						</DropdownItem>
+					</Dropdown>
+					<Button
+						icon={sortAsc ? SortAscending : SortDescending}
+						on:click={() => (sortAsc = !sortAsc)}
+					/>
+				{/if}
+			</svelte:fragment>
 			{#if $profile.signer !== undefined}
-				<Dropdown icon={SettingsView}>
-					<DropdownItem active={sortBy === 'date'} on:click={() => (sortBy = 'date')}>
-						Sort by date of creation
-					</DropdownItem>
-					<DropdownItem
-						active={sortBy === 'alphabetical'}
-						on:click={() => (sortBy = 'alphabetical')}
-					>
-						Sort by name (alphabetical)
-					</DropdownItem>
-				</Dropdown>
-				<Button
-					icon={sortAsc ? SortAscending : SortDescending}
-					on:click={() => (sortAsc = !sortAsc)}
-				/>
+				<Search bind:filterQuery />
 			{/if}
-		</svelte:fragment>
-		{#if $profile.signer !== undefined}
-			<Search bind:filterQuery />
-		{/if}
-	</SectionTitle>
+		</SectionTitle>
 
 		{#if !personaPosts || personaPosts.loading}
 			<Container>
@@ -175,13 +173,27 @@
 				{#each showPending ? personaPosts.pending : personaPosts.approved as post, index}
 					<Post {post} on:click={() => !showPending && goto(ROUTES.PERSONA_POST(groupId, index))}>
 						{#if showPending}
-							{#if post.yourVote === '+'  && $profile.signer !== undefined}
-								<Button variant='secondary' label='You promoted this' />
+							{#if post.yourVote === '+' && $profile.signer !== undefined}
+								<Button variant="secondary" label="You promoted this" />
 							{:else if post.yourVote === '-' && $profile.signer !== undefined}
-								<Button variant='secondary' label='You demoted this' />
+								<Button variant="secondary" label="You demoted this" />
 							{:else}
-								<Button variant='secondary' label='Promote' disabled={$profile.signer === undefined} on:click={() => $profile.signer !== undefined && adapter.voteOnPost(groupId, index, '+', $profile.signer)} />
-								<Button variant='secondary' label='Demote' disabled={$profile.signer === undefined} on:click={() => $profile.signer !== undefined && adapter.voteOnPost(groupId, index, '-', $profile.signer)} />
+								<Button
+									variant="secondary"
+									label="Promote"
+									disabled={$profile.signer === undefined}
+									on:click={() =>
+										$profile.signer !== undefined &&
+										adapter.voteOnPost(groupId, index, '+', $profile.signer)}
+								/>
+								<Button
+									variant="secondary"
+									label="Demote"
+									disabled={$profile.signer === undefined}
+									on:click={() =>
+										$profile.signer !== undefined &&
+										adapter.voteOnPost(groupId, index, '-', $profile.signer)}
+								/>
 							{/if}
 						{/if}
 					</Post>

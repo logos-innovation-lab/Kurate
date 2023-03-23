@@ -12,7 +12,9 @@
 </script>
 
 <Card on:click>
-	<div class="picture"><img src={picture ? adapter.getPicture(picture) :undefined} alt="persona" /></div>
+	<div class="picture">
+		<img src={picture ? adapter.getPicture(picture) : undefined} alt="persona" />
+	</div>
 	<div class="details">
 		<div class="header">{name}</div>
 		<div class="description">{pitch}</div>
