@@ -20,7 +20,8 @@
 	export let picture: string | undefined
 	export let cover: string | undefined
 	export let canEditPictures = false
-	export let postsCount: number | undefined = undefined
+	export let postsCount: number
+	export let participantsCount: number
 
 	let coverFiles: FileList | undefined = undefined
 	let pictureFiles: FileList | undefined = undefined
@@ -98,7 +99,7 @@
 		<div class="post-count">
 			<div>
 				<UserMultiple size={18} />
-				{postsCount}
+				{participantsCount}
 			</div>
 			<div>
 				<Forum size={18} />

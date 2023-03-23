@@ -88,6 +88,7 @@
 		pitch={persona.pitch}
 		description={persona.description}
 		postsCount={persona.postsCount}
+		participantsCount={persona.participantsCount}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 		onBack={() => {showPending ? showPending = false : goto(ROUTES.HOME)}}
@@ -173,16 +174,16 @@
 			<Grid>
 				{#each showPending ? personaPosts.pending : personaPosts.approved as post, index}
 					<Post {post} on:click={() => !showPending && goto(ROUTES.PERSONA_POST(groupId, index))}>
-							{#if showPending}
-							{#if post.yourVote === '+'}
+						{#if showPending}
+							{#if post.yourVote === '+'  && $profile.signer !== undefined}
 								<Button variant='secondary' label='You promoted this' />
-							{:else if post.yourVote === '-'}
+							{:else if post.yourVote === '-' && $profile.signer !== undefined}
 								<Button variant='secondary' label='You demoted this' />
 							{:else}
-								<Button variant='secondary' label='Promote' on:click={() => adapter.voteOnPost(groupId, index, '+')} />
-								<Button variant='secondary' label='Demote' on:click={() => adapter.voteOnPost(groupId, index, '-')} />
+								<Button variant='secondary' label='Promote' disabled={$profile.signer === undefined} on:click={() => $profile.signer !== undefined && adapter.voteOnPost(groupId, index, '+', $profile.signer)} />
+								<Button variant='secondary' label='Demote' disabled={$profile.signer === undefined} on:click={() => $profile.signer !== undefined && adapter.voteOnPost(groupId, index, '-', $profile.signer)} />
 							{/if}
-							{/if}
+						{/if}
 					</Post>
 				{/each}
 			</Grid>
