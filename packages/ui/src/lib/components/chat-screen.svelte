@@ -77,7 +77,7 @@
 			<Post class="detail" post={chat.post} />
 			<Persona
 				name={chat.persona.name}
-				description={chat.persona.description}
+				pitch={chat.persona.pitch}
 				postsCount={chat.persona.postsCount}
 				picture={chat.persona.picture}
 				participantsCount={chat.persona.participantsCount}

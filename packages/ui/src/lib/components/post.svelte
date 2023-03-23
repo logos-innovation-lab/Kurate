@@ -2,6 +2,7 @@
 	import Card from '$lib/components/grid-card.svelte'
 	import { formatDateAndTime } from '$lib/utils/format'
 	import type { Post } from '$lib/stores/post'
+	import adapter from '$lib/adapters'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -14,13 +15,17 @@
 		<div class="imgs">
 			{#each post.images as image}
 				<div>
-					<img src={image} alt="post" />
+					<img src={adapter.getPicture(image)} alt="post" />
 				</div>
 			{/each}
 		</div>
 		<div class="post-content">{post.text}</div>
 		<div class="user-info">
 			<div class="faded">{formatDateAndTime(post.timestamp)}</div>
+		</div>
+		<!-- FIXME: not sure this is correct -->
+		<div style='display: flex; flex-direction: row;'>
+			<slot />
 		</div>
 	</div>
 </Card>

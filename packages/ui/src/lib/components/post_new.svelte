@@ -9,6 +9,7 @@
 	import { resize } from '$lib/utils/image'
 	import { MAX_DIMENSIONS } from '$lib/constants'
 	import Close from './icons/close.svelte'
+	import adapter from '$lib/adapters'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -32,8 +33,8 @@
 		try {
 			const imgs = []
 			for (let i = 0; i < files.length; i++) {
-				imgs.push(
-					await resize(files[i], MAX_DIMENSIONS.POST_IMAGE.width, MAX_DIMENSIONS.POST_IMAGE.height),
+				imgs.push(await adapter.uploadPicture(
+					await resize(files[i], MAX_DIMENSIONS.POST_IMAGE.width, MAX_DIMENSIONS.POST_IMAGE.height)),
 				)
 			}
 			images = [...images, ...imgs]
@@ -61,7 +62,7 @@
 	<div class="imgs">
 		{#each images as image, index}
 			<div class="img-wrapper">
-				<img src={image} alt="post" />
+				<img src={adapter.getPicture(image)} alt="post" />
 				<div class="icon">
 					<Button icon={Close} variant="overlay" on:click={removeImage(index)} />
 				</div>

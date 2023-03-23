@@ -11,6 +11,7 @@
 
 	import { clipAndResize } from '$lib/utils/image'
 	import { MAX_DIMENSIONS } from '$lib/constants'
+	import adapter from '$lib/adapters'
 
 	export let name: string
 	export let pitch: string
@@ -19,7 +20,8 @@
 	export let picture: string | undefined
 	export let cover: string | undefined
 	export let canEditPictures = false
-	export let postsCount: number | undefined = undefined
+	export let postsCount: number
+	export let participantsCount: number
 
 	let coverFiles: FileList | undefined = undefined
 	let pictureFiles: FileList | undefined = undefined
@@ -27,7 +29,7 @@
 	async function resizePersonaPicture(p?: File) {
 		try {
 			picture = p
-				? await clipAndResize(p, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
+				? await adapter.uploadPicture(await clipAndResize(p, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height))
 				: picture
 		} catch (error) {
 			console.error(error)
@@ -37,7 +39,7 @@
 	async function resizePersonaCover(c?: File) {
 		try {
 			cover = c
-				? await clipAndResize(c, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
+				? await adapter.uploadPicture(await clipAndResize(c, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height))
 				: cover
 		} catch (error) {
 			console.error(error)
@@ -50,7 +52,7 @@
 <div class="top">
 	{#if cover}
 		<div class="img">
-			<img src={cover} alt="profile" />
+			<img src={adapter.getPicture(cover)} alt="profile" />
 		</div>
 	{/if}
 </div>
@@ -70,7 +72,7 @@
 <div class="avatar">
 	{#if picture}
 		<div class="img">
-			<img src={picture} alt="profile" />
+			<img src={adapter.getPicture(picture)} alt="profile" />
 			{#if canEditPictures}
 				<div class="change">
 					<InputFile icon={Renew} variant="overlay" bind:files={pictureFiles} />
@@ -97,7 +99,7 @@
 		<div class="post-count">
 			<div>
 				<UserMultiple size={18} />
-				{postsCount}
+				{participantsCount}
 			</div>
 			<div>
 				<Forum size={18} />

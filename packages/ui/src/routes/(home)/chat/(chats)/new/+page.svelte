@@ -5,13 +5,14 @@
 
 	import { chats } from '$lib/stores/chat'
 	import { ROUTES } from '$lib/routes'
+	import adapters from '$lib/adapters'
 
 	const draftChat = $chats.draft
 
-	function sendMessage(text: string) {
+	async function sendMessage(text: string) {
 		if (!draftChat) return
 		draftChat.messages = [{ timestamp: Date.now(), text, myMessage: true }]
-		const length = $chats.chats.push(draftChat)
+		const length = await adapters.startChat(draftChat)
 		goto(ROUTES.CHAT(length - 1))
 	}
 </script>

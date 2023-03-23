@@ -85,6 +85,8 @@
 		name={persona.name}
 		pitch={persona.pitch}
 		description={persona.description}
+		postsCount={0}
+		participantsCount={1}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 		canEditPictures
