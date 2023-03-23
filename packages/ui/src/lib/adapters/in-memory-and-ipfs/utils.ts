@@ -24,7 +24,6 @@ export function randomIntegerBetween(min: number, max: number): number {
 
 export function randomId(): string {
 	const randomUUID = crypto.randomUUID()
-	console.log(randomUUID)
 	const encoder = new TextEncoder()
 	return ethers.utils.sha256(encoder.encode(randomUUID))
 }
@@ -32,9 +31,11 @@ export function randomId(): string {
 export function randomPost(): Post {
 	const images: string[] = []
 
-	// Only 20% of posts should have a picture
-	if (executeWithChance(0.2)) {
-		for (let i = 0; i < randomIntegerBetween(1, 7); i++) {
+	// Only 35% of posts should have a picture
+	if (executeWithChance(0.35)) {
+		// Only 40% of posts with pictures can have more than 3
+		const max = executeWithChance(0.4) ? 20 : 3
+		for (let i = 0; i < randomIntegerBetween(1, max); i++) {
 			images.push(randomPicture(MAX_DIMENSIONS.POST_IMAGE.width, MAX_DIMENSIONS.POST_IMAGE.height))
 		}
 	}
