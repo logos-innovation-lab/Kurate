@@ -1,9 +1,10 @@
 import sveltePreprocess from 'svelte-preprocess'
 import { preprocess, compile } from 'svelte/compiler'
+import type { KnipConfig } from 'knip'
 
 const sveltePreprocessor = sveltePreprocess()
 
-export default {
+const config: KnipConfig = {
 	ignore: ['**/*.d.ts'],
 	paths: {
 		// This ain't pretty, but Svelte basically does the same
@@ -18,13 +19,6 @@ export default {
 		},
 		css: (text: string) => [...text.matchAll(/(?<=@)import[^;]+/g)].join('\n'),
 	},
-	svelte: {
-		entry: [
-			'svelte.config.js',
-			'vite.config.ts',
-			// FIXME: This incorrectly reports `src/routes/(home)/chat/(chats)/+layout@.svelte` as unused
-			'src/routes/**/+{page,page.server,error,layout,layout.server}.{js,ts,svelte}',
-		],
-		project: ['src/**/*.{js,ts,svelte}'],
-	},
 }
+
+export default config
