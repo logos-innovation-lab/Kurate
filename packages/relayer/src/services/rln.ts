@@ -36,6 +36,9 @@ export const rlnRegistry = new Registry(MERKLE_TREE_DEPTH);
 export const caches = new Map<bigint, Cache>();
 
 // Sync groups
+// TODO: Avoid race conditions by listening to events before querying past ones,
+// then checking blockNumber and transactionIndex to make sure the event wasn't
+// processed already.
 export const syncGroup = async (provider: Provider) => {
   const feed = GlobalAnonymousFeed__factory.connect(
     GLOBAL_ANONYMOUS_FEED_ADDRESS,
