@@ -5,7 +5,8 @@
     "preinstall": "npx only-allow pnpm",
     "test": "pnpm --stream -r test",
     "check": "pnpm --stream -r check",
-    "lint": "pnpm --stream -r lint"
+    "lint": "pnpm --stream -r lint",
+    "knip": "pnpm --stream -r knip"
   },
   "workspaces": [
     "packages/*"
