@@ -25,73 +25,68 @@ import type {
 
 export interface GlobalAnonymousFeedInterface extends utils.Interface {
 	functions: {
-		'createAndJoin(uint256,uint256)': FunctionFragment
-		'createGroup(uint256)': FunctionFragment
-		'groupMembers(uint256,uint256)': FunctionFragment
-		'groups(uint256)': FunctionFragment
-		'joinGroup(uint256,uint256)': FunctionFragment
+		'groupId()': FunctionFragment
+		'joinGroup(uint256)': FunctionFragment
+		'registeredIdentities(uint256)': FunctionFragment
 		'semaphore()': FunctionFragment
+		'sendMessage(string,uint256,uint256,uint256,uint256[8])': FunctionFragment
 	}
 
 	getFunction(
 		nameOrSignatureOrTopic:
-			| 'createAndJoin'
-			| 'createGroup'
-			| 'groupMembers'
-			| 'groups'
+			| 'groupId'
 			| 'joinGroup'
-			| 'semaphore',
+			| 'registeredIdentities'
+			| 'semaphore'
+			| 'sendMessage',
 	): FunctionFragment
 
+	encodeFunctionData(functionFragment: 'groupId', values?: undefined): string
+	encodeFunctionData(functionFragment: 'joinGroup', values: [PromiseOrValue<BigNumberish>]): string
 	encodeFunctionData(
-		functionFragment: 'createAndJoin',
-		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'createGroup',
+		functionFragment: 'registeredIdentities',
 		values: [PromiseOrValue<BigNumberish>],
 	): string
-	encodeFunctionData(
-		functionFragment: 'groupMembers',
-		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(functionFragment: 'groups', values: [PromiseOrValue<BigNumberish>]): string
-	encodeFunctionData(
-		functionFragment: 'joinGroup',
-		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-	): string
 	encodeFunctionData(functionFragment: 'semaphore', values?: undefined): string
+	encodeFunctionData(
+		functionFragment: 'sendMessage',
+		values: [
+			PromiseOrValue<string>,
+			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<BigNumberish>[],
+		],
+	): string
 
-	decodeFunctionResult(functionFragment: 'createAndJoin', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'createGroup', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'groupMembers', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'groups', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'groupId', data: BytesLike): Result
 	decodeFunctionResult(functionFragment: 'joinGroup', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'registeredIdentities', data: BytesLike): Result
 	decodeFunctionResult(functionFragment: 'semaphore', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'sendMessage', data: BytesLike): Result
 
 	events: {
-		'NewGroup(uint256)': EventFragment
-		'NewIdentity(uint256,uint256)': EventFragment
+		'NewIdentity(uint256)': EventFragment
+		'NewMessage(string)': EventFragment
 	}
 
-	getEvent(nameOrSignatureOrTopic: 'NewGroup'): EventFragment
 	getEvent(nameOrSignatureOrTopic: 'NewIdentity'): EventFragment
+	getEvent(nameOrSignatureOrTopic: 'NewMessage'): EventFragment
 }
-
-export interface NewGroupEventObject {
-	groupId: BigNumber
-}
-export type NewGroupEvent = TypedEvent<[BigNumber], NewGroupEventObject>
-
-export type NewGroupEventFilter = TypedEventFilter<NewGroupEvent>
 
 export interface NewIdentityEventObject {
-	groupId: BigNumber
 	identityCommitment: BigNumber
 }
-export type NewIdentityEvent = TypedEvent<[BigNumber, BigNumber], NewIdentityEventObject>
+export type NewIdentityEvent = TypedEvent<[BigNumber], NewIdentityEventObject>
 
 export type NewIdentityEventFilter = TypedEventFilter<NewIdentityEvent>
+
+export interface NewMessageEventObject {
+	message: string
+}
+export type NewMessageEvent = TypedEvent<[string], NewMessageEventObject>
+
+export type NewMessageEventFilter = TypedEventFilter<NewMessageEvent>
 
 export interface GlobalAnonymousFeed extends BaseContract {
 	connect(signerOrProvider: Signer | Provider | string): this
@@ -118,156 +113,133 @@ export interface GlobalAnonymousFeed extends BaseContract {
 	removeListener: OnEvent<this>
 
 	functions: {
-		createAndJoin(
-			groupId: PromiseOrValue<BigNumberish>,
+		groupId(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		joinGroup(
 			identityCommitment: PromiseOrValue<BigNumberish>,
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<ContractTransaction>
 
-		createGroup(
-			groupId: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		groupMembers(
+		registeredIdentities(
 			arg0: PromiseOrValue<BigNumberish>,
-			arg1: PromiseOrValue<BigNumberish>,
 			overrides?: CallOverrides,
 		): Promise<[boolean]>
 
-		groups(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[boolean]>
+		semaphore(overrides?: CallOverrides): Promise<[string]>
 
-		joinGroup(
-			groupId: PromiseOrValue<BigNumberish>,
-			identityCommitment: PromiseOrValue<BigNumberish>,
+		sendMessage(
+			message: PromiseOrValue<string>,
+			merkleTreeRoot: PromiseOrValue<BigNumberish>,
+			nullifierHash: PromiseOrValue<BigNumberish>,
+			externalNullifier: PromiseOrValue<BigNumberish>,
+			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<ContractTransaction>
-
-		semaphore(overrides?: CallOverrides): Promise<[string]>
 	}
 
-	createAndJoin(
-		groupId: PromiseOrValue<BigNumberish>,
+	groupId(overrides?: CallOverrides): Promise<BigNumber>
+
+	joinGroup(
 		identityCommitment: PromiseOrValue<BigNumberish>,
 		overrides?: Overrides & { from?: PromiseOrValue<string> },
 	): Promise<ContractTransaction>
 
-	createGroup(
-		groupId: PromiseOrValue<BigNumberish>,
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	groupMembers(
+	registeredIdentities(
 		arg0: PromiseOrValue<BigNumberish>,
-		arg1: PromiseOrValue<BigNumberish>,
 		overrides?: CallOverrides,
 	): Promise<boolean>
 
-	groups(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>
+	semaphore(overrides?: CallOverrides): Promise<string>
 
-	joinGroup(
-		groupId: PromiseOrValue<BigNumberish>,
-		identityCommitment: PromiseOrValue<BigNumberish>,
+	sendMessage(
+		message: PromiseOrValue<string>,
+		merkleTreeRoot: PromiseOrValue<BigNumberish>,
+		nullifierHash: PromiseOrValue<BigNumberish>,
+		externalNullifier: PromiseOrValue<BigNumberish>,
+		proof: PromiseOrValue<BigNumberish>[],
 		overrides?: Overrides & { from?: PromiseOrValue<string> },
 	): Promise<ContractTransaction>
 
-	semaphore(overrides?: CallOverrides): Promise<string>
-
 	callStatic: {
-		createAndJoin(
-			groupId: PromiseOrValue<BigNumberish>,
+		groupId(overrides?: CallOverrides): Promise<BigNumber>
+
+		joinGroup(
 			identityCommitment: PromiseOrValue<BigNumberish>,
 			overrides?: CallOverrides,
 		): Promise<void>
 
-		createGroup(groupId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<void>
-
-		groupMembers(
+		registeredIdentities(
 			arg0: PromiseOrValue<BigNumberish>,
-			arg1: PromiseOrValue<BigNumberish>,
 			overrides?: CallOverrides,
 		): Promise<boolean>
 
-		groups(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>
+		semaphore(overrides?: CallOverrides): Promise<string>
 
-		joinGroup(
-			groupId: PromiseOrValue<BigNumberish>,
-			identityCommitment: PromiseOrValue<BigNumberish>,
+		sendMessage(
+			message: PromiseOrValue<string>,
+			merkleTreeRoot: PromiseOrValue<BigNumberish>,
+			nullifierHash: PromiseOrValue<BigNumberish>,
+			externalNullifier: PromiseOrValue<BigNumberish>,
+			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: CallOverrides,
 		): Promise<void>
-
-		semaphore(overrides?: CallOverrides): Promise<string>
 	}
 
 	filters: {
-		'NewGroup(uint256)'(groupId?: null): NewGroupEventFilter
-		NewGroup(groupId?: null): NewGroupEventFilter
+		'NewIdentity(uint256)'(identityCommitment?: null): NewIdentityEventFilter
+		NewIdentity(identityCommitment?: null): NewIdentityEventFilter
 
-		'NewIdentity(uint256,uint256)'(
-			groupId?: null,
-			identityCommitment?: null,
-		): NewIdentityEventFilter
-		NewIdentity(groupId?: null, identityCommitment?: null): NewIdentityEventFilter
+		'NewMessage(string)'(message?: null): NewMessageEventFilter
+		NewMessage(message?: null): NewMessageEventFilter
 	}
 
 	estimateGas: {
-		createAndJoin(
-			groupId: PromiseOrValue<BigNumberish>,
-			identityCommitment: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		createGroup(
-			groupId: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		groupMembers(
-			arg0: PromiseOrValue<BigNumberish>,
-			arg1: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		groups(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
+		groupId(overrides?: CallOverrides): Promise<BigNumber>
 
 		joinGroup(
-			groupId: PromiseOrValue<BigNumberish>,
 			identityCommitment: PromiseOrValue<BigNumberish>,
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		registeredIdentities(
+			arg0: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
 		): Promise<BigNumber>
 
 		semaphore(overrides?: CallOverrides): Promise<BigNumber>
+
+		sendMessage(
+			message: PromiseOrValue<string>,
+			merkleTreeRoot: PromiseOrValue<BigNumberish>,
+			nullifierHash: PromiseOrValue<BigNumberish>,
+			externalNullifier: PromiseOrValue<BigNumberish>,
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
 	}
 
 	populateTransaction: {
-		createAndJoin(
-			groupId: PromiseOrValue<BigNumberish>,
-			identityCommitment: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		createGroup(
-			groupId: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		groupMembers(
-			arg0: PromiseOrValue<BigNumberish>,
-			arg1: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		groups(
-			arg0: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
+		groupId(overrides?: CallOverrides): Promise<PopulatedTransaction>
 
 		joinGroup(
-			groupId: PromiseOrValue<BigNumberish>,
 			identityCommitment: PromiseOrValue<BigNumberish>,
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		registeredIdentities(
+			arg0: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
 		): Promise<PopulatedTransaction>
 
 		semaphore(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		sendMessage(
+			message: PromiseOrValue<string>,
+			merkleTreeRoot: PromiseOrValue<BigNumberish>,
+			nullifierHash: PromiseOrValue<BigNumberish>,
+			externalNullifier: PromiseOrValue<BigNumberish>,
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
 	}
 }

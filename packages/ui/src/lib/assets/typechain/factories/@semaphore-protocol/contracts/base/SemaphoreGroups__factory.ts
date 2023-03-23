@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, type Signer, utils } from 'ethers'
+import { Contract, Signer, utils } from 'ethers'
 import type { Provider } from '@ethersproject/providers'
 import type {
 	SemaphoreGroups,

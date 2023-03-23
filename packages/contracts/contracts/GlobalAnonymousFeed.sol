@@ -5,43 +5,49 @@ import "@semaphore-protocol/contracts/interfaces/ISemaphore.sol";
 
 contract GlobalAnonymousFeed {
     error IdentityAlreadyExists();
-    error GroupAlreadyExists();
-    error GroupNotCreated();
+
+    event NewMessage(string message);
+    event NewIdentity(uint256 identityCommitment);
 
     ISemaphore public semaphore;
 
-    mapping(uint256 => bool) public groups;
-    mapping(uint256 => mapping(uint256 => bool)) public groupMembers;
+    uint256 public groupId;
+    mapping(uint256 => bool) public registeredIdentities;
 
-    event NewGroup(uint256 groupId);
-    event NewIdentity(uint256 groupId, uint256 identityCommitment);
-
-    constructor(address semaphoreAddress) {
+    constructor(address semaphoreAddress, uint256 _groupId) {
         semaphore = ISemaphore(semaphoreAddress);
-    }
+        groupId = _groupId;
 
-    function createGroup(uint256 groupId) external {
         semaphore.createGroup(groupId, 20, address(this));
-        groups[groupId] = true;
-        emit NewGroup(groupId);
     }
 
-    function joinGroup(uint256 groupId, uint256 identityCommitment) external {
-        if (groups[groupId] != true) {
-            revert GroupNotCreated();
-        }
-
-        if (groupMembers[groupId][identityCommitment] == true) {
+    function joinGroup(uint256 identityCommitment) external {
+        if (registeredIdentities[identityCommitment] == true) {
             revert IdentityAlreadyExists();
         }
 
         semaphore.addMember(groupId, identityCommitment);
-        groupMembers[groupId][identityCommitment] = true;
-        emit NewIdentity(groupId, identityCommitment);
+        registeredIdentities[identityCommitment] = true;
+
+        emit NewIdentity(identityCommitment);
     }
 
-    function createAndJoin(uint256 groupId, uint256 identityCommitment) external {
-        this.createGroup(groupId);
-        this.joinGroup(groupId, identityCommitment);
+    function sendMessage(
+        string calldata message,
+        uint256 merkleTreeRoot,
+        uint256 nullifierHash,
+        uint256 externalNullifier,
+        uint256[8] calldata proof
+    ) external {
+        semaphore.verifyProof(
+            groupId,
+            merkleTreeRoot,
+            uint256(keccak256(abi.encodePacked(message))),
+            nullifierHash,
+            externalNullifier,
+            proof
+        );
+
+        emit NewMessage(message);
     }
 }
