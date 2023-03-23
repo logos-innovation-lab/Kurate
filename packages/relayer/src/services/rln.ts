@@ -46,6 +46,14 @@ export const syncGroup = async (provider: Provider) => {
   );
 
   const filter = feed.filters.NewIdentity();
+
+  // Fetch past events
+  const identities = await feed.queryFilter(filter);
+  for (const { args } of identities) {
+    rlnRegistry.addMember(args.identityCommitment.toBigInt());
+  }
+
+  // Keep registry in sync by listening to on-chain events
   const listener: TypedListener<NewIdentityEvent> = (
     identityCommitment: BigNumber
   ) => {
