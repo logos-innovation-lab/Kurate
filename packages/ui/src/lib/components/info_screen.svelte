@@ -1,16 +1,19 @@
 <script lang="ts">
 	import Header from '$lib/components/header.svelte'
+	import Button from '$lib/components/button.svelte'
+	import Close from '$lib/components/icons/close.svelte'
 
 	let cls: string | undefined = undefined
 	let y: number
 	export { cls as class }
 	export let title: string
 	export let onBack: (() => unknown) | undefined = undefined
+	export let onClose: (() => unknown) | undefined = undefined
 </script>
 
 <svelte:window bind:scrollY={y} />
 
-<Header {title} {onBack} />
+<Header {title} {onBack} {onClose} />
 
 <div class={`content ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<slot />
@@ -39,6 +42,10 @@
 			align-items: center;
 			justify-content: center;
 			gap: var(--spacing-12);
+		}
+
+		:global(.small) {
+			font-size: var(--font-size-sm);
 		}
 
 		@media (min-width: 688px) {

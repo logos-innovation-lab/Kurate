@@ -31,7 +31,8 @@
 	let pitch = ''
 	let description = ''
 
-	let state: 'add_text' | 'edit_text' | 'edit_images' | 'confirm' | 'discard_warning' = 'add_text'
+	let state: 'add_text' | 'edit_text' | 'edit_images' | 'confirm' | 'discard_warning' | 'add_rep' =
+		'add_text'
 	let showWarningModal = false
 	let draftPersonaIndex: number | undefined
 
@@ -78,6 +79,11 @@
 		bind:pitch={persona.pitch}
 		bind:description={persona.description}
 		title="Create Persona"
+		onClose={() => {
+			persona.name || persona.pitch || persona.description
+				? (state = 'discard_warning')
+				: history.back()
+		}}
 	>
 		<Button
 			label="Proceed"
@@ -85,12 +91,39 @@
 			variant="primary"
 			disabled={!persona.name || !persona.pitch || !persona.description}
 			on:click={() => {
-				state = 'edit_images'
+				state = 'add_rep'
 			}}
 		/>
 
-		<Button label="Cancel" icon={Close} on:click={onCancel} />
+		<!-- <Button label="Cancel" icon={Close} on:click={onCancel} /> -->
 	</PersonaEditText>
+{:else if state === 'add_rep'}
+	<InfoScreen
+		title="Create Persona"
+		onBack={() => (showWarningModal = false)}
+		onClose={() => (showWarningModal = true)}
+	>
+		<Container>
+			<h2>Reputation level</h2>
+			+
+			<p>
+				Choose how much REP is needed to submit a post through this Persona. Higher values means a
+				more reputable Persona, but accessible to less people.
+			</p>
+
+			<p class="small">
+				You currently have 61 REP. You can't choose a reputation level above your current REP total.
+			</p>
+		</Container>
+		<svelte:fragment slot="buttons">
+			<Button
+				variant="primary"
+				label="Proceed"
+				icon={Checkmark}
+				on:click={() => (state = 'edit_images')}
+			/>
+		</svelte:fragment>
+	</InfoScreen>
 {:else if state === 'edit_text'}
 	<PersonaEditText bind:name bind:pitch bind:description title="Edit Persona details">
 		<Button
