@@ -13,7 +13,6 @@ export async function sleep(ms: number): Promise<void> {
 
 export async function saveToLocalStorage<T extends JSONdecoded>(key: string, data: T) {
 	if (browser && localStorage) {
-		console.log('saving', key, data)
 		localStorage.setItem(key, JSON.stringify(data))
 	}
 }

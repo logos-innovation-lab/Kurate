@@ -13,12 +13,16 @@
 <Card on:click class={` ${cls}`}>
 	<div class={`content-wrapper`}>
 		<div class="imgs">
-			{#each post.images as image}
+			{#each post.images as image, index}
+				{#if index <= 5}
 				<div>
 					<img src={adapter.getPicture(image)} alt="post" />
 					<!-- TODO: add check and functionality to 'more images' badge -->
-					<div class="more">+1</div>
+					{#if index === 5 && post.images.length > 6}
+						<div class="more">+{post.images.length - 6}</div>
+					{/if}
 				</div>
+				{/if}
 			{/each}
 		</div>
 		<div class="post-content">{post.text}</div>
@@ -76,30 +80,16 @@
 		div:nth-child(6) {
 			width: calc(calc(100% - var(--spacing-12)) / 3);
 		}
-
-		div:not(:nth-child(6)),
-		div:nth-child(6):last-child {
-			.more {
-				display: none;
-			}
-		}
-
-		div:nth-child(6):not(:last-child) {
-			.more {
-				position: absolute;
-				background-color: rgba(var(--color-black-rgb), 0.5);
-				color: var(--color-body-bg);
-				border-radius: var(--spacing-24);
-				padding: var(--spacing-12);
-				min-width: 44px;
-				text-align: center;
-				inset: 50% 50% auto auto;
-				transform: translate(50%, -50%);
-
-				&:empty {
-					display: none;
-				}
-			}
+		.more {
+			position: absolute;
+			background-color: rgba(var(--color-black-rgb), 0.5);
+			color: var(--color-body-bg);
+			border-radius: var(--spacing-24);
+			padding: var(--spacing-12);
+			min-width: 44px;
+			text-align: center;
+			inset: 50% 50% auto auto;
+			transform: translate(50%, -50%);
 		}
 	}
 
