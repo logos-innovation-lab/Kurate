@@ -31,13 +31,11 @@ export function randomId(): string {
 export function randomPost(): Post {
 	const images: string[] = []
 
-	// Only 15% of posts should have a picture
-	if (executeWithChance(0.15)) {
-		for (let i = 0; i < randomIntegerBetween(1, 3); i++) {
-			images.push(randomPicture(MAX_DIMENSIONS.POST_IMAGE.width, MAX_DIMENSIONS.POST_IMAGE.height))
-		}
-	} else if (executeWithChance(0.2)) {
-		for (let i = 0; i < randomIntegerBetween(4, 20); i++) {
+	// Only 35% of posts should have a picture
+	if (executeWithChance(0.35)) {
+		// Only 40% of posts with pictures can have more than 3
+		const max = executeWithChance(0.4) ? 20 : 3
+		for (let i = 0; i < randomIntegerBetween(1, max); i++) {
 			images.push(randomPicture(MAX_DIMENSIONS.POST_IMAGE.width, MAX_DIMENSIONS.POST_IMAGE.height))
 		}
 	}
