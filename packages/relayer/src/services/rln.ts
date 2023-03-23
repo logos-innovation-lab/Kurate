@@ -17,8 +17,6 @@ export const CACHE_LENGTH = 10_000;
 const zkeyFilesPath = "./zkeyFiles";
 const vkeyPath = join(zkeyFilesPath, "verification_key.json");
 const vKey = JSON.parse(readFileSync(vkeyPath, "utf-8"));
-const wasmFilePath = join(zkeyFilesPath, "rln.wasm");
-const finalZkeyPath = join(zkeyFilesPath, "rln_final.zkey");
 
 // Errors
 class InvalidProofError extends Error {
@@ -34,7 +32,6 @@ class ProofBreachError extends Error {
 }
 
 // Instantiate RLN
-export const rlnInstance = new RLN(wasmFilePath, finalZkeyPath, vKey);
 export const rlnRegistry = new Registry(MERKLE_TREE_DEPTH);
 export const caches = new Map<bigint, Cache>();
 
@@ -69,7 +66,7 @@ export const syncGroup = async (provider: Provider) => {
 
 // Verify proof
 export const verifyProof = async (proof: RLNFullProof) => {
-  const valid = await rlnInstance.verifyProof(proof);
+  const valid = await RLN.verifySNARKProof(vKey, proof.snarkProof);
   if (!valid) {
     throw new InvalidProofError();
   }
