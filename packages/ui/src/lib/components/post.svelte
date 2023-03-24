@@ -5,12 +5,13 @@
 	import adapter from '$lib/adapters'
 
 	let cls: string | undefined = undefined
+	export let noHover: boolean | undefined = undefined
 	export { cls as class }
 
 	export let post: Post
 </script>
 
-<Card on:click class={` ${cls}`}>
+<Card on:click class={` ${cls}`} {noHover}>
 	<div class={`content-wrapper`}>
 		<div class="imgs">
 			{#each post.images as image, index}
@@ -29,14 +30,20 @@
 		<div class="user-info">
 			<div class="faded">{formatDateAndTime(post.timestamp)}</div>
 		</div>
-		<!-- FIXME: not sure this is correct -->
-		<div style="display: flex; flex-direction: row;">
+		<div class="btns">
 			<slot />
 		</div>
 	</div>
 </Card>
 
 <style lang="scss">
+	.btns {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: flex-start;
+		gap: var(--spacing-12);
+	}
 	.imgs {
 		display: flex;
 		flex-direction: row;
