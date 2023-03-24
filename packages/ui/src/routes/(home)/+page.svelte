@@ -112,14 +112,13 @@
 				.toLowerCase()
 				.includes(filterQuery.toLowerCase())) as [groupId, data]}
 			<Persona
-				{...data}
 				name={data.name}
 				pitch={data.pitch}
 				postsCount={data.postsCount}
 				participantsCount={data.participantsCount}
-				on:click={() => goto(ROUTES.PERSONA(groupId))}
 				picture={data.picture}
 				minReputation={data.minReputation}
+				on:click={() => goto(ROUTES.PERSONA(groupId))}
 			/>
 		{:else}
 			<p>There are no personas yet</p>

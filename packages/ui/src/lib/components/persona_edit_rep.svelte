@@ -5,15 +5,16 @@
 	import Container from './container.svelte'
 	import Dropdown from './dropdown.svelte'
 	import DropdownItem from './dropdown-item.svelte'
+	import type { ReputationOptions } from '$lib/types'
 
 	let y: number
 
-	export let minReputation: 5 | 25 | 100 | 250 | 500
+	export let minReputation: ReputationOptions
 	export let repTotal: number
 	export let title: string
 	export let onBack: () => unknown
 	export let onClose: () => unknown
-	export let onProceed: (minReputation: 5 | 25 | 100 | 250 | 500) => unknown
+	export let onProceed: (minReputation: ReputationOptions) => unknown
 </script>
 
 <svelte:window bind:scrollY={y} />

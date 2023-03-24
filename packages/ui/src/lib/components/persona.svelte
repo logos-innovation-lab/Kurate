@@ -3,13 +3,14 @@
 	import UserMultiple from './icons/user-multiple.svelte'
 	import Forum from './icons/forum.svelte'
 	import adapter from '$lib/adapters'
+	import type { ReputationOptions } from '$lib/types'
 
 	export let name: string | undefined
 	export let pitch: string | undefined
 	export let postsCount: number
 	export let participantsCount: number
 	export let picture: string | undefined
-	export let minReputation: 5 | 25 | 100 | 250 | 500
+	export let minReputation: ReputationOptions
 	export let noHover: boolean | undefined = undefined
 </script>
 

@@ -1,6 +1,7 @@
 import { writable, type Writable } from 'svelte/store'
 import type { Identity } from '@semaphore-protocol/identity'
 import type { Post } from './post'
+import type { ReputationOptions } from '$lib/types'
 
 export interface Persona {
 	identity?: Identity
@@ -11,7 +12,7 @@ export interface Persona {
 	description: string
 	participantsCount: number
 	postsCount: number
-	minReputation: 5 | 25 | 100 | 250 | 500
+	minReputation: ReputationOptions
 }
 
 export interface DraftPersona extends Omit<Persona, 'postsCount' | 'participantsCount'> {

@@ -14,13 +14,14 @@
 	import Container from '$lib/components/container.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
 	import InfoScreen from '$lib/components/info_screen.svelte'
+	import PersonaEditRep from '$lib/components/persona_edit_rep.svelte'
 
 	import { ROUTES } from '$lib/routes'
 	import { goto } from '$app/navigation'
 	import adapter from '$lib/adapters'
 	import { tokens } from '$lib/stores/tokens'
 	import type { Persona } from '$lib/stores/persona'
-	import PersonaEditRep from '$lib/components/persona_edit_rep.svelte'
+	import type { ReputationOptions } from '$lib/types'
 
 	let persona: Omit<Persona, 'participantsCount' | 'postsCount'> = {
 		name: '',
@@ -34,7 +35,7 @@
 	let name = ''
 	let pitch = ''
 	let description = ''
-	let minReputation: 5 | 25 | 100 | 250 | 500 = 5
+	let minReputation: ReputationOptions = 5
 
 	type State = 'add_text' | 'add_rep' | 'add_images' | 'edit_text' | 'edit_rep' | 'confirm'
 
@@ -75,7 +76,12 @@
 	}
 
 	function onLeaveEdit() {
-		if (name !== '' || pitch !== '' || description !== '' || minReputation !== 5) {
+		if (
+			name !== persona.name ||
+			pitch !== persona.pitch ||
+			description !== persona.description ||
+			minReputation !== persona.minReputation
+		) {
 			showWarningDiscardModal = true
 		} else {
 			setState('add_images')
@@ -132,6 +138,7 @@
 					label="Discard changes"
 					on:click={() => {
 						setState('add_images')
+						showWarningDiscardModal = false
 					}}
 				/>
 				<Button
@@ -182,6 +189,7 @@
 			label="Proceed"
 			icon={Checkmark}
 			variant="primary"
+			disabled={name === '' || pitch === '' || description === ''}
 			on:click={() => {
 				setState('edit_rep')
 			}}

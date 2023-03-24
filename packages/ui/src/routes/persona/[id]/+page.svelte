@@ -88,8 +88,8 @@
 		postsCount={persona.postsCount}
 		participantsCount={persona.participantsCount}
 		minReputation={persona.minReputation}
-		bind:picture={persona.picture}
-		bind:cover={persona.cover}
+		picture={persona.picture}
+		cover={persona.cover}
 		onBack={() => {
 			showPending ? (showPending = false) : goto(ROUTES.HOME)
 		}}

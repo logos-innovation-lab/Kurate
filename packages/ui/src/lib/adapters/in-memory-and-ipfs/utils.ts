@@ -1,6 +1,7 @@
 import { MAX_DIMENSIONS } from '$lib/constants'
 import type { Persona } from '$lib/stores/persona'
 import type { Post } from '$lib/stores/post'
+import type { ReputationOptions } from '$lib/types'
 import { ethers } from 'ethers'
 import lipsum from './lipsum'
 
@@ -55,7 +56,7 @@ export function randomPersona(): Persona {
 	const description = randomText(randomIntegerBetween(5, 20))
 	const cover = randomPicture(MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
 	const picture = randomPicture(MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
-	let minReputation: 5 | 25 | 100 | 250 | 500
+	let minReputation: ReputationOptions
 	switch (randomIntegerBetween(0, 10)) {
 		case 0:
 			minReputation = 500
