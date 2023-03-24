@@ -1,7 +1,5 @@
 <script lang="ts">
 	import Header from '$lib/components/header.svelte'
-	import Button from '$lib/components/button.svelte'
-	import Close from '$lib/components/icons/close.svelte'
 
 	let cls: string | undefined = undefined
 	let y: number

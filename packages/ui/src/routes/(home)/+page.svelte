@@ -41,8 +41,9 @@
 					pitch={draftPersona.pitch}
 					postsCount={draftPersona.posts.length}
 					participantsCount={1}
-					on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
 					picture={draftPersona.picture}
+					minReputation={draftPersona.minReputation}
+					on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
 				/>
 			{/each}
 		</Grid>
@@ -52,14 +53,16 @@
 		<SectionTitle title="Favorites" />
 		<Grid>
 			{#each $personas.favorite as personaId}
-				{#if $personas.all.get(personaId) !== undefined}
+				{@const persona = $personas.all.get(personaId)}
+				{#if persona !== undefined}
 					<Persona
-						name={$personas.all.get(personaId)?.name}
-						pitch={$personas.all.get(personaId)?.pitch}
-						postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
-						participantsCount={$personas.all.get(personaId)?.participantsCount ?? 0}
+						name={persona.name}
+						pitch={persona.pitch}
+						postsCount={persona.postsCount}
+						participantsCount={persona.participantsCount}
+						picture={persona.picture}
+						minReputation={persona.minReputation}
 						on:click={() => goto(ROUTES.PERSONA(personaId))}
-						picture={$personas.all.get(personaId)?.picture}
 					/>
 				{/if}
 			{/each}
@@ -109,12 +112,14 @@
 				.toLowerCase()
 				.includes(filterQuery.toLowerCase())) as [groupId, data]}
 			<Persona
+				{...data}
 				name={data.name}
 				pitch={data.pitch}
 				postsCount={data.postsCount}
 				participantsCount={data.participantsCount}
 				on:click={() => goto(ROUTES.PERSONA(groupId))}
 				picture={data.picture}
+				minReputation={data.minReputation}
 			/>
 		{:else}
 			<p>There are no personas yet</p>

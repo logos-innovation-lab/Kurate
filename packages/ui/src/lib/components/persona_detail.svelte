@@ -22,6 +22,7 @@
 	export let canEditPictures = false
 	export let postsCount: number
 	export let participantsCount: number
+	export let minReputation: 5 | 25 | 100 | 250 | 500
 
 	let coverFiles: FileList | undefined = undefined
 	let pictureFiles: FileList | undefined = undefined
@@ -101,6 +102,9 @@
 		<div class="pitch">{pitch}</div>
 		<div class="description">{description}</div>
 		<div class="post-count">
+			<div>
+				REP {minReputation}+
+			</div>
 			<div>
 				<UserMultiple size={18} />
 				{participantsCount}

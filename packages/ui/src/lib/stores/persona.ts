@@ -11,6 +11,7 @@ export interface Persona {
 	description: string
 	participantsCount: number
 	postsCount: number
+	minReputation: 5 | 25 | 100 | 250 | 500
 }
 
 export interface DraftPersona extends Omit<Persona, 'postsCount' | 'participantsCount'> {

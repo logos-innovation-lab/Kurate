@@ -9,6 +9,7 @@
 	export let postsCount: number
 	export let participantsCount: number
 	export let picture: string | undefined
+	export let minReputation: 5 | 25 | 100 | 250 | 500
 	export let noHover: boolean | undefined = undefined
 </script>
 
@@ -20,6 +21,9 @@
 		<div class="header">{name}</div>
 		<div class="description">{pitch}</div>
 		<div class="post-count">
+			<div>
+				REP {minReputation}+
+			</div>
 			<div>
 				<UserMultiple size={18} />
 				{participantsCount}

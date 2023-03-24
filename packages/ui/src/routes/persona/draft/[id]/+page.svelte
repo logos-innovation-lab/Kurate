@@ -56,7 +56,6 @@
 	}
 
 	let y: number
-	export let onBack: () => unknown = () => history.back()
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -98,6 +97,7 @@
 		description={persona.description}
 		postsCount={persona.posts.length}
 		participantsCount={1}
+		minReputation={persona.minReputation}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 		canEditPictures
@@ -309,7 +309,6 @@
 			border-radius: 50%;
 			width: 28px;
 			height: 28px;
-			// transform: translateX(2px);
 			transform: translate(-4px, 0px);
 			z-index: -1;
 		}

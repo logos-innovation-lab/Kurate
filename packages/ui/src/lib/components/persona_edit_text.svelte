@@ -1,8 +1,6 @@
 <script lang="ts">
 	import Textarea from '$lib/components/textarea.svelte'
 	import Header from '$lib/components/header.svelte'
-	import Button from '$lib/components/button.svelte'
-	import Close from '$lib/components/icons/close.svelte'
 
 	let y: number
 
@@ -10,7 +8,6 @@
 	export let pitch = ''
 	export let description = ''
 	export let title: string
-	// export let onBack: undefined | (() => unknown) = undefined
 	export let onClose: (() => unknown) | undefined = undefined
 </script>
 

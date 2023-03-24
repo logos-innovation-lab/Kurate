@@ -82,6 +82,7 @@
 				postsCount={chat.persona.postsCount}
 				picture={chat.persona.picture}
 				participantsCount={chat.persona.participantsCount}
+				minReputation={chat.persona.minReputation}
 			/>
 		{:else}
 			<div class="btn">

@@ -55,15 +55,37 @@ export function randomPersona(): Persona {
 	const description = randomText(randomIntegerBetween(5, 20))
 	const cover = randomPicture(MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
 	const picture = randomPicture(MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
+	let minReputation: 5 | 25 | 100 | 250 | 500
+	switch (randomIntegerBetween(0, 10)) {
+		case 0:
+			minReputation = 500
+			break
+		case 1:
+			minReputation = 250
+			break
+		case 2:
+		case 3:
+			minReputation = 100
+			break
+		case 4:
+		case 5:
+		case 6:
+			minReputation = 25
+			break
+		default:
+			minReputation = 5
+			break
+	}
 
 	const persona: Persona = {
 		name,
 		pitch,
 		description,
-		participantsCount: randomIntegerBetween(1, 500),
-		postsCount: randomIntegerBetween(1, 1000),
+		participantsCount: randomIntegerBetween(1, 1500),
+		postsCount: randomIntegerBetween(1, 2000),
 		cover,
 		picture,
+		minReputation,
 	}
 
 	return persona

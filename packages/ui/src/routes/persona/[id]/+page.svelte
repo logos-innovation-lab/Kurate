@@ -87,6 +87,7 @@
 		description={persona.description}
 		postsCount={persona.postsCount}
 		participantsCount={persona.participantsCount}
+		minReputation={persona.minReputation}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 		onBack={() => {
