@@ -2,6 +2,8 @@ import type { DraftPersona, Persona } from '$lib/stores/persona'
 import type { Signer } from 'ethers'
 import type { Chat } from '$lib/stores/chat'
 import { InMemoryAndIPFS } from './in-memory-and-ipfs'
+import { ZkitterAdapter } from './zkitter'
+import { ADAPTER } from '$lib/constants'
 
 export interface Adapter {
 	// This is run when the app is mounted and should start app wide subscriptions
@@ -29,5 +31,8 @@ export interface Adapter {
 	sendChatMessage(chatId: number, text: string): Promise<void>
 	subscribeToChat(chatId: number): () => void
 }
+let adapter: Adapter
+if (ADAPTER === 'in-memory') adapter = new InMemoryAndIPFS() as Adapter
+else adapter = new ZkitterAdapter() as Adapter
 
-export default new InMemoryAndIPFS() as Adapter
+export default adapter
