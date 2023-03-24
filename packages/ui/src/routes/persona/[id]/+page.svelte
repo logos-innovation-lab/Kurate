@@ -4,6 +4,8 @@
 	import Edit from '$lib/components/icons/edit.svelte'
 	import Star from '$lib/components/icons/star.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
+	import ThumbsDown from '$lib/components/icons/thumbs-down.svelte'
+	import Favorite from '$lib/components/icons/favorite.svelte'
 	import StarFilled from '$lib/components/icons/star_filled.svelte'
 	import Hourglass from '$lib/components/icons/hourglass.svelte'
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
@@ -181,6 +183,7 @@
 								<Button
 									variant="secondary"
 									label="Promote"
+									icon={Favorite}
 									disabled={$profile.signer === undefined}
 									on:click={() =>
 										$profile.signer !== undefined &&
@@ -189,6 +192,7 @@
 								<Button
 									variant="secondary"
 									label="Demote"
+									icon={ThumbsDown}
 									disabled={$profile.signer === undefined}
 									on:click={() =>
 										$profile.signer !== undefined &&
