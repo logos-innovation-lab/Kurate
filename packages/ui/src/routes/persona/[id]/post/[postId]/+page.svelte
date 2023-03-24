@@ -56,7 +56,7 @@
 {:else}
 	<Header title="Post" {onBack} />
 	<!-- TODO: This is the post page so I'm thinking there shouldn't be an action on the post -->
-	<Post {post} on:click noHover /> 
+	<Post {post} on:click noHover />
 	<div class="center">
 		{#if $profile.signer !== undefined}
 			<Button variant="primary" label="Chat with poster" icon={ChatBot} on:click={startChat} />
