@@ -4,7 +4,7 @@ import { generateMerkleTree } from '@zk-kit/protocols'
 import { browser } from '$app/environment'
 import { providers } from 'ethers'
 import { PROVIDER } from '$lib/constants'
-import type { GenericDBAdapterInterface } from '$lib/zkitter-js'
+import type { GenericDBAdapterInterface } from 'zkitter-js'
 
 const LS_KEY_GROUP_IDS = 'kurate/groupIds'
 

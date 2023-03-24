@@ -1,8 +1,10 @@
 import { ec } from 'elliptic'
 import { Strategy, ZkIdentity } from '@zk-kit/identity'
-import { generateIdentity } from '$lib/zkitter-js'
+import { generateIdentity } from 'zkitter-js'
 import type { Signer } from 'ethers'
-import { sha256, signWithP256 } from '$lib/zkitter-js/utils/crypto'
+
+// FIXME: help! Would be nice to have this exposed
+import { sha256, signWithP256 } from 'zkitter-js/utils/crypto'
 
 export const generateECDHKeyPairFromhex = async (
 	hashHex: string,
