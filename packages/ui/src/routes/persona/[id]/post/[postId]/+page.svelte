@@ -55,8 +55,7 @@
 	</Container>
 {:else}
 	<Header title="Post" {onBack} />
-	<Post {post} on:click />
-
+	<Post {post} on:click noHover />
 	<div class="center">
 		{#if $profile.signer !== undefined}
 			<Button variant="primary" label="Chat with poster" icon={ChatBot} on:click={startChat} />

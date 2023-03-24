@@ -5,12 +5,13 @@
 	import adapter from '$lib/adapters'
 
 	let cls: string | undefined = undefined
+	export let noHover: boolean | undefined = undefined
 	export { cls as class }
 
 	export let post: Post
 </script>
 
-<Card on:click class={` ${cls}`}>
+<Card on:click class={` ${cls}`} {noHover}>
 	<div class={`content-wrapper`}>
 		<div class="imgs">
 			{#each post.images as image, index}

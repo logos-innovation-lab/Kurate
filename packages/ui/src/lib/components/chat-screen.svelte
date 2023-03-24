@@ -74,8 +74,9 @@
 					<Button icon={ViewOff} on:click={toggleShowPost} />
 				</div>
 			</SingleColumn>
-			<Post class="detail" post={chat.post} />
+			<Post class="detail" post={chat.post} noHover />
 			<Persona
+				noHover
 				name={chat.persona.name}
 				pitch={chat.persona.pitch}
 				postsCount={chat.persona.postsCount}
@@ -88,31 +89,47 @@
 			</div>
 		{/if}
 	</div>
-	<Divider />
 
 	<!-- Extra content -->
 	<div class="messages">
-		<SingleColumn>
-			<slot />
+		{#if chat.messages.length > 0}
+			<Divider />
+			<SingleColumn>
+				<slot />
 
-			<!-- Chat bubbles -->
-			{#each chat.messages as message}
-				<div
-					class={`message ${message.myMessage ? 'my-message' : ''} ${
-						message.system ? 'system' : ''
-					}`}
-				>
-					<div>{message.text}</div>
-					<div>
-						{formatDateAndTime(message.timestamp)}
-						{#if message.system}
-							<br />
-							This is an automated message
-						{/if}
-					</div>
+				<div class="messages-inner">
+					<!-- Chat bubbles -->
+					{#each chat.messages as message}
+						<div
+							class={`message ${message.myMessage ? 'my-message' : ''} ${
+								message.system ? 'system' : ''
+							}`}
+						>
+							<div>{message.text}</div>
+							<div>
+								{formatDateAndTime(message.timestamp)}
+								{#if message.system}
+									<br />
+									This is an automated message
+								{/if}
+							</div>
+						</div>
+					{/each}
 				</div>
-			{/each}
-		</SingleColumn>
+			</SingleColumn>
+		{:else}
+			<Divider />
+			<SingleColumn>
+				<InfoBox>
+					<div class="icon">
+						<Info size={32} />
+					</div>
+					<p class="h2">Start a new chat</p>
+					<p>This will send an anonymous and private message to the writer of this post.</p>
+					<LearnMore href="/" />
+				</InfoBox>
+			</SingleColumn>
+		{/if}
 		{#if chat.blocked === true}
 			<Divider />
 			<SingleColumn>
@@ -143,6 +160,7 @@
 	<!-- Chat input -->
 	{#if chat.blocked !== true && chat.closed !== true}
 		<div class="chat-input-wrapper">
+			<Divider />
 			<SingleColumn>
 				<div class="chat-input">
 					<div class="textarea">
@@ -165,7 +183,7 @@
 
 <style lang="scss">
 	.original-post {
-		margin-bottom: var(--spacing-24);
+		padding-bottom: var(--spacing-24);
 		.original-header {
 			display: flex;
 			justify-content: space-between;
@@ -179,7 +197,11 @@
 	}
 
 	.messages {
-		margin-block: var(--spacing-48);
+		margin-bottom: 71px;
+
+		.messages-inner {
+			padding-top: var(--spacing-48);
+		}
 
 		.message {
 			display: flex;
@@ -225,6 +247,8 @@
 	.chat-input-wrapper {
 		position: fixed;
 		inset: auto 0 0 0;
+		background-color: var(--color-body-bg);
+
 		.chat-input {
 			display: flex;
 			flex-direction: row;

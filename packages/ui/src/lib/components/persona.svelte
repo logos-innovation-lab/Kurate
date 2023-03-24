@@ -9,9 +9,10 @@
 	export let postsCount: number
 	export let participantsCount: number
 	export let picture: string | undefined
+	export let noHover: boolean | undefined = undefined
 </script>
 
-<Card on:click>
+<Card on:click {noHover}>
 	<div class="picture">
 		<img src={picture ? adapter.getPicture(picture) : undefined} alt="persona" />
 	</div>
