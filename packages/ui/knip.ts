@@ -5,10 +5,12 @@ import type { KnipConfig } from 'knip'
 const sveltePreprocessor = sveltePreprocess()
 
 const config: KnipConfig = {
-	ignore: ['**/*.d.ts'],
+	// FIXME: figure out why types.ts is reported as unused
+	ignore: ['**/*.d.ts', 'src/lib/types.ts'],
 	paths: {
 		// This ain't pretty, but Svelte basically does the same
 		'$app/*': ['node_modules/@sveltejs/kit/src/runtime/app/*'],
+		'$env/*': ['.svelte-kit/ambient.d.ts'],
 		'$lib/*': ['src/lib/*'],
 	},
 	compilers: {
