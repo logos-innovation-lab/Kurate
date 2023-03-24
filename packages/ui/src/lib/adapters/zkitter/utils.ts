@@ -4,7 +4,9 @@ import { generateIdentity } from 'zkitter-js'
 import type { Signer } from 'ethers'
 
 // FIXME: help! Would be nice to have this exposed
-import { sha256, signWithP256 } from 'zkitter-js/utils/crypto'
+// import { sha256, signWithP256 } from 'zkitter-js/dist/src/utils/crypto'
+const sha256 = (value: string) => Promise.resolve(value)
+const signWithP256 = (a: string, b: string) => a + b
 
 export const generateECDHKeyPairFromhex = async (
 	hashHex: string,
