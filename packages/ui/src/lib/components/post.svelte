@@ -18,7 +18,6 @@
 				{#if index <= 5}
 					<div>
 						<img src={adapter.getPicture(image)} alt="post" />
-						<!-- TODO: add check and functionality to 'more images' badge -->
 						{#if index === 5 && post.images.length > 6}
 							<div class="more">+{post.images.length - 6}</div>
 						{/if}

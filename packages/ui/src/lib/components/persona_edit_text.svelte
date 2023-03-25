@@ -1,9 +1,6 @@
 <script lang="ts">
-	import Close from '$lib/components/icons/close.svelte'
-	import Button from '$lib/components/button.svelte'
 	import Textarea from '$lib/components/textarea.svelte'
 	import Header from '$lib/components/header.svelte'
-	import Checkmark from './icons/checkmark.svelte'
 
 	let y: number
 
@@ -11,14 +8,12 @@
 	export let pitch = ''
 	export let description = ''
 	export let title: string
-	export let onCancel: () => unknown
-	export let onSubmit: () => unknown
-	export let onBack: undefined | (() => unknown) = undefined
+	export let onClose: (() => unknown) | undefined = undefined
 </script>
 
 <svelte:window bind:scrollY={y} />
 
-<Header {title} {onBack} />
+<Header {title} {onClose} />
 
 <form>
 	<Textarea placeholder="Enter a short memorable name…" label="Persona name" bind:value={name} />
@@ -34,15 +29,7 @@
 	/>
 
 	<div class="btns">
-		<Button
-			label="Proceed"
-			icon={Checkmark}
-			variant="primary"
-			disabled={!name || !pitch || !description}
-			on:click={onSubmit}
-		/>
-
-		<Button label="Cancel" icon={Close} on:click={onCancel} />
+		<slot />
 	</div>
 </form>
 

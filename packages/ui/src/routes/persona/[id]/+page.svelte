@@ -87,8 +87,9 @@
 		description={persona.description}
 		postsCount={persona.postsCount}
 		participantsCount={persona.participantsCount}
-		bind:picture={persona.picture}
-		bind:cover={persona.cover}
+		minReputation={persona.minReputation}
+		picture={persona.picture}
+		cover={persona.cover}
 		onBack={() => {
 			showPending ? (showPending = false) : goto(ROUTES.HOME)
 		}}
@@ -136,13 +137,15 @@
 		<SectionTitle title={showPending ? 'All pending posts' : 'All posts'}>
 			<svelte:fragment slot="buttons">
 				{#if $profile.signer !== undefined}
-					<Dropdown icon={SettingsView}>
-						<DropdownItem active={sortBy === 'date'} on:click={() => (sortBy = 'date')}>
+					<Dropdown>
+						<Button slot="button" icon={SettingsView} />
+
+						<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
 							Sort by date of creation
 						</DropdownItem>
 						<DropdownItem
 							active={sortBy === 'alphabetical'}
-							on:click={() => (sortBy = 'alphabetical')}
+							onClick={() => (sortBy = 'alphabetical')}
 						>
 							Sort by name (alphabetical)
 						</DropdownItem>

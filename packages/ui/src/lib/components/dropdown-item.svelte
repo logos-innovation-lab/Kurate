@@ -4,10 +4,14 @@
 	export let disabled = false
 	export let danger = false
 	export let active = false
+	export let onClick: () => unknown
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<li class={`${$$props.class} ${disabled ? 'disabled' : ''} ${danger ? 'danger' : ''}`} on:click>
+<li
+	class={`${$$props.class} ${disabled ? 'disabled' : ''} ${danger ? 'danger' : ''}`}
+	on:click={() => !disabled && onClick()}
+>
 	<slot />
 	{#if active}
 		<span class="selected">

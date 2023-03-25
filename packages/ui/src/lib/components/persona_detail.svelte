@@ -12,6 +12,7 @@
 	import { clipAndResize } from '$lib/utils/image'
 	import { MAX_DIMENSIONS } from '$lib/constants'
 	import adapter from '$lib/adapters'
+	import type { ReputationOptions } from '$lib/types'
 
 	export let name: string
 	export let pitch: string
@@ -22,6 +23,7 @@
 	export let canEditPictures = false
 	export let postsCount: number
 	export let participantsCount: number
+	export let minReputation: ReputationOptions
 
 	let coverFiles: FileList | undefined = undefined
 	let pictureFiles: FileList | undefined = undefined
@@ -101,6 +103,9 @@
 		<div class="pitch">{pitch}</div>
 		<div class="description">{description}</div>
 		<div class="post-count">
+			<div>
+				REP {minReputation}+
+			</div>
 			<div>
 				<UserMultiple size={18} />
 				{participantsCount}

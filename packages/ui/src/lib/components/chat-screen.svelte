@@ -46,21 +46,23 @@
 <div class="root">
 	<Header {title} {onBack}>
 		<!-- TODO: add actions to dropdown buttons -->
-		<Dropdown icon={Menu}>
+		<Dropdown>
+			<Button slot="button" icon={Menu} />
+
 			{#if chat.blocked === true}
-				<DropdownItem on:click={() => console.log('delete for me')}>Delete for me</DropdownItem>
-				<DropdownItem on:click={() => console.log('delete & block')} danger>
+				<DropdownItem onClick={() => console.log('delete for me')}>Delete for me</DropdownItem>
+				<DropdownItem onClick={() => console.log('delete & block')} danger>
 					Delete & block sender...
 				</DropdownItem>
 			{:else if chat.closed === true}
-				<DropdownItem on:click={() => console.log('re-open')}>Re-open chat</DropdownItem>
-				<DropdownItem on:click={() => console.log('delete for me')}>Delete for me</DropdownItem>
-				<DropdownItem on:click={() => console.log('delete & block')} danger>
+				<DropdownItem onClick={() => console.log('re-open')}>Re-open chat</DropdownItem>
+				<DropdownItem onClick={() => console.log('delete for me')}>Delete for me</DropdownItem>
+				<DropdownItem onClick={() => console.log('delete & block')} danger>
 					Delete & block sender...
 				</DropdownItem>
 			{:else}
-				<DropdownItem on:click={() => console.log('close')}>Close chat</DropdownItem>
-				<DropdownItem on:click={() => console.log('delete & block')} danger>
+				<DropdownItem onClick={() => console.log('close')}>Close chat</DropdownItem>
+				<DropdownItem onClick={() => console.log('delete & block')} danger>
 					Delete & block sender...
 				</DropdownItem>
 			{/if}
@@ -82,6 +84,7 @@
 				postsCount={chat.persona.postsCount}
 				picture={chat.persona.picture}
 				participantsCount={chat.persona.participantsCount}
+				minReputation={chat.persona.minReputation}
 			/>
 		{:else}
 			<div class="btn">

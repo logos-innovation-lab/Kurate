@@ -4,6 +4,7 @@
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 	import Info from '$lib/components/icons/information.svelte'
+	import Undo from '$lib/components/icons/undo.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
@@ -13,35 +14,90 @@
 	import Container from '$lib/components/container.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
 	import InfoScreen from '$lib/components/info_screen.svelte'
+	import PersonaEditRep from '$lib/components/persona_edit_rep.svelte'
 
 	import { ROUTES } from '$lib/routes'
 	import { goto } from '$app/navigation'
 	import adapter from '$lib/adapters'
+	import { tokens } from '$lib/stores/tokens'
+	import type { Persona } from '$lib/stores/persona'
+	import type { ReputationOptions } from '$lib/types'
 
-	let persona = {
+	let persona: Omit<Persona, 'participantsCount' | 'postsCount'> = {
 		name: '',
 		pitch: '',
 		description: '',
 		picture: '',
 		cover: '',
+		minReputation: 5,
 	}
 
-	let state: 'edit_text' | 'edit_images' | 'confirm' = 'edit_text'
-	let showWarningModal = false
+	let name = ''
+	let pitch = ''
+	let description = ''
+	let minReputation: ReputationOptions = 5
+
+	type State = 'add_text' | 'add_rep' | 'add_images' | 'edit_text' | 'edit_rep' | 'confirm'
+
+	let state: State = 'add_text'
+	let showWarningLeaveModal = false
+	let showWarningDiscardModal = false
 	let draftPersonaIndex: number | undefined
 
-	function onCancel() {
-		showWarningModal = true
+	const setState = (newState: State) => {
+		state = newState
+	}
+
+	const goBack = () => {
+		switch (state) {
+			case 'add_rep':
+				setState('add_text')
+				break
+			case 'add_images':
+				setState('add_rep')
+				break
+			case 'edit_rep':
+				setState('edit_text')
+				break
+		}
+	}
+
+	function onLeave() {
+		if (
+			persona.name !== '' ||
+			persona.pitch !== '' ||
+			persona.description !== '' ||
+			persona.minReputation !== 5
+		) {
+			showWarningLeaveModal = true
+		} else {
+			history.back()
+		}
+	}
+
+	function onLeaveEdit() {
+		if (
+			name !== persona.name ||
+			pitch !== persona.pitch ||
+			description !== persona.description ||
+			minReputation !== persona.minReputation
+		) {
+			showWarningDiscardModal = true
+		} else {
+			setState('add_images')
+		}
 	}
 
 	async function savePersona() {
 		draftPersonaIndex = await adapter.addPersonaDraft({ ...persona, posts: [] })
 		state = 'confirm'
 	}
+
+	$: console.log(state)
 </script>
 
-{#if showWarningModal}
-	<InfoScreen title="Leaving Persona creation" onBack={() => (showWarningModal = false)}>
+{#if showWarningLeaveModal}
+	<InfoScreen title="Leaving Persona creation" onBack={() => (showWarningLeaveModal = false)}>
 		<Container>
 			<InfoBox>
 				<div class="icon">
@@ -55,7 +111,7 @@
 						variant="secondary"
 						label="Cancel"
 						icon={Close}
-						on:click={() => (showWarningModal = false)}
+						on:click={() => (showWarningLeaveModal = false)}
 					/>
 					<Button
 						icon={ArrowRight}
@@ -67,19 +123,94 @@
 			</InfoBox>
 		</Container>
 	</InfoScreen>
-{:else if state === 'edit_text'}
+{:else if showWarningDiscardModal}
+	<InfoScreen title="Discard changes">
+		<InfoBox>
+			<div class="icon">
+				<Info size={32} />
+			</div>
+			<h2>Discard changes?</h2>
+			<LearnMore href="/" />
+			<svelte:fragment slot="buttons">
+				<Button
+					icon={Checkmark}
+					variant="primary"
+					label="Discard changes"
+					on:click={() => {
+						setState('add_images')
+						showWarningDiscardModal = false
+					}}
+				/>
+				<Button
+					variant="secondary"
+					label="Continue editing"
+					icon={Undo}
+					on:click={() => (showWarningDiscardModal = false)}
+				/>
+			</svelte:fragment>
+		</InfoBox>
+	</InfoScreen>
+{:else if state === 'add_text'}
 	<PersonaEditText
 		bind:name={persona.name}
 		bind:pitch={persona.pitch}
 		bind:description={persona.description}
-		title="Create persona"
-		onSubmit={() => {
-			state = 'edit_images'
+		title="Create Persona"
+		onClose={onLeave}
+	>
+		<Button
+			label="Proceed"
+			icon={Checkmark}
+			variant="primary"
+			disabled={!persona.name || !persona.pitch || !persona.description}
+			on:click={() => setState('add_rep')}
+		/>
+	</PersonaEditText>
+{:else if state === 'add_rep'}
+	<PersonaEditRep
+		minReputation={persona.minReputation}
+		title="Create Persona"
+		repTotal={$tokens.repTotal}
+		onClose={onLeave}
+		onBack={goBack}
+		onProceed={() => {
+			setState('add_images')
 		}}
-		onBack={onCancel}
-		{onCancel}
 	/>
-{:else if state === 'edit_images'}
+{:else if state === 'edit_text'}
+	<PersonaEditText
+		bind:name
+		bind:pitch
+		bind:description
+		title="Edit Persona details"
+		onClose={onLeaveEdit}
+	>
+		<Button
+			label="Proceed"
+			icon={Checkmark}
+			variant="primary"
+			disabled={name === '' || pitch === '' || description === ''}
+			on:click={() => {
+				setState('edit_rep')
+			}}
+		/>
+	</PersonaEditText>
+{:else if state === 'edit_rep'}
+	<PersonaEditRep
+		bind:minReputation
+		title="Edit Persona details"
+		repTotal={$tokens.repTotal}
+		onBack={goBack}
+		onClose={onLeaveEdit}
+		onProceed={(minRep) => {
+			persona.name = name
+			persona.pitch = pitch
+			persona.description = description
+			persona.minReputation = minRep
+			setState('add_images')
+		}}
+	/>
+{:else if state === 'add_images'}
 	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<PersonaDetail
 		name={persona.name}
@@ -87,12 +218,11 @@
 		description={persona.description}
 		postsCount={0}
 		participantsCount={1}
+		minReputation={persona.minReputation}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 		canEditPictures
-		onBack={() => {
-			state = 'edit_text'
-		}}
+		onBack={goBack}
 	>
 		<Button
 			slot="button_primary"
@@ -107,7 +237,13 @@
 			variant="secondary"
 			label="Edit Persona details"
 			icon={Edit}
-			on:click={() => (state = 'edit_text')}
+			on:click={() => {
+				name = persona.name
+				pitch = persona.pitch
+				description = persona.description
+				minReputation = persona.minReputation
+				setState('edit_text')
+			}}
 		/>
 		<Container>
 			<InfoBox>

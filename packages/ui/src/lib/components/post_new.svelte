@@ -14,7 +14,7 @@
 	let cls: string | undefined = undefined
 	export { cls as class }
 	export let submit: (postText: string, images: string[]) => unknown
-	export let onBack: () => unknown = () => history.back()
+	export let onBack: (hasContent: boolean) => unknown = () => history.back()
 	export let label: string | undefined = 'Publish'
 
 	let postText = ''
@@ -54,7 +54,7 @@
 <svelte:window bind:innerWidth={x} />
 
 <div class={`root ${cls}`}>
-	<Header {onBack}>
+	<Header onBack={() => onBack(postText !== '' || images.length > 0)}>
 		<InputFile icon={Image} bind:files multiple />
 		<Button
 			icon={Checkmark}

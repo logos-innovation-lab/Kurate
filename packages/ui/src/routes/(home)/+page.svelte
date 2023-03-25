@@ -41,8 +41,9 @@
 					pitch={draftPersona.pitch}
 					postsCount={draftPersona.posts.length}
 					participantsCount={1}
-					on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
 					picture={draftPersona.picture}
+					minReputation={draftPersona.minReputation}
+					on:click={() => goto(ROUTES.PERSONA_DRAFT(index))}
 				/>
 			{/each}
 		</Grid>
@@ -52,14 +53,16 @@
 		<SectionTitle title="Favorites" />
 		<Grid>
 			{#each $personas.favorite as personaId}
-				{#if $personas.all.get(personaId) !== undefined}
+				{@const persona = $personas.all.get(personaId)}
+				{#if persona !== undefined}
 					<Persona
-						name={$personas.all.get(personaId)?.name}
-						pitch={$personas.all.get(personaId)?.pitch}
-						postsCount={$personas.all.get(personaId)?.postsCount ?? 0}
-						participantsCount={$personas.all.get(personaId)?.participantsCount ?? 0}
+						name={persona.name}
+						pitch={persona.pitch}
+						postsCount={persona.postsCount}
+						participantsCount={persona.participantsCount}
+						picture={persona.picture}
+						minReputation={persona.minReputation}
 						on:click={() => goto(ROUTES.PERSONA(personaId))}
-						picture={$personas.all.get(personaId)?.picture}
 					/>
 				{/if}
 			{/each}
@@ -70,25 +73,27 @@
 		<svelte:fragment slot="buttons">
 			{#if $profile.signer !== undefined}
 				<Button icon={Add} label="Create persona" on:click={createDraft} />
-				<Dropdown icon={SettingsView}>
-					<DropdownItem active={sortBy === 'date'} on:click={() => (sortBy = 'date')}>
+				<Dropdown>
+					<Button slot="button" icon={SettingsView} />
+
+					<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
 						Sort by date of creation
 					</DropdownItem>
-					<DropdownItem active={sortBy === 'activity'} on:click={() => (sortBy = 'activity')}>
+					<DropdownItem active={sortBy === 'activity'} onClick={() => (sortBy = 'activity')}>
 						Sort by recent activity
 					</DropdownItem>
 					<DropdownItem
 						active={sortBy === 'participantsCount'}
-						on:click={() => (sortBy = 'participantsCount')}
+						onClick={() => (sortBy = 'participantsCount')}
 					>
 						Sort by number of participants
 					</DropdownItem>
-					<DropdownItem active={sortBy === 'postsCount'} on:click={() => (sortBy = 'postsCount')}>
+					<DropdownItem active={sortBy === 'postsCount'} onClick={() => (sortBy = 'postsCount')}>
 						Sort by number of posts
 					</DropdownItem>
 					<DropdownItem
 						active={sortBy === 'alphabetical'}
-						on:click={() => (sortBy = 'alphabetical')}
+						onClick={() => (sortBy = 'alphabetical')}
 					>
 						Sort by name (alphabetical)
 					</DropdownItem>
@@ -113,8 +118,9 @@
 				pitch={data.pitch}
 				postsCount={data.postsCount}
 				participantsCount={data.participantsCount}
-				on:click={() => goto(ROUTES.PERSONA(groupId))}
 				picture={data.picture}
+				minReputation={data.minReputation}
+				on:click={() => goto(ROUTES.PERSONA(groupId))}
 			/>
 		{:else}
 			<p>There are no personas yet</p>

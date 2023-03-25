@@ -10,7 +10,7 @@ export interface TokenData {
 export type TokenStore = Writable<TokenData>
 
 function createTokenStore(): TokenStore {
-	const store = writable<TokenData>({ go: 30, repTotal: 10, repStaked: 5, loading: false })
+	const store = writable<TokenData>({ go: 30, repTotal: 55, repStaked: 5, loading: false })
 
 	return store
 }
