@@ -5,6 +5,7 @@
 	import Container from './container.svelte'
 	import Dropdown from './dropdown.svelte'
 	import DropdownItem from './dropdown-item.svelte'
+	import Select from './select.svelte'
 	import type { ReputationOptions } from '$lib/types'
 
 	let y: number
@@ -22,31 +23,33 @@
 <InfoScreen {title} {onBack} {onClose}>
 	<Container>
 		<h2>Reputation level</h2>
-		<Dropdown label={`Minimum ${minReputation} REP`}>
+		<Dropdown>
+			<Select slot="button" label="Reputation level" value={`Minimum ${minReputation} REP`} />
+
 			<DropdownItem
 				disabled={repTotal < 5}
 				active={minReputation === 5}
-				on:click={() => (minReputation = 5)}>Minimum (5+ REP)</DropdownItem
+				onClick={() => (minReputation = 5)}>Minimum (5+ REP)</DropdownItem
 			>
 			<DropdownItem
 				disabled={repTotal < 25}
 				active={minReputation === 25}
-				on:click={() => (minReputation = 25)}>Medium (25+ REP)</DropdownItem
+				onClick={() => (minReputation = 25)}>Medium (25+ REP)</DropdownItem
 			>
 			<DropdownItem
 				disabled={repTotal < 100}
 				active={minReputation === 100}
-				on:click={() => (minReputation = 100)}>High (100+ REP)</DropdownItem
+				onClick={() => (minReputation = 100)}>High (100+ REP)</DropdownItem
 			>
 			<DropdownItem
 				disabled={repTotal < 250}
 				active={minReputation === 250}
-				on:click={() => (minReputation = 250)}>Very high (250+ REP)</DropdownItem
+				onClick={() => (minReputation = 250)}>Very high (250+ REP)</DropdownItem
 			>
 			<DropdownItem
 				disabled={repTotal < 500}
 				active={minReputation === 500}
-				on:click={() => (minReputation = 500)}>Maximum (500+ REP)</DropdownItem
+				onClick={() => (minReputation = 500)}>Maximum (500+ REP)</DropdownItem
 			>
 		</Dropdown>
 		<p>

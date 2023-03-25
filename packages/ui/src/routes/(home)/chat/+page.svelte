@@ -50,14 +50,16 @@
 {:else}
 	<SectionTitle title="Active chats">
 		<svelte:fragment slot="buttons">
-			<Dropdown icon={SettingsView}>
-				<DropdownItem active={sortBy === 'date'} on:click={() => (sortBy = 'date')}>
+			<Dropdown>
+				<Button slot="button" icon={SettingsView} />
+
+				<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
 					Sort by date of creation
 				</DropdownItem>
-				<DropdownItem active={sortBy === 'activity'} on:click={() => (sortBy = 'activity')}>
+				<DropdownItem active={sortBy === 'activity'} onClick={() => (sortBy = 'activity')}>
 					Sort by recent activity
 				</DropdownItem>
-				<DropdownItem active={sortBy === 'alphabetical'} on:click={() => (sortBy = 'alphabetical')}>
+				<DropdownItem active={sortBy === 'alphabetical'} onClick={() => (sortBy = 'alphabetical')}>
 					Sort by name (alphabetical)
 				</DropdownItem>
 			</Dropdown>
