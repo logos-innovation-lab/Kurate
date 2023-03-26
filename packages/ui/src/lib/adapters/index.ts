@@ -18,6 +18,7 @@ export interface Adapter {
 	removePersonaFromFavorite: (groupId: string, persona?: Persona) => Promise<void>
 	addPersonaDraft: (draftPersona: DraftPersona) => Promise<number>
 	updatePersonaDraft: (index: number, draftPersona: DraftPersona) => Promise<void>
+	deleteDraftPersona: (index: number) => Promise<void>
 	publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void>
 
 	uploadPicture(picture: string): Promise<string>
