@@ -92,8 +92,6 @@
 		draftPersonaIndex = await adapter.addPersonaDraft({ ...persona, posts: [] })
 		state = 'confirm'
 	}
-
-	$: console.log(state)
 </script>
 
 {#if showWarningLeaveModal}
