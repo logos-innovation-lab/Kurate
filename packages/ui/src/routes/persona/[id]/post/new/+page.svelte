@@ -14,13 +14,10 @@
 	import Undo from '$lib/components/icons/undo.svelte'
 	import adapter from '$lib/adapters'
 	import { page } from '$app/stores'
+	import { personas } from '$lib/stores/persona'
+	import { NEW_POST_GO_PRICE, NEW_POST_REP_PRICE } from '$lib/constants'
 
-	// FIXME: These should come from some constants
-	const TOKEN_POST_COST_REP = 5
-	const TOKEN_POST_COST_GO = 5
-
-	// FIXME: This should be stored in persona and loaded
-	const TOKEN_POST_MIN_REP = 5
+	const persona = $personas.all.get($page.params.id)
 
 	async function submit(postText: string, images: string[]) {
 		try {
@@ -42,8 +39,24 @@
 	let state: 'price_varning' | 'edit' | 'post_submitted' = 'price_varning'
 </script>
 
-{#if state === 'price_varning'}
-	{#if $tokens.repTotal < TOKEN_POST_MIN_REP}
+{#if persona === undefined}
+	<InfoScreen title="Persona not found" {onBack}>
+		<div class="token-info">
+			<div>
+				<div class="icon">
+					<Info size={32} />
+				</div>
+				<h2>Sorry, we couldn't find the Persona you were looking for</h2>
+				<p>It might have been deleted or you might have the wrong link.</p>
+				<LearnMore href="/" />
+			</div>
+		</div>
+		<svelte:fragment slot="buttons">
+			<Button label="Back" icon={Undo} on:click={onBack} />
+		</svelte:fragment>
+	</InfoScreen>
+{:else if state === 'price_varning'}
+	{#if $tokens.repTotal < persona.minReputation}
 		<InfoScreen title="Not enough REP" {onBack}>
 			<div class="token-info">
 				<div>
@@ -51,7 +64,9 @@
 						<Info size={32} />
 					</div>
 					<h2>Sorry, you can't submit a post now</h2>
-					<p>You need at least {TOKEN_POST_MIN_REP} REP to submit a post through this Persona.</p>
+					<p>
+						You need at least {persona.minReputation} REP to submit a post through this Persona.
+					</p>
 					<LearnMore href="/" />
 				</div>
 				<TokenInfo
@@ -66,7 +81,7 @@
 				<Button label="Back" icon={Undo} on:click={onBack} />
 			</svelte:fragment>
 		</InfoScreen>
-	{:else if $tokens.go < TOKEN_POST_COST_GO || $tokens.repTotal - $tokens.repStaked < TOKEN_POST_COST_REP}
+	{:else if $tokens.go < NEW_POST_GO_PRICE || $tokens.repTotal - $tokens.repStaked < NEW_POST_REP_PRICE}
 		<InfoScreen title="Not enough token" {onBack}>
 			<div class="token-info">
 				<div>
@@ -75,7 +90,7 @@
 					</div>
 					<h2>Sorry, you can't submit a post now</h2>
 					<p>
-						You need {TOKEN_POST_COST_REP} REP to stake and {TOKEN_POST_COST_GO} GO to submit a post.
+						You need {NEW_POST_REP_PRICE} REP to stake and {NEW_POST_GO_PRICE} GO to submit a post.
 					</p>
 					<LearnMore href="/" />
 				</div>
@@ -85,14 +100,14 @@
 						amount={($tokens.repTotal - $tokens.repStaked).toFixed()}
 						tokenName="REP"
 						explanation={`${$tokens.repStaked} out of ${$tokens.repTotal} staked`}
-						error={$tokens.repTotal - $tokens.repStaked < TOKEN_POST_COST_REP}
+						error={$tokens.repTotal - $tokens.repStaked < NEW_POST_REP_PRICE}
 					/>
 					<TokenInfo
 						title="Currently available"
 						amount={$tokens.go.toFixed()}
 						tokenName="GO"
 						explanation="Until new cycle begins"
-						error={$tokens.go < TOKEN_POST_COST_GO}
+						error={$tokens.go < NEW_POST_GO_PRICE}
 					/>
 				</div>
 			</div>
@@ -107,10 +122,10 @@
 					<div class="icon">
 						<Info size={32} />
 					</div>
-					<h2>This will stake {TOKEN_POST_COST_REP} REP and use {TOKEN_POST_COST_GO} GO</h2>
+					<h2>This will stake {persona?.minReputation} REP and use {NEW_POST_GO_PRICE} GO</h2>
 					<p>
 						Your post will be submitted to a community vote, and will be published if the majority
-						votes to promote it. If promoted, you will earn {TOKEN_POST_COST_REP} REP. If demoted, you
+						votes to promote it. If promoted, you will earn {NEW_POST_REP_PRICE} REP. If demoted, you
 						will lose your staked REP.
 					</p>
 					<p><LearnMore href="/" /></p>
