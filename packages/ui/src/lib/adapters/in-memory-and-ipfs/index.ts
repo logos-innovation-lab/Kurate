@@ -196,6 +196,14 @@ export class InMemoryAndIPFS implements Adapter {
 
 		draftPersona.posts.forEach((p) => posts.addApproved(p, groupId))
 
+		personas.update(({ draft, ...state }) => {
+			const newDraft = draft.filter((d) => d !== draftPersona)
+
+			saveToLocalStorage('drafts', newDraft)
+
+			return { ...state, draft: newDraft }
+		})
+
 		tokens.update(({ go, ...state }) => {
 			return { ...state, go: go - CREATE_PERSONA_GO_PRICE }
 		})

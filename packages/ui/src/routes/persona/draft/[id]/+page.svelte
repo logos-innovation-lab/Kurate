@@ -75,7 +75,6 @@
 		if (!$profile.signer) return
 
 		await adapter.publishPersona(persona, $profile.signer)
-		$personas.draft.splice(personaIndex, 1)
 		state = 'done'
 	}
 
