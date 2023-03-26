@@ -6,6 +6,7 @@
 	import Undo from '$lib/components/icons/undo.svelte'
 	import Info from '$lib/components/icons/information.svelte'
 	import Launch from '$lib/components/icons/rocket.svelte'
+	import TrashCan from '$lib/components/icons/trash-can.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
@@ -24,6 +25,7 @@
 
 	import { personas } from '$lib/stores/persona'
 	import { tokens } from '$lib/stores/tokens'
+	import type { Post as PostType } from '$lib/stores/post'
 	import { page } from '$app/stores'
 	import TokenInfo from '$lib/components/token-info.svelte'
 	import adapter from '$lib/adapters'
@@ -41,6 +43,10 @@
 	let pitch = persona.pitch
 	let description = persona.description
 	let minReputation = persona.minReputation
+	let postToEdit: PostType | undefined = undefined
+	let postToEditText = ''
+	let postToEditImages: string[] = []
+	let postToDelete: PostType | undefined = undefined
 
 	type State =
 		| 'persona_preview'
@@ -99,6 +105,7 @@
 					variant="primary"
 					label="Discard changes"
 					on:click={() => {
+						postToEdit = undefined
 						setState('persona_preview')
 						showWarningDiscardModal = false
 					}}
@@ -112,6 +119,54 @@
 			</svelte:fragment>
 		</InfoBox>
 	</InfoScreen>
+{:else if postToDelete !== undefined}
+	<InfoScreen title="Delete seed post">
+		<InfoBox>
+			<div class="icon">
+				<Info size={32} />
+			</div>
+			<h2>Are you sure you want to delete this seed post?</h2>
+			<LearnMore href="/" />
+			<svelte:fragment slot="buttons">
+				<Button
+					icon={Checkmark}
+					variant="primary"
+					label="Delete seed post"
+					on:click={() => {
+						persona.posts = persona.posts.filter((p) => p !== postToDelete)
+						adapter.updatePersonaDraft(personaIndex, persona)
+						postToDelete = undefined
+					}}
+				/>
+				<Button
+					variant="secondary"
+					label="Cancel"
+					icon={Undo}
+					on:click={() => (postToDelete = undefined)}
+				/>
+			</svelte:fragment>
+		</InfoBox>
+	</InfoScreen>
+{:else if postToEdit !== undefined}
+	<PostNew
+		bind:postText={postToEditText}
+		bind:images={postToEditImages}
+		submit={(text, images) => {
+			const psts = persona.posts.filter((p) => p !== postToEdit)
+			psts.push({ timestamp: Date.now(), text, images })
+			persona.posts = psts
+			adapter.updatePersonaDraft(personaIndex, persona)
+			postToEdit = undefined
+			state = 'persona_preview'
+		}}
+		label="Save seed post"
+		onBack={(text, images) =>
+			text !== postToEdit?.text ||
+			images.some((img) => !postToEdit?.images.includes(img)) ||
+			postToEdit.images.some((img) => !images.includes(img))
+				? (showWarningDiscardModal = true)
+				: (postToEdit = undefined)}
+	/>
 {:else if state === 'persona_preview'}
 	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
@@ -181,7 +236,25 @@
 		</Container>
 		<Grid>
 			{#each persona.posts as post}
-				<Post {post} />
+				<Post {post}>
+					<Button
+						icon={Edit}
+						variant="secondary"
+						label="Edit post"
+						on:click={() => {
+							postToEditText = post.text
+							postToEditImages = post.images
+							postToEdit = post
+						}}
+					/>
+					<Button
+						icon={TrashCan}
+						variant="secondary"
+						on:click={() => {
+							postToDelete = post
+						}}
+					/>
+				</Post>
 			{/each}
 		</Grid>
 	</PersonaDetail>
