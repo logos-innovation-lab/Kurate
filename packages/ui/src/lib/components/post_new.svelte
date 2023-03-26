@@ -14,11 +14,11 @@
 	let cls: string | undefined = undefined
 	export { cls as class }
 	export let submit: (postText: string, images: string[]) => unknown
-	export let onBack: (hasContent: boolean) => unknown = () => history.back()
+	export let onBack: (postText: string, images: string[]) => unknown = () => history.back()
 	export let label: string | undefined = 'Publish'
+	export let postText = ''
+	export let images: string[] = []
 
-	let postText = ''
-	let images: string[] = []
 	let x: number
 
 	let files: FileList
@@ -54,14 +54,14 @@
 <svelte:window bind:innerWidth={x} />
 
 <div class={`root ${cls}`}>
-	<Header onBack={() => onBack(postText !== '' || images.length > 0)}>
+	<Header onBack={() => onBack(postText, images)}>
 		<InputFile icon={Image} bind:files multiple />
 		<Button
 			icon={Checkmark}
 			variant="primary"
 			{label}
 			on:click={() => submit(postText, images)}
-			disabled={!$profile.signer}
+			disabled={!$profile.signer && postText === ''}
 		/>
 	</Header>
 
