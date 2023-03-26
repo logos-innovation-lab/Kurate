@@ -96,6 +96,20 @@ export class ZkitterAdapter implements Adapter {
 		)
 	}
 
+	deleteDraftPersona(index: number): Promise<void> {
+		return new Promise((resolve) =>
+			personas.update(({ draft, ...state }) => {
+				const newDraft = draft.filter((_, i) => i !== index)
+
+				saveToLocalStorage('drafts', newDraft)
+
+				resolve()
+
+				return { ...state, draft: newDraft }
+			}),
+		)
+	}
+
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'publishPersona')

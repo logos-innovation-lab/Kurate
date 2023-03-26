@@ -57,6 +57,7 @@
 		| 'done'
 
 	let showWarningDiscardModal = false
+	let showWarningDeletePersona = false
 
 	const setState = (newState: State) => {
 		state = newState
@@ -115,6 +116,33 @@
 					label="Continue editing"
 					icon={Undo}
 					on:click={() => (showWarningDiscardModal = false)}
+				/>
+			</svelte:fragment>
+		</InfoBox>
+	</InfoScreen>
+{:else if showWarningDeletePersona}
+	<InfoScreen title="Delete persona">
+		<InfoBox>
+			<div class="icon">
+				<Info size={32} />
+			</div>
+			<h2>Are you sure you want to delete this draft persona?</h2>
+			<LearnMore href="/" />
+			<svelte:fragment slot="buttons">
+				<Button
+					icon={Checkmark}
+					variant="primary"
+					label="Yes, delete persona"
+					on:click={() => {
+						adapter.deleteDraftPersona(personaIndex)
+						goto(ROUTES.HOME)
+					}}
+				/>
+				<Button
+					variant="secondary"
+					label="No, keep it"
+					icon={Undo}
+					on:click={() => (showWarningDeletePersona = false)}
 				/>
 			</svelte:fragment>
 		</InfoBox>
@@ -201,19 +229,25 @@
 				/>
 			{/if}
 		</svelte:fragment>
-		<Button
-			slot="button_other"
-			variant="secondary"
-			label="Edit Persona details"
-			icon={EditPersona}
-			on:click={() => {
-				name = persona.name
-				pitch = persona.pitch
-				description = persona.description
-				minReputation = persona.minReputation
-				setState('edit_text')
-			}}
-		/>
+		<svelte:fragment slot="button_other">
+			<Button
+				variant="secondary"
+				label="Edit Persona details"
+				icon={EditPersona}
+				on:click={() => {
+					name = persona.name
+					pitch = persona.pitch
+					description = persona.description
+					minReputation = persona.minReputation
+					setState('edit_text')
+				}}
+			/>
+			<Button
+				variant="secondary"
+				icon={TrashCan}
+				on:click={() => (showWarningDeletePersona = true)}
+			/>
+		</svelte:fragment>
 		<Divider />
 		<Container>
 			<InfoBox>
