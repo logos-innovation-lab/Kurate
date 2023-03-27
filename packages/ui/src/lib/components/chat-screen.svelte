@@ -110,9 +110,9 @@
 					{#each chat.messages as message}
 						<!-- FIXME: style this properly please -->
 						<div
-						class={`message ${message.myMessage ? 'my-message' : ''} ${
-							message.system ? 'system' : ''
-						}`}
+							class={`message ${message.myMessage ? 'my-message' : ''} ${
+								message.system ? 'system' : ''
+							}`}
 						>
 							<div class="message-content">
 								{#if message.myMessage}
