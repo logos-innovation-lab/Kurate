@@ -3,7 +3,7 @@
 	export { cls as class }
 </script>
 
-<div class={`info ${cls}`}>
+<div class={`info-box ${cls}`}>
 	<div class="content">
 		<slot />
 	</div>
@@ -15,8 +15,8 @@
 </div>
 
 <style lang="scss">
-	.info {
-		padding-block: var(--spacing-24);
+	.info-box {
+		padding-bottom: var(--spacing-24);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -24,7 +24,7 @@
 		gap: var(--spacing-48);
 
 		@media (min-width: 688px) {
-			padding-block: var(--spacing-48);
+			padding-bottom: var(--spacing-48);
 		}
 		.content {
 			text-align: center;

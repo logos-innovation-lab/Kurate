@@ -13,7 +13,7 @@
 
 <Header {title} {onBack} {onClose} />
 
-<div class={`content ${y > 0 ? 'scrolled' : ''} ${cls}`}>
+<div class={`info-screen ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<slot />
 
 	<div class="btns">
@@ -22,7 +22,7 @@
 </div>
 
 <style lang="scss">
-	.content {
+	.info-screen {
 		min-height: calc(100dvh - 92px);
 		min-height: calc(100vh - 92px);
 		display: flex;

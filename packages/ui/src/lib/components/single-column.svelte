@@ -3,12 +3,12 @@
 	export { cls as class }
 </script>
 
-<div class={`root ${cls}`}>
+<div class={`single-column ${cls}`}>
 	<slot />
 </div>
 
 <style lang="scss">
-	.root {
+	.single-column {
 		padding: 0 var(--spacing-24);
 		max-width: 498px;
 		margin-inline: auto;

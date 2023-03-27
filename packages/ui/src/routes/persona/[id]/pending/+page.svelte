@@ -5,6 +5,7 @@
 	import Wallet from '$lib/components/icons/wallet.svelte'
 	import ThumbsDown from '$lib/components/icons/thumbs-down.svelte'
 	import Favorite from '$lib/components/icons/favorite.svelte'
+	import FavoriteFilled from '$lib/components/icons/favorite-filled.svelte'
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
 	import SortAscending from '$lib/components/icons/sort-ascending.svelte'
 	import SortDescending from '$lib/components/icons/sort-descending.svelte'
@@ -17,6 +18,7 @@
 	import Container from '$lib/components/container.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
 	import Banner from '$lib/components/message-banner.svelte'
+	import SingleColumn from '$lib/components/single-column.svelte'
 
 	import { posts } from '$lib/stores/post'
 	import { personas } from '$lib/stores/persona'
@@ -75,8 +77,8 @@
 	</Container>
 {:else if vote !== undefined && $tokens.go >= VOTE_GO_PRICE}
 	<InfoScreen title={vote.vote === '+' ? 'Promote' : 'Demote'} onBack={() => (vote = undefined)}>
-		<div class="token-info">
-			<div>
+		<SingleColumn>
+			<InfoBox>
 				<div class="icon">
 					<Info size={32} />
 				</div>
@@ -87,14 +89,14 @@
 						: 'demote'} this content.
 				</p>
 				<p><LearnMore href="/" /></p>
-			</div>
+			</InfoBox>
 			<TokenInfo
 				title="Currently available"
 				amount={$tokens.go.toFixed()}
 				tokenName="GO"
 				explanation="Until new cycle begins"
 			/>
-		</div>
+		</SingleColumn>
 		<svelte:fragment slot="buttons">
 			<Button
 				label="I agree"
@@ -111,8 +113,8 @@
 	</InfoScreen>
 {:else if vote !== undefined}
 	<InfoScreen title="Not enough token" onBack={() => (vote = undefined)}>
-		<div class="token-info">
-			<div>
+		<SingleColumn>
+			<InfoBox>
 				<div class="icon">
 					<Info size={32} />
 				</div>
@@ -121,7 +123,7 @@
 					You need {VOTE_GO_PRICE} GO to promote or demote content.
 				</p>
 				<p><LearnMore href="/" /></p>
-			</div>
+			</InfoBox>
 			<TokenInfo
 				title="Currently available"
 				amount={$tokens.go.toFixed()}
@@ -129,7 +131,7 @@
 				explanation="Until new cycle begins"
 				error
 			/>
-		</div>
+		</SingleColumn>
 		<svelte:fragment slot="buttons">
 			<Button
 				label="I agree"
@@ -164,35 +166,37 @@
 			{/if}
 		</Header>
 	</div>
-	<InfoBox>
-		<div class="icon">
-			<Info size={32} />
-		</div>
-		<h2>The following are pending posts from anonymous contributors like you.</h2>
-		<p>
-			Please vote on whether they should be promoted to {persona.name}'s timeline, or demoted into
-			oblivion. Voting costs you {VOTE_GO_PRICE} GO, and you may use up to your daily limit. Voting in
-			line with the majority earns you REP.
-		</p>
-		<svelte:fragment slot="buttons">
-			{#if $profile.signer !== undefined}
-				<Button
-					variant="primary"
-					label="Submit post"
-					icon={Edit}
-					on:click={() => goto(ROUTES.POST_NEW(groupId))}
-				/>
-			{:else}
-				<Button
-					variant="primary"
-					label="Connect to post"
-					icon={Wallet}
-					on:click={adapter.signIn}
-					disabled={!canConnectWallet()}
-				/>
-			{/if}
-		</svelte:fragment>
-	</InfoBox>
+	<SingleColumn>
+		<InfoBox>
+			<div class="icon">
+				<Info size={32} />
+			</div>
+			<h2>The following are pending posts from anonymous contributors like you.</h2>
+			<p>
+				Please vote on whether they should be promoted to {persona.name}'s timeline, or demoted into
+				oblivion. Voting costs you {VOTE_GO_PRICE} GO, and you may use up to your daily limit. Voting
+				in line with the majority earns you REP.
+			</p>
+			<svelte:fragment slot="buttons">
+				{#if $profile.signer !== undefined}
+					<Button
+						variant="primary"
+						label="Submit post"
+						icon={Edit}
+						on:click={() => goto(ROUTES.POST_NEW(groupId))}
+					/>
+				{:else}
+					<Button
+						variant="primary"
+						label="Connect to post"
+						icon={Wallet}
+						on:click={adapter.signIn}
+						disabled={!canConnectWallet()}
+					/>
+				{/if}
+			</svelte:fragment>
+		</InfoBox>
+	</SingleColumn>
 
 	<SectionTitle title="All pending posts">
 		<svelte:fragment slot="buttons">
@@ -238,9 +242,9 @@
 			{#each personaPosts.pending as post, index}
 				<Post {post} on:click={() => goto(ROUTES.PERSONA_POST(groupId, index))}>
 					{#if post.yourVote === '+' && $profile.signer !== undefined}
-						<Button icon={Favorite} variant="secondary" label="You promoted this" />
+						<Button icon={FavoriteFilled} variant="accent" label="You promoted this" />
 					{:else if post.yourVote === '-' && $profile.signer !== undefined}
-						<Button icon={ThumbsDown} variant="secondary" label="You demoted this" />
+						<Button icon={ThumbsDown} variant="accent" label="You demoted this" />
 					{:else}
 						<Button
 							variant="secondary"

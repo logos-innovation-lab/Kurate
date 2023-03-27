@@ -2,6 +2,7 @@
 	import Divider from '$lib/components/divider.svelte'
 	let cls: string | undefined = undefined
 	export let noHover: boolean | undefined = undefined
+	export let noBorder: boolean | undefined = undefined
 	export { cls as class }
 </script>
 
@@ -10,7 +11,9 @@
 	<div class="card">
 		<slot />
 	</div>
-	<Divider visible="mobile" />
+	{#if noBorder === false}
+		<Divider visible="mobile" />
+	{/if}
 </div>
 
 <style lang="scss">

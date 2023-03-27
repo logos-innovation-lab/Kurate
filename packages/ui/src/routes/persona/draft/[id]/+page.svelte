@@ -21,6 +21,7 @@
 	import Container from '$lib/components/container.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
 	import Divider from '$lib/components/divider.svelte'
+	import Spacer from '$lib/components/spacer.svelte'
 	import PersonaEditRep from '$lib/components/persona_edit_rep.svelte'
 
 	import { personas } from '$lib/stores/persona'
@@ -250,6 +251,7 @@
 		</svelte:fragment>
 		<Divider />
 		<Container>
+			<Spacer />
 			<InfoBox>
 				{#if persona.posts.length < PERSONA_LIMIT}
 					<div class="icon">

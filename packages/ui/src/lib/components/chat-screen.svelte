@@ -14,6 +14,7 @@
 	import Persona from '$lib/components/persona.svelte'
 	import Divider from '$lib/components/divider.svelte'
 	import Dropdown from '$lib/components/dropdown.svelte'
+	import Spacer from '$lib/components/spacer.svelte'
 	import DropdownItem from '$lib/components/dropdown-item.svelte'
 	import SingleColumn from '$lib/components/single-column.svelte'
 	import LearnMore from './learn-more.svelte'
@@ -79,6 +80,7 @@
 			<Post class="detail" post={chat.post} noHover />
 			<Persona
 				noHover
+				noBorder
 				name={chat.persona.name}
 				pitch={chat.persona.pitch}
 				postsCount={chat.persona.postsCount}
@@ -123,6 +125,7 @@
 		{:else}
 			<Divider />
 			<SingleColumn>
+				<Spacer />
 				<InfoBox>
 					<div class="icon">
 						<Info size={32} />
@@ -136,6 +139,7 @@
 		{#if chat.blocked === true}
 			<Divider />
 			<SingleColumn>
+				<Spacer />
 				<InfoBox>
 					<div class="icon">
 						<Info size={32} />
@@ -148,6 +152,7 @@
 		{:else if chat.closed === true}
 			<Divider />
 			<SingleColumn>
+				<Spacer />
 				<InfoBox>
 					<div class="icon">
 						<Info size={32} />
@@ -186,7 +191,9 @@
 
 <style lang="scss">
 	.original-post {
-		padding-bottom: var(--spacing-24);
+		@media (min-width: 688px) {
+			padding-bottom: var(--spacing-24);
+		}
 		.original-header {
 			display: flex;
 			justify-content: space-between;

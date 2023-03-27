@@ -3,7 +3,7 @@
 
 	let cls: string | undefined = undefined
 	export { cls as class }
-	export let variant: 'secondary' | 'primary' | 'overlay' = 'secondary'
+	export let variant: 'secondary' | 'primary' | 'overlay' | 'accent' = 'secondary'
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 	export let label: string | undefined = undefined
 	export let disabled: boolean | undefined = undefined
@@ -167,6 +167,53 @@
 		&:hover:not(:disabled) {
 			background-color: var(--color-black);
 			transition: background-color 0.2s;
+		}
+	}
+	.accent {
+		background-color: var(--grey-200);
+		border-color: var(--grey-200);
+		color: var(--color-body-text);
+
+		& :global(svg) {
+			fill: var(--color-body-text);
+		}
+
+		&:disabled {
+			color: var(--grey-200);
+
+			& :global(svg) {
+				fill: var(--grey-200);
+			}
+		}
+
+		&:active:not(:disabled),
+		&:hover:not(:disabled) {
+			background-color: var(--grey-150);
+			transition: border-color 0.2s, background-color 0.2s;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			background-color: var(--color-body-bg);
+			border-color: var(--color-body-text);
+			color: var(--color-body-text);
+
+			& :global(svg) {
+				fill: var(--color-body-text);
+			}
+
+			&:disabled {
+				background-color: var(--color-body-bg);
+				color: var(--grey-500);
+
+				& :global(svg) {
+					fill: var(--grey-500);
+				}
+			}
+
+			&:active:not(:disabled),
+			&:hover:not(:disabled) {
+				transition: border-color 0.2s, background-color 0.2s;
+			}
 		}
 	}
 </style>
