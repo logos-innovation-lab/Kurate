@@ -37,8 +37,8 @@
 					await adapter.uploadPicture(
 						await resize(
 							files[i],
-							MAX_DIMENSIONS.POST_IMAGE.width,
-							MAX_DIMENSIONS.POST_IMAGE.height,
+							MAX_DIMENSIONS.POST_PICTURE.width,
+							MAX_DIMENSIONS.POST_PICTURE.height,
 						),
 					),
 				)

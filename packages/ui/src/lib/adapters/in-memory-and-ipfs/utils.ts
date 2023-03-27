@@ -37,7 +37,9 @@ export function randomPost(): Post {
 		// Only 40% of posts with pictures can have more than 3
 		const max = executeWithChance(0.4) ? 20 : 3
 		for (let i = 0; i < randomIntegerBetween(1, max); i++) {
-			images.push(randomPicture(MAX_DIMENSIONS.POST_IMAGE.width, MAX_DIMENSIONS.POST_IMAGE.height))
+			images.push(
+				randomPicture(MAX_DIMENSIONS.POST_PICTURE.width, MAX_DIMENSIONS.POST_PICTURE.height),
+			)
 		}
 	}
 
@@ -54,8 +56,14 @@ export function randomPersona(): Persona {
 	const name = randomText(1).split(' ')[0]
 	const pitch = randomText(randomIntegerBetween(1, 3))
 	const description = randomText(randomIntegerBetween(5, 20))
-	const cover = randomPicture(MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
-	const picture = randomPicture(MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
+	const cover = randomPicture(
+		MAX_DIMENSIONS.PERSONA_COVER.width,
+		MAX_DIMENSIONS.PERSONA_COVER.height,
+	)
+	const picture = randomPicture(
+		MAX_DIMENSIONS.PERSONA_PICTURE.width,
+		MAX_DIMENSIONS.PERSONA_PICTURE.height,
+	)
 	let minReputation: ReputationOptions
 	switch (randomIntegerBetween(0, 10)) {
 		case 0:
