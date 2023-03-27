@@ -5,7 +5,12 @@ import { profile } from '$lib/stores/profile'
 import { getFromLocalStorage, saveToLocalStorage, sleep } from '$lib/utils'
 import type { Signer } from 'ethers'
 import { create } from 'ipfs-http-client'
-import { CREATE_PERSONA_GO_PRICE, NEW_POST_GO_PRICE, NEW_POST_REP_PRICE } from '$lib/constants'
+import {
+	CREATE_PERSONA_GO_PRICE,
+	NEW_POST_GO_PRICE,
+	NEW_POST_REP_PRICE,
+	VOTE_GO_PRICE,
+} from '$lib/constants'
 import { tokens } from '$lib/stores/tokens'
 import { posts, type Post } from '$lib/stores/post'
 
@@ -283,6 +288,13 @@ export class InMemoryAndIPFS implements Adapter {
 			}
 
 			return state
+		})
+
+		tokens.update(({ go, ...state }) => {
+			return {
+				...state,
+				go: go - VOTE_GO_PRICE,
+			}
 		})
 	}
 
