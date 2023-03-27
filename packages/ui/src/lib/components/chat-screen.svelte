@@ -108,17 +108,18 @@
 				<div class="messages-inner">
 					<!-- Chat bubbles -->
 					{#each chat.messages as message}
-						<!-- FIXME: style this properly please -->
-						{#if message.myMessage}
-							<img src={avatar} class="avatar" alt="Avatar" />
-						{/if}
 						<div
 							class={`message ${message.myMessage ? 'my-message' : ''} ${
 								message.system ? 'system' : ''
 							}`}
 						>
-							<div>{message.text}</div>
-							<div>
+							<div class="message-content">
+								{#if message.myMessage}
+									<img src={avatar} class="avatar" alt="Avatar" />
+								{/if}
+								<div class="message-text">{message.text}</div>
+							</div>
+							<div class="timestamp">
 								{formatDateAndTime(message.timestamp)}
 								{#if message.system}
 									<br />
@@ -199,8 +200,8 @@
 <style lang="scss">
 	// FIXME: style this properly please
 	.avatar {
-		width: 47px;
-		height: 47px;
+		width: var(--spacing-48);
+		height: var(--spacing-48);
 	}
 
 	.original-post {
@@ -220,7 +221,7 @@
 	}
 
 	.messages {
-		margin-bottom: 71px;
+		margin-bottom: 96px;
 
 		.messages-inner {
 			padding-top: var(--spacing-48);
@@ -233,7 +234,14 @@
 			align-items: flex-end;
 			margin-bottom: var(--spacing-24);
 
-			> div:first-child {
+			.message-content {
+				display: flex;
+				flex-direction: row;
+				gap: var(--spacing-6);
+				align-items: flex-end;
+			}
+
+			.message-text {
 				border: 1px solid var(--grey-200);
 				padding: var(--spacing-12);
 				border-radius: var(--spacing-24);
@@ -243,14 +251,14 @@
 				font-size: var(--font-size-lg);
 			}
 
-			> div:nth-child(2) {
+			.timestamp {
 				font-size: var(--font-size-sm);
 			}
 
 			&.my-message {
 				align-items: flex-start;
 
-				> div:first-child {
+				.message-text {
 					border-bottom-left-radius: 0;
 					border-bottom-right-radius: var(--spacing-24);
 					background-color: var(--grey-200);

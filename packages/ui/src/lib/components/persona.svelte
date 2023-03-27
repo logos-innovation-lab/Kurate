@@ -23,7 +23,7 @@
 		<div class="header">{name}</div>
 		<div class="description">{pitch}</div>
 		<div class="post-count">
-			<div>
+			<div class="rep">
 				REP {minReputation}+
 			</div>
 			<div>
@@ -92,6 +92,16 @@
 				justify-content: flex-start;
 				flex-wrap: nowrap;
 				gap: var(--spacing-3);
+			}
+
+			.rep {
+				background-color: var(--grey-200);
+				border-radius: 9px;
+				font-size: var(--font-size-sm);
+				font-weight: var(--font-weight-sb);
+				padding-left: var(--spacing-6);
+				padding-right: var(--spacing-4);
+				padding-top: 1px;
 			}
 		}
 	}
