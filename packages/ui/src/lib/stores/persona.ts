@@ -5,8 +5,8 @@ import type { ReputationOptions } from '$lib/types'
 
 export interface Persona {
 	identity?: Identity
-	picture?: string
-	cover?: string
+	picture: string
+	cover: string
 	name: string
 	pitch: string
 	description: string

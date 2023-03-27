@@ -20,8 +20,8 @@
 
 	import type { Chat } from '$lib/stores/chat'
 	import { formatDateAndTime } from '$lib/utils/format'
-	// import { personas } from '$lib/stores/persona'
-	// import { page } from '$app/stores'
+	import { createAvatar } from '@dicebear/core'
+	import { botttsNeutral } from '@dicebear/collection'
 
 	export let chat: Chat
 	export let sendMessage: (text: string) => unknown
@@ -32,8 +32,6 @@
 	let messageText = ''
 	let sending = false
 
-	// const persona = $personas.all.get($page.params.id)
-
 	const toggleShowPost = () => (showPost = !showPost)
 	const onSendMessage = async () => {
 		sending = true
@@ -41,6 +39,11 @@
 		sending = false
 		messageText = ''
 	}
+
+	let avatar = createAvatar(botttsNeutral, {
+		size: 94, // This is 47pt at 2x resolution
+		seed: chat.seed,
+	}).toDataUriSync()
 </script>
 
 <div class="root">
@@ -103,6 +106,10 @@
 				<div class="messages-inner">
 					<!-- Chat bubbles -->
 					{#each chat.messages as message}
+						<!-- FIXME: style this properly please -->
+						{#if message.myMessage}
+							<img src={avatar} class="avatar" alt="Avatar" />
+						{/if}
 						<div
 							class={`message ${message.myMessage ? 'my-message' : ''} ${
 								message.system ? 'system' : ''
@@ -185,6 +192,12 @@
 </div>
 
 <style lang="scss">
+	// FIXME: style this properly please
+	.avatar {
+		width: 47px;
+		height: 47px;
+	}
+
 	.original-post {
 		padding-bottom: var(--spacing-24);
 		.original-header {
