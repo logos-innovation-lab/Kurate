@@ -16,6 +16,7 @@
 	import { ROUTES } from '$lib/routes'
 	import adapter from '$lib/adapters'
 	import { canConnectWallet } from '$lib/services'
+	import { randomSeed } from '$lib/utils'
 
 	const post = $posts.data.get($page.params.id)?.approved[$page.params.postId as unknown as number]
 	const persona = $personas.all.get($page.params.id)
@@ -23,12 +24,12 @@
 	const startChat = async () => {
 		if (!persona || !post) return
 
-		// FIXME: this should start chat with this post as first post
 		$chats.draft = {
 			persona,
 			post,
 			messages: [],
 			closed: false,
+			seed: randomSeed(),
 		}
 
 		goto(ROUTES.CHAT_NEW)

@@ -21,6 +21,7 @@ import {
 	randomIntegerBetween,
 	randomPersona,
 	randomPost,
+	randomText,
 } from './utils'
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
@@ -327,10 +328,15 @@ export class InMemoryAndIPFS implements Adapter {
 		const interval = setInterval(() => {
 			chats.update((state) => {
 				const newState = { ...state }
-				newState.chats[chatId].messages.push({
-					timestamp: Date.now(),
-					text: 'Another second has passed',
-				})
+				const lastMessage =
+					newState.chats[chatId].messages[newState.chats[chatId].messages.length - 1]
+				// 10% chance every second to add new message and only when the last message was sent by me
+				if (lastMessage.myMessage && executeWithChance(0.1)) {
+					newState.chats[chatId].messages.push({
+						timestamp: Date.now(),
+						text: randomText(randomIntegerBetween(1, 5)),
+					})
+				}
 				return newState
 			})
 		}, 1000)
