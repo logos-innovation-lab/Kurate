@@ -222,7 +222,7 @@
 	}
 
 	.messages {
-		margin-bottom: 71px;
+		margin-bottom: 96px;
 
 		.messages-inner {
 			padding-top: var(--spacing-48);
