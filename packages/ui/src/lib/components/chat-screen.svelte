@@ -108,7 +108,6 @@
 				<div class="messages-inner">
 					<!-- Chat bubbles -->
 					{#each chat.messages as message}
-						<!-- FIXME: style this properly please -->
 						<div
 							class={`message ${message.myMessage ? 'my-message' : ''} ${
 								message.system ? 'system' : ''
