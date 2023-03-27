@@ -32,7 +32,11 @@
 		try {
 			picture = p
 				? await adapter.uploadPicture(
-						await clipAndResize(p, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height),
+						await clipAndResize(
+							p,
+							MAX_DIMENSIONS.PERSONA_PICTURE.width,
+							MAX_DIMENSIONS.PERSONA_PICTURE.height,
+						),
 				  )
 				: picture
 		} catch (error) {
@@ -44,7 +48,11 @@
 		try {
 			cover = c
 				? await adapter.uploadPicture(
-						await clipAndResize(c, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height),
+						await clipAndResize(
+							c,
+							MAX_DIMENSIONS.PERSONA_COVER.width,
+							MAX_DIMENSIONS.PERSONA_COVER.height,
+						),
 				  )
 				: cover
 		} catch (error) {
