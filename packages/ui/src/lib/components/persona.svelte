@@ -12,9 +12,10 @@
 	export let picture: string | undefined
 	export let minReputation: ReputationOptions
 	export let noHover: boolean | undefined = undefined
+	export let noBorder: boolean | undefined = undefined
 </script>
 
-<Card on:click {noHover}>
+<Card on:click {noHover} {noBorder}>
 	<div class="picture">
 		<img src={picture ? adapter.getPicture(picture) : undefined} alt="persona" />
 	</div>

@@ -9,7 +9,7 @@
 	export let error = false
 </script>
 
-<div class={`box ${error ? 'error' : ''}`}>
+<div class={`token-info-box ${error ? 'error' : ''}`}>
 	<div class="h3">{title}</div>
 	<div class="token-amt">{amount}</div>
 	<div class="token">{tokenName}</div>
@@ -18,13 +18,12 @@
 </div>
 
 <style lang="scss">
-	.box {
+	.token-info-box {
 		border: 1px solid var(--grey-200);
 		padding: var(--spacing-24);
 		margin-top: var(--spacing-48);
 		flex-basis: 100%;
-		margin-left: 3px;
-		margin-right: 3px;
+		text-align: center;
 
 		&.first-child {
 			margin-left: 0px;
