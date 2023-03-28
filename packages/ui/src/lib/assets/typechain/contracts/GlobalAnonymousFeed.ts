@@ -45,6 +45,7 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     "members(uint256)": FunctionFragment;
     "membersByPersona(uint256,uint256)": FunctionFragment;
     "negRepFieldIndex()": FunctionFragment;
+    "numOfPersonas()": FunctionFragment;
     "personaList(uint256)": FunctionFragment;
     "personas(uint256)": FunctionFragment;
     "posRepFieldIndex()": FunctionFragment;
@@ -80,6 +81,7 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
       | "members"
       | "membersByPersona"
       | "negRepFieldIndex"
+      | "numOfPersonas"
       | "personaList"
       | "personas"
       | "posRepFieldIndex"
@@ -196,6 +198,10 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "negRepFieldIndex",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "numOfPersonas",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -329,6 +335,10 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "negRepFieldIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "numOfPersonas",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -549,6 +559,8 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     negRepFieldIndex(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    numOfPersonas(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     personaList(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -737,6 +749,8 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
   negRepFieldIndex(overrides?: CallOverrides): Promise<BigNumber>;
 
+  numOfPersonas(overrides?: CallOverrides): Promise<BigNumber>;
+
   personaList(
     arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -868,7 +882,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
       signUpPublicSignals: PromiseOrValue<BigNumberish>[],
       signUpProof: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<BigNumber>;
 
     "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
@@ -888,7 +902,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
       signUpPublicSignals: PromiseOrValue<BigNumberish>[],
       signUpProof: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<BigNumber>;
 
     createPersonaRep(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -924,6 +938,8 @@ export interface GlobalAnonymousFeed extends BaseContract {
     ): Promise<boolean>;
 
     negRepFieldIndex(overrides?: CallOverrides): Promise<BigNumber>;
+
+    numOfPersonas(overrides?: CallOverrides): Promise<BigNumber>;
 
     personaList(
       arg0: PromiseOrValue<BigNumberish>,
@@ -1146,6 +1162,8 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     negRepFieldIndex(overrides?: CallOverrides): Promise<BigNumber>;
 
+    numOfPersonas(overrides?: CallOverrides): Promise<BigNumber>;
+
     personaList(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -1320,6 +1338,8 @@ export interface GlobalAnonymousFeed extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     negRepFieldIndex(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    numOfPersonas(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     personaList(
       arg0: PromiseOrValue<BigNumberish>,

@@ -81,6 +81,10 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         return unirep.attesterEpochRemainingTime(attesterId);
     }
 
+    function numOfPersonas() public view returns (uint256) {
+        return personaList.length;
+    }
+
     function sealEpoch(
         uint256 epoch,
         uint256[] memory publicSignals,
@@ -167,7 +171,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         uint256[8] memory proof,
         uint256[] memory signUpPublicSignals,
         uint256[8] memory signUpProof
-    ) onlyAdmin external {
+    ) onlyAdmin external returns (uint256) {
         uint personaId = personaList.length;
 
         IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
@@ -211,6 +215,8 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         } else {
             joinPersona(personaId, signUpPublicSignals, signUpProof);
         }
+
+        return personaId;
     }
 
     function createPersona(
@@ -222,7 +228,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         bytes32[5] memory seedPosts,
         uint256[] memory signUpPublicSignals,
         uint256[8] memory signUpProof
-    ) onlyAdmin external {
+    ) onlyAdmin external returns (uint256) {
         uint personaId = personaList.length;
 
         Persona storage persona = personas[personaId];
@@ -250,6 +256,8 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         } else {
             joinPersona(personaId, signUpPublicSignals, signUpProof);
         }
+
+        return personaId;
     }
 
     // @dev Required ZK Proof for first time joining a group.
