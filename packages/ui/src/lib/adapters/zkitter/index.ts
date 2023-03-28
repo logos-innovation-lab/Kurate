@@ -1,18 +1,18 @@
-import type { ZkIdentity } from '@zk-kit/identity'
-import { connectWallet, getGlobalAnonymousFeed } from '$lib/services'
-import { chats, type Chat } from '$lib/stores/chat'
-import { personas, type DraftPersona } from '$lib/stores/persona'
-import { profile } from '$lib/stores/profile'
-import { saveToLocalStorage } from '$lib/utils'
-import type { Adapter } from '..'
-import { Zkitter } from '$lib/zkitter-js'
-import { GroupAdapter } from './group-adapter'
-import { ethers, Signer } from 'ethers'
-import { create } from 'ipfs-http-client'
-import { CREATE_PERSONA_GO_PRICE } from '$lib/constants'
-import { tokens } from '$lib/stores/tokens'
-import { createIdentity } from './utils'
-import { posts } from '$lib/stores/post'
+import type {ZkIdentity} from '@zk-kit/identity'
+import {connectWallet, getGlobalAnonymousFeed} from '$lib/services'
+import {type Chat, chats} from '$lib/stores/chat'
+import {type DraftPersona, personas} from '$lib/stores/persona'
+import {profile} from '$lib/stores/profile'
+import {saveToLocalStorage} from '$lib/utils'
+import type {Adapter} from '..'
+// import { Zkitter } from '$lib/zkitter-js'
+import {GroupAdapter} from './group-adapter'
+import {Signer} from 'ethers'
+import {create} from 'ipfs-http-client'
+import {createIdentity} from './utils'
+import {posts} from '$lib/stores/post'
+import type {GenericDBAdapterInterface} from "zkitter-js";
+import type {Persona} from "../../stores/persona";
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -28,7 +28,7 @@ interface Identity {
 }
 
 export class ZkitterAdapter implements Adapter {
-	private zkitter?: Zkitter
+	private zkitter?: any
 	private ipfs = create({
 		host: 'ipfs.infura.io',
 		port: 5001,
@@ -46,37 +46,48 @@ export class ZkitterAdapter implements Adapter {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'start')
 
+		const { Zkitter } = await import('zkitter-js');
+		// console.log(d);
+
 		this.zkitter = await Zkitter.initialize()
 
 		const globalAnonymousFeed = getGlobalAnonymousFeed()
 		const groupAdapter = new GroupAdapter({
 			globalAnonymousFeed,
-			db: this.zkitter.db as any, // FIXME: I don't like using any
+			db: this.zkitter.db as GenericDBAdapterInterface
 		})
-		this.zkitter.services.groups.addGroup(groupAdapter as any) // FIXME: I don't like using any
+
+		this.zkitter.services.groups.addGroup(groupAdapter)
+
 		this.zkitter.on('Zkitter.NewMessageCreated', async (msg, proof) => {
 			console.log(msg, proof)
 		})
-		await groupAdapter.sync()
 
-		await this.zkitter.subscribe()
+		await this.zkitter.services.groups.watch();
 
-		this.zkitter.db
+		const contract = await getGlobalAnonymousFeed();
+		const personaIds = Object.keys(groupAdapter.groups);
+
+		const toAdd: Persona[] = [];
+
+		for (let i = 0; i < personaIds.length; i++) {
+			const personaId = personaIds[i];
+			const personaData = await contract.personas(personaId.split('_')[1]);
+			toAdd.push({
+				personaId,
+				name: personaData.name,
+				pitch: personaData.pitch,
+				description: personaData.description,
+				picture: personaData.profileImage,
+				cover: personaData.coverImage,
+				postsCount: 0,
+				participantsCount: 0,
+			});
+		}
 
 		personas.update((state) => {
-			const toAdd = Object.keys(groupAdapter.groups)
-				.filter((groupId) => !state.all.has(groupId))
-				.map((groupId) => ({
-					groupId,
-					name: '',
-					pitch: '',
-					description: '',
-					postsCount: 0,
-					participantsCount: 0,
-				}))
-
-			toAdd.forEach((p) => state.all.set(p.groupId, p))
-
+			const newPersonas = toAdd.filter(({personaId}) => !state.all.has(personaId))
+			newPersonas.forEach((p) => state.all.set(p.personaId, p))
 			return {
 				...state,
 				loading: false,
@@ -145,25 +156,76 @@ export class ZkitterAdapter implements Adapter {
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'publishPersona')
+		const {MessageType, Post, PostMessageSubType} = await import('zkitter-js');
 
-		const randBuf = crypto.getRandomValues(new Uint8Array(32))
-		const groupId = ethers.utils.sha256(randBuf)
+		console.log(draftPersona);
+		// const randBuf = crypto.getRandomValues(new Uint8Array(32))
+		// const groupId = ethers.utils.sha256(randBuf)
+		//
+		// const { zkIdentity, ecdh } = await createIdentity(signer, groupId);
 
-		const { zkIdentity, ecdh } = await createIdentity(signer, groupId)
+		const pitch = new Post({
+			type: MessageType.Post,
+			subtype: PostMessageSubType.Default,
+			payload: { content: draftPersona.pitch }
+		});
 
-		await getGlobalAnonymousFeed(signer).createAndJoin(
-			groupId,
-			`0x${zkIdentity.genIdentityCommitment().toString(16)}`,
+		const description = new Post({
+			type: MessageType.Post,
+			subtype: PostMessageSubType.Default,
+			payload: { content: draftPersona.description }
+		});
+
+		const seedPosts = draftPersona.posts.map(post => new Post({
+			type: MessageType.Post,
+			subtype: PostMessageSubType.Default,
+			payload: { content: post.text }
+		}));
+
+		console.log(
+			draftPersona.name,
+			`https://kurate.infura-ipfs.io/ipfs/${draftPersona.picture}`,
+			`https://kurate.infura-ipfs.io/ipfs/${draftPersona.cover}`,
+			pitch.toHex(),
+			description.toHex(),
+			seedPosts.map(p => p.toHex()),
 		)
 
-		this.identities.set(groupId, { identity: zkIdentity, ecdh })
+		const seedPostHashes: string[] = [];
+		seedPosts.forEach(seedPost => seedPostHashes.push('0x' + seedPost.hash()));
 
-		return new Promise((resolve) => {
-			tokens.update(({ go, ...state }) => {
-				resolve()
-				return { ...state, go: go - CREATE_PERSONA_GO_PRICE }
-			})
-		})
+		if (seedPostHashes.length !== 5) throw new Error('must contain exactly 5 seed posts');
+		if (!draftPersona.picture) throw new Error('must contain a profile picture');
+		if (!draftPersona.cover) throw new Error('must contain a cover image');
+
+		console.log(
+			draftPersona.name,
+			draftPersona.picture,
+			draftPersona.cover,
+			'0x' + pitch.hash(),
+			'0x' + description.hash(),
+			seedPostHashes as [string, string, string, string, string],
+			{gasLimit: 6721974}
+		)
+		const contract = await getGlobalAnonymousFeed(signer)
+		await contract['createPersona(string,string,string,bytes32,bytes32,bytes32[5])'](
+			draftPersona.name,
+			draftPersona.picture,
+			draftPersona.cover,
+			'0x' + pitch.hash(),
+			'0x' + description.hash(),
+			seedPostHashes as [string, string, string, string, string],
+			{gasLimit: 6721974}
+		)
+		//
+		// this.identities.set(groupId, { identity: zkIdentity, ecdh })
+
+		// return new Promise((resolve) => {
+		// 	tokens.update(({ go, ...state }) => {
+		// 		resolve()
+		// 		return { ...state, go: go - CREATE_PERSONA_GO_PRICE }
+		// 	})
+		// })
 	}
 
 	async signIn(): Promise<void> {

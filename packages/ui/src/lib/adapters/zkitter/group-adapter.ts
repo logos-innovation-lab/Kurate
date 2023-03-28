@@ -4,11 +4,11 @@ import { generateMerkleTree } from '@zk-kit/protocols'
 import { browser } from '$app/environment'
 import { providers } from 'ethers'
 import { PROVIDER } from '$lib/constants'
-import type { GenericDBAdapterInterface } from '$lib/zkitter-js'
+import type { GenericDBAdapterInterface, GenericGroupAdapter } from 'zkitter-js'
 
 const LS_KEY_GROUP_IDS = 'kurate/groupIds'
 
-export class GroupAdapter extends EventEmitter2 {
+export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter  {
 	db: GenericDBAdapterInterface
 
 	globalAnonymousFeed: GlobalAnonymousFeed
@@ -55,16 +55,14 @@ export class GroupAdapter extends EventEmitter2 {
 			[groupId: string]: string[]
 		} = {}
 
-		const newIdentityEvents = await this.globalAnonymousFeed
+		const events = await this.globalAnonymousFeed
 			.connect(new providers.JsonRpcProvider(PROVIDER))
-			.queryFilter(this.globalAnonymousFeed.filters.NewIdentity())
+			.queryFilter(this.globalAnonymousFeed.filters.NewPersona())
 
-		for (const event of newIdentityEvents) {
-			const groupId = ['kurate', event.args.groupId.toHexString()].join('_')
-			const identityCommitment = event.args.identityCommitment.toHexString()
-
+		for (const event of events) {
+			const groupId = ['kurate', event.args.personaId.toString()].join('_')
 			data[groupId] = data[groupId] || []
-			data[groupId].push(identityCommitment)
+			// data[groupId].push(identityCommitment)
 		}
 
 		for (const groupId of Object.keys(data)) {
@@ -87,22 +85,26 @@ export class GroupAdapter extends EventEmitter2 {
 			}
 		}
 
-		this._persistGroupIds(
-			Object.keys(data).reduce((map: any, groupId: string) => {
-				// FIXME: I don't like using any
-				map[groupId] = groupId
-				return map
-			}, {}),
-		)
+		this.groups = Object.keys(data).reduce((map: { [groupId: string]: string }, groupId: string) => {
+			map[groupId] = groupId
+			return map
+		}, {});
+
+		this._persistGroupIds(this.groups)
 	}
 
-	async tree(groupId: string) {
+	async tree(groupId?: string) {
+		if (!groupId) throw new Error(`must include one of group ids: [${Object.keys(this.groups).join(', ')}]`);
 		const tree = generateMerkleTree(15, BigInt(0), await this.members(groupId))
-
 		return tree
 	}
 
-	async members(groupId: string): Promise<string[]> {
-		return this.db.getGroupMembers(groupId)
+	async members(groupId?: string): Promise<string[]> {
+		if (!groupId) throw new Error(`must include one of group ids: [${Object.keys(this.groups).join(', ')}]`);
+		return this.db.getGroupMembers(groupId).catch(() => ([]));
+	}
+
+	async verify(): Promise<boolean> {
+		return false;
 	}
 }

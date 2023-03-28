@@ -164,7 +164,9 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         bytes32 description,
         bytes32[5] memory seedPosts,
         uint256[] memory publicSignals,
-        uint256[8] memory proof
+        uint256[8] memory proof,
+        uint256[] memory signUpPublicSignals,
+        uint256[8] memory signUpProof
     ) onlyAdmin external {
         uint personaId = personaList.length;
 
@@ -201,6 +203,14 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             publishedMessage[seedPosts[i]] = true;
             emit NewPersonaMessage(personaId, seedPosts[i]);
         }
+
+        uint256 identityCommitment = signUpPublicSignals[0];
+
+        if (membersByPersona[personaId][identityCommitment] || members[identityCommitment]) {
+            joinPersona(personaId, identityCommitment);
+        } else {
+            joinPersona(personaId, signUpPublicSignals, signUpProof);
+        }
     }
 
     function createPersona(
@@ -209,7 +219,9 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         string memory coverImage,
         bytes32 pitch,
         bytes32 description,
-        bytes32[5] memory seedPosts
+        bytes32[5] memory seedPosts,
+        uint256[] memory signUpPublicSignals,
+        uint256[8] memory signUpProof
     ) onlyAdmin external {
         uint personaId = personaList.length;
 
@@ -230,6 +242,14 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             publishedMessage[seedPosts[i]] = true;
             emit NewPersonaMessage(personaId, seedPosts[i]);
         }
+
+        uint256 identityCommitment = signUpPublicSignals[0];
+
+        if (membersByPersona[personaId][identityCommitment] || members[identityCommitment]) {
+            joinPersona(personaId, identityCommitment);
+        } else {
+            joinPersona(personaId, signUpPublicSignals, signUpProof);
+        }
     }
 
     // @dev Required ZK Proof for first time joining a group.
@@ -237,7 +257,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         uint256 personaId,
         uint256[] memory publicSignals,
         uint256[8] memory proof
-    ) external {
+    ) public {
         uint256 identityCommitment = publicSignals[0];
 
         if (membersByPersona[personaId][identityCommitment] || members[identityCommitment]) {
@@ -256,7 +276,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
     function joinPersona(
         uint256 personaId,
         uint256 identityCommitment
-    ) external {
+    ) public {
         require(members[identityCommitment], 'member must join unirep first');
 
         if (membersByPersona[personaId][identityCommitment]) {

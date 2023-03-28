@@ -9,7 +9,7 @@ import { getUnirepContract, Unirep } from '@unirep/contracts'
 
 const snarkjs = require('snarkjs');
 const path = require('path');
-const buildPath = path.join(process.cwd(), '../../node_modules/@unirep/circuits/zksnarkBuild/');
+const buildPath = path.join(process.cwd(), './node_modules/@unirep/circuits/zksnarkBuild/');
 
 const {EPOCH_TREE_ARITY, EPOCH_TREE_DEPTH, FIELD_COUNT} = CircuitConfig.default;
 
@@ -74,10 +74,22 @@ describe("Global Anonymous Feed Contract", () => {
             // TODO: need to add getters for posts
             // TODO: add ability to migrate admin
 
+            const state = new UserState({
+                prover: defaultProver, // a circuit prover
+                attesterId: (await postContract.attesterId()).toBigInt(),
+                unirepAddress: await postContract.unirep(),
+                provider, // an ethers.js provider
+            }, zkIdentity)
+
+            await state.sync.start();
+            await state.waitForSync();
+
+            const signupProof = await state.genUserSignUpProof();
+
             const persona = await postContract.personas(0);
 
             if (persona.name === '') {
-                await postContract["createPersona(string,string,string,bytes32,bytes32,bytes32[5])"](
+                await postContract["createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"](
                   'testing group',
                   'http://profile.image',
                   'http://cover.image',
@@ -90,18 +102,20 @@ describe("Global Anonymous Feed Contract", () => {
                     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
                     '0x56904a481c9a7ff8e9b51310d8bd9a9b3e1f0c5ea3f82a58b070e0ceb888c685',
                   ],
+                  signupProof.publicSignals,
+                  signupProof.proof,
                   { gasLimit: 6721974 }
                 );
             }
         });
 
         it("Should allow users to join a group", async () => {
-            const state = new UserState({
-                prover: defaultProver, // a circuit prover
-                attesterId: (await postContract.attesterId()).toBigInt(),
-                unirepAddress: await postContract.unirep(),
-                provider, // an ethers.js provider
-            }, zkIdentity)
+            // const state = new UserState({
+            //     prover: defaultProver, // a circuit prover
+            //     attesterId: (await postContract.attesterId()).toBigInt(),
+            //     unirepAddress: await postContract.unirep(),
+            //     provider, // an ethers.js provider
+            // }, zkIdentity)
 
             const state2 = new UserState({
                 prover: defaultProver, // a circuit prover
@@ -110,22 +124,22 @@ describe("Global Anonymous Feed Contract", () => {
                 provider, // an ethers.js provider
             }, zkIdentity2)
 
-            await state.sync.start();
-            await state.waitForSync();
+            // await state.sync.start();
+            // await state.waitForSync();
             await state2.sync.start();
             await state2.waitForSync();
 
-            const signupProof = await state.genUserSignUpProof();
-            const memberSignedUp = await postContract.membersByPersona(0, signupProof.publicSignals[0]);
-
-            if (!memberSignedUp) {
-                await postContract["joinPersona(uint256,uint256[],uint256[8])"](
-                  0,
-                  signupProof.publicSignals,
-                  signupProof.proof,
-                  { gasLimit: 6721974 }
-                );
-            }
+            // const signupProof = await state.genUserSignUpProof();
+            // const memberSignedUp = await postContract.membersByPersona(0, signupProof.publicSignals[0]);
+            //
+            // if (!memberSignedUp) {
+            //     await postContract["joinPersona(uint256,uint256[],uint256[8])"](
+            //       0,
+            //       signupProof.publicSignals,
+            //       signupProof.proof,
+            //       { gasLimit: 6721974 }
+            //     );
+            // }
 
             const signupProof2 = await state2.genUserSignUpProof();
             const memberSignedUp2 = await postContract.membersByPersona(0, signupProof2.publicSignals[0]);
@@ -176,7 +190,7 @@ describe("Global Anonymous Feed Contract", () => {
             }
 
             const attestations = await unirepContract.queryFilter(unirepContract.filters.Attestation(
-              0,
+              (await postContract.attesterCurrentEpoch()).toNumber(),
               null,
               (await postContract.attesterId()).toBigInt(),
             ));

@@ -3,6 +3,7 @@ import type { Identity } from '@semaphore-protocol/identity'
 import type { Post } from './post'
 
 export interface Persona {
+	personaId: string
 	identity?: Identity
 	picture?: string
 	cover?: string
