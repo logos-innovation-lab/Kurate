@@ -1,5 +1,5 @@
 import type {ZkIdentity} from '@zk-kit/identity'
-import {connectWallet, getGlobalAnonymousFeed} from '$lib/services'
+import {connectWallet, getGlobalAnonymousFeed, getProvider} from '$lib/services'
 import {type Chat, chats} from '$lib/stores/chat'
 import {type DraftPersona, personas} from '$lib/stores/persona'
 import {profile} from '$lib/stores/profile'
@@ -11,8 +11,49 @@ import {Signer} from 'ethers'
 import {create} from 'ipfs-http-client'
 import {createIdentity} from './utils'
 import {posts} from '$lib/stores/post'
-import type {GenericDBAdapterInterface} from "zkitter-js";
-import type {Persona} from "../../stores/persona";
+import type {GenericDBAdapterInterface} from "zkitter-js"
+import type {Persona} from "../../stores/persona"
+import {UserState, Synchronizer} from '@unirep/core'
+import type {Circuit, Prover} from "@unirep/circuits";
+import type {SnarkProof, SnarkPublicSignals} from "@unirep/utils";
+
+
+const prover: Prover = {
+	verifyProof: async (
+		circuitName: string | Circuit,
+		publicSignals: SnarkPublicSignals,
+		proof: SnarkProof
+	) => {
+		const snarkjs = await import('snarkjs');
+		const url = new URL(`/${circuitName}.vkey.json`, 'http://localhost:3000')
+		const vkey = await fetch(url.toString()).then((r) => r.json())
+		return snarkjs.groth16.verify(vkey, publicSignals, proof)
+	},
+	genProofAndPublicSignals: async (
+		circuitName: string | Circuit,
+		inputs: any
+	) => {
+		const snarkjs = await import('snarkjs');
+		const wasmUrl = new URL(`/${circuitName}.wasm`, 'http://localhost:3000')
+		const wasm = await fetch(wasmUrl.toString()).then((r) =>
+			r.arrayBuffer()
+		)
+		const zkeyUrl = new URL(`/${circuitName}.zkey`, 'http://localhost:3000')
+		const zkey = await fetch(zkeyUrl.toString()).then((r) =>
+			r.arrayBuffer()
+		)
+		const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+			inputs,
+			new Uint8Array(wasm),
+			new Uint8Array(zkey)
+		)
+		return { proof, publicSignals }
+	},
+
+	getVKey: async (name: string | Circuit): Promise<any> => {
+		return new URL(`/${name}.vkey.json`, 'http://localhost:3000').toString();
+	}
+}
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -158,11 +199,21 @@ export class ZkitterAdapter implements Adapter {
 		console.error('NOT IMPLEMENTED', 'publishPersona')
 		const {MessageType, Post, PostMessageSubType} = await import('zkitter-js');
 
-		console.log(draftPersona);
-		// const randBuf = crypto.getRandomValues(new Uint8Array(32))
-		// const groupId = ethers.utils.sha256(randBuf)
-		//
-		// const { zkIdentity, ecdh } = await createIdentity(signer, groupId);
+		const { zkIdentity, ecdh } = await createIdentity(signer);
+
+		const contract = await getGlobalAnonymousFeed()
+
+		window.contract = contract;
+		console.log(contract);
+		const state = new UserState({
+			prover: prover, // a circuit prover
+			attesterId: (await contract.attesterId()).toBigInt(),
+			unirepAddress: await contract.unirep(),
+			provider: getProvider(), // an ethers.js provider
+		}, zkIdentity)
+
+		await state.sync.start();
+		await state.waitForSync();
 
 		const pitch = new Post({
 			type: MessageType.Post,
@@ -207,14 +258,20 @@ export class ZkitterAdapter implements Adapter {
 			seedPostHashes as [string, string, string, string, string],
 			{gasLimit: 6721974}
 		)
-		const contract = await getGlobalAnonymousFeed(signer)
-		await contract['createPersona(string,string,string,bytes32,bytes32,bytes32[5])'](
+
+		const signupProof = await state.genUserSignUpProof();
+
+		const contractWithSigner = await getGlobalAnonymousFeed(signer)
+		console.log(signupProof);
+		await contractWithSigner['createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'](
 			draftPersona.name,
 			draftPersona.picture,
 			draftPersona.cover,
 			'0x' + pitch.hash(),
 			'0x' + description.hash(),
 			seedPostHashes as [string, string, string, string, string],
+			signupProof.publicSignals,
+			signupProof.proof,
 			{gasLimit: 6721974}
 		)
 		//
