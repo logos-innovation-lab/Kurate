@@ -69,6 +69,10 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         admin = msg.sender;
     }
 
+    function changeAdmin(address newAdminAddress) onlyAdmin external {
+        admin = newAdminAddress;
+    }
+
     function attesterCurrentEpoch() public view returns (uint256) {
         return unirep.attesterCurrentEpoch(attesterId);
     }

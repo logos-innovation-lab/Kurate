@@ -33,12 +33,12 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     "attesterCurrentEpoch()": FunctionFragment;
     "attesterEpochRemainingTime()": FunctionFragment;
     "attesterId()": FunctionFragment;
+    "changeAdmin(address)": FunctionFragment;
     "commentRep()": FunctionFragment;
     "commentReward()": FunctionFragment;
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])": FunctionFragment;
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])": FunctionFragment;
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])": FunctionFragment;
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])": FunctionFragment;
     "createPersonaRep()": FunctionFragment;
-    "finalizeEpochIfNeeded(uint256)": FunctionFragment;
     "grantReputation(uint256,uint256[],uint256[8])": FunctionFragment;
     "joinPersona(uint256,uint256[],uint256[8])": FunctionFragment;
     "joinPersona(uint256,uint256)": FunctionFragment;
@@ -50,13 +50,16 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     "posRepFieldIndex()": FunctionFragment;
     "postRep()": FunctionFragment;
     "postReward()": FunctionFragment;
-    "proposeComment(uint256,bytes32)": FunctionFragment;
-    "proposeComment(uint256,bytes32,uint256[],uint256[8])": FunctionFragment;
-    "proposePost(uint256,bytes32,uint256[],uint256[8])": FunctionFragment;
-    "proposePost(uint256,bytes32)": FunctionFragment;
+    "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])": FunctionFragment;
+    "proposeMessage(uint256,uint8,bytes32)": FunctionFragment;
+    "proposedMessageByEpoch(uint256,bytes32)": FunctionFragment;
+    "proposedMessageListByEpoch(uint256,uint256)": FunctionFragment;
+    "publishedMessage(bytes32)": FunctionFragment;
+    "sealEpoch(uint256,uint256[],uint256[8])": FunctionFragment;
     "slashReputation(uint256,uint256[],uint256[8])": FunctionFragment;
     "unirep()": FunctionFragment;
-    "vote(uint256,bytes32,bool,uint256[],uint256[8])": FunctionFragment;
+    "userStateTransition(uint256[],uint256[8])": FunctionFragment;
+    "vote(bytes32,bool,uint256[],uint256[8])": FunctionFragment;
     "voterReward()": FunctionFragment;
   };
 
@@ -65,12 +68,12 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
       | "attesterCurrentEpoch"
       | "attesterEpochRemainingTime"
       | "attesterId"
+      | "changeAdmin"
       | "commentRep"
       | "commentReward"
-      | "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"
-      | "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])"
+      | "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"
+      | "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"
       | "createPersonaRep"
-      | "finalizeEpochIfNeeded"
       | "grantReputation"
       | "joinPersona(uint256,uint256[],uint256[8])"
       | "joinPersona(uint256,uint256)"
@@ -82,12 +85,15 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
       | "posRepFieldIndex"
       | "postRep"
       | "postReward"
-      | "proposeComment(uint256,bytes32)"
-      | "proposeComment(uint256,bytes32,uint256[],uint256[8])"
-      | "proposePost(uint256,bytes32,uint256[],uint256[8])"
-      | "proposePost(uint256,bytes32)"
+      | "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])"
+      | "proposeMessage(uint256,uint8,bytes32)"
+      | "proposedMessageByEpoch"
+      | "proposedMessageListByEpoch"
+      | "publishedMessage"
+      | "sealEpoch"
       | "slashReputation"
       | "unirep"
+      | "userStateTransition"
       | "vote"
       | "voterReward"
   ): FunctionFragment;
@@ -105,6 +111,10 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "changeAdmin",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "commentRep",
     values?: undefined
   ): string;
@@ -113,9 +123,8 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])",
+    functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])",
     values: [
-      PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
@@ -133,9 +142,8 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])",
+    functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5])",
     values: [
-      PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
@@ -153,10 +161,6 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "createPersonaRep",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "finalizeEpochIfNeeded",
-    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "grantReputation",
@@ -208,12 +212,9 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "proposeComment(uint256,bytes32)",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "proposeComment(uint256,bytes32,uint256[],uint256[8])",
+    functionFragment: "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])",
     values: [
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BigNumberish>[],
@@ -221,17 +222,32 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "proposePost(uint256,bytes32,uint256[],uint256[8])",
+    functionFragment: "proposeMessage(uint256,uint8,bytes32)",
     values: [
       PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BigNumberish>[],
-      PromiseOrValue<BigNumberish>[]
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "proposePost(uint256,bytes32)",
+    functionFragment: "proposedMessageByEpoch",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposedMessageListByEpoch",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "publishedMessage",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sealEpoch",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BigNumberish>[]
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "slashReputation",
@@ -243,9 +259,12 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "unirep", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "userStateTransition",
+    values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "vote",
     values: [
-      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<boolean>,
       PromiseOrValue<BigNumberish>[],
@@ -266,25 +285,25 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "attesterId", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "changeAdmin",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "commentRep", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "commentReward",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])",
+    functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])",
+    functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "createPersonaRep",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "finalizeEpochIfNeeded",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -320,26 +339,35 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "postRep", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "postReward", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "proposeComment(uint256,bytes32)",
+    functionFragment: "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "proposeComment(uint256,bytes32,uint256[],uint256[8])",
+    functionFragment: "proposeMessage(uint256,uint8,bytes32)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "proposePost(uint256,bytes32,uint256[],uint256[8])",
+    functionFragment: "proposedMessageByEpoch",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "proposePost(uint256,bytes32)",
+    functionFragment: "proposedMessageListByEpoch",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "publishedMessage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "sealEpoch", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "slashReputation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unirep", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "userStateTransition",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "vote", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "voterReward",
@@ -348,15 +376,15 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
 
   events: {
     "NewPersona(uint256)": EventFragment;
-    "NewPersonaComment(uint256,bytes32,bytes32)": EventFragment;
     "NewPersonaMember(uint256,uint256)": EventFragment;
-    "NewPersonaPost(uint256,bytes32)": EventFragment;
+    "NewPersonaMessage(uint256,bytes32)": EventFragment;
+    "NewProposedMessage(uint256,bytes32)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "NewPersona"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "NewPersonaComment"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewPersonaMember"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "NewPersonaPost"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewPersonaMessage"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewProposedMessage"): EventFragment;
 }
 
 export interface NewPersonaEventObject {
@@ -365,19 +393,6 @@ export interface NewPersonaEventObject {
 export type NewPersonaEvent = TypedEvent<[BigNumber], NewPersonaEventObject>;
 
 export type NewPersonaEventFilter = TypedEventFilter<NewPersonaEvent>;
-
-export interface NewPersonaCommentEventObject {
-  personaId: BigNumber;
-  postHash: string;
-  commentHash: string;
-}
-export type NewPersonaCommentEvent = TypedEvent<
-  [BigNumber, string, string],
-  NewPersonaCommentEventObject
->;
-
-export type NewPersonaCommentEventFilter =
-  TypedEventFilter<NewPersonaCommentEvent>;
 
 export interface NewPersonaMemberEventObject {
   personaId: BigNumber;
@@ -391,16 +406,29 @@ export type NewPersonaMemberEvent = TypedEvent<
 export type NewPersonaMemberEventFilter =
   TypedEventFilter<NewPersonaMemberEvent>;
 
-export interface NewPersonaPostEventObject {
+export interface NewPersonaMessageEventObject {
   personaId: BigNumber;
-  postHash: string;
+  messageHash: string;
 }
-export type NewPersonaPostEvent = TypedEvent<
+export type NewPersonaMessageEvent = TypedEvent<
   [BigNumber, string],
-  NewPersonaPostEventObject
+  NewPersonaMessageEventObject
 >;
 
-export type NewPersonaPostEventFilter = TypedEventFilter<NewPersonaPostEvent>;
+export type NewPersonaMessageEventFilter =
+  TypedEventFilter<NewPersonaMessageEvent>;
+
+export interface NewProposedMessageEventObject {
+  personaId: BigNumber;
+  messageHash: string;
+}
+export type NewProposedMessageEvent = TypedEvent<
+  [BigNumber, string],
+  NewProposedMessageEventObject
+>;
+
+export type NewProposedMessageEventFilter =
+  TypedEventFilter<NewProposedMessageEvent>;
 
 export interface GlobalAnonymousFeed extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -435,12 +463,16 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     attesterId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    changeAdmin(
+      newAdminAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     commentRep(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     commentReward(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
-      personaId: PromiseOrValue<BigNumberish>,
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -458,8 +490,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])"(
-      personaId: PromiseOrValue<BigNumberish>,
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -476,11 +507,6 @@ export interface GlobalAnonymousFeed extends BaseContract {
     ): Promise<ContractTransaction>;
 
     createPersonaRep(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    finalizeEpochIfNeeded(
-      epoch: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
 
     grantReputation(
       rep: PromiseOrValue<BigNumberish>,
@@ -540,32 +566,53 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     postReward(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "proposeComment(uint256,bytes32)"(
+    "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])"(
       personaId: PromiseOrValue<BigNumberish>,
-      messageHash: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "proposeComment(uint256,bytes32,uint256[],uint256[8])"(
-      personaId: PromiseOrValue<BigNumberish>,
+      messageType: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
       publicSignals: PromiseOrValue<BigNumberish>[],
       proof: PromiseOrValue<BigNumberish>[],
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "proposePost(uint256,bytes32,uint256[],uint256[8])"(
+    "proposeMessage(uint256,uint8,bytes32)"(
       personaId: PromiseOrValue<BigNumberish>,
+      messageType: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
-      publicSignals: PromiseOrValue<BigNumberish>[],
-      proof: PromiseOrValue<BigNumberish>[],
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "proposePost(uint256,bytes32)"(
-      personaId: PromiseOrValue<BigNumberish>,
-      messageHash: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    proposedMessageByEpoch(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [number, string, BigNumber, BigNumber, BigNumber, boolean] & {
+        messageType: number;
+        hash: string;
+        epochKey: BigNumber;
+        epoch: BigNumber;
+        personaId: BigNumber;
+        isAdmin: boolean;
+      }
+    >;
+
+    proposedMessageListByEpoch(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    publishedMessage(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    sealEpoch(
+      epoch: PromiseOrValue<BigNumberish>,
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     slashReputation(
@@ -577,8 +624,13 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     unirep(overrides?: CallOverrides): Promise<[string]>;
 
+    userStateTransition(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     vote(
-      personaId: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
       isUpvote: PromiseOrValue<boolean>,
       publicSignals: PromiseOrValue<BigNumberish>[],
@@ -595,12 +647,16 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
   attesterId(overrides?: CallOverrides): Promise<BigNumber>;
 
+  changeAdmin(
+    newAdminAddress: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   commentRep(overrides?: CallOverrides): Promise<BigNumber>;
 
   commentReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
-    personaId: PromiseOrValue<BigNumberish>,
+  "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
     name: PromiseOrValue<string>,
     profileImage: PromiseOrValue<string>,
     coverImage: PromiseOrValue<string>,
@@ -618,8 +674,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])"(
-    personaId: PromiseOrValue<BigNumberish>,
+  "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
     name: PromiseOrValue<string>,
     profileImage: PromiseOrValue<string>,
     coverImage: PromiseOrValue<string>,
@@ -636,11 +691,6 @@ export interface GlobalAnonymousFeed extends BaseContract {
   ): Promise<ContractTransaction>;
 
   createPersonaRep(overrides?: CallOverrides): Promise<BigNumber>;
-
-  finalizeEpochIfNeeded(
-    epoch: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   grantReputation(
     rep: PromiseOrValue<BigNumberish>,
@@ -700,32 +750,53 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
   postReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "proposeComment(uint256,bytes32)"(
+  "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])"(
     personaId: PromiseOrValue<BigNumberish>,
-    messageHash: PromiseOrValue<BytesLike>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "proposeComment(uint256,bytes32,uint256[],uint256[8])"(
-    personaId: PromiseOrValue<BigNumberish>,
+    messageType: PromiseOrValue<BigNumberish>,
     messageHash: PromiseOrValue<BytesLike>,
     publicSignals: PromiseOrValue<BigNumberish>[],
     proof: PromiseOrValue<BigNumberish>[],
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "proposePost(uint256,bytes32,uint256[],uint256[8])"(
+  "proposeMessage(uint256,uint8,bytes32)"(
     personaId: PromiseOrValue<BigNumberish>,
+    messageType: PromiseOrValue<BigNumberish>,
     messageHash: PromiseOrValue<BytesLike>,
-    publicSignals: PromiseOrValue<BigNumberish>[],
-    proof: PromiseOrValue<BigNumberish>[],
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "proposePost(uint256,bytes32)"(
-    personaId: PromiseOrValue<BigNumberish>,
-    messageHash: PromiseOrValue<BytesLike>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  proposedMessageByEpoch(
+    arg0: PromiseOrValue<BigNumberish>,
+    arg1: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<
+    [number, string, BigNumber, BigNumber, BigNumber, boolean] & {
+      messageType: number;
+      hash: string;
+      epochKey: BigNumber;
+      epoch: BigNumber;
+      personaId: BigNumber;
+      isAdmin: boolean;
+    }
+  >;
+
+  proposedMessageListByEpoch(
+    arg0: PromiseOrValue<BigNumberish>,
+    arg1: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  publishedMessage(
+    arg0: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  sealEpoch(
+    epoch: PromiseOrValue<BigNumberish>,
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    proof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   slashReputation(
@@ -737,8 +808,13 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
   unirep(overrides?: CallOverrides): Promise<string>;
 
+  userStateTransition(
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    proof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   vote(
-    personaId: PromiseOrValue<BigNumberish>,
     messageHash: PromiseOrValue<BytesLike>,
     isUpvote: PromiseOrValue<boolean>,
     publicSignals: PromiseOrValue<BigNumberish>[],
@@ -755,12 +831,16 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     attesterId(overrides?: CallOverrides): Promise<BigNumber>;
 
+    changeAdmin(
+      newAdminAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     commentRep(overrides?: CallOverrides): Promise<BigNumber>;
 
     commentReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
-      personaId: PromiseOrValue<BigNumberish>,
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -778,8 +858,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])"(
-      personaId: PromiseOrValue<BigNumberish>,
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -796,11 +875,6 @@ export interface GlobalAnonymousFeed extends BaseContract {
     ): Promise<void>;
 
     createPersonaRep(overrides?: CallOverrides): Promise<BigNumber>;
-
-    finalizeEpochIfNeeded(
-      epoch: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     grantReputation(
       rep: PromiseOrValue<BigNumberish>,
@@ -860,31 +934,52 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     postReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "proposeComment(uint256,bytes32)"(
+    "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])"(
       personaId: PromiseOrValue<BigNumberish>,
-      messageHash: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "proposeComment(uint256,bytes32,uint256[],uint256[8])"(
-      personaId: PromiseOrValue<BigNumberish>,
+      messageType: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
       publicSignals: PromiseOrValue<BigNumberish>[],
       proof: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "proposePost(uint256,bytes32,uint256[],uint256[8])"(
+    "proposeMessage(uint256,uint8,bytes32)"(
       personaId: PromiseOrValue<BigNumberish>,
+      messageType: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
-      publicSignals: PromiseOrValue<BigNumberish>[],
-      proof: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "proposePost(uint256,bytes32)"(
-      personaId: PromiseOrValue<BigNumberish>,
-      messageHash: PromiseOrValue<BytesLike>,
+    proposedMessageByEpoch(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<
+      [number, string, BigNumber, BigNumber, BigNumber, boolean] & {
+        messageType: number;
+        hash: string;
+        epochKey: BigNumber;
+        epoch: BigNumber;
+        personaId: BigNumber;
+        isAdmin: boolean;
+      }
+    >;
+
+    proposedMessageListByEpoch(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    publishedMessage(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    sealEpoch(
+      epoch: PromiseOrValue<BigNumberish>,
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -897,8 +992,13 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     unirep(overrides?: CallOverrides): Promise<string>;
 
+    userStateTransition(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     vote(
-      personaId: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
       isUpvote: PromiseOrValue<boolean>,
       publicSignals: PromiseOrValue<BigNumberish>[],
@@ -913,34 +1013,32 @@ export interface GlobalAnonymousFeed extends BaseContract {
     "NewPersona(uint256)"(personaId?: null): NewPersonaEventFilter;
     NewPersona(personaId?: null): NewPersonaEventFilter;
 
-    "NewPersonaComment(uint256,bytes32,bytes32)"(
-      personaId?: null,
-      postHash?: null,
-      commentHash?: null
-    ): NewPersonaCommentEventFilter;
-    NewPersonaComment(
-      personaId?: null,
-      postHash?: null,
-      commentHash?: null
-    ): NewPersonaCommentEventFilter;
-
     "NewPersonaMember(uint256,uint256)"(
-      personaId?: null,
+      personaId?: PromiseOrValue<BigNumberish> | null,
       identityCommitment?: null
     ): NewPersonaMemberEventFilter;
     NewPersonaMember(
-      personaId?: null,
+      personaId?: PromiseOrValue<BigNumberish> | null,
       identityCommitment?: null
     ): NewPersonaMemberEventFilter;
 
-    "NewPersonaPost(uint256,bytes32)"(
-      personaId?: null,
-      postHash?: null
-    ): NewPersonaPostEventFilter;
-    NewPersonaPost(
-      personaId?: null,
-      postHash?: null
-    ): NewPersonaPostEventFilter;
+    "NewPersonaMessage(uint256,bytes32)"(
+      personaId?: PromiseOrValue<BigNumberish> | null,
+      messageHash?: null
+    ): NewPersonaMessageEventFilter;
+    NewPersonaMessage(
+      personaId?: PromiseOrValue<BigNumberish> | null,
+      messageHash?: null
+    ): NewPersonaMessageEventFilter;
+
+    "NewProposedMessage(uint256,bytes32)"(
+      personaId?: PromiseOrValue<BigNumberish> | null,
+      messageHash?: null
+    ): NewProposedMessageEventFilter;
+    NewProposedMessage(
+      personaId?: PromiseOrValue<BigNumberish> | null,
+      messageHash?: null
+    ): NewProposedMessageEventFilter;
   };
 
   estimateGas: {
@@ -950,12 +1048,16 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     attesterId(overrides?: CallOverrides): Promise<BigNumber>;
 
+    changeAdmin(
+      newAdminAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     commentRep(overrides?: CallOverrides): Promise<BigNumber>;
 
     commentReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
-      personaId: PromiseOrValue<BigNumberish>,
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -973,8 +1075,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])"(
-      personaId: PromiseOrValue<BigNumberish>,
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -991,11 +1092,6 @@ export interface GlobalAnonymousFeed extends BaseContract {
     ): Promise<BigNumber>;
 
     createPersonaRep(overrides?: CallOverrides): Promise<BigNumber>;
-
-    finalizeEpochIfNeeded(
-      epoch: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
 
     grantReputation(
       rep: PromiseOrValue<BigNumberish>,
@@ -1046,32 +1142,44 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     postReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "proposeComment(uint256,bytes32)"(
+    "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])"(
       personaId: PromiseOrValue<BigNumberish>,
-      messageHash: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "proposeComment(uint256,bytes32,uint256[],uint256[8])"(
-      personaId: PromiseOrValue<BigNumberish>,
+      messageType: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
       publicSignals: PromiseOrValue<BigNumberish>[],
       proof: PromiseOrValue<BigNumberish>[],
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "proposePost(uint256,bytes32,uint256[],uint256[8])"(
+    "proposeMessage(uint256,uint8,bytes32)"(
       personaId: PromiseOrValue<BigNumberish>,
+      messageType: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
-      publicSignals: PromiseOrValue<BigNumberish>[],
-      proof: PromiseOrValue<BigNumberish>[],
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "proposePost(uint256,bytes32)"(
-      personaId: PromiseOrValue<BigNumberish>,
-      messageHash: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    proposedMessageByEpoch(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    proposedMessageListByEpoch(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    publishedMessage(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    sealEpoch(
+      epoch: PromiseOrValue<BigNumberish>,
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     slashReputation(
@@ -1083,8 +1191,13 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     unirep(overrides?: CallOverrides): Promise<BigNumber>;
 
+    userStateTransition(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     vote(
-      personaId: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
       isUpvote: PromiseOrValue<boolean>,
       publicSignals: PromiseOrValue<BigNumberish>[],
@@ -1106,12 +1219,16 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     attesterId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    changeAdmin(
+      newAdminAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     commentRep(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     commentReward(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
-      personaId: PromiseOrValue<BigNumberish>,
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -1129,8 +1246,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "createPersona(uint256,string,string,string,bytes32,bytes32,bytes32[5])"(
-      personaId: PromiseOrValue<BigNumberish>,
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -1147,11 +1263,6 @@ export interface GlobalAnonymousFeed extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     createPersonaRep(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    finalizeEpochIfNeeded(
-      epoch: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
 
     grantReputation(
       rep: PromiseOrValue<BigNumberish>,
@@ -1202,32 +1313,44 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     postReward(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "proposeComment(uint256,bytes32)"(
+    "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])"(
       personaId: PromiseOrValue<BigNumberish>,
-      messageHash: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "proposeComment(uint256,bytes32,uint256[],uint256[8])"(
-      personaId: PromiseOrValue<BigNumberish>,
+      messageType: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
       publicSignals: PromiseOrValue<BigNumberish>[],
       proof: PromiseOrValue<BigNumberish>[],
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "proposePost(uint256,bytes32,uint256[],uint256[8])"(
+    "proposeMessage(uint256,uint8,bytes32)"(
       personaId: PromiseOrValue<BigNumberish>,
+      messageType: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
-      publicSignals: PromiseOrValue<BigNumberish>[],
-      proof: PromiseOrValue<BigNumberish>[],
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "proposePost(uint256,bytes32)"(
-      personaId: PromiseOrValue<BigNumberish>,
-      messageHash: PromiseOrValue<BytesLike>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    proposedMessageByEpoch(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    proposedMessageListByEpoch(
+      arg0: PromiseOrValue<BigNumberish>,
+      arg1: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    publishedMessage(
+      arg0: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    sealEpoch(
+      epoch: PromiseOrValue<BigNumberish>,
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     slashReputation(
@@ -1239,8 +1362,13 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     unirep(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    userStateTransition(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     vote(
-      personaId: PromiseOrValue<BigNumberish>,
       messageHash: PromiseOrValue<BytesLike>,
       isUpvote: PromiseOrValue<boolean>,
       publicSignals: PromiseOrValue<BigNumberish>[],
