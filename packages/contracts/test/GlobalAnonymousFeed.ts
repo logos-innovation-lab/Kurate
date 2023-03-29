@@ -1,8 +1,8 @@
 import {ethers} from "hardhat"
 import {GlobalAnonymousFeed, GlobalAnonymousFeed__factory} from "../build/typechain"
 import type {Signer} from "ethers/lib/ethers"
-import {Circuit, CircuitConfig, Prover} from '@unirep/circuits'
-import {SnarkProof, SnarkPublicSignals, Strategy, ZkIdentity} from '@unirep/utils'
+import {BuildOrderedTree, Circuit, CircuitConfig, Prover} from '@unirep/circuits'
+import {SnarkProof, SnarkPublicSignals, Strategy, stringifyBigInts, ZkIdentity} from '@unirep/utils'
 import {UserState} from '@unirep/core'
 import {defaultProver} from '@unirep/circuits/provers/defaultProver'
 import {getUnirepContract, Unirep} from '@unirep/contracts'
