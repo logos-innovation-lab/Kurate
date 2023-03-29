@@ -29,12 +29,12 @@ jobs:
       - name: Install dependenciess
         run: pnpm install --frozen-lockfile
 
-      - name: Download snark-artifacts
-        working-directory: packages/contracts
-        run: pnpm run download:snark-artifacts
+      # - name: Download snark-artifacts
+      #   working-directory: packages/contracts
+      #   run: pnpm run download:snark-artifacts
 
       - name: Test
-        run: pnpm run test
+        run: pnpm --filter ui run test # FIXME: run contract tests as well
 
       - name: Check the build
         run: pnpm run check

@@ -41,6 +41,22 @@ declare module 'hardhat/types/runtime' {
 			signerOrOptions?: ethers.Signer | FactoryOptions,
 		): Promise<Contracts.Semaphore__factory>
 		getContractFactory(
+			name: 'IUnirep',
+			signerOrOptions?: ethers.Signer | FactoryOptions,
+		): Promise<Contracts.IUnirep__factory>
+		getContractFactory(
+			name: 'IVerifier',
+			signerOrOptions?: ethers.Signer | FactoryOptions,
+		): Promise<Contracts.IVerifier__factory>
+		getContractFactory(
+			name: 'Polysum',
+			signerOrOptions?: ethers.Signer | FactoryOptions,
+		): Promise<Contracts.Polysum__factory>
+		getContractFactory(
+			name: 'Unirep',
+			signerOrOptions?: ethers.Signer | FactoryOptions,
+		): Promise<Contracts.Unirep__factory>
+		getContractFactory(
 			name: 'PoseidonT3',
 			signerOrOptions?: ethers.Signer | FactoryOptions,
 		): Promise<Contracts.PoseidonT3__factory>
@@ -52,6 +68,10 @@ declare module 'hardhat/types/runtime' {
 			name: 'GlobalAnonymousFeed',
 			signerOrOptions?: ethers.Signer | FactoryOptions,
 		): Promise<Contracts.GlobalAnonymousFeed__factory>
+		getContractFactory(
+			name: 'PoseidonT2',
+			signerOrOptions?: ethers.Signer | FactoryOptions,
+		): Promise<Contracts.PoseidonT2__factory>
 
 		getContractAt(
 			name: 'Pairing',
@@ -89,6 +109,26 @@ declare module 'hardhat/types/runtime' {
 			signer?: ethers.Signer,
 		): Promise<Contracts.Semaphore>
 		getContractAt(
+			name: 'IUnirep',
+			address: string,
+			signer?: ethers.Signer,
+		): Promise<Contracts.IUnirep>
+		getContractAt(
+			name: 'IVerifier',
+			address: string,
+			signer?: ethers.Signer,
+		): Promise<Contracts.IVerifier>
+		getContractAt(
+			name: 'Polysum',
+			address: string,
+			signer?: ethers.Signer,
+		): Promise<Contracts.Polysum>
+		getContractAt(
+			name: 'Unirep',
+			address: string,
+			signer?: ethers.Signer,
+		): Promise<Contracts.Unirep>
+		getContractAt(
 			name: 'PoseidonT3',
 			address: string,
 			signer?: ethers.Signer,
@@ -103,6 +143,11 @@ declare module 'hardhat/types/runtime' {
 			address: string,
 			signer?: ethers.Signer,
 		): Promise<Contracts.GlobalAnonymousFeed>
+		getContractAt(
+			name: 'PoseidonT2',
+			address: string,
+			signer?: ethers.Signer,
+		): Promise<Contracts.PoseidonT2>
 
 		// default types
 		getContractFactory(

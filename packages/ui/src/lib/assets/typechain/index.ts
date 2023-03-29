@@ -3,10 +3,14 @@
 /* eslint-disable */
 import type * as semaphoreProtocol from './@semaphore-protocol'
 export type { semaphoreProtocol }
+import type * as unirep from './@unirep'
+export type { unirep }
 import type * as zkKit from './@zk-kit'
 export type { zkKit }
 import type * as contracts from './contracts'
 export type { contracts }
+import type * as poseidonSolidity from './poseidon-solidity'
+export type { poseidonSolidity }
 export * as factories from './factories'
 export type { Pairing } from './@semaphore-protocol/contracts/base/Pairing'
 export { Pairing__factory } from './factories/@semaphore-protocol/contracts/base/Pairing__factory'
@@ -22,9 +26,19 @@ export type { ISemaphoreVerifier } from './@semaphore-protocol/contracts/interfa
 export { ISemaphoreVerifier__factory } from './factories/@semaphore-protocol/contracts/interfaces/ISemaphoreVerifier__factory'
 export type { Semaphore } from './@semaphore-protocol/contracts/Semaphore'
 export { Semaphore__factory } from './factories/@semaphore-protocol/contracts/Semaphore__factory'
+export type { IUnirep } from './@unirep/contracts/interfaces/IUnirep'
+export { IUnirep__factory } from './factories/@unirep/contracts/interfaces/IUnirep__factory'
+export type { IVerifier } from './@unirep/contracts/interfaces/IVerifier'
+export { IVerifier__factory } from './factories/@unirep/contracts/interfaces/IVerifier__factory'
+export type { Polysum } from './@unirep/contracts/libraries/Polysum'
+export { Polysum__factory } from './factories/@unirep/contracts/libraries/Polysum__factory'
+export type { Unirep } from './@unirep/contracts/Unirep'
+export { Unirep__factory } from './factories/@unirep/contracts/Unirep__factory'
 export type { PoseidonT3 } from './@zk-kit/incremental-merkle-tree.sol/Hashes.sol/PoseidonT3'
 export { PoseidonT3__factory } from './factories/@zk-kit/incremental-merkle-tree.sol/Hashes.sol/PoseidonT3__factory'
 export type { PoseidonT6 } from './@zk-kit/incremental-merkle-tree.sol/Hashes.sol/PoseidonT6'
 export { PoseidonT6__factory } from './factories/@zk-kit/incremental-merkle-tree.sol/Hashes.sol/PoseidonT6__factory'
 export type { GlobalAnonymousFeed } from './contracts/GlobalAnonymousFeed'
 export { GlobalAnonymousFeed__factory } from './factories/contracts/GlobalAnonymousFeed__factory'
+export type { PoseidonT2 } from './poseidon-solidity/PoseidonT2'
+export { PoseidonT2__factory } from './factories/poseidon-solidity/PoseidonT2__factory'

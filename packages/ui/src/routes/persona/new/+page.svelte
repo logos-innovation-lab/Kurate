@@ -23,7 +23,7 @@
 	import type { Persona } from '$lib/stores/persona'
 	import type { ReputationOptions } from '$lib/types'
 
-	let persona: Omit<Persona, 'participantsCount' | 'postsCount'> = {
+	let persona: Omit<Persona, 'participantsCount' | 'postsCount' | 'personaId'> = {
 		name: '',
 		pitch: '',
 		description: '',

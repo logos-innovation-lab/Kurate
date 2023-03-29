@@ -4,6 +4,7 @@ import type { Post } from './post'
 import type { ReputationOptions } from '$lib/types'
 
 export interface Persona {
+	personaId: number | string
 	identity?: Identity
 	picture: string
 	cover: string
@@ -15,14 +16,15 @@ export interface Persona {
 	minReputation: ReputationOptions
 }
 
-export interface DraftPersona extends Omit<Persona, 'postsCount' | 'participantsCount'> {
+export interface DraftPersona
+	extends Omit<Persona, 'postsCount' | 'participantsCount' | 'personaId'> {
 	posts: Post[]
 }
 
 type PersonaStore = {
 	draft: DraftPersona[]
 	favorite: string[]
-	all: Map<string, Persona>
+	all: Map<number | string, Persona>
 	loading: boolean
 }
 

@@ -39,7 +39,7 @@ function addRandomPersona() {
 	// FIXME: it can happen that this ID already exists
 	const groupId = randomId()
 	personas.update((state) => {
-		const persona = randomPersona()
+		const persona = randomPersona(groupId)
 		state.all.set(groupId, persona)
 
 		// The persona should have 5-15 approved posts
@@ -209,7 +209,12 @@ export class InMemoryAndIPFS implements Adapter {
 		const groupId = randomId()
 
 		personas.update((state) => {
-			state.all.set(groupId, { ...draftPersona, postsCount: 5, participantsCount: 1 })
+			state.all.set(groupId, {
+				...draftPersona,
+				postsCount: 5,
+				participantsCount: 1,
+				personaId: groupId,
+			})
 
 			return { ...state }
 		})

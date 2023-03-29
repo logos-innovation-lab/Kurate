@@ -2,5 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as semaphoreProtocol from './@semaphore-protocol'
+export * as unirep from './@unirep'
 export * as zkKit from './@zk-kit'
 export * as contracts from './contracts'
+export * as poseidonSolidity from './poseidon-solidity'

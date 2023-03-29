@@ -9,6 +9,7 @@ import type {
 	CallOverrides,
 	ContractTransaction,
 	Overrides,
+	PayableOverrides,
 	PopulatedTransaction,
 	Signer,
 	utils,
@@ -25,68 +26,355 @@ import type {
 
 export interface GlobalAnonymousFeedInterface extends utils.Interface {
 	functions: {
-		'groupId()': FunctionFragment
-		'joinGroup(uint256)': FunctionFragment
-		'registeredIdentities(uint256)': FunctionFragment
-		'semaphore()': FunctionFragment
-		'sendMessage(string,uint256,uint256,uint256,uint256[8])': FunctionFragment
+		'attesterCurrentEpoch()': FunctionFragment
+		'attesterEpochRemainingTime()': FunctionFragment
+		'attesterId()': FunctionFragment
+		'changeAdmin(address)': FunctionFragment
+		'commentRep()': FunctionFragment
+		'commentReward()': FunctionFragment
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])': FunctionFragment
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])': FunctionFragment
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])': FunctionFragment
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5])': FunctionFragment
+		'createPersonaRep()': FunctionFragment
+		'grantReputation(uint256,uint256[],uint256[8])': FunctionFragment
+		'joinPersona(uint256,uint256[],uint256[8])': FunctionFragment
+		'joinPersona(uint256,uint256)': FunctionFragment
+		'members(uint256)': FunctionFragment
+		'membersByPersona(uint256,uint256)': FunctionFragment
+		'negRepFieldIndex()': FunctionFragment
+		'numOfPersonas()': FunctionFragment
+		'personaList(uint256)': FunctionFragment
+		'personas(uint256)': FunctionFragment
+		'posRepFieldIndex()': FunctionFragment
+		'postRep()': FunctionFragment
+		'postReward()': FunctionFragment
+		'proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])': FunctionFragment
+		'proposeMessage(uint256,uint8,bytes32)': FunctionFragment
+		'proposedMessageByEpoch(uint256,bytes32)': FunctionFragment
+		'proposedMessageListByEpoch(uint256,uint256)': FunctionFragment
+		'publishedMessage(bytes32)': FunctionFragment
+		'sealEpoch(uint256,uint256[],uint256[8])': FunctionFragment
+		'slashReputation(uint256,uint256[],uint256[8])': FunctionFragment
+		'unirep()': FunctionFragment
+		'userStateTransition(uint256[],uint256[8])': FunctionFragment
+		'vote(bytes32,bool,uint256[],uint256[8])': FunctionFragment
+		'voterReward()': FunctionFragment
 	}
 
 	getFunction(
 		nameOrSignatureOrTopic:
-			| 'groupId'
-			| 'joinGroup'
-			| 'registeredIdentities'
-			| 'semaphore'
-			| 'sendMessage',
+			| 'attesterCurrentEpoch'
+			| 'attesterEpochRemainingTime'
+			| 'attesterId'
+			| 'changeAdmin'
+			| 'commentRep'
+			| 'commentReward'
+			| 'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'
+			| 'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])'
+			| 'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'
+			| 'createPersona(string,string,string,bytes32,bytes32,bytes32[5])'
+			| 'createPersonaRep'
+			| 'grantReputation'
+			| 'joinPersona(uint256,uint256[],uint256[8])'
+			| 'joinPersona(uint256,uint256)'
+			| 'members'
+			| 'membersByPersona'
+			| 'negRepFieldIndex'
+			| 'numOfPersonas'
+			| 'personaList'
+			| 'personas'
+			| 'posRepFieldIndex'
+			| 'postRep'
+			| 'postReward'
+			| 'proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])'
+			| 'proposeMessage(uint256,uint8,bytes32)'
+			| 'proposedMessageByEpoch'
+			| 'proposedMessageListByEpoch'
+			| 'publishedMessage'
+			| 'sealEpoch'
+			| 'slashReputation'
+			| 'unirep'
+			| 'userStateTransition'
+			| 'vote'
+			| 'voterReward',
 	): FunctionFragment
 
-	encodeFunctionData(functionFragment: 'groupId', values?: undefined): string
-	encodeFunctionData(functionFragment: 'joinGroup', values: [PromiseOrValue<BigNumberish>]): string
+	encodeFunctionData(functionFragment: 'attesterCurrentEpoch', values?: undefined): string
+	encodeFunctionData(functionFragment: 'attesterEpochRemainingTime', values?: undefined): string
+	encodeFunctionData(functionFragment: 'attesterId', values?: undefined): string
+	encodeFunctionData(functionFragment: 'changeAdmin', values: [PromiseOrValue<string>]): string
+	encodeFunctionData(functionFragment: 'commentRep', values?: undefined): string
+	encodeFunctionData(functionFragment: 'commentReward', values?: undefined): string
 	encodeFunctionData(
-		functionFragment: 'registeredIdentities',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(functionFragment: 'semaphore', values?: undefined): string
-	encodeFunctionData(
-		functionFragment: 'sendMessage',
+		functionFragment: 'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])',
 		values: [
 			PromiseOrValue<string>,
-			PromiseOrValue<BigNumberish>,
-			PromiseOrValue<BigNumberish>,
-			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<string>,
+			PromiseOrValue<string>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			[
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			PromiseOrValue<BigNumberish>[],
 			PromiseOrValue<BigNumberish>[],
 		],
 	): string
+	encodeFunctionData(
+		functionFragment: 'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])',
+		values: [
+			PromiseOrValue<string>,
+			PromiseOrValue<string>,
+			PromiseOrValue<string>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			[
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+		],
+	): string
+	encodeFunctionData(
+		functionFragment: 'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])',
+		values: [
+			PromiseOrValue<string>,
+			PromiseOrValue<string>,
+			PromiseOrValue<string>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			[
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+		],
+	): string
+	encodeFunctionData(
+		functionFragment: 'createPersona(string,string,string,bytes32,bytes32,bytes32[5])',
+		values: [
+			PromiseOrValue<string>,
+			PromiseOrValue<string>,
+			PromiseOrValue<string>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			[
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+		],
+	): string
+	encodeFunctionData(functionFragment: 'createPersonaRep', values?: undefined): string
+	encodeFunctionData(
+		functionFragment: 'grantReputation',
+		values: [
+			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+		],
+	): string
+	encodeFunctionData(
+		functionFragment: 'joinPersona(uint256,uint256[],uint256[8])',
+		values: [
+			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+		],
+	): string
+	encodeFunctionData(
+		functionFragment: 'joinPersona(uint256,uint256)',
+		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+	): string
+	encodeFunctionData(functionFragment: 'members', values: [PromiseOrValue<BigNumberish>]): string
+	encodeFunctionData(
+		functionFragment: 'membersByPersona',
+		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+	): string
+	encodeFunctionData(functionFragment: 'negRepFieldIndex', values?: undefined): string
+	encodeFunctionData(functionFragment: 'numOfPersonas', values?: undefined): string
+	encodeFunctionData(
+		functionFragment: 'personaList',
+		values: [PromiseOrValue<BigNumberish>],
+	): string
+	encodeFunctionData(functionFragment: 'personas', values: [PromiseOrValue<BigNumberish>]): string
+	encodeFunctionData(functionFragment: 'posRepFieldIndex', values?: undefined): string
+	encodeFunctionData(functionFragment: 'postRep', values?: undefined): string
+	encodeFunctionData(functionFragment: 'postReward', values?: undefined): string
+	encodeFunctionData(
+		functionFragment: 'proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])',
+		values: [
+			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+		],
+	): string
+	encodeFunctionData(
+		functionFragment: 'proposeMessage(uint256,uint8,bytes32)',
+		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>, PromiseOrValue<BytesLike>],
+	): string
+	encodeFunctionData(
+		functionFragment: 'proposedMessageByEpoch',
+		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BytesLike>],
+	): string
+	encodeFunctionData(
+		functionFragment: 'proposedMessageListByEpoch',
+		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
+	): string
+	encodeFunctionData(
+		functionFragment: 'publishedMessage',
+		values: [PromiseOrValue<BytesLike>],
+	): string
+	encodeFunctionData(
+		functionFragment: 'sealEpoch',
+		values: [
+			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+		],
+	): string
+	encodeFunctionData(
+		functionFragment: 'slashReputation',
+		values: [
+			PromiseOrValue<BigNumberish>,
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+		],
+	): string
+	encodeFunctionData(functionFragment: 'unirep', values?: undefined): string
+	encodeFunctionData(
+		functionFragment: 'userStateTransition',
+		values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]],
+	): string
+	encodeFunctionData(
+		functionFragment: 'vote',
+		values: [
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<boolean>,
+			PromiseOrValue<BigNumberish>[],
+			PromiseOrValue<BigNumberish>[],
+		],
+	): string
+	encodeFunctionData(functionFragment: 'voterReward', values?: undefined): string
 
-	decodeFunctionResult(functionFragment: 'groupId', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'joinGroup', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'registeredIdentities', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'semaphore', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'sendMessage', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'attesterCurrentEpoch', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'attesterEpochRemainingTime', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'attesterId', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'changeAdmin', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'commentRep', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'commentReward', data: BytesLike): Result
+	decodeFunctionResult(
+		functionFragment: 'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])',
+		data: BytesLike,
+	): Result
+	decodeFunctionResult(
+		functionFragment: 'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])',
+		data: BytesLike,
+	): Result
+	decodeFunctionResult(
+		functionFragment: 'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])',
+		data: BytesLike,
+	): Result
+	decodeFunctionResult(
+		functionFragment: 'createPersona(string,string,string,bytes32,bytes32,bytes32[5])',
+		data: BytesLike,
+	): Result
+	decodeFunctionResult(functionFragment: 'createPersonaRep', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'grantReputation', data: BytesLike): Result
+	decodeFunctionResult(
+		functionFragment: 'joinPersona(uint256,uint256[],uint256[8])',
+		data: BytesLike,
+	): Result
+	decodeFunctionResult(functionFragment: 'joinPersona(uint256,uint256)', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'members', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'membersByPersona', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'negRepFieldIndex', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'numOfPersonas', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'personaList', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'personas', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'posRepFieldIndex', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'postRep', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'postReward', data: BytesLike): Result
+	decodeFunctionResult(
+		functionFragment: 'proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])',
+		data: BytesLike,
+	): Result
+	decodeFunctionResult(
+		functionFragment: 'proposeMessage(uint256,uint8,bytes32)',
+		data: BytesLike,
+	): Result
+	decodeFunctionResult(functionFragment: 'proposedMessageByEpoch', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'proposedMessageListByEpoch', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'publishedMessage', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'sealEpoch', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'slashReputation', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'unirep', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'userStateTransition', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'vote', data: BytesLike): Result
+	decodeFunctionResult(functionFragment: 'voterReward', data: BytesLike): Result
 
 	events: {
-		'NewIdentity(uint256)': EventFragment
-		'NewMessage(string)': EventFragment
+		'NewPersona(uint256)': EventFragment
+		'NewPersonaMember(uint256,uint256)': EventFragment
+		'NewPersonaMessage(uint256,bytes32)': EventFragment
+		'NewProposedMessage(uint256,bytes32)': EventFragment
 	}
 
-	getEvent(nameOrSignatureOrTopic: 'NewIdentity'): EventFragment
-	getEvent(nameOrSignatureOrTopic: 'NewMessage'): EventFragment
+	getEvent(nameOrSignatureOrTopic: 'NewPersona'): EventFragment
+	getEvent(nameOrSignatureOrTopic: 'NewPersonaMember'): EventFragment
+	getEvent(nameOrSignatureOrTopic: 'NewPersonaMessage'): EventFragment
+	getEvent(nameOrSignatureOrTopic: 'NewProposedMessage'): EventFragment
 }
 
-export interface NewIdentityEventObject {
+export interface NewPersonaEventObject {
+	personaId: BigNumber
+}
+export type NewPersonaEvent = TypedEvent<[BigNumber], NewPersonaEventObject>
+
+export type NewPersonaEventFilter = TypedEventFilter<NewPersonaEvent>
+
+export interface NewPersonaMemberEventObject {
+	personaId: BigNumber
 	identityCommitment: BigNumber
 }
-export type NewIdentityEvent = TypedEvent<[BigNumber], NewIdentityEventObject>
+export type NewPersonaMemberEvent = TypedEvent<[BigNumber, BigNumber], NewPersonaMemberEventObject>
 
-export type NewIdentityEventFilter = TypedEventFilter<NewIdentityEvent>
+export type NewPersonaMemberEventFilter = TypedEventFilter<NewPersonaMemberEvent>
 
-export interface NewMessageEventObject {
-	message: string
+export interface NewPersonaMessageEventObject {
+	personaId: BigNumber
+	messageHash: string
 }
-export type NewMessageEvent = TypedEvent<[string], NewMessageEventObject>
+export type NewPersonaMessageEvent = TypedEvent<[BigNumber, string], NewPersonaMessageEventObject>
 
-export type NewMessageEventFilter = TypedEventFilter<NewMessageEvent>
+export type NewPersonaMessageEventFilter = TypedEventFilter<NewPersonaMessageEvent>
+
+export interface NewProposedMessageEventObject {
+	personaId: BigNumber
+	messageHash: string
+}
+export type NewProposedMessageEvent = TypedEvent<[BigNumber, string], NewProposedMessageEventObject>
+
+export type NewProposedMessageEventFilter = TypedEventFilter<NewProposedMessageEvent>
 
 export interface GlobalAnonymousFeed extends BaseContract {
 	connect(signerOrProvider: Signer | Provider | string): this
@@ -113,133 +401,1079 @@ export interface GlobalAnonymousFeed extends BaseContract {
 	removeListener: OnEvent<this>
 
 	functions: {
-		groupId(overrides?: CallOverrides): Promise<[BigNumber]>
+		attesterCurrentEpoch(overrides?: CallOverrides): Promise<[BigNumber]>
 
-		joinGroup(
+		attesterEpochRemainingTime(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		attesterId(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		changeAdmin(
+			newAdminAddress: PromiseOrValue<string>,
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		commentRep(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		commentReward(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+			signUpProof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+			signUpProof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		createPersonaRep(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		grantReputation(
+			rep: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		'joinPersona(uint256,uint256[],uint256[8])'(
+			personaId: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		'joinPersona(uint256,uint256)'(
+			personaId: PromiseOrValue<BigNumberish>,
 			identityCommitment: PromiseOrValue<BigNumberish>,
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<ContractTransaction>
 
-		registeredIdentities(
+		members(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[boolean]>
+
+		membersByPersona(
 			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BigNumberish>,
 			overrides?: CallOverrides,
 		): Promise<[boolean]>
 
-		semaphore(overrides?: CallOverrides): Promise<[string]>
+		negRepFieldIndex(overrides?: CallOverrides): Promise<[BigNumber]>
 
-		sendMessage(
-			message: PromiseOrValue<string>,
-			merkleTreeRoot: PromiseOrValue<BigNumberish>,
-			nullifierHash: PromiseOrValue<BigNumberish>,
-			externalNullifier: PromiseOrValue<BigNumberish>,
+		numOfPersonas(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		personaList(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[BigNumber]>
+
+		personas(
+			arg0: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
+		): Promise<
+			[BigNumber, string, string, string, string, string] & {
+				personaId: BigNumber
+				name: string
+				profileImage: string
+				coverImage: string
+				pitch: string
+				description: string
+			}
+		>
+
+		posRepFieldIndex(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		postRep(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		postReward(overrides?: CallOverrides): Promise<[BigNumber]>
+
+		'proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])'(
+			personaId: PromiseOrValue<BigNumberish>,
+			messageType: PromiseOrValue<BigNumberish>,
+			messageHash: PromiseOrValue<BytesLike>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: PayableOverrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		'proposeMessage(uint256,uint8,bytes32)'(
+			personaId: PromiseOrValue<BigNumberish>,
+			messageType: PromiseOrValue<BigNumberish>,
+			messageHash: PromiseOrValue<BytesLike>,
+			overrides?: PayableOverrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		proposedMessageByEpoch(
+			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BytesLike>,
+			overrides?: CallOverrides,
+		): Promise<
+			[number, string, BigNumber, BigNumber, BigNumber, boolean] & {
+				messageType: number
+				hash: string
+				epochKey: BigNumber
+				epoch: BigNumber
+				personaId: BigNumber
+				isAdmin: boolean
+			}
+		>
+
+		proposedMessageListByEpoch(
+			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
+		): Promise<[string]>
+
+		publishedMessage(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[boolean]>
+
+		sealEpoch(
+			epoch: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
 			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<ContractTransaction>
+
+		slashReputation(
+			rep: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		unirep(overrides?: CallOverrides): Promise<[string]>
+
+		userStateTransition(
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		vote(
+			messageHash: PromiseOrValue<BytesLike>,
+			isUpvote: PromiseOrValue<boolean>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<ContractTransaction>
+
+		voterReward(overrides?: CallOverrides): Promise<[BigNumber]>
 	}
 
-	groupId(overrides?: CallOverrides): Promise<BigNumber>
+	attesterCurrentEpoch(overrides?: CallOverrides): Promise<BigNumber>
 
-	joinGroup(
-		identityCommitment: PromiseOrValue<BigNumberish>,
+	attesterEpochRemainingTime(overrides?: CallOverrides): Promise<BigNumber>
+
+	attesterId(overrides?: CallOverrides): Promise<BigNumber>
+
+	changeAdmin(
+		newAdminAddress: PromiseOrValue<string>,
 		overrides?: Overrides & { from?: PromiseOrValue<string> },
 	): Promise<ContractTransaction>
 
-	registeredIdentities(
-		arg0: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<boolean>
+	commentRep(overrides?: CallOverrides): Promise<BigNumber>
 
-	semaphore(overrides?: CallOverrides): Promise<string>
+	commentReward(overrides?: CallOverrides): Promise<BigNumber>
 
-	sendMessage(
-		message: PromiseOrValue<string>,
-		merkleTreeRoot: PromiseOrValue<BigNumberish>,
-		nullifierHash: PromiseOrValue<BigNumberish>,
-		externalNullifier: PromiseOrValue<BigNumberish>,
+	'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+		name: PromiseOrValue<string>,
+		profileImage: PromiseOrValue<string>,
+		coverImage: PromiseOrValue<string>,
+		pitch: PromiseOrValue<BytesLike>,
+		description: PromiseOrValue<BytesLike>,
+		seedPosts: [
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+		],
+		signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+		signUpProof: PromiseOrValue<BigNumberish>[],
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])'(
+		name: PromiseOrValue<string>,
+		profileImage: PromiseOrValue<string>,
+		coverImage: PromiseOrValue<string>,
+		pitch: PromiseOrValue<BytesLike>,
+		description: PromiseOrValue<BytesLike>,
+		seedPosts: [
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+		],
+		publicSignals: PromiseOrValue<BigNumberish>[],
+		proof: PromiseOrValue<BigNumberish>[],
+		signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+		signUpProof: PromiseOrValue<BigNumberish>[],
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+		name: PromiseOrValue<string>,
+		profileImage: PromiseOrValue<string>,
+		coverImage: PromiseOrValue<string>,
+		pitch: PromiseOrValue<BytesLike>,
+		description: PromiseOrValue<BytesLike>,
+		seedPosts: [
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+		],
+		publicSignals: PromiseOrValue<BigNumberish>[],
 		proof: PromiseOrValue<BigNumberish>[],
 		overrides?: Overrides & { from?: PromiseOrValue<string> },
 	): Promise<ContractTransaction>
 
-	callStatic: {
-		groupId(overrides?: CallOverrides): Promise<BigNumber>
+	'createPersona(string,string,string,bytes32,bytes32,bytes32[5])'(
+		name: PromiseOrValue<string>,
+		profileImage: PromiseOrValue<string>,
+		coverImage: PromiseOrValue<string>,
+		pitch: PromiseOrValue<BytesLike>,
+		description: PromiseOrValue<BytesLike>,
+		seedPosts: [
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+			PromiseOrValue<BytesLike>,
+		],
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
 
-		joinGroup(
+	createPersonaRep(overrides?: CallOverrides): Promise<BigNumber>
+
+	grantReputation(
+		rep: PromiseOrValue<BigNumberish>,
+		publicSignals: PromiseOrValue<BigNumberish>[],
+		proof: PromiseOrValue<BigNumberish>[],
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	'joinPersona(uint256,uint256[],uint256[8])'(
+		personaId: PromiseOrValue<BigNumberish>,
+		publicSignals: PromiseOrValue<BigNumberish>[],
+		proof: PromiseOrValue<BigNumberish>[],
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	'joinPersona(uint256,uint256)'(
+		personaId: PromiseOrValue<BigNumberish>,
+		identityCommitment: PromiseOrValue<BigNumberish>,
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	members(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>
+
+	membersByPersona(
+		arg0: PromiseOrValue<BigNumberish>,
+		arg1: PromiseOrValue<BigNumberish>,
+		overrides?: CallOverrides,
+	): Promise<boolean>
+
+	negRepFieldIndex(overrides?: CallOverrides): Promise<BigNumber>
+
+	numOfPersonas(overrides?: CallOverrides): Promise<BigNumber>
+
+	personaList(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
+
+	personas(
+		arg0: PromiseOrValue<BigNumberish>,
+		overrides?: CallOverrides,
+	): Promise<
+		[BigNumber, string, string, string, string, string] & {
+			personaId: BigNumber
+			name: string
+			profileImage: string
+			coverImage: string
+			pitch: string
+			description: string
+		}
+	>
+
+	posRepFieldIndex(overrides?: CallOverrides): Promise<BigNumber>
+
+	postRep(overrides?: CallOverrides): Promise<BigNumber>
+
+	postReward(overrides?: CallOverrides): Promise<BigNumber>
+
+	'proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])'(
+		personaId: PromiseOrValue<BigNumberish>,
+		messageType: PromiseOrValue<BigNumberish>,
+		messageHash: PromiseOrValue<BytesLike>,
+		publicSignals: PromiseOrValue<BigNumberish>[],
+		proof: PromiseOrValue<BigNumberish>[],
+		overrides?: PayableOverrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	'proposeMessage(uint256,uint8,bytes32)'(
+		personaId: PromiseOrValue<BigNumberish>,
+		messageType: PromiseOrValue<BigNumberish>,
+		messageHash: PromiseOrValue<BytesLike>,
+		overrides?: PayableOverrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	proposedMessageByEpoch(
+		arg0: PromiseOrValue<BigNumberish>,
+		arg1: PromiseOrValue<BytesLike>,
+		overrides?: CallOverrides,
+	): Promise<
+		[number, string, BigNumber, BigNumber, BigNumber, boolean] & {
+			messageType: number
+			hash: string
+			epochKey: BigNumber
+			epoch: BigNumber
+			personaId: BigNumber
+			isAdmin: boolean
+		}
+	>
+
+	proposedMessageListByEpoch(
+		arg0: PromiseOrValue<BigNumberish>,
+		arg1: PromiseOrValue<BigNumberish>,
+		overrides?: CallOverrides,
+	): Promise<string>
+
+	publishedMessage(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<boolean>
+
+	sealEpoch(
+		epoch: PromiseOrValue<BigNumberish>,
+		publicSignals: PromiseOrValue<BigNumberish>[],
+		proof: PromiseOrValue<BigNumberish>[],
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	slashReputation(
+		rep: PromiseOrValue<BigNumberish>,
+		publicSignals: PromiseOrValue<BigNumberish>[],
+		proof: PromiseOrValue<BigNumberish>[],
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	unirep(overrides?: CallOverrides): Promise<string>
+
+	userStateTransition(
+		publicSignals: PromiseOrValue<BigNumberish>[],
+		proof: PromiseOrValue<BigNumberish>[],
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	vote(
+		messageHash: PromiseOrValue<BytesLike>,
+		isUpvote: PromiseOrValue<boolean>,
+		publicSignals: PromiseOrValue<BigNumberish>[],
+		proof: PromiseOrValue<BigNumberish>[],
+		overrides?: Overrides & { from?: PromiseOrValue<string> },
+	): Promise<ContractTransaction>
+
+	voterReward(overrides?: CallOverrides): Promise<BigNumber>
+
+	callStatic: {
+		attesterCurrentEpoch(overrides?: CallOverrides): Promise<BigNumber>
+
+		attesterEpochRemainingTime(overrides?: CallOverrides): Promise<BigNumber>
+
+		attesterId(overrides?: CallOverrides): Promise<BigNumber>
+
+		changeAdmin(newAdminAddress: PromiseOrValue<string>, overrides?: CallOverrides): Promise<void>
+
+		commentRep(overrides?: CallOverrides): Promise<BigNumber>
+
+		commentReward(overrides?: CallOverrides): Promise<BigNumber>
+
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+			signUpProof: PromiseOrValue<BigNumberish>[],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+			signUpProof: PromiseOrValue<BigNumberish>[],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		createPersonaRep(overrides?: CallOverrides): Promise<BigNumber>
+
+		grantReputation(
+			rep: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		'joinPersona(uint256,uint256[],uint256[8])'(
+			personaId: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		'joinPersona(uint256,uint256)'(
+			personaId: PromiseOrValue<BigNumberish>,
 			identityCommitment: PromiseOrValue<BigNumberish>,
 			overrides?: CallOverrides,
 		): Promise<void>
 
-		registeredIdentities(
+		members(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>
+
+		membersByPersona(
 			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BigNumberish>,
 			overrides?: CallOverrides,
 		): Promise<boolean>
 
-		semaphore(overrides?: CallOverrides): Promise<string>
+		negRepFieldIndex(overrides?: CallOverrides): Promise<BigNumber>
 
-		sendMessage(
-			message: PromiseOrValue<string>,
-			merkleTreeRoot: PromiseOrValue<BigNumberish>,
-			nullifierHash: PromiseOrValue<BigNumberish>,
-			externalNullifier: PromiseOrValue<BigNumberish>,
+		numOfPersonas(overrides?: CallOverrides): Promise<BigNumber>
+
+		personaList(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
+
+		personas(
+			arg0: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
+		): Promise<
+			[BigNumber, string, string, string, string, string] & {
+				personaId: BigNumber
+				name: string
+				profileImage: string
+				coverImage: string
+				pitch: string
+				description: string
+			}
+		>
+
+		posRepFieldIndex(overrides?: CallOverrides): Promise<BigNumber>
+
+		postRep(overrides?: CallOverrides): Promise<BigNumber>
+
+		postReward(overrides?: CallOverrides): Promise<BigNumber>
+
+		'proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])'(
+			personaId: PromiseOrValue<BigNumberish>,
+			messageType: PromiseOrValue<BigNumberish>,
+			messageHash: PromiseOrValue<BytesLike>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
 			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: CallOverrides,
 		): Promise<void>
+
+		'proposeMessage(uint256,uint8,bytes32)'(
+			personaId: PromiseOrValue<BigNumberish>,
+			messageType: PromiseOrValue<BigNumberish>,
+			messageHash: PromiseOrValue<BytesLike>,
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		proposedMessageByEpoch(
+			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BytesLike>,
+			overrides?: CallOverrides,
+		): Promise<
+			[number, string, BigNumber, BigNumber, BigNumber, boolean] & {
+				messageType: number
+				hash: string
+				epochKey: BigNumber
+				epoch: BigNumber
+				personaId: BigNumber
+				isAdmin: boolean
+			}
+		>
+
+		proposedMessageListByEpoch(
+			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
+		): Promise<string>
+
+		publishedMessage(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<boolean>
+
+		sealEpoch(
+			epoch: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		slashReputation(
+			rep: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		unirep(overrides?: CallOverrides): Promise<string>
+
+		userStateTransition(
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		vote(
+			messageHash: PromiseOrValue<BytesLike>,
+			isUpvote: PromiseOrValue<boolean>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: CallOverrides,
+		): Promise<void>
+
+		voterReward(overrides?: CallOverrides): Promise<BigNumber>
 	}
 
 	filters: {
-		'NewIdentity(uint256)'(identityCommitment?: null): NewIdentityEventFilter
-		NewIdentity(identityCommitment?: null): NewIdentityEventFilter
+		'NewPersona(uint256)'(personaId?: null): NewPersonaEventFilter
+		NewPersona(personaId?: null): NewPersonaEventFilter
 
-		'NewMessage(string)'(message?: null): NewMessageEventFilter
-		NewMessage(message?: null): NewMessageEventFilter
+		'NewPersonaMember(uint256,uint256)'(
+			personaId?: PromiseOrValue<BigNumberish> | null,
+			identityCommitment?: null,
+		): NewPersonaMemberEventFilter
+		NewPersonaMember(
+			personaId?: PromiseOrValue<BigNumberish> | null,
+			identityCommitment?: null,
+		): NewPersonaMemberEventFilter
+
+		'NewPersonaMessage(uint256,bytes32)'(
+			personaId?: PromiseOrValue<BigNumberish> | null,
+			messageHash?: null,
+		): NewPersonaMessageEventFilter
+		NewPersonaMessage(
+			personaId?: PromiseOrValue<BigNumberish> | null,
+			messageHash?: null,
+		): NewPersonaMessageEventFilter
+
+		'NewProposedMessage(uint256,bytes32)'(
+			personaId?: PromiseOrValue<BigNumberish> | null,
+			messageHash?: null,
+		): NewProposedMessageEventFilter
+		NewProposedMessage(
+			personaId?: PromiseOrValue<BigNumberish> | null,
+			messageHash?: null,
+		): NewProposedMessageEventFilter
 	}
 
 	estimateGas: {
-		groupId(overrides?: CallOverrides): Promise<BigNumber>
+		attesterCurrentEpoch(overrides?: CallOverrides): Promise<BigNumber>
 
-		joinGroup(
+		attesterEpochRemainingTime(overrides?: CallOverrides): Promise<BigNumber>
+
+		attesterId(overrides?: CallOverrides): Promise<BigNumber>
+
+		changeAdmin(
+			newAdminAddress: PromiseOrValue<string>,
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		commentRep(overrides?: CallOverrides): Promise<BigNumber>
+
+		commentReward(overrides?: CallOverrides): Promise<BigNumber>
+
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+			signUpProof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+			signUpProof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		createPersonaRep(overrides?: CallOverrides): Promise<BigNumber>
+
+		grantReputation(
+			rep: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		'joinPersona(uint256,uint256[],uint256[8])'(
+			personaId: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		'joinPersona(uint256,uint256)'(
+			personaId: PromiseOrValue<BigNumberish>,
 			identityCommitment: PromiseOrValue<BigNumberish>,
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<BigNumber>
 
-		registeredIdentities(
+		members(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
+
+		membersByPersona(
 			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BigNumberish>,
 			overrides?: CallOverrides,
 		): Promise<BigNumber>
 
-		semaphore(overrides?: CallOverrides): Promise<BigNumber>
+		negRepFieldIndex(overrides?: CallOverrides): Promise<BigNumber>
 
-		sendMessage(
-			message: PromiseOrValue<string>,
-			merkleTreeRoot: PromiseOrValue<BigNumberish>,
-			nullifierHash: PromiseOrValue<BigNumberish>,
-			externalNullifier: PromiseOrValue<BigNumberish>,
+		numOfPersonas(overrides?: CallOverrides): Promise<BigNumber>
+
+		personaList(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
+
+		personas(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>
+
+		posRepFieldIndex(overrides?: CallOverrides): Promise<BigNumber>
+
+		postRep(overrides?: CallOverrides): Promise<BigNumber>
+
+		postReward(overrides?: CallOverrides): Promise<BigNumber>
+
+		'proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])'(
+			personaId: PromiseOrValue<BigNumberish>,
+			messageType: PromiseOrValue<BigNumberish>,
+			messageHash: PromiseOrValue<BytesLike>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: PayableOverrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		'proposeMessage(uint256,uint8,bytes32)'(
+			personaId: PromiseOrValue<BigNumberish>,
+			messageType: PromiseOrValue<BigNumberish>,
+			messageHash: PromiseOrValue<BytesLike>,
+			overrides?: PayableOverrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		proposedMessageByEpoch(
+			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BytesLike>,
+			overrides?: CallOverrides,
+		): Promise<BigNumber>
+
+		proposedMessageListByEpoch(
+			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
+		): Promise<BigNumber>
+
+		publishedMessage(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>
+
+		sealEpoch(
+			epoch: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
 			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<BigNumber>
+
+		slashReputation(
+			rep: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		unirep(overrides?: CallOverrides): Promise<BigNumber>
+
+		userStateTransition(
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		vote(
+			messageHash: PromiseOrValue<BytesLike>,
+			isUpvote: PromiseOrValue<boolean>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<BigNumber>
+
+		voterReward(overrides?: CallOverrides): Promise<BigNumber>
 	}
 
 	populateTransaction: {
-		groupId(overrides?: CallOverrides): Promise<PopulatedTransaction>
+		attesterCurrentEpoch(overrides?: CallOverrides): Promise<PopulatedTransaction>
 
-		joinGroup(
+		attesterEpochRemainingTime(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		attesterId(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		changeAdmin(
+			newAdminAddress: PromiseOrValue<string>,
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		commentRep(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		commentReward(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+			signUpProof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			signUpPublicSignals: PromiseOrValue<BigNumberish>[],
+			signUpProof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		'createPersona(string,string,string,bytes32,bytes32,bytes32[5])'(
+			name: PromiseOrValue<string>,
+			profileImage: PromiseOrValue<string>,
+			coverImage: PromiseOrValue<string>,
+			pitch: PromiseOrValue<BytesLike>,
+			description: PromiseOrValue<BytesLike>,
+			seedPosts: [
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+				PromiseOrValue<BytesLike>,
+			],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		createPersonaRep(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		grantReputation(
+			rep: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		'joinPersona(uint256,uint256[],uint256[8])'(
+			personaId: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		'joinPersona(uint256,uint256)'(
+			personaId: PromiseOrValue<BigNumberish>,
 			identityCommitment: PromiseOrValue<BigNumberish>,
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<PopulatedTransaction>
 
-		registeredIdentities(
+		members(
 			arg0: PromiseOrValue<BigNumberish>,
 			overrides?: CallOverrides,
 		): Promise<PopulatedTransaction>
 
-		semaphore(overrides?: CallOverrides): Promise<PopulatedTransaction>
+		membersByPersona(
+			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
+		): Promise<PopulatedTransaction>
 
-		sendMessage(
-			message: PromiseOrValue<string>,
-			merkleTreeRoot: PromiseOrValue<BigNumberish>,
-			nullifierHash: PromiseOrValue<BigNumberish>,
-			externalNullifier: PromiseOrValue<BigNumberish>,
+		negRepFieldIndex(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		numOfPersonas(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		personaList(
+			arg0: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
+		): Promise<PopulatedTransaction>
+
+		personas(
+			arg0: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
+		): Promise<PopulatedTransaction>
+
+		posRepFieldIndex(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		postRep(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		postReward(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		'proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])'(
+			personaId: PromiseOrValue<BigNumberish>,
+			messageType: PromiseOrValue<BigNumberish>,
+			messageHash: PromiseOrValue<BytesLike>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: PayableOverrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		'proposeMessage(uint256,uint8,bytes32)'(
+			personaId: PromiseOrValue<BigNumberish>,
+			messageType: PromiseOrValue<BigNumberish>,
+			messageHash: PromiseOrValue<BytesLike>,
+			overrides?: PayableOverrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		proposedMessageByEpoch(
+			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BytesLike>,
+			overrides?: CallOverrides,
+		): Promise<PopulatedTransaction>
+
+		proposedMessageListByEpoch(
+			arg0: PromiseOrValue<BigNumberish>,
+			arg1: PromiseOrValue<BigNumberish>,
+			overrides?: CallOverrides,
+		): Promise<PopulatedTransaction>
+
+		publishedMessage(
+			arg0: PromiseOrValue<BytesLike>,
+			overrides?: CallOverrides,
+		): Promise<PopulatedTransaction>
+
+		sealEpoch(
+			epoch: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
 			proof: PromiseOrValue<BigNumberish>[],
 			overrides?: Overrides & { from?: PromiseOrValue<string> },
 		): Promise<PopulatedTransaction>
+
+		slashReputation(
+			rep: PromiseOrValue<BigNumberish>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		unirep(overrides?: CallOverrides): Promise<PopulatedTransaction>
+
+		userStateTransition(
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		vote(
+			messageHash: PromiseOrValue<BytesLike>,
+			isUpvote: PromiseOrValue<boolean>,
+			publicSignals: PromiseOrValue<BigNumberish>[],
+			proof: PromiseOrValue<BigNumberish>[],
+			overrides?: Overrides & { from?: PromiseOrValue<string> },
+		): Promise<PopulatedTransaction>
+
+		voterReward(overrides?: CallOverrides): Promise<PopulatedTransaction>
 	}
 }
