@@ -36,8 +36,10 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     "changeAdmin(address)": FunctionFragment;
     "commentRep()": FunctionFragment;
     "commentReward()": FunctionFragment;
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])": FunctionFragment;
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])": FunctionFragment;
     "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])": FunctionFragment;
-    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])": FunctionFragment;
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])": FunctionFragment;
     "createPersonaRep()": FunctionFragment;
     "grantReputation(uint256,uint256[],uint256[8])": FunctionFragment;
     "joinPersona(uint256,uint256[],uint256[8])": FunctionFragment;
@@ -72,8 +74,10 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
       | "changeAdmin"
       | "commentRep"
       | "commentReward"
+      | "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"
+      | "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"
       | "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"
-      | "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"
+      | "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"
       | "createPersonaRep"
       | "grantReputation"
       | "joinPersona(uint256,uint256[],uint256[8])"
@@ -125,6 +129,46 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BigNumberish>[]
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BigNumberish>[]
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])",
     values: [
       PromiseOrValue<string>,
@@ -144,7 +188,7 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])",
+    functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5])",
     values: [
       PromiseOrValue<string>,
       PromiseOrValue<string>,
@@ -157,11 +201,7 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
         PromiseOrValue<BytesLike>,
         PromiseOrValue<BytesLike>,
         PromiseOrValue<BytesLike>
-      ],
-      PromiseOrValue<BigNumberish>[],
-      PromiseOrValue<BigNumberish>[],
-      PromiseOrValue<BigNumberish>[],
-      PromiseOrValue<BigNumberish>[]
+      ]
     ]
   ): string;
   encodeFunctionData(
@@ -305,11 +345,19 @@ export interface GlobalAnonymousFeedInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])",
+    functionFragment: "createPersona(string,string,string,bytes32,bytes32,bytes32[5])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -486,7 +534,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     commentReward(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -504,7 +552,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -521,6 +569,40 @@ export interface GlobalAnonymousFeed extends BaseContract {
       proof: PromiseOrValue<BigNumberish>[],
       signUpPublicSignals: PromiseOrValue<BigNumberish>[],
       signUpProof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+      name: PromiseOrValue<string>,
+      profileImage: PromiseOrValue<string>,
+      coverImage: PromiseOrValue<string>,
+      pitch: PromiseOrValue<BytesLike>,
+      description: PromiseOrValue<BytesLike>,
+      seedPosts: [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
+      name: PromiseOrValue<string>,
+      profileImage: PromiseOrValue<string>,
+      coverImage: PromiseOrValue<string>,
+      pitch: PromiseOrValue<BytesLike>,
+      description: PromiseOrValue<BytesLike>,
+      seedPosts: [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -676,7 +758,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
   commentReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+  "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
     name: PromiseOrValue<string>,
     profileImage: PromiseOrValue<string>,
     coverImage: PromiseOrValue<string>,
@@ -694,7 +776,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
+  "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
     name: PromiseOrValue<string>,
     profileImage: PromiseOrValue<string>,
     coverImage: PromiseOrValue<string>,
@@ -711,6 +793,40 @@ export interface GlobalAnonymousFeed extends BaseContract {
     proof: PromiseOrValue<BigNumberish>[],
     signUpPublicSignals: PromiseOrValue<BigNumberish>[],
     signUpProof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+    name: PromiseOrValue<string>,
+    profileImage: PromiseOrValue<string>,
+    coverImage: PromiseOrValue<string>,
+    pitch: PromiseOrValue<BytesLike>,
+    description: PromiseOrValue<BytesLike>,
+    seedPosts: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>
+    ],
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    proof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
+    name: PromiseOrValue<string>,
+    profileImage: PromiseOrValue<string>,
+    coverImage: PromiseOrValue<string>,
+    pitch: PromiseOrValue<BytesLike>,
+    description: PromiseOrValue<BytesLike>,
+    seedPosts: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>
+    ],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -866,7 +982,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     commentReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -882,9 +998,9 @@ export interface GlobalAnonymousFeed extends BaseContract {
       signUpPublicSignals: PromiseOrValue<BigNumberish>[],
       signUpProof: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<void>;
 
-    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -902,7 +1018,41 @@ export interface GlobalAnonymousFeed extends BaseContract {
       signUpPublicSignals: PromiseOrValue<BigNumberish>[],
       signUpProof: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<void>;
+
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+      name: PromiseOrValue<string>,
+      profileImage: PromiseOrValue<string>,
+      coverImage: PromiseOrValue<string>,
+      pitch: PromiseOrValue<BytesLike>,
+      description: PromiseOrValue<BytesLike>,
+      seedPosts: [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
+      name: PromiseOrValue<string>,
+      profileImage: PromiseOrValue<string>,
+      coverImage: PromiseOrValue<string>,
+      pitch: PromiseOrValue<BytesLike>,
+      description: PromiseOrValue<BytesLike>,
+      seedPosts: [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     createPersonaRep(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1089,7 +1239,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     commentReward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -1107,7 +1257,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -1124,6 +1274,40 @@ export interface GlobalAnonymousFeed extends BaseContract {
       proof: PromiseOrValue<BigNumberish>[],
       signUpPublicSignals: PromiseOrValue<BigNumberish>[],
       signUpProof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+      name: PromiseOrValue<string>,
+      profileImage: PromiseOrValue<string>,
+      coverImage: PromiseOrValue<string>,
+      pitch: PromiseOrValue<BytesLike>,
+      description: PromiseOrValue<BytesLike>,
+      seedPosts: [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
+      name: PromiseOrValue<string>,
+      profileImage: PromiseOrValue<string>,
+      coverImage: PromiseOrValue<string>,
+      pitch: PromiseOrValue<BytesLike>,
+      description: PromiseOrValue<BytesLike>,
+      seedPosts: [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1266,7 +1450,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
 
     commentReward(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -1284,7 +1468,7 @@ export interface GlobalAnonymousFeed extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
+    "createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"(
       name: PromiseOrValue<string>,
       profileImage: PromiseOrValue<string>,
       coverImage: PromiseOrValue<string>,
@@ -1301,6 +1485,40 @@ export interface GlobalAnonymousFeed extends BaseContract {
       proof: PromiseOrValue<BigNumberish>[],
       signUpPublicSignals: PromiseOrValue<BigNumberish>[],
       signUpProof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])"(
+      name: PromiseOrValue<string>,
+      profileImage: PromiseOrValue<string>,
+      coverImage: PromiseOrValue<string>,
+      pitch: PromiseOrValue<BytesLike>,
+      description: PromiseOrValue<BytesLike>,
+      seedPosts: [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "createPersona(string,string,string,bytes32,bytes32,bytes32[5])"(
+      name: PromiseOrValue<string>,
+      profileImage: PromiseOrValue<string>,
+      coverImage: PromiseOrValue<string>,
+      pitch: PromiseOrValue<BytesLike>,
+      description: PromiseOrValue<BytesLike>,
+      seedPosts: [
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+      ],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
