@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IncrementalBinaryTree, IncrementalTreeData} from '@zk-kit/incremental-merkle-tree.sol/IncrementalBinaryTree.sol';
-import {PolysumData} from '@unirep/contracts/libraries/Polysum.sol';
+import {IncrementalBinaryTree, IncrementalTreeData} from "@zk-kit/incremental-merkle-tree.sol/IncrementalBinaryTree.sol";
+import {PolysumData} from "@unirep/contracts/libraries/Polysum.sol";
 
 interface IGlobalAnonymousFeed {
-    enum MessageType { Post, Comment }
+    enum MessageType {
+        Post,
+        Comment
+    }
 
     struct ReputationSignals {
         uint256 stateTreeRoot;
