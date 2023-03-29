@@ -19,6 +19,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ethersproject/bignumber": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/wallet": "^5.7.0",
     "@fastify/autoload": "^5.0.0",
     "@fastify/sensible": "^5.0.0",
     "fastify": "^4.0.0",
