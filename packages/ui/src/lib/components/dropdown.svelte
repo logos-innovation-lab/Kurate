@@ -1,16 +1,11 @@
 <script lang="ts">
 	import { onDestroy, onMount, createEventDispatcher } from 'svelte'
 	import { browser } from '$app/environment'
-	import type { ComponentConstructor, IconProps } from '$lib/types'
-	import Button from './button.svelte'
 
 	const dispatch = createEventDispatcher()
 
 	let cls: string | undefined = undefined
 	export { cls as class }
-	export let variant: 'secondary' | 'primary' | 'overlay' = 'secondary'
-	export let icon: ComponentConstructor<IconProps> | undefined = undefined
-	export let label: string | undefined = undefined
 	export let disabled: boolean | undefined = undefined
 
 	let showDropdown = false
@@ -33,12 +28,16 @@
 	onDestroy(() => {
 		if (browser && window) window.removeEventListener('click', closeDropdown)
 	})
-	$: if (showDropdown) dispatch('open')
-	$: if (!showDropdown) dispatch('close')
+
+	// Trigger event when dropdown is opened or closed
+	$: showDropdown ? dispatch('open') : dispatch('close')
 </script>
 
 <div bind:this={dropdownElement}>
-	<Button on:click={() => (showDropdown = !showDropdown)} {label} {icon} {variant} {disabled} />
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<div on:click={() => !disabled && (showDropdown = !showDropdown)}>
+		<slot name="button" disabled />
+	</div>
 
 	<div class={`root ${cls}`}>
 		<ul class={showDropdown ? '' : 'hidden'}>

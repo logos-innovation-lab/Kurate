@@ -6,6 +6,7 @@
 	import Undo from '$lib/components/icons/undo.svelte'
 	import Info from '$lib/components/icons/information.svelte'
 	import Launch from '$lib/components/icons/rocket.svelte'
+	import TrashCan from '$lib/components/icons/trash-can.svelte'
 
 	import Button from '$lib/components/button.svelte'
 	import PersonaEditText from '$lib/components/persona_edit_text.svelte'
@@ -20,13 +21,18 @@
 	import Container from '$lib/components/container.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
 	import Divider from '$lib/components/divider.svelte'
+	import Spacer from '$lib/components/spacer.svelte'
+	import PersonaEditRep from '$lib/components/persona_edit_rep.svelte'
 
 	import { personas } from '$lib/stores/persona'
 	import { tokens } from '$lib/stores/tokens'
+	import type { Post as PostType } from '$lib/stores/post'
 	import { page } from '$app/stores'
 	import TokenInfo from '$lib/components/token-info.svelte'
 	import adapter from '$lib/adapters'
 	import { profile } from '$lib/stores/profile'
+	import { goto } from '$app/navigation'
+	import { ROUTES } from '$lib/routes'
 
 	const PERSONA_LIMIT = 5
 	const TOKEN_POST_COST = 10
@@ -34,48 +40,166 @@
 	const personaIndex = Number($page.params.id)
 	let persona = $personas.draft[personaIndex]
 
-	let name = persona?.name
-	let pitch = persona?.pitch
-	let description = persona?.description
+	let name = persona.name
+	let pitch = persona.pitch
+	let description = persona.description
+	let minReputation = persona.minReputation
+	let postToEdit: PostType | undefined = undefined
+	let postToEditText = ''
+	let postToEditImages: string[] = []
+	let postToDelete: PostType | undefined = undefined
 
-	let state: 'text' | 'posts' | 'post_new' | 'publish_warning' | 'publish_success' = 'posts'
+	type State =
+		| 'persona_preview'
+		| 'edit_text'
+		| 'edit_rep'
+		| 'post_new'
+		| 'publish_warning'
+		| 'done'
+
+	let showWarningDiscardModal = false
+	let showWarningDeletePersona = false
+
+	const setState = (newState: State) => {
+		state = newState
+	}
+
+	let state: State = 'persona_preview'
+
+	function onLeaveEdit() {
+		if (
+			name !== persona.name ||
+			pitch !== persona.pitch ||
+			description !== persona.description ||
+			minReputation !== persona.minReputation
+		) {
+			showWarningDiscardModal = true
+		} else {
+			setState('persona_preview')
+		}
+	}
 
 	async function publishPersona() {
 		if (!$profile.signer) return
 
 		await adapter.publishPersona(persona, $profile.signer)
-		state = 'publish_success'
+		state = 'done'
 	}
 
 	let y: number
-	export let onBack: () => unknown = () => history.back()
 </script>
 
 <svelte:window bind:scrollY={y} />
 
 {#if persona === undefined}
 	<div>No draft persona with id {personaIndex}</div>
-{:else if state === 'text'}
-	<PersonaEditText
-		bind:name
-		bind:pitch
-		bind:description
-		title="Edit Persona details"
-		onSubmit={() => {
-			persona.name = name
-			persona.pitch = pitch
-			persona.description = description
+{:else if showWarningDiscardModal}
+	<InfoScreen title="Discard changes">
+		<InfoBox>
+			<div class="icon">
+				<Info size={32} />
+			</div>
+			<h2>Discard changes?</h2>
+			<LearnMore href="/" />
+			<svelte:fragment slot="buttons">
+				<Button
+					icon={Checkmark}
+					variant="primary"
+					label="Discard changes"
+					on:click={() => {
+						postToEdit = undefined
+						setState('persona_preview')
+						showWarningDiscardModal = false
+					}}
+				/>
+				<Button
+					variant="secondary"
+					label="Continue editing"
+					icon={Undo}
+					on:click={() => (showWarningDiscardModal = false)}
+				/>
+			</svelte:fragment>
+		</InfoBox>
+	</InfoScreen>
+{:else if showWarningDeletePersona}
+	<InfoScreen title="Delete persona">
+		<InfoBox>
+			<div class="icon">
+				<Info size={32} />
+			</div>
+			<h2>Are you sure you want to delete this draft persona?</h2>
+			<LearnMore href="/" />
+			<svelte:fragment slot="buttons">
+				<Button
+					icon={Checkmark}
+					variant="primary"
+					label="Yes, delete persona"
+					on:click={() => {
+						adapter.deleteDraftPersona(personaIndex)
+						goto(ROUTES.HOME)
+					}}
+				/>
+				<Button
+					variant="secondary"
+					label="No, keep it"
+					icon={Undo}
+					on:click={() => (showWarningDeletePersona = false)}
+				/>
+			</svelte:fragment>
+		</InfoBox>
+	</InfoScreen>
+{:else if postToDelete !== undefined}
+	<InfoScreen title="Delete seed post">
+		<InfoBox>
+			<div class="icon">
+				<Info size={32} />
+			</div>
+			<h2>Are you sure you want to delete this seed post?</h2>
+			<LearnMore href="/" />
+			<svelte:fragment slot="buttons">
+				<Button
+					icon={Checkmark}
+					variant="primary"
+					label="Delete seed post"
+					on:click={() => {
+						persona.posts = persona.posts.filter((p) => p !== postToDelete)
+						adapter.updatePersonaDraft(personaIndex, persona)
+						postToDelete = undefined
+					}}
+				/>
+				<Button
+					variant="secondary"
+					label="Cancel"
+					icon={Undo}
+					on:click={() => (postToDelete = undefined)}
+				/>
+			</svelte:fragment>
+		</InfoBox>
+	</InfoScreen>
+{:else if postToEdit !== undefined}
+	<PostNew
+		bind:postText={postToEditText}
+		bind:images={postToEditImages}
+		submit={(text, images) => {
+			const psts = persona.posts.filter((p) => p !== postToEdit)
+			psts.push({ timestamp: Date.now(), text, images })
+			persona.posts = psts
 			adapter.updatePersonaDraft(personaIndex, persona)
-			state = 'posts'
+			postToEdit = undefined
+			state = 'persona_preview'
 		}}
-		onCancel={() => {
-			state = 'posts'
-		}}
+		label="Save seed post"
+		onBack={(text, images) =>
+			text !== postToEdit?.text ||
+			images.some((img) => !postToEdit?.images.includes(img)) ||
+			postToEdit.images.some((img) => !images.includes(img))
+				? (showWarningDiscardModal = true)
+				: (postToEdit = undefined)}
 	/>
-{:else if state === 'posts'}
+{:else if state === 'persona_preview'}
 	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
-		<Header title={persona.name} {onBack} />
+		<Header title={persona.name} onBack={() => goto(ROUTES.HOME)} />
 	</div>
 	<PersonaDetail
 		name={persona.name}
@@ -83,10 +207,11 @@
 		description={persona.description}
 		postsCount={persona.posts.length}
 		participantsCount={1}
+		minReputation={persona.minReputation}
 		bind:picture={persona.picture}
 		bind:cover={persona.cover}
 		canEditPictures
-		onBack={() => history.back()}
+		onBack={() => goto(ROUTES.HOME)}
 	>
 		<svelte:fragment slot="button_primary">
 			{#if persona.posts.length < PERSONA_LIMIT}
@@ -94,26 +219,39 @@
 					icon={Edit}
 					variant="primary"
 					label="Write seed post"
-					on:click={() => (state = 'post_new')}
+					on:click={() => setState('post_new')}
 				/>
 			{:else}
 				<Button
 					icon={Launch}
 					variant="primary"
 					label="Publish Persona"
-					on:click={() => (state = 'publish_warning')}
+					on:click={() => setState('publish_warning')}
 				/>
 			{/if}
 		</svelte:fragment>
-		<Button
-			slot="button_other"
-			variant="secondary"
-			label="Edit Persona details"
-			icon={EditPersona}
-			on:click={() => (state = 'text')}
-		/>
+		<svelte:fragment slot="button_other">
+			<Button
+				variant="secondary"
+				label="Edit Persona details"
+				icon={EditPersona}
+				on:click={() => {
+					name = persona.name
+					pitch = persona.pitch
+					description = persona.description
+					minReputation = persona.minReputation
+					setState('edit_text')
+				}}
+			/>
+			<Button
+				variant="secondary"
+				icon={TrashCan}
+				on:click={() => (showWarningDeletePersona = true)}
+			/>
+		</svelte:fragment>
 		<Divider />
 		<Container>
+			<Spacer />
 			<InfoBox>
 				{#if persona.posts.length < PERSONA_LIMIT}
 					<div class="icon">
@@ -134,24 +272,76 @@
 		</Container>
 		<Grid>
 			{#each persona.posts as post}
-				<Post {post} />
+				<Post {post}>
+					<Button
+						icon={Edit}
+						variant="secondary"
+						label="Edit post"
+						on:click={() => {
+							postToEditText = post.text
+							postToEditImages = post.images
+							postToEdit = post
+						}}
+					/>
+					<Button
+						icon={TrashCan}
+						variant="secondary"
+						on:click={() => {
+							postToDelete = post
+						}}
+					/>
+				</Post>
 			{/each}
 		</Grid>
 	</PersonaDetail>
+{:else if state === 'edit_text'}
+	<PersonaEditText
+		bind:name
+		bind:pitch
+		bind:description
+		title="Edit Persona details"
+		onClose={onLeaveEdit}
+	>
+		<Button
+			label="Proceed"
+			icon={Checkmark}
+			variant="primary"
+			disabled={name === '' || pitch === '' || description === ''}
+			on:click={() => {
+				setState('edit_rep')
+			}}
+		/>
+	</PersonaEditText>
+{:else if state === 'edit_rep'}
+	<PersonaEditRep
+		bind:minReputation
+		title="Edit Persona details"
+		repTotal={$tokens.repTotal}
+		onBack={() => setState('edit_text')}
+		onClose={onLeaveEdit}
+		onProceed={(minRep) => {
+			persona.name = name
+			persona.pitch = pitch
+			persona.description = description
+			persona.minReputation = minRep
+			setState('persona_preview')
+		}}
+	/>
 {:else if state === 'post_new'}
 	<PostNew
 		submit={(text, images) => {
 			persona.posts.push({ timestamp: Date.now(), text, images })
 			adapter.updatePersonaDraft(personaIndex, persona)
-			state = 'posts'
+			state = 'persona_preview'
 		}}
 		label="Save seed post"
-		onBack={() => (state = 'posts')}
+		onBack={(hasContent) =>
+			hasContent ? (showWarningDiscardModal = true) : setState('persona_preview')}
 	/>
 {:else if state === 'publish_warning'}
 	<InfoScreen
 		title={$tokens.go >= TOKEN_POST_COST ? 'Publish Persona' : 'Not enough token'}
-		onBack={() => history.back()}
+		onBack={() => setState('persona_preview')}
 	>
 		{#if $tokens.go >= TOKEN_POST_COST}
 			<div class="token-info">
@@ -193,9 +383,19 @@
 		<svelte:fragment slot="buttons">
 			{#if $tokens.go >= TOKEN_POST_COST}
 				<Button icon={Checkmark} variant="primary" label="I agree" on:click={publishPersona} />
-				<Button variant="secondary" label="Nope" icon={Close} on:click={() => (state = 'text')} />
+				<Button
+					variant="secondary"
+					label="Nope"
+					icon={Close}
+					on:click={() => setState('persona_preview')}
+				/>
 			{:else}
-				<Button variant="secondary" label="Back" icon={Undo} on:click={() => (state = 'text')} />
+				<Button
+					variant="secondary"
+					label="Back"
+					icon={Undo}
+					on:click={() => setState('persona_preview')}
+				/>
 			{/if}
 		</svelte:fragment>
 	</InfoScreen>
@@ -262,12 +462,12 @@
 		&::before {
 			position: absolute;
 			content: '';
-			inset: -4px auto auto -6px;
+			inset: -4px auto auto auto;
 			background-color: var(--color-success);
 			border-radius: 50%;
 			width: 28px;
 			height: 28px;
-			transform: translateX(2px);
+			transform: translate(-4px, 0px);
 			z-index: -1;
 		}
 	}

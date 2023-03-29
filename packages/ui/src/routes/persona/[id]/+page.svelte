@@ -33,7 +33,6 @@
 	const groupId = $page.params.id
 	const persona = $personas.all.get(groupId)
 	let personaPosts = $posts.data.get(groupId)
-	let showPending = false
 	let sortAsc = true
 	let sortBy: 'date' | 'alphabetical' = 'date'
 	let filterQuery = ''
@@ -85,11 +84,10 @@
 		description={persona.description}
 		postsCount={persona.postsCount}
 		participantsCount={persona.participantsCount}
-		bind:picture={persona.picture}
-		bind:cover={persona.cover}
-		onBack={() => {
-			showPending ? (showPending = false) : goto(ROUTES.HOME)
-		}}
+		minReputation={persona.minReputation}
+		picture={persona.picture}
+		cover={persona.cover}
+		onBack={() => goto(ROUTES.HOME)}
 	>
 		<svelte:fragment slot="button_top">
 			{#if $profile.signer !== undefined}
@@ -126,21 +124,25 @@
 		</svelte:fragment>
 
 		<svelte:fragment slot="button_other">
-			{#if !showPending}
-				<Button label="Review pending" icon={Hourglass} on:click={() => (showPending = true)} />
-			{/if}
+			<Button
+				label="Review pending"
+				icon={Hourglass}
+				on:click={() => goto(ROUTES.PERSONA_PENDING(groupId))}
+			/>
 		</svelte:fragment>
 
-		<SectionTitle title={showPending ? 'All pending posts' : 'All posts'}>
+		<SectionTitle title="All posts">
 			<svelte:fragment slot="buttons">
 				{#if $profile.signer !== undefined}
-					<Dropdown icon={SettingsView}>
-						<DropdownItem active={sortBy === 'date'} on:click={() => (sortBy = 'date')}>
+					<Dropdown>
+						<Button slot="button" icon={SettingsView} />
+
+						<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
 							Sort by date of creation
 						</DropdownItem>
 						<DropdownItem
 							active={sortBy === 'alphabetical'}
-							on:click={() => (sortBy = 'alphabetical')}
+							onClick={() => (sortBy = 'alphabetical')}
 						>
 							Sort by name (alphabetical)
 						</DropdownItem>
@@ -162,7 +164,7 @@
 					<p>Loading posts...</p>
 				</InfoBox>
 			</Container>
-		{:else if (showPending ? personaPosts.pending : personaPosts.approved).length == 0}
+		{:else if personaPosts.approved.length == 0}
 			<Container>
 				<InfoBox>
 					<p>There are no posts yet</p>
@@ -170,33 +172,8 @@
 			</Container>
 		{:else}
 			<Grid>
-				{#each showPending ? personaPosts.pending : personaPosts.approved as post, index}
-					<Post {post} on:click={() => !showPending && goto(ROUTES.PERSONA_POST(groupId, index))}>
-						{#if showPending}
-							{#if post.yourVote === '+' && $profile.signer !== undefined}
-								<Button variant="secondary" label="You promoted this" />
-							{:else if post.yourVote === '-' && $profile.signer !== undefined}
-								<Button variant="secondary" label="You demoted this" />
-							{:else}
-								<Button
-									variant="secondary"
-									label="Promote"
-									disabled={$profile.signer === undefined}
-									on:click={() =>
-										$profile.signer !== undefined &&
-										adapter.voteOnPost(groupId, index, '+', $profile.signer)}
-								/>
-								<Button
-									variant="secondary"
-									label="Demote"
-									disabled={$profile.signer === undefined}
-									on:click={() =>
-										$profile.signer !== undefined &&
-										adapter.voteOnPost(groupId, index, '-', $profile.signer)}
-								/>
-							{/if}
-						{/if}
-					</Post>
+				{#each personaPosts.approved as post, index}
+					<Post {post} on:click={() => goto(ROUTES.PERSONA_POST(groupId, index))} />
 				{/each}
 			</Grid>
 		{/if}

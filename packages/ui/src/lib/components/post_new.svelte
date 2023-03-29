@@ -14,11 +14,11 @@
 	let cls: string | undefined = undefined
 	export { cls as class }
 	export let submit: (postText: string, images: string[]) => unknown
-	export let onBack: () => unknown = () => history.back()
+	export let onBack: (postText: string, images: string[]) => unknown = () => history.back()
 	export let label: string | undefined = 'Publish'
+	export let postText = ''
+	export let images: string[] = []
 
-	let postText = ''
-	let images: string[] = []
 	let x: number
 
 	let files: FileList
@@ -37,8 +37,8 @@
 					await adapter.uploadPicture(
 						await resize(
 							files[i],
-							MAX_DIMENSIONS.POST_IMAGE.width,
-							MAX_DIMENSIONS.POST_IMAGE.height,
+							MAX_DIMENSIONS.POST_PICTURE.width,
+							MAX_DIMENSIONS.POST_PICTURE.height,
 						),
 					),
 				)
@@ -54,14 +54,14 @@
 <svelte:window bind:innerWidth={x} />
 
 <div class={`root ${cls}`}>
-	<Header {onBack}>
+	<Header onBack={() => onBack(postText, images)}>
 		<InputFile icon={Image} bind:files multiple />
 		<Button
 			icon={Checkmark}
 			variant="primary"
 			{label}
 			on:click={() => submit(postText, images)}
-			disabled={!$profile.signer}
+			disabled={!$profile.signer && postText === ''}
 		/>
 	</Header>
 

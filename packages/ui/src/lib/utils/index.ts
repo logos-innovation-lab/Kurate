@@ -1,4 +1,5 @@
 import { browser } from '$app/environment'
+import { ethers } from 'ethers'
 
 type JSONdecoded = string | number | boolean | object | Array<JSONdecoded>
 
@@ -29,4 +30,10 @@ export function getFromLocalStorage<T extends JSONdecoded>(key: string, defaultV
 	}
 
 	return defaultValue
+}
+
+export function randomSeed(): string {
+	const randomUUID = crypto.randomUUID()
+	const encoder = new TextEncoder()
+	return ethers.utils.sha256(encoder.encode(randomUUID))
 }

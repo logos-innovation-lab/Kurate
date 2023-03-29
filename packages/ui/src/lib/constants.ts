@@ -9,17 +9,21 @@ export const PROVIDER = PUBLIC_PROVIDER
 export const ADAPTER = PUBLIC_ADAPTER
 
 export const CREATE_PERSONA_GO_PRICE = 10
+export const NEW_POST_REP_PRICE = 5
+export const NEW_POST_GO_PRICE = 5
+export const VOTE_GO_PRICE = 1
+
 export const MAX_DIMENSIONS = {
-	PICTURE: {
+	PERSONA_PICTURE: {
 		width: 500,
 		height: 500,
 	},
-	COVER: {
+	PERSONA_COVER: {
 		width: 1440,
 		height: 810,
 	},
-	POST_IMAGE: {
-		width: 500,
-		height: 500,
+	POST_PICTURE: {
+		width: 900,
+		height: 900,
 	},
 }

@@ -1,17 +1,19 @@
 import { writable, type Writable } from 'svelte/store'
 import type { Identity } from '@semaphore-protocol/identity'
 import type { Post } from './post'
+import type { ReputationOptions } from '$lib/types'
 
 export interface Persona {
 	personaId: number | string
 	identity?: Identity
-	picture?: string
-	cover?: string
+	picture: string
+	cover: string
 	name: string
 	pitch: string
 	description: string
 	participantsCount: number
 	postsCount: number
+	minReputation: ReputationOptions
 }
 
 export interface DraftPersona

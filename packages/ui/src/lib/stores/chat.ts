@@ -13,6 +13,7 @@ export interface Chat {
 	persona: Persona
 	post: Post
 	messages: Message[]
+	seed: string
 	closed?: boolean
 	blocked?: boolean
 }

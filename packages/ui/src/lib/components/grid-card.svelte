@@ -1,15 +1,19 @@
 <script lang="ts">
 	import Divider from '$lib/components/divider.svelte'
 	let cls: string | undefined = undefined
+	export let noHover: boolean | undefined = undefined
+	export let noBorder: boolean | undefined = undefined
 	export { cls as class }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class={`root card-wrapper ${cls}`} on:click>
+<div class={`root card-wrapper ${noHover ? '' : 'hover'} ${cls}`} on:click>
 	<div class="card">
 		<slot />
 	</div>
-	<Divider visible="mobile" />
+	{#if noBorder === false}
+		<Divider visible="mobile" />
+	{/if}
 </div>
 
 <style lang="scss">
@@ -21,7 +25,7 @@
 		align-items: flex-end;
 		justify-content: flex-end;
 
-		&:hover {
+		&.hover:hover {
 			background-color: var(--grey-150);
 		}
 	}

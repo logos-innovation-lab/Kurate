@@ -12,6 +12,7 @@
 	import { clipAndResize } from '$lib/utils/image'
 	import { MAX_DIMENSIONS } from '$lib/constants'
 	import adapter from '$lib/adapters'
+	import type { ReputationOptions } from '$lib/types'
 
 	export let name: string
 	export let pitch: string
@@ -22,6 +23,7 @@
 	export let canEditPictures = false
 	export let postsCount: number
 	export let participantsCount: number
+	export let minReputation: ReputationOptions
 
 	let coverFiles: FileList | undefined = undefined
 	let pictureFiles: FileList | undefined = undefined
@@ -30,7 +32,11 @@
 		try {
 			picture = p
 				? await adapter.uploadPicture(
-						await clipAndResize(p, MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height),
+						await clipAndResize(
+							p,
+							MAX_DIMENSIONS.PERSONA_PICTURE.width,
+							MAX_DIMENSIONS.PERSONA_PICTURE.height,
+						),
 				  )
 				: picture
 		} catch (error) {
@@ -42,7 +48,11 @@
 		try {
 			cover = c
 				? await adapter.uploadPicture(
-						await clipAndResize(c, MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height),
+						await clipAndResize(
+							c,
+							MAX_DIMENSIONS.PERSONA_COVER.width,
+							MAX_DIMENSIONS.PERSONA_COVER.height,
+						),
 				  )
 				: cover
 		} catch (error) {
@@ -101,6 +111,9 @@
 		<div class="pitch">{pitch}</div>
 		<div class="description">{description}</div>
 		<div class="post-count">
+			<div class="rep">
+				REP {minReputation}+
+			</div>
 			<div>
 				<UserMultiple size={18} />
 				{participantsCount}
@@ -254,6 +267,16 @@
 			justify-content: flex-start;
 			flex-wrap: nowrap;
 			gap: var(--spacing-3);
+		}
+
+		.rep {
+			background-color: var(--grey-200);
+			border-radius: 9px;
+			font-size: var(--font-size-sm);
+			font-weight: var(--font-weight-sb);
+			padding-left: var(--spacing-6);
+			padding-right: var(--spacing-4);
+			padding-top: 1px;
 		}
 	}
 

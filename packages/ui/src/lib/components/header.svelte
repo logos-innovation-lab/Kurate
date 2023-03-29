@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Button from './button.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
+	import Close from '$lib/components/icons/close.svelte'
 
 	let cls: string | undefined = undefined
 	export { cls as class }
@@ -8,6 +9,7 @@
 	let y: number
 
 	export let onBack: (() => unknown) | undefined = undefined
+	export let onClose: (() => unknown) | undefined = undefined
 	export let title = ''
 </script>
 
@@ -26,6 +28,9 @@
 		</h1>
 
 		<div class="btns">
+			{#if typeof onClose === 'function'}
+				<Button icon={Close} on:click={onClose} />
+			{/if}
 			<slot />
 		</div>
 	</div>

@@ -5,7 +5,12 @@ import { profile } from '$lib/stores/profile'
 import { getFromLocalStorage, saveToLocalStorage, sleep } from '$lib/utils'
 import type { Signer } from 'ethers'
 import { create } from 'ipfs-http-client'
-import { CREATE_PERSONA_GO_PRICE } from '$lib/constants'
+import {
+	CREATE_PERSONA_GO_PRICE,
+	NEW_POST_GO_PRICE,
+	NEW_POST_REP_PRICE,
+	VOTE_GO_PRICE,
+} from '$lib/constants'
 import { tokens } from '$lib/stores/tokens'
 import { posts, type Post } from '$lib/stores/post'
 
@@ -16,6 +21,7 @@ import {
 	randomIntegerBetween,
 	randomPersona,
 	randomPost,
+	randomText,
 } from './utils'
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
@@ -182,6 +188,20 @@ export class InMemoryAndIPFS implements Adapter {
 		)
 	}
 
+	deleteDraftPersona(index: number): Promise<void> {
+		return new Promise((resolve) =>
+			personas.update(({ draft, ...state }) => {
+				const newDraft = draft.filter((_, i) => i !== index)
+
+				saveToLocalStorage('drafts', newDraft)
+
+				resolve()
+
+				return { ...state, draft: newDraft }
+			}),
+		)
+	}
+
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
 		await signer.signMessage('This "transaction" publishes persona')
 
@@ -200,6 +220,14 @@ export class InMemoryAndIPFS implements Adapter {
 		})
 
 		draftPersona.posts.forEach((p) => posts.addApproved(p, groupId))
+
+		personas.update(({ draft, ...state }) => {
+			const newDraft = draft.filter((d) => d !== draftPersona)
+
+			saveToLocalStorage('drafts', newDraft)
+
+			return { ...state, draft: newDraft }
+		})
 
 		tokens.update(({ go, ...state }) => {
 			return { ...state, go: go - CREATE_PERSONA_GO_PRICE }
@@ -239,6 +267,10 @@ export class InMemoryAndIPFS implements Adapter {
 			images,
 		}
 
+		tokens.update(({ go, repStaked, ...state }) => {
+			return { ...state, repStaked: repStaked + NEW_POST_REP_PRICE, go: go - NEW_POST_GO_PRICE }
+		})
+
 		posts.addPending(post, groupId)
 	}
 
@@ -262,6 +294,13 @@ export class InMemoryAndIPFS implements Adapter {
 			}
 
 			return state
+		})
+
+		tokens.update(({ go, ...state }) => {
+			return {
+				...state,
+				go: go - VOTE_GO_PRICE,
+			}
 		})
 	}
 
@@ -294,10 +333,15 @@ export class InMemoryAndIPFS implements Adapter {
 		const interval = setInterval(() => {
 			chats.update((state) => {
 				const newState = { ...state }
-				newState.chats[chatId].messages.push({
-					timestamp: Date.now(),
-					text: 'Another second has passed',
-				})
+				const lastMessage =
+					newState.chats[chatId].messages[newState.chats[chatId].messages.length - 1]
+				// 10% chance every second to add new message and only when the last message was sent by me
+				if (lastMessage.myMessage && executeWithChance(0.1)) {
+					newState.chats[chatId].messages.push({
+						timestamp: Date.now(),
+						text: randomText(randomIntegerBetween(1, 5)),
+					})
+				}
 				return newState
 			})
 		}, 1000)

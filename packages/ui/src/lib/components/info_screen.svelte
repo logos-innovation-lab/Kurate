@@ -5,14 +5,15 @@
 	let y: number
 	export { cls as class }
 	export let title: string
-	export let onBack: () => unknown = () => history.back()
+	export let onBack: (() => unknown) | undefined = undefined
+	export let onClose: (() => unknown) | undefined = undefined
 </script>
 
 <svelte:window bind:scrollY={y} />
 
-<Header {title} {onBack} />
+<Header {title} {onBack} {onClose} />
 
-<div class={`content ${y > 0 ? 'scrolled' : ''} ${cls}`}>
+<div class={`info-screen ${y > 0 ? 'scrolled' : ''} ${cls}`}>
 	<slot />
 
 	<div class="btns">
@@ -21,7 +22,7 @@
 </div>
 
 <style lang="scss">
-	.content {
+	.info-screen {
 		min-height: calc(100dvh - 92px);
 		min-height: calc(100vh - 92px);
 		display: flex;
@@ -39,6 +40,10 @@
 			align-items: center;
 			justify-content: center;
 			gap: var(--spacing-12);
+		}
+
+		:global(.small) {
+			font-size: var(--font-size-sm);
 		}
 
 		@media (min-width: 688px) {

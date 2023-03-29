@@ -3,15 +3,19 @@
 	import UserMultiple from './icons/user-multiple.svelte'
 	import Forum from './icons/forum.svelte'
 	import adapter from '$lib/adapters'
+	import type { ReputationOptions } from '$lib/types'
 
 	export let name: string | undefined
 	export let pitch: string | undefined
 	export let postsCount: number
 	export let participantsCount: number
 	export let picture: string | undefined
+	export let minReputation: ReputationOptions
+	export let noHover: boolean | undefined = undefined
+	export let noBorder: boolean | undefined = undefined
 </script>
 
-<Card on:click>
+<Card on:click {noHover} {noBorder}>
 	<div class="picture">
 		<img src={picture ? adapter.getPicture(picture) : undefined} alt="persona" />
 	</div>
@@ -19,6 +23,9 @@
 		<div class="header">{name}</div>
 		<div class="description">{pitch}</div>
 		<div class="post-count">
+			<div class="rep">
+				REP {minReputation}+
+			</div>
 			<div>
 				<UserMultiple size={18} />
 				{participantsCount}
@@ -85,6 +92,16 @@
 				justify-content: flex-start;
 				flex-wrap: nowrap;
 				gap: var(--spacing-3);
+			}
+
+			.rep {
+				background-color: var(--grey-200);
+				border-radius: 9px;
+				font-size: var(--font-size-sm);
+				font-weight: var(--font-weight-sb);
+				padding-left: var(--spacing-6);
+				padding-right: var(--spacing-4);
+				padding-top: 1px;
 			}
 		}
 	}

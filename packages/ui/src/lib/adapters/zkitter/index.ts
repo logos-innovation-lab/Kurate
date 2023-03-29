@@ -74,6 +74,7 @@ export class ZkitterAdapter implements Adapter {
 				cover: personaData.coverImage,
 				postsCount: 0,
 				participantsCount: 0,
+				minReputation: 5,
 			})
 		}
 
@@ -156,6 +157,20 @@ export class ZkitterAdapter implements Adapter {
 			serializedMessages,
 			idCommitment,
 		})
+	}
+
+	deleteDraftPersona(index: number): Promise<void> {
+		return new Promise((resolve) =>
+			personas.update(({ draft, ...state }) => {
+				const newDraft = draft.filter((_, i) => i !== index)
+
+				saveToLocalStorage('drafts', newDraft)
+
+				resolve()
+
+				return { ...state, draft: newDraft }
+			}),
+		)
 	}
 	async getPersonaSeedMessages(): Promise<SavedSeedMessages> {
 		return getFromLocalStorage<SavedSeedMessages>(`kurate/seedPosts`, {

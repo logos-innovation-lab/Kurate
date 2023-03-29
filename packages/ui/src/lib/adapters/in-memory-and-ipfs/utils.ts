@@ -1,6 +1,7 @@
 import { MAX_DIMENSIONS } from '$lib/constants'
 import type { Persona } from '$lib/stores/persona'
 import type { Post } from '$lib/stores/post'
+import type { ReputationOptions } from '$lib/types'
 import { ethers } from 'ethers'
 import lipsum from './lipsum'
 
@@ -36,7 +37,9 @@ export function randomPost(): Post {
 		// Only 40% of posts with pictures can have more than 3
 		const max = executeWithChance(0.4) ? 20 : 3
 		for (let i = 0; i < randomIntegerBetween(1, max); i++) {
-			images.push(randomPicture(MAX_DIMENSIONS.POST_IMAGE.width, MAX_DIMENSIONS.POST_IMAGE.height))
+			images.push(
+				randomPicture(MAX_DIMENSIONS.POST_PICTURE.width, MAX_DIMENSIONS.POST_PICTURE.height),
+			)
 		}
 	}
 
@@ -53,18 +56,46 @@ export function randomPersona(personaId: string | number): Persona {
 	const name = randomText(1).split(' ')[0]
 	const pitch = randomText(randomIntegerBetween(1, 3))
 	const description = randomText(randomIntegerBetween(5, 20))
-	const cover = randomPicture(MAX_DIMENSIONS.COVER.width, MAX_DIMENSIONS.COVER.height)
-	const picture = randomPicture(MAX_DIMENSIONS.PICTURE.width, MAX_DIMENSIONS.PICTURE.height)
+	const cover = randomPicture(
+		MAX_DIMENSIONS.PERSONA_COVER.width,
+		MAX_DIMENSIONS.PERSONA_COVER.height,
+	)
+	const picture = randomPicture(
+		MAX_DIMENSIONS.PERSONA_PICTURE.width,
+		MAX_DIMENSIONS.PERSONA_PICTURE.height,
+	)
+	let minReputation: ReputationOptions
+	switch (randomIntegerBetween(0, 10)) {
+		case 0:
+			minReputation = 500
+			break
+		case 1:
+			minReputation = 250
+			break
+		case 2:
+		case 3:
+			minReputation = 100
+			break
+		case 4:
+		case 5:
+		case 6:
+			minReputation = 25
+			break
+		default:
+			minReputation = 5
+			break
+	}
 
 	const persona: Persona = {
 		name,
 		pitch,
 		description,
-		participantsCount: randomIntegerBetween(1, 500),
-		postsCount: randomIntegerBetween(1, 1000),
+		participantsCount: randomIntegerBetween(1, 1500),
+		postsCount: randomIntegerBetween(1, 2000),
 		cover,
 		picture,
 		personaId,
+		minReputation,
 	}
 
 	return persona
