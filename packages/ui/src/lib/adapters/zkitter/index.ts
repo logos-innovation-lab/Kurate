@@ -1,21 +1,21 @@
-import {connectWallet, getGlobalAnonymousFeed, getProvider} from '$lib/services'
-import {type Chat, chats} from '$lib/stores/chat'
-import {type DraftPersona, personas} from '$lib/stores/persona'
-import {profile} from '$lib/stores/profile'
-import {saveToLocalStorage} from '$lib/utils'
-import type {Adapter} from '..'
+import { connectWallet, getGlobalAnonymousFeed, getProvider } from '$lib/services'
+import { type Chat, chats } from '$lib/stores/chat'
+import { type DraftPersona, personas } from '$lib/stores/persona'
+import { profile } from '$lib/stores/profile'
+import { saveToLocalStorage } from '$lib/utils'
+import type { Adapter } from '..'
 // import { Zkitter } from '$lib/zkitter-js'
-import {GroupAdapter} from './group-adapter'
-import {Signer} from 'ethers'
-import {create} from 'ipfs-http-client'
-import {createIdentity, prover} from './utils'
-import {posts} from '$lib/stores/post'
-import type {GenericDBAdapterInterface} from "zkitter-js"
-import type {Persona} from "../../stores/persona"
-import {UserState} from '@unirep/core'
-import {getFromLocalStorage, type SavedSeedMessages} from "../../utils";
-import type {ZkIdentity as UnirepIdentity} from "@unirep/utils";
-import type {ZkIdentity} from "@zk-kit/identity";
+import { GroupAdapter } from './group-adapter'
+import { Signer } from 'ethers'
+import { create } from 'ipfs-http-client'
+import { createIdentity, prover } from './utils'
+import { posts } from '$lib/stores/post'
+import type { GenericDBAdapterInterface } from 'zkitter-js'
+import type { Persona } from '../../stores/persona'
+import { UserState } from '@unirep/core'
+import { getFromLocalStorage, type SavedSeedMessages } from '../../utils'
+import type { ZkIdentity as UnirepIdentity } from '@unirep/utils'
+import type { ZkIdentity } from '@zk-kit/identity'
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -34,13 +34,13 @@ export class ZkitterAdapter implements Adapter {
 	})
 
 	private identity: {
-		zkIdentity: ZkIdentity;
-		unirepIdentity: UnirepIdentity;
-		ecdsa: { pub: string; priv: string };
+		zkIdentity: ZkIdentity
+		unirepIdentity: UnirepIdentity
+		ecdsa: { pub: string; priv: string }
 	} | null = null
 
 	async start() {
-		const { Zkitter } = await import('zkitter-js');
+		const { Zkitter } = await import('zkitter-js')
 
 		this.zkitter = await Zkitter.initialize({ groups: [] })
 
@@ -57,13 +57,15 @@ export class ZkitterAdapter implements Adapter {
 		const toAdd: Persona[] = []
 
 		for (let i = 0; i < numOfPersonas; i++) {
-			this.zkitter.services.groups.addGroup(new GroupAdapter({
-				globalAnonymousFeed: contract,
-				db: this.zkitter.db as GenericDBAdapterInterface,
-				personaId: i,
-			}))
+			this.zkitter.services.groups.addGroup(
+				new GroupAdapter({
+					globalAnonymousFeed: contract,
+					db: this.zkitter.db as GenericDBAdapterInterface,
+					personaId: i,
+				}),
+			)
 
-			const personaData = await contract.personas(i);
+			const personaData = await contract.personas(i)
 
 			toAdd.push({
 				personaId: i,
@@ -74,14 +76,13 @@ export class ZkitterAdapter implements Adapter {
 				cover: personaData.coverImage,
 				postsCount: 0,
 				participantsCount: 0,
-			});
+			})
 		}
 
-		await this.zkitter.services.groups.watch();
-
+		await this.zkitter.services.groups.watch()
 
 		personas.update((state) => {
-			const newPersonas = toAdd.filter(({personaId}) => !state.all.has(personaId))
+			const newPersonas = toAdd.filter(({ personaId }) => !state.all.has(personaId))
 			newPersonas.forEach((p) => state.all.set(p.personaId, p))
 			return {
 				...state,
@@ -152,71 +153,84 @@ export class ZkitterAdapter implements Adapter {
 		serializedMessages: string[],
 		idCommitment: string,
 	): Promise<void> {
-		await saveToLocalStorage<SavedSeedMessages>(`kurate/seedPosts`, {personaId, serializedMessages, idCommitment});
+		await saveToLocalStorage<SavedSeedMessages>(`kurate/seedPosts`, {
+			personaId,
+			serializedMessages,
+			idCommitment,
+		})
 	}
 	async getPersonaSeedMessages(): Promise<SavedSeedMessages> {
 		return getFromLocalStorage<SavedSeedMessages>(`kurate/seedPosts`, {
 			personaId: -1,
 			serializedMessages: [],
 			idCommitment: '',
-		});
+		})
 	}
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
 		if (!this.identity) throw new Error('must sign in first')
 
-		const pending = await this.getPersonaSeedMessages();
+		const pending = await this.getPersonaSeedMessages()
 
-		if (pending.personaId > -1) throw new Error('must wait until all pending seed posts are published')
+		if (pending.personaId > -1)
+			throw new Error('must wait until all pending seed posts are published')
 
-		const {MessageType, Post, PostMessageSubType} = await import('zkitter-js');
+		const { MessageType, Post, PostMessageSubType } = await import('zkitter-js')
 
-		const { unirepIdentity, ecdsa } = this.identity;
+		const { unirepIdentity, ecdsa } = this.identity
 
 		const contract = await getGlobalAnonymousFeed()
 
-		const state = new UserState({
-			prover: prover, // a circuit prover
-			attesterId: (await contract.attesterId()).toBigInt(),
-			unirepAddress: await contract.unirep(),
-			provider: getProvider(), // an ethers.js provider
-		}, unirepIdentity)
+		const state = new UserState(
+			{
+				prover: prover, // a circuit prover
+				attesterId: (await contract.attesterId()).toBigInt(),
+				unirepAddress: await contract.unirep(),
+				provider: getProvider(), // an ethers.js provider
+			},
+			unirepIdentity,
+		)
 
-		await state.sync.start();
-		await state.waitForSync();
+		await state.sync.start()
+		await state.waitForSync()
 
 		const pitch = new Post({
 			type: MessageType.Post,
 			subtype: PostMessageSubType.Default,
-			payload: { content: draftPersona.pitch }
+			payload: { content: draftPersona.pitch },
 		})
 
 		const description = new Post({
 			type: MessageType.Post,
 			subtype: PostMessageSubType.Default,
-			payload: { content: draftPersona.description }
+			payload: { content: draftPersona.description },
 		})
 
-		const seedPosts = draftPersona.posts.map(post => new Post({
-			type: MessageType.Post,
-			subtype: PostMessageSubType.Default,
-			payload: {
-				content: post.text,
-				attachment: post.images.length ? post.images[0] : undefined,
-			}
-		}))
+		const seedPosts = draftPersona.posts.map(
+			(post) =>
+				new Post({
+					type: MessageType.Post,
+					subtype: PostMessageSubType.Default,
+					payload: {
+						content: post.text,
+						attachment: post.images.length ? post.images[0] : undefined,
+					},
+				}),
+		)
 
-		const seedPostHashes: string[] = [];
-		seedPosts.forEach(seedPost => seedPostHashes.push('0x' + seedPost.hash()));
+		const seedPostHashes: string[] = []
+		seedPosts.forEach((seedPost) => seedPostHashes.push('0x' + seedPost.hash()))
 
-		if (seedPostHashes.length !== 5) throw new Error('must contain exactly 5 seed posts');
-		if (!draftPersona.picture) throw new Error('must contain a profile picture');
-		if (!draftPersona.cover) throw new Error('must contain a cover image');
+		if (seedPostHashes.length !== 5) throw new Error('must contain exactly 5 seed posts')
+		if (!draftPersona.picture) throw new Error('must contain a profile picture')
+		if (!draftPersona.cover) throw new Error('must contain a cover image')
 
 		const signupProof = await state.genUserSignUpProof()
 
 		const contractWithSigner = await getGlobalAnonymousFeed(signer)
 		const newPersonaId = (await contract.numOfPersonas()).toNumber()
-		const tx = await contractWithSigner['createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'](
+		const tx = await contractWithSigner[
+			'createPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'
+		](
 			draftPersona.name,
 			draftPersona.picture,
 			draftPersona.cover,
@@ -225,14 +239,14 @@ export class ZkitterAdapter implements Adapter {
 			seedPostHashes as [string, string, string, string, string],
 			signupProof.publicSignals,
 			signupProof.proof,
-			{gasLimit: 205449242}
+			{ gasLimit: 205449242 },
 		)
 
-		console.log(tx);
+		console.log(tx)
 
 		await this.savePersonaSeedMessages(
 			newPersonaId,
-			seedPosts.map(p => p.toHex()).concat([pitch.toHex(), description.toHex()]),
+			seedPosts.map((p) => p.toHex()).concat([pitch.toHex(), description.toHex()]),
 			this.identity.zkIdentity.genIdentityCommitment().toString(),
 		)
 
@@ -249,13 +263,13 @@ export class ZkitterAdapter implements Adapter {
 		const address = await signer.getAddress()
 
 		const { zkIdentity, unirepIdentity, ecdsa } = await createIdentity(signer)
-		const {personaId, serializedMessages} = await this.getPersonaSeedMessages()
+		const { personaId, serializedMessages } = await this.getPersonaSeedMessages()
 
 		this.identity = { zkIdentity, unirepIdentity, ecdsa }
 
 		if (personaId > -1) {
-			const {Post} = await import('zkitter-js')
-			const posts = serializedMessages.map(hex => Post.fromHex(hex))
+			const { Post } = await import('zkitter-js')
+			const posts = serializedMessages.map((hex) => Post.fromHex(hex))
 
 			for (let i = 0; i < posts.length; i++) {
 				const post = posts[i]
@@ -268,7 +282,7 @@ export class ZkitterAdapter implements Adapter {
 				await this.zkitter.publish(post, proof)
 			}
 
-			await this.savePersonaSeedMessages(-1, [], '');
+			await this.savePersonaSeedMessages(-1, [], '')
 		}
 
 		profile.update((state) => ({

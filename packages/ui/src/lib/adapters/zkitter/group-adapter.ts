@@ -5,7 +5,7 @@ import { providers } from 'ethers'
 import { PROVIDER } from '$lib/constants'
 import type { GenericDBAdapterInterface, GenericGroupAdapter } from 'zkitter-js'
 
-export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter  {
+export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 	db: GenericDBAdapterInterface
 
 	globalAnonymousFeed: GlobalAnonymousFeed
@@ -32,16 +32,20 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter  
 		const lastMemberIdCommitment = (await this.members()).pop()
 		// TODO: expose method in new zkitter-js release
 		// @ts-ignore
-		const lastMember = await this.db.groupMembersDB(this.groupId)
+		const lastMember = await this.db
+			.groupMembersDB(this.groupId)
 			.get(lastMemberIdCommitment)
 			.catch(() => null)
 		const events = await this.globalAnonymousFeed
 			.connect(new providers.JsonRpcProvider(PROVIDER))
-			.queryFilter(this.globalAnonymousFeed.filters.NewPersonaMember(this.personaId), lastMember?.blockNumber || 13980010)
+			.queryFilter(
+				this.globalAnonymousFeed.filters.NewPersonaMember(this.personaId),
+				lastMember?.blockNumber || 13980010,
+			)
 
 		for (const event of events) {
-			const identityCommitment = event.args.identityCommitment.toHexString();
-			const tree = await this.tree();
+			const identityCommitment = event.args.identityCommitment.toHexString()
+			const tree = await this.tree()
 
 			if (tree.indexOf(BigInt(identityCommitment)) < 0) {
 				const member = {
@@ -51,7 +55,7 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter  
 					blockNumber: event.blockNumber,
 				}
 				tree.insert(BigInt(identityCommitment))
-				member.newRoot = tree.root.toString();
+				member.newRoot = tree.root.toString()
 				await this.db.insertGroupMember(this.groupId, member)
 				this.emit('Group.NewGroupMemberCreated', member, this.groupId)
 			}
@@ -64,10 +68,10 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter  
 	}
 
 	async members(): Promise<string[]> {
-		return this.db.getGroupMembers(this.groupId).catch(() => ([]));
+		return this.db.getGroupMembers(this.groupId).catch(() => [])
 	}
 
 	async verify(): Promise<boolean> {
-		return false;
+		return false
 	}
 }

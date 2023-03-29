@@ -1,7 +1,7 @@
 import { writable, type Writable } from 'svelte/store'
 import type { Signer } from 'ethers'
-import type {ZkIdentity as UnirepIdentity} from "@unirep/utils";
-import type {ZkIdentity} from "@zk-kit/identity";
+import type { ZkIdentity as UnirepIdentity } from '@unirep/utils'
+import type { ZkIdentity } from '@zk-kit/identity'
 
 export interface Profile {
 	signer?: Signer

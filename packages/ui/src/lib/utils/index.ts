@@ -3,9 +3,9 @@ import { browser } from '$app/environment'
 type JSONdecoded = string | number | boolean | object | Array<JSONdecoded>
 
 export type SavedSeedMessages = {
-	personaId: number;
-	serializedMessages: string[];
-	idCommitment: string;
+	personaId: number
+	serializedMessages: string[]
+	idCommitment: string
 }
 /**
  * Sleep for N miliseconds
