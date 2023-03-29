@@ -170,7 +170,7 @@ export class ZkitterAdapter implements Adapter {
 
 		const {MessageType, Post, PostMessageSubType} = await import('zkitter-js');
 
-		const { zkIdentity, ecdsa } = this.identity;
+		const { unirepIdentity, ecdsa } = this.identity;
 
 		const contract = await getGlobalAnonymousFeed()
 
@@ -179,7 +179,7 @@ export class ZkitterAdapter implements Adapter {
 			attesterId: (await contract.attesterId()).toBigInt(),
 			unirepAddress: await contract.unirep(),
 			provider: getProvider(), // an ethers.js provider
-		}, zkIdentity)
+		}, unirepIdentity)
 
 		await state.sync.start();
 		await state.waitForSync();
@@ -225,8 +225,10 @@ export class ZkitterAdapter implements Adapter {
 			seedPostHashes as [string, string, string, string, string],
 			signupProof.publicSignals,
 			signupProof.proof,
-			{gasLimit: 6721974}
+			{gasLimit: 205449242}
 		)
+
+		console.log(tx);
 
 		await this.savePersonaSeedMessages(
 			newPersonaId,

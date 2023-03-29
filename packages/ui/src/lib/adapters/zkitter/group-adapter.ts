@@ -37,7 +37,7 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter  
 			.catch(() => null)
 		const events = await this.globalAnonymousFeed
 			.connect(new providers.JsonRpcProvider(PROVIDER))
-			.queryFilter(this.globalAnonymousFeed.filters.NewPersonaMember(this.personaId), lastMember?.blockNumber)
+			.queryFilter(this.globalAnonymousFeed.filters.NewPersonaMember(this.personaId), lastMember?.blockNumber || 13980010)
 
 		for (const event of events) {
 			const identityCommitment = event.args.identityCommitment.toHexString();

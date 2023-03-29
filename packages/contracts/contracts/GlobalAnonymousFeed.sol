@@ -160,7 +160,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         );
     }
 
-    function createPersona(
+    function createAndJoinPersona(
         string memory name,
         string memory profileImage,
         string memory coverImage,
@@ -171,7 +171,69 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         uint256[8] memory proof,
         uint256[] memory signUpPublicSignals,
         uint256[8] memory signUpProof
-    ) onlyAdmin external returns (uint256) {
+    ) onlyAdmin external {
+        uint personaId = personaList.length;
+
+        createPersona(
+            name,
+            profileImage,
+            coverImage,
+            pitch,
+            description,
+            seedPosts,
+            publicSignals,
+            proof
+        );
+
+        uint256 identityCommitment = signUpPublicSignals[0];
+
+        if (membersByPersona[personaId][identityCommitment] || members[identityCommitment]) {
+            joinPersona(personaId, identityCommitment);
+        } else {
+            joinPersona(personaId, signUpPublicSignals, signUpProof);
+        }
+    }
+
+    function createAndJoinPersona(
+        string memory name,
+        string memory profileImage,
+        string memory coverImage,
+        bytes32 pitch,
+        bytes32 description,
+        bytes32[5] memory seedPosts,
+        uint256[] memory signUpPublicSignals,
+        uint256[8] memory signUpProof
+    ) onlyAdmin external {
+        uint personaId = personaList.length;
+
+        createPersona(
+            name,
+            profileImage,
+            coverImage,
+            pitch,
+            description,
+            seedPosts
+        );
+
+        uint256 identityCommitment = signUpPublicSignals[0];
+
+        if (membersByPersona[personaId][identityCommitment] || members[identityCommitment]) {
+            joinPersona(personaId, identityCommitment);
+        } else {
+            joinPersona(personaId, signUpPublicSignals, signUpProof);
+        }
+    }
+
+    function createPersona(
+        string memory name,
+        string memory profileImage,
+        string memory coverImage,
+        bytes32 pitch,
+        bytes32 description,
+        bytes32[5] memory seedPosts,
+        uint256[] memory publicSignals,
+        uint256[8] memory proof
+    ) onlyAdmin public {
         uint personaId = personaList.length;
 
         IUnirep.ReputationSignals memory signals = unirep.decodeReputationSignals(
@@ -207,16 +269,6 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             publishedMessage[seedPosts[i]] = true;
             emit NewPersonaMessage(personaId, seedPosts[i]);
         }
-
-        uint256 identityCommitment = signUpPublicSignals[0];
-
-        if (membersByPersona[personaId][identityCommitment] || members[identityCommitment]) {
-            joinPersona(personaId, identityCommitment);
-        } else {
-            joinPersona(personaId, signUpPublicSignals, signUpProof);
-        }
-
-        return personaId;
     }
 
     function createPersona(
@@ -225,10 +277,8 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
         string memory coverImage,
         bytes32 pitch,
         bytes32 description,
-        bytes32[5] memory seedPosts,
-        uint256[] memory signUpPublicSignals,
-        uint256[8] memory signUpProof
-    ) onlyAdmin external returns (uint256) {
+        bytes32[5] memory seedPosts
+    ) onlyAdmin public {
         uint personaId = personaList.length;
 
         Persona storage persona = personas[personaId];
@@ -248,16 +298,6 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
             publishedMessage[seedPosts[i]] = true;
             emit NewPersonaMessage(personaId, seedPosts[i]);
         }
-
-        uint256 identityCommitment = signUpPublicSignals[0];
-
-        if (membersByPersona[personaId][identityCommitment] || members[identityCommitment]) {
-            joinPersona(personaId, identityCommitment);
-        } else {
-            joinPersona(personaId, signUpPublicSignals, signUpProof);
-        }
-
-        return personaId;
     }
 
     // @dev Required ZK Proof for first time joining a group.
