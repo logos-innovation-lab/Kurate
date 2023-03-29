@@ -1,40 +1,91 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte'
-	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
-	import Close from '$lib/components/icons/close.svelte'
-	import CodeSigningService from '$lib/components/icons/code-signing-service.svelte'
-	import GroupSecurity from '$lib/components/icons/group-security.svelte'
-	import Renew from '$lib/components/icons/renew.svelte'
-	import UpToTop from '$lib/components/icons/up-to-top.svelte'
-	import UserAdmin from '$lib/components/icons/user-admin.svelte'
-	import User from '$lib/components/icons/user.svelte'
-	import Wallet from '$lib/components/icons/wallet.svelte'
-	import Edit from '$lib/components/icons/edit.svelte'
+	import Header from '$lib/components/header.svelte'
+	import Container from '$lib/components/container.svelte'
+	import Textarea from '$lib/components/textarea.svelte'
+	import { tokens } from '$lib/stores/tokens'
+	import Divider from '$lib/components/divider.svelte'
+	import { onDestroy, onMount } from 'svelte'
+
+	function calculateTimeToEndEpoch() {
+		return $tokens.epochDuration - Date.now() % $tokens.epochDuration
+	}
+
+	let goTokenValue = $tokens.go.toFixed()
+	let repTokenValue = $tokens.repTotal.toFixed()
+	let timeToEndEpoch: number = calculateTimeToEndEpoch()
+	let interval: NodeJS.Timer
+
+	onMount(() => {
+		interval = setInterval(() => {
+			timeToEndEpoch = calculateTimeToEndEpoch()
+		}, 1000)
+	})
+
+	onDestroy(() => {
+		interval && clearInterval(interval)
+	})
+
+	function updateTokens() {
+		tokens.update((tokens) => {
+			tokens.go = parseInt(goTokenValue)
+			tokens.repTotal = parseInt(repTokenValue)
+			return tokens
+		})
+	}
 </script>
 
-<h2>Buttons</h2>
-<Button label="primary" variant="primary" />
-<Button label="secondary" variant="secondary" />
-<Button label="primary disabled" variant="primary" disabled />
-<Button label="secondary disabled" variant="secondary" disabled />
-<Button label="primary icon" variant="primary" icon={UpToTop} />
-<Button label="secondary icon" variant="secondary" icon={UpToTop} />
-<Button label="primary icon disabled" variant="primary" icon={UpToTop} disabled />
-<Button label="secondary icon disabled" variant="secondary" icon={UpToTop} disabled />
-<Button variant="primary" icon={UpToTop} />
-<Button variant="secondary" icon={UpToTop} />
-<Button variant="primary" icon={UpToTop} disabled />
-<Button variant="secondary" icon={UpToTop} disabled />
+<Header title="DEV DASHBOARD" onBack={() => history.back()} />
+<Container>
+	<section>
+		<h2>Epoch</h2>
+		<p>Epoch duration: {$tokens.epochDuration / 1000} seconds</p>
+		<p>Time to end epoch: {(timeToEndEpoch / 1000).toFixed()} seconds</p>
+		<Button label="Start new epoch" variant="primary" />
+	</section>
+	<Divider />
+	<section>
+		<Textarea label="Available GO token value" bind:value={goTokenValue} />
+		<Textarea label="Total REP token" bind:value={repTokenValue} />
+		<Button label="Update" on:click={updateTokens} />
+	</section>
+	<Divider />
+	<section>
+		<h2>GO historical values</h2>
+		{#each $tokens.goHistoricalValues as transaction}
+			<section>
+				{transaction.timestamp}
+				{transaction.value}
+			</section>
+		{/each}
+	</section>
+	<Divider />
+	<section>
+		<h2>REP staked historical values</h2>
+		{#each $tokens.repStakedHistoricalValues as transaction}
+			<section>
+				{transaction.timestamp}
+				{transaction.value}
+			</section>
+		{/each}
+	</section>
+	<Divider />
+	<section>
+		<h2>REP total historical values</h2>
+		{#each $tokens.repTotalHistoricalValues as transaction}
+			<section>
+				{transaction.timestamp}
+				{transaction.value}
+			</section>
+		{/each}
+	</section>
+</Container>
 
-<h2>Icons</h2>
-
-<UpToTop />
-<User />
-<Wallet />
-<GroupSecurity />
-<ArrowRight />
-<Close />
-<CodeSigningService />
-<Renew />
-<UserAdmin />
-<Edit />
+<style lang="scss">
+	section {
+		margin-bottom: 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+</style>

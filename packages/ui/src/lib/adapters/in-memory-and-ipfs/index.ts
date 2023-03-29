@@ -11,8 +11,9 @@ import {
 	NEW_POST_REP_PRICE,
 	VOTE_GO_PRICE,
 } from '$lib/constants'
-import { tokens } from '$lib/stores/tokens'
+import { tokens, type TokenData } from '$lib/stores/tokens'
 import { posts, type Post } from '$lib/stores/post'
+import { transaction } from '$lib/stores/transaction'
 
 import type { Adapter } from '..'
 import {
@@ -86,6 +87,56 @@ export class InMemoryAndIPFS implements Adapter {
 		const storedChats = getFromLocalStorage('chats', [])
 		const storedPosts = new Map<string, { approved: Post[]; pending: Post[]; loading: boolean }>(
 			getFromLocalStorage('posts', []),
+		)
+		const storedTokens = getFromLocalStorage('tokens', {
+			go: 30,
+			repTotal: 55,
+			repStaked: 5,
+			loading: false,
+			goHistoricalValues: [],
+			repStakedHistoricalValues: [],
+			repTotalHistoricalValues: [],
+			epochDuration: 5 * 60 * 1000,
+		})
+
+		tokens.set(storedTokens)
+
+		this.subscriptions.push(
+			tokens.subscribe((state) => {
+				let newState: TokenData | undefined = undefined
+				if (
+					state.goHistoricalValues.length === 0 ||
+					state.go !== state.goHistoricalValues[state.goHistoricalValues.length - 1].value
+				) {
+					newState = {...state}
+					newState.goHistoricalValues.push({ timestamp: Date.now(), value: state.go })
+				}
+				if (
+					state.repStakedHistoricalValues.length === 0 ||
+					state.repStaked !==
+						state.repStakedHistoricalValues[state.repStakedHistoricalValues.length - 1].value
+				) {
+					if (newState === undefined) {
+						newState = {...state}
+					}
+					newState.repStakedHistoricalValues.push({ timestamp: Date.now(), value: state.repStaked })
+				}
+				if (
+					state.repTotalHistoricalValues.length === 0 ||
+					state.repTotal !==
+						state.repTotalHistoricalValues[state.repTotalHistoricalValues.length - 1].value
+				) {
+					
+					if (newState === undefined) {
+						newState = {...state}
+					}
+					newState.repTotalHistoricalValues.push({ timestamp: Date.now(), value: state.repTotal })
+				}
+				if (newState !== undefined) {
+					tokens.update(() => state)
+					saveToLocalStorage('tokens', state)
+				}
+			}),
 		)
 
 		// It takes 1 second to load all the data :)
@@ -205,8 +256,19 @@ export class InMemoryAndIPFS implements Adapter {
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
 		await signer.signMessage('This "transaction" publishes persona')
 
-		// FIXME: it can happen that this ID already exists
-		const groupId = randomId()
+		function getRandomNonExistingId(): Promise<string> {
+			let groupId = randomId()
+			return new Promise((resolve) => {
+				personas.subscribe((s) => {
+					while (s.all.has(groupId)) {
+						groupId = randomId()
+					}
+					resolve(groupId)
+				})
+			})
+		}
+
+		const groupId = await getRandomNonExistingId()
 
 		personas.update((state) => {
 			state.all.set(groupId, {
@@ -231,6 +293,17 @@ export class InMemoryAndIPFS implements Adapter {
 
 		tokens.update(({ go, ...state }) => {
 			return { ...state, go: go - CREATE_PERSONA_GO_PRICE }
+		})
+
+		transaction.update(({ transactions }) => {
+			transactions.push({
+				timestamp: Date.now(),
+				goChange: -CREATE_PERSONA_GO_PRICE,
+				repChange: 0,
+				personaId: groupId,
+				type: 'publish persona',
+			})
+			return { transactions }
 		})
 	}
 
@@ -272,6 +345,17 @@ export class InMemoryAndIPFS implements Adapter {
 		})
 
 		posts.addPending(post, groupId)
+
+		transaction.update(({ transactions }) => {
+			transactions.push({
+				timestamp: Date.now(),
+				goChange: -NEW_POST_GO_PRICE,
+				repChange: -NEW_POST_REP_PRICE,
+				personaId: groupId,
+				type: 'publish post',
+			})
+			return { transactions }
+		})
 	}
 
 	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {
@@ -301,6 +385,16 @@ export class InMemoryAndIPFS implements Adapter {
 				...state,
 				go: go - VOTE_GO_PRICE,
 			}
+		})
+		transaction.update(({ transactions }) => {
+			transactions.push({
+				timestamp: Date.now(),
+				goChange: -CREATE_PERSONA_GO_PRICE,
+				repChange: 0,
+				type: vote === '+' ? 'promote' : 'demote',
+				personaId: groupId,
+			})
+			return { transactions }
 		})
 	}
 
