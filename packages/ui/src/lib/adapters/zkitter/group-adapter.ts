@@ -31,8 +31,7 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 	async sync() {
 		const lastMemberIdCommitment = (await this.members()).pop()
 		// TODO: expose method in new zkitter-js release
-		// @ts-ignore
-		const lastMember = await this.db
+		const lastMember = await (this.db as any)
 			.groupMembersDB(this.groupId)
 			.get(lastMemberIdCommitment)
 			.catch(() => null)

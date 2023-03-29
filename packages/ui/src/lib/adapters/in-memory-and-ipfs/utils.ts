@@ -49,7 +49,7 @@ export function randomPost(): Post {
 	return post
 }
 
-export function randomPersona(): Persona {
+export function randomPersona(personaId: string | number): Persona {
 	const name = randomText(1).split(' ')[0]
 	const pitch = randomText(randomIntegerBetween(1, 3))
 	const description = randomText(randomIntegerBetween(5, 20))
@@ -64,6 +64,7 @@ export function randomPersona(): Persona {
 		postsCount: randomIntegerBetween(1, 1000),
 		cover,
 		picture,
+		personaId,
 	}
 
 	return persona

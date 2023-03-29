@@ -10,14 +10,12 @@ export const prover: Prover = {
 		publicSignals: SnarkPublicSignals,
 		proof: SnarkProof,
 	) => {
-		// @ts-ignore
 		const snarkjs = await import('snarkjs')
 		const url = new URL(`/${circuitName}.vkey.json`, 'http://localhost:3000')
 		const vkey = await fetch(url.toString()).then((r) => r.json())
 		return snarkjs.groth16.verify(vkey, publicSignals, proof)
 	},
-	genProofAndPublicSignals: async (circuitName: string | Circuit, inputs: any) => {
-		// @ts-ignore
+	genProofAndPublicSignals: async (circuitName: string | Circuit, inputs: unknown) => {
 		const snarkjs = await import('snarkjs')
 		const wasmUrl = new URL(`/${circuitName}.wasm`, 'http://localhost:3000')
 		const wasm = await fetch(wasmUrl.toString()).then((r) => r.arrayBuffer())
@@ -30,7 +28,7 @@ export const prover: Prover = {
 		)
 		return { proof, publicSignals }
 	},
-	getVKey: async (name: string | Circuit): Promise<any> => {
+	getVKey: async (name: string | Circuit): Promise<string> => {
 		return new URL(`/${name}.vkey.json`, 'http://localhost:3000').toString()
 	},
 }
@@ -43,9 +41,7 @@ export async function createIdentity(
 	zkIdentity: ZkIdentity
 	unirepIdentity: UnirepIdentity
 }> {
-	const { generateP256FromSeed, generateZKIdentityWithP256, generateECDHWithP256 } = await import(
-		'zkitter-js'
-	)
+	const { generateP256FromSeed, generateZKIdentityWithP256 } = await import('zkitter-js')
 
 	const seed = await signer.signMessage(
 		`Sign this message to generate a ECDSA with key nonce: ${nonce}`,

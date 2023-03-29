@@ -3,7 +3,7 @@ import type { Identity } from '@semaphore-protocol/identity'
 import type { Post } from './post'
 
 export interface Persona {
-	personaId: number
+	personaId: number | string
 	identity?: Identity
 	picture?: string
 	cover?: string
@@ -14,14 +14,15 @@ export interface Persona {
 	postsCount: number
 }
 
-export interface DraftPersona extends Omit<Persona, 'postsCount' | 'participantsCount'> {
+export interface DraftPersona
+	extends Omit<Persona, 'postsCount' | 'participantsCount' | 'personaId'> {
 	posts: Post[]
 }
 
 type PersonaStore = {
 	draft: DraftPersona[]
 	favorite: string[]
-	all: Map<number, Persona>
+	all: Map<number | string, Persona>
 	loading: boolean
 }
 

@@ -4,13 +4,12 @@ import { type DraftPersona, personas } from '$lib/stores/persona'
 import { profile } from '$lib/stores/profile'
 import { saveToLocalStorage } from '$lib/utils'
 import type { Adapter } from '..'
-// import { Zkitter } from '$lib/zkitter-js'
 import { GroupAdapter } from './group-adapter'
-import { Signer } from 'ethers'
+import type { Signer } from 'ethers'
 import { create } from 'ipfs-http-client'
 import { createIdentity, prover } from './utils'
 import { posts } from '$lib/stores/post'
-import type { GenericDBAdapterInterface } from 'zkitter-js'
+import type { GenericDBAdapterInterface, Zkitter } from 'zkitter-js'
 import type { Persona } from '../../stores/persona'
 import { UserState } from '@unirep/core'
 import { getFromLocalStorage, type SavedSeedMessages } from '../../utils'
@@ -23,7 +22,7 @@ const IPFS_AUTH =
 const IPFS_GATEWAY = 'https://kurate.infura-ipfs.io/ipfs'
 
 export class ZkitterAdapter implements Adapter {
-	private zkitter?: any
+	private zkitter?: Zkitter
 	private ipfs = create({
 		host: 'ipfs.infura.io',
 		port: 5001,
@@ -45,7 +44,6 @@ export class ZkitterAdapter implements Adapter {
 		this.zkitter = await Zkitter.initialize({ groups: [] })
 
 		if (process.env.NODE_ENV !== 'production') {
-			// @ts-ignore
 			this.zkitter.on('Zkitter.NewMessageCreated', async (msg, proof) => {
 				console.log(msg, proof)
 			})
@@ -176,9 +174,9 @@ export class ZkitterAdapter implements Adapter {
 
 		const { MessageType, Post, PostMessageSubType } = await import('zkitter-js')
 
-		const { unirepIdentity, ecdsa } = this.identity
+		const { unirepIdentity } = this.identity
 
-		const contract = await getGlobalAnonymousFeed()
+		const contract = getGlobalAnonymousFeed()
 
 		const state = new UserState(
 			{
@@ -271,6 +269,9 @@ export class ZkitterAdapter implements Adapter {
 			const { Post } = await import('zkitter-js')
 			const posts = serializedMessages.map((hex) => Post.fromHex(hex))
 
+			// FIXME: we should probably do something smarter here
+			if (!this.zkitter) throw new Error('Zkitter is not initiated yet')
+
 			for (let i = 0; i < posts.length; i++) {
 				const post = posts[i]
 				const proof = await this.zkitter.createProof({
@@ -313,18 +314,7 @@ export class ZkitterAdapter implements Adapter {
 		signer: Signer,
 	): Promise<void> {
 		// FIXME: properly implement
-		console.error('NOT IMPLEMENTED', 'publishPost')
-
-		let identity = this.identities.get(groupId)
-
-		if (!identity) {
-			const { zkIdentity, ecdh } = await createIdentity(signer, groupId)
-			identity = { identity: zkIdentity, ecdh }
-
-			this.identities.set(groupId, identity)
-
-			// TODO: check the identity has joined a the group already before posting
-		}
+		console.error('NOT IMPLEMENTED', 'publishPost', signer)
 
 		const post = {
 			timestamp: Date.now(),
@@ -339,58 +329,19 @@ export class ZkitterAdapter implements Adapter {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'subscribePersonaPosts')
 
-		if (!this.zkitter) {
-			this.zkitter = await Zkitter.initialize()
-		}
+		// FIXME:
+		if (!this.zkitter) throw new Error('Zkitter is not initiated yet')
 
-		const unsubscribe = this.zkitter.subscribe({ groups: [groupId] })
+		const unsubscribe = this.zkitter.subscribe()
 
-		const identity = this.identities.get(groupId)
-
-		posts.subscribe((p) => {
-			const data = p.data.get(groupId)
-			if (data === undefined || data.loading === true) {
-				// These are just to see something
-				posts.addPending(
-					{ text: `some text for persona id ${groupId}`, timestamp: Date.now(), images: [] },
-					groupId,
-				)
-				posts.addPending(
-					{
-						text: `my identity for this persona is ${identity?.identity}`,
-						timestamp: Date.now(),
-						images: [],
-					},
-					groupId,
-				)
-				posts.addPending(
-					{
-						text: `Something you liked`,
-						timestamp: Date.now(),
-						images: [],
-						yourVote: '+',
-					},
-					groupId,
-				)
-				posts.addPending(
-					{
-						text: `Aaaand something you disliked...`,
-						timestamp: Date.now(),
-						images: [],
-						yourVote: '-',
-					},
-					groupId,
-				)
-				posts.addApproved(
-					{
-						text: `This is some very nice post which actually made it to the persona!`,
-						timestamp: Date.now(),
-						images: [],
-					},
-					groupId,
-				)
-			}
-		})
+		posts.addPending(
+			{
+				text: `This is some pending persona post`,
+				timestamp: Date.now(),
+				images: [],
+			},
+			groupId,
+		)
 
 		return unsubscribe
 	}
