@@ -31,6 +31,12 @@ class ProofBreachError extends Error {
   }
 }
 
+class MerkleRootOutdated extends Error {
+  constructor(public expected: bigint, public actual: bigint) {
+    super("duplicate proof");
+  }
+}
+
 // Instantiate RLN
 export const rlnRegistry = new Registry(MERKLE_TREE_DEPTH);
 export const caches = new Map<bigint, Cache>();
@@ -92,5 +98,10 @@ export const verifyProof = async (proof: RLNFullProof) => {
       throw new Error("no secret revealed despite proof breach");
     }
     throw new ProofBreachError(result.secret);
+  }
+
+  const root = BigInt(proof.snarkProof.publicSignals.merkleRoot);
+  if (root !== rlnRegistry.root) {
+    throw new MerkleRootOutdated(rlnRegistry.root, root);
   }
 };
