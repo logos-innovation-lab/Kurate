@@ -1,22 +1,28 @@
 import { Provider } from "@ethersproject/abstract-provider";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { RLN, Registry, RLNFullProof, Cache } from "rlnjs";
+import { RLN, Registry, RLNFullProof, Cache, StrBigInt } from "rlnjs";
 import { GlobalAnonymousFeed__factory } from "../abi";
 import { NewIdentityEvent } from "../abi/GlobalAnonymousFeed";
 import { TypedListener } from "../abi/common";
-import { GLOBAL_ANONYMOUS_FEED_ADDRESS } from "../config";
-import { BigNumber } from "ethers";
-import { Status } from "rlnjs/dist/types/cache";
+import type { BigNumber } from "@ethersproject/bignumber";
 
 // Configuration
 export const MERKLE_TREE_DEPTH = 20;
 export const CACHE_LENGTH = 10_000;
 
 // Configuration files
-const zkeyFilesPath = "./zkeyFiles";
+const zkeyFilesPath = join(__dirname, "./zkeyFiles");
 const vkeyPath = join(zkeyFilesPath, "verification_key.json");
 const vKey = JSON.parse(readFileSync(vkeyPath, "utf-8"));
+const wasmFilePath = join(zkeyFilesPath, "rln.wasm");
+const finalZkeyPath = join(zkeyFilesPath, "rln_final.zkey");
+
+// Types
+type CustomRLNFullProof = Omit<RLNFullProof, "epoch" | "rlnIdentifier"> & {
+  epoch: StrBigInt;
+  rlnIdentifier: StrBigInt;
+};
 
 // Errors
 class InvalidProofError extends Error {
@@ -41,16 +47,15 @@ class MerkleRootOutdated extends Error {
 export const rlnRegistry = new Registry(MERKLE_TREE_DEPTH);
 export const caches = new Map<bigint, Cache>();
 
+// Get instance
+export const getInstance = () => new RLN(wasmFilePath, finalZkeyPath, vKey);
+
 // Sync groups
 // TODO: Avoid race conditions by listening to events before querying past ones,
 // then checking blockNumber and transactionIndex to make sure the event wasn't
 // processed already.
-export const syncGroup = async (provider: Provider) => {
-  const feed = GlobalAnonymousFeed__factory.connect(
-    GLOBAL_ANONYMOUS_FEED_ADDRESS,
-    provider
-  );
-
+export const syncGroup = async (provider: Provider, address: string) => {
+  const feed = GlobalAnonymousFeed__factory.connect(address, provider);
   const filter = feed.filters.NewIdentity();
 
   // Fetch past events
@@ -73,8 +78,19 @@ export const syncGroup = async (provider: Provider) => {
   };
 };
 
+// Converts a CustomRLNFullProof to RLNFullProof
+const customToRlnProof = (proof: CustomRLNFullProof): RLNFullProof => {
+  return {
+    ...proof,
+    epoch: BigInt(proof.epoch),
+    rlnIdentifier: BigInt(proof.rlnIdentifier),
+  };
+};
+
 // Verify proof
-export const verifyProof = async (proof: RLNFullProof) => {
+// TODO: Ask `rlnjs` to make `epoch` and `rlnIdentifier` a StrBigInt
+export const verifyProof = async (customProof: CustomRLNFullProof) => {
+  const proof = customToRlnProof(customProof);
   const valid = await RLN.verifySNARKProof(vKey, proof.snarkProof);
   if (!valid) {
     throw new InvalidProofError();
@@ -88,11 +104,11 @@ export const verifyProof = async (proof: RLNFullProof) => {
 
   const result = cache.addProof(proof);
 
-  if (result.status === Status.INVALID) {
+  if (result.status === "invalid") {
     throw new InvalidProofError();
   }
 
-  if (result.status === Status.BREACH) {
+  if (result.status === "breach") {
     // NOTE: This should never happen
     if (!result.secret) {
       throw new Error("no secret revealed despite proof breach");
