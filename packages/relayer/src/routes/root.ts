@@ -5,6 +5,19 @@ import { Wallet } from "@ethersproject/wallet";
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, PRIVATE_KEY, RPC_URL } from "../config";
 import { GlobalAnonymousFeed__factory } from "../abi";
 
+// Config
+enum MessageType {
+  Post,
+  Comment,
+  Vote,
+}
+
+const goRequired = {
+  [MessageType.Post]: 10,
+  [MessageType.Comment]: 5,
+  [MessageType.Vote]: 1,
+};
+
 const bigIntSchema = { type: "string", pattern: "^[0-9]+$" } as const;
 const rlnProofSchema = {
   type: "object",
@@ -103,43 +116,20 @@ const response = {
   },
 } as const;
 
-const getBodySchema = <GoCount extends number>(goCount: GoCount) => {
+const getBodySchemaWithRep = () => {
   return {
     type: "object",
     additionalProperties: false,
-    required: ["goProofs", "postHash"],
-    properties: {
-      goProofs: {
-        type: "array",
-        uniqueItems: true,
-        minItems: goCount,
-        maxItems: goCount,
-        items: {
-          type: "object",
-        },
-      },
-      postHash: {
-        type: "string",
-      },
-    },
-  } as const;
-};
-
-const getBodySchemaWithRep = <GoCount extends number>(goCount: GoCount) => {
-  return {
-    type: "object",
-    additionalProperties: false,
-    required: ["personaId", "postHash", "goProofs", "repProof"],
+    required: ["personaId", "type", "postHash", "goProofs", "repProof"],
     properties: {
       personaId: bigIntSchema,
+      type: { enum: [0, 1] },
       postHash: {
         type: "string",
       },
       goProofs: {
         type: "array",
         uniqueItems: true,
-        minItems: goCount,
-        maxItems: goCount,
         items: rlnProofSchema,
       },
       repProof: repProofSchema,
@@ -147,14 +137,23 @@ const getBodySchemaWithRep = <GoCount extends number>(goCount: GoCount) => {
   } as const;
 };
 
-enum MessageType {
-  Post,
-  Comment,
-}
+const getBodySchemaWithoutRep = () => {
+  const schema = getBodySchemaWithRep();
+  const { repProof, ...properties } = schema.properties;
 
+  return {
+    ...schema,
+    required: ["personaId", "type", "postHash", "goProofs"],
+    properties: {
+      ...properties,
+      type: { const: 2 },
+    },
+  } as const;
+};
+
+// TODO: Make the verification code more generic, but it's not easy type-wise
 const root: FastifyPluginAsyncJsonSchemaToTs = async (
-  fastify,
-  opts
+  fastify
 ): Promise<void> => {
   const provider = getDefaultProvider(RPC_URL);
   const wallet = new Wallet(PRIVATE_KEY, provider);
@@ -164,9 +163,13 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
   );
 
   fastify.post(
-    "/post",
-    { schema: { response, body: getBodySchemaWithRep(10) } } as const,
-    async function ({ body }, res) {
+    "/with-rep",
+    { schema: { response, body: getBodySchemaWithRep() } } as const,
+    async function ({ body }) {
+      if (body.goProofs.length !== goRequired[body.type]) {
+        throw new Error("wrong number of go proofs");
+      }
+
       const { signalHash } = body.goProofs[0].snarkProof.publicSignals;
 
       // Make sure that the signal for each proof is identical
@@ -191,7 +194,7 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
         "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])"
       ](
         body.personaId,
-        MessageType.Post,
+        body.type,
         body.postHash,
         body.repProof.publicSignals,
         body.repProof.proof
@@ -203,19 +206,41 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
   );
 
   fastify.post(
-    "/comment",
-    { schema: { response, body: getBodySchemaWithRep(5) } as const },
-    async function (request, reply) {
-      request.body;
-      return { transaction: "" };
-    }
-  );
+    "/without-rep",
+    { schema: { response, body: getBodySchemaWithoutRep() } as const },
+    async function ({ body }) {
+      if (body.goProofs.length !== goRequired[body.type]) {
+        throw new Error("wrong number of go proofs");
+      }
 
-  fastify.post(
-    "/vote",
-    { schema: { response, body: getBodySchema(1) } },
-    async function (request, reply) {
-      return { transaction: "" };
+      const { signalHash } = body.goProofs[0].snarkProof.publicSignals;
+
+      // Make sure that the signal for each proof is identical
+      // TODO: Also check nullifiers?
+      // TODO: Make sure that ell the epochs are in the same interval
+      // TODO: Check that internalNullifier === "kurate"
+      for (const { snarkProof } of body.goProofs) {
+        if (snarkProof.publicSignals.signalHash !== signalHash) {
+          throw new Error("signalHashes different");
+        }
+
+        if (BigInt(snarkProof.publicSignals.merkleRoot) !== rlnRegistry.root) {
+          throw new Error("wrong root hash");
+        }
+      }
+
+      // Check all proofs
+      await Promise.all(body.goProofs.map(verifyProof));
+
+      // Post data on-chain
+      const tx = await feed["proposeMessage(uint256,uint8,bytes32)"](
+        body.personaId,
+        body.type,
+        body.postHash
+      );
+
+      // Return transaction hash
+      return { transaction: tx.hash };
     }
   );
 };
