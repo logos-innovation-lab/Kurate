@@ -100,7 +100,7 @@
 		}
 	}
 	.secondary {
-		background-color: transparent;
+		background-color: var(--color-body-bg);
 		border-color: var(--grey-200);
 		color: var(--color-body-text);
 
@@ -186,12 +186,6 @@
 			}
 		}
 
-		&:active:not(:disabled),
-		&:hover:not(:disabled) {
-			background-color: var(--grey-150);
-			transition: border-color 0.2s, background-color 0.2s;
-		}
-
 		@media (prefers-color-scheme: dark) {
 			background-color: var(--color-body-bg);
 			border-color: var(--color-body-text);
@@ -199,20 +193,6 @@
 
 			& :global(svg) {
 				fill: var(--color-body-text);
-			}
-
-			&:disabled {
-				background-color: var(--color-body-bg);
-				color: var(--grey-500);
-
-				& :global(svg) {
-					fill: var(--grey-500);
-				}
-			}
-
-			&:active:not(:disabled),
-			&:hover:not(:disabled) {
-				transition: border-color 0.2s, background-color 0.2s;
 			}
 		}
 	}
