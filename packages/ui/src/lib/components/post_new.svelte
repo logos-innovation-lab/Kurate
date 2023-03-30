@@ -70,7 +70,7 @@
 			<div class="img-wrapper">
 				<img src={adapter.getPicture(image)} alt="post" />
 				<div class="icon">
-					<Button icon={Close} variant="overlay" on:click={removeImage(index)} />
+					<Button icon={Close} variant="overlay" small on:click={removeImage(index)} />
 				</div>
 			</div>
 		{/each}

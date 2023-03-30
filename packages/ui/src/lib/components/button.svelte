@@ -7,12 +7,13 @@
 	export let icon: ComponentConstructor<IconProps> | undefined = undefined
 	export let label: string | undefined = undefined
 	export let disabled: boolean | undefined = undefined
+	export let small: boolean | undefined = undefined
 </script>
 
 <button
 	type="button"
 	{disabled}
-	class={`root ${variant} ${!label ? 'icon-only' : ''} ${cls}`}
+	class={`root ${variant} ${!label ? 'icon-only' : ''}  ${small ? 'small' : ''} ${cls}`}
 	on:click
 >
 	{#if icon !== undefined}
@@ -54,6 +55,11 @@
 
 		.wrapper {
 			margin-right: 0px;
+		}
+
+		&.small {
+			width: 32px;
+			height: 32px;
 		}
 	}
 	.wrapper {
