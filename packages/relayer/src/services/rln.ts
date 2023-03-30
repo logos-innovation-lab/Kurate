@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { RLN, Registry, RLNFullProof, Cache, StrBigInt } from "rlnjs";
 import { GlobalAnonymousFeed__factory } from "../abi";
-import { NewIdentityEvent } from "../abi/GlobalAnonymousFeed";
+import { NewPersonaMemberEvent } from "../abi/GlobalAnonymousFeed";
 import { TypedListener } from "../abi/common";
 import type { BigNumber } from "@ethersproject/bignumber";
 
@@ -12,7 +12,7 @@ export const MERKLE_TREE_DEPTH = 20;
 export const CACHE_LENGTH = 10_000;
 
 // Configuration files
-const zkeyFilesPath = join(__dirname, "./zkeyFiles");
+const zkeyFilesPath = join(__dirname, "../assets/zkey-files");
 const vkeyPath = join(zkeyFilesPath, "verification_key.json");
 const vKey = JSON.parse(readFileSync(vkeyPath, "utf-8"));
 const wasmFilePath = join(zkeyFilesPath, "rln.wasm");
@@ -56,7 +56,7 @@ export const getInstance = () => new RLN(wasmFilePath, finalZkeyPath, vKey);
 // processed already.
 export const syncGroup = async (provider: Provider, address: string) => {
   const feed = GlobalAnonymousFeed__factory.connect(address, provider);
-  const filter = feed.filters.NewIdentity();
+  const filter = feed.filters.NewPersonaMember();
 
   // Fetch past events
   const identities = await feed.queryFilter(filter);
@@ -65,16 +65,17 @@ export const syncGroup = async (provider: Provider, address: string) => {
   }
 
   // Keep registry in sync by listening to on-chain events
-  const listener: TypedListener<NewIdentityEvent> = (
+  const listener: TypedListener<NewPersonaMemberEvent> = (
+    _personaId: BigNumber,
     identityCommitment: BigNumber
   ) => {
     rlnRegistry.addMember(identityCommitment.toBigInt());
   };
 
-  feed.on<NewIdentityEvent>(filter, listener);
+  feed.on<NewPersonaMemberEvent>(filter, listener);
 
   return () => {
-    feed.off<NewIdentityEvent>(filter, listener);
+    feed.off<NewPersonaMemberEvent>(filter, listener);
   };
 };
 
