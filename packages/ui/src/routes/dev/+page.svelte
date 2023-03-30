@@ -8,13 +8,13 @@
 	import { onDestroy, onMount } from 'svelte'
 
 	function calculateTimeToEndEpoch() {
-		return $tokens.epochDuration - Date.now() % $tokens.epochDuration
+		return $tokens.epochDuration - (Date.now() % $tokens.epochDuration)
 	}
 
 	let goTokenValue = $tokens.go.toFixed()
 	let repTokenValue = $tokens.repTotal.toFixed()
 	let timeToEndEpoch: number = calculateTimeToEndEpoch()
-	let interval: NodeJS.Timer
+	let interval: ReturnType<typeof setInterval>
 
 	onMount(() => {
 		interval = setInterval(() => {

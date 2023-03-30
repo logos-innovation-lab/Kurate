@@ -108,7 +108,7 @@ export class InMemoryAndIPFS implements Adapter {
 					state.goHistoricalValues.length === 0 ||
 					state.go !== state.goHistoricalValues[state.goHistoricalValues.length - 1].value
 				) {
-					newState = {...state}
+					newState = { ...state }
 					newState.goHistoricalValues.push({ timestamp: Date.now(), value: state.go })
 				}
 				if (
@@ -117,7 +117,7 @@ export class InMemoryAndIPFS implements Adapter {
 						state.repStakedHistoricalValues[state.repStakedHistoricalValues.length - 1].value
 				) {
 					if (newState === undefined) {
-						newState = {...state}
+						newState = { ...state }
 					}
 					newState.repStakedHistoricalValues.push({ timestamp: Date.now(), value: state.repStaked })
 				}
@@ -126,9 +126,8 @@ export class InMemoryAndIPFS implements Adapter {
 					state.repTotal !==
 						state.repTotalHistoricalValues[state.repTotalHistoricalValues.length - 1].value
 				) {
-					
 					if (newState === undefined) {
-						newState = {...state}
+						newState = { ...state }
 					}
 					newState.repTotalHistoricalValues.push({ timestamp: Date.now(), value: state.repTotal })
 				}
