@@ -183,6 +183,9 @@
 	.side-by-side {
 		display: flex;
 		flex-direction: row;
+		align-items: stretch;
+		justify-content: center;
+		gap: var(--spacing-6);
 	}
 
 	.token-info {
