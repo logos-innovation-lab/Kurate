@@ -76,7 +76,7 @@
 		{/each}
 	</div>
 	<div class="post-content">
-		<Textarea bind:value={postText} placeholder="Write here..." autofocus />
+		<Textarea noHighlight bind:value={postText} placeholder="Write here..." autofocus />
 	</div>
 </div>
 

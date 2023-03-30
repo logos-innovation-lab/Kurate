@@ -5,6 +5,7 @@
 	export let placeholder = ''
 	export let label = ''
 	export let autofocus = false
+	export let noHighlight: boolean | undefined = undefined
 
 	let placeholderHeight: number
 	let textarea: HTMLTextAreaElement
@@ -39,7 +40,7 @@
 	})
 </script>
 
-<label>
+<label class={noHighlight ? '' : 'highlight'}>
 	{label}
 	<div class="area-placeholder">
 		<div
@@ -65,7 +66,7 @@
 		background-color: transparent;
 		transition: background-color 0.2s;
 
-		&:focus-within {
+		&.highlight:focus-within {
 			background-color: var(--grey-150);
 			transition: background-color 0.2s;
 		}
