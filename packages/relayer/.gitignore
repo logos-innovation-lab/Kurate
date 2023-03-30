@@ -60,6 +60,7 @@ profile*
 # generated code
 examples/typescript-server.js
 test/types/index.js
+/src/abi
 
 # compiled app
 dist
