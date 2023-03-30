@@ -73,6 +73,25 @@ const rlnProofSchema = {
   },
 } as const;
 
+const repProofSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["publicSignals", "proof"],
+  properties: {
+    publicSignals: {
+      type: "array",
+      items: bigIntSchema,
+      minContains: 8,
+      maxContains: 8,
+    },
+    proof: {
+      type: "array",
+      items: bigIntSchema,
+      minContains: 1,
+    },
+  },
+} as const;
+
 const response = {
   200: {
     type: "object",
@@ -110,8 +129,12 @@ const getBodySchemaWithRep = <GoCount extends number>(goCount: GoCount) => {
   return {
     type: "object",
     additionalProperties: false,
-    required: ["goProofs", "postHash", "repProof"],
+    required: ["personaId", "postHash", "goProofs", "repProof"],
     properties: {
+      personaId: bigIntSchema,
+      postHash: {
+        type: "string",
+      },
       goProofs: {
         type: "array",
         uniqueItems: true,
@@ -119,15 +142,15 @@ const getBodySchemaWithRep = <GoCount extends number>(goCount: GoCount) => {
         maxItems: goCount,
         items: rlnProofSchema,
       },
-      postHash: {
-        type: "string",
-      },
-      repProof: {
-        type: "object",
-      },
+      repProof: repProofSchema,
     },
   } as const;
 };
+
+enum MessageType {
+  Post,
+  Comment,
+}
 
 const root: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify,
@@ -143,12 +166,14 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify.post(
     "/post",
     { schema: { response, body: getBodySchemaWithRep(10) } } as const,
-    async function (req, res) {
-      const { signalHash } = req.body.goProofs[0].snarkProof.publicSignals;
+    async function ({ body }, res) {
+      const { signalHash } = body.goProofs[0].snarkProof.publicSignals;
 
       // Make sure that the signal for each proof is identical
       // TODO: Also check nullifiers?
-      for (const { snarkProof } of req.body.goProofs) {
+      // TODO: Make sure that ell the epochs are in the same interval
+      // TODO: Check that internalNullifier === "kurate"
+      for (const { snarkProof } of body.goProofs) {
         if (snarkProof.publicSignals.signalHash !== signalHash) {
           throw new Error("signalHashes different");
         }
@@ -159,12 +184,21 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
       }
 
       // Check all proofs
-      await Promise.all(req.body.goProofs.map(verifyProof));
+      await Promise.all(body.goProofs.map(verifyProof));
 
-      // TODO: Post data on-chain (waiting for contract to get merged)
+      // Post data on-chain
+      const tx = await feed[
+        "proposeMessage(uint256,uint8,bytes32,uint256[],uint256[8])"
+      ](
+        body.personaId,
+        MessageType.Post,
+        body.postHash,
+        body.repProof.publicSignals,
+        body.repProof.proof
+      );
 
       // Return transaction hash
-      return { transaction: "" };
+      return { transaction: tx.hash };
     }
   );
 
