@@ -100,7 +100,7 @@
 		}
 	}
 	.secondary {
-		background-color: transparent;
+		background-color: var(--color-body-bg);
 		border-color: var(--grey-200);
 		color: var(--color-body-text);
 
