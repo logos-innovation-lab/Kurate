@@ -48,8 +48,9 @@
 			justify-content: space-between;
 			align-items: center;
 			flex-direction: row;
-			flex-wrap: nowrap;
+			flex-wrap: wrap;
 			margin-bottom: var(--spacing-12);
+			gap: var(--spacing-12);
 
 			.title {
 				font-size: var(--font-size-lg);
