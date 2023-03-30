@@ -40,19 +40,11 @@
 
 <style lang="scss">
 	.picture {
-		flex: 0 0 90px;
+		flex: 0 0 92px;
 		aspect-ratio: 1;
 
-		@media (min-width: 412px) {
-			flex-basis: 100px;
-		}
-
-		@media (min-width: 688px) {
-			flex-basis: 90px;
-		}
-
-		@media (min-width: 844px) {
-			flex-basis: 100px;
+		@media (min-width: 398px) {
+			flex-basis: 99px;
 		}
 
 		img {
@@ -66,6 +58,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-8);
+		min-height: 92px;
+
+		@media (min-width: 398px) {
+			min-height: 99px;
+		}
 
 		.header {
 			font-size: 16px;
@@ -74,6 +71,7 @@
 
 		.description {
 			font-size: 14px;
+			flex-grow: 1;
 		}
 
 		.post-count {
