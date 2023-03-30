@@ -65,23 +65,27 @@
 		}
 
 		.header {
-			font-size: 16px;
+			font-size: var(--font-size-lg);
 			font-weight: 600;
 		}
 
 		.description {
-			font-size: 14px;
+			font-size: var(--font-size-normal);
 			flex-grow: 1;
 		}
 
 		.post-count {
-			font-size: 12px;
+			font-size: var(--font-size-normal);
 			display: flex;
 			flex-direction: row;
+			flex-wrap: wrap;
 			align-items: center;
 			justify-content: flex-start;
-			flex-wrap: nowrap;
 			gap: var(--spacing-12);
+
+			@media (min-width: 398px) {
+				font-size: var(--font-size-sm);
+			}
 
 			> div {
 				display: flex;
@@ -95,7 +99,6 @@
 			.rep {
 				background-color: var(--grey-200);
 				border-radius: 9px;
-				font-size: var(--font-size-sm);
 				font-weight: var(--font-weight-sb);
 				padding-left: var(--spacing-6);
 				padding-right: var(--spacing-4);
