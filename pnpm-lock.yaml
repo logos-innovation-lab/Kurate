@@ -116,7 +116,7 @@ importers:
       vite: v4.2.1
       vite-plugin-node-polyfills: ^0.7.0
       vitest: ^0.29.7
-      zkitter-js: ^1.2.5
+      zkitter-js: ^1.2.7
     devDependencies:
       '@dicebear/collection': 6.0.2_@dicebear+core@6.0.2
       '@dicebear/core': 6.0.2
@@ -153,7 +153,7 @@ importers:
       vite: 4.2.1_sass@1.60.0
       vite-plugin-node-polyfills: 0.7.0_vite@4.2.1
       vitest: 0.29.7_sass@1.60.0
-      zkitter-js: 1.2.5
+      zkitter-js: 1.2.7
 
 packages:
 
@@ -14308,8 +14308,8 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
-  /zkitter-js/1.2.5:
-    resolution: {integrity: sha512-GMaA/5bSh4P3tYVYtKxHZnJOxAKtvJgJDRiX68gsu10Mb3sjvDCZ52ww4ntFEDt6V5rgoaBlmgGcTuXBpq0bHQ==}
+  /zkitter-js/1.2.7:
+    resolution: {integrity: sha512-Lo6Bv9or3ONR7GKR9fHfrhdowM5MVjEWkUmskgvC/iPxzsnxaTpLruwbNm8kutypuakXmPiD7VfTKaLdBvSaaw==}
     engines: {node: 16.x - 18.x}
     hasBin: true
     dependencies:
