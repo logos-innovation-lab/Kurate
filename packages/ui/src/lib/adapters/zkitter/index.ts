@@ -8,16 +8,16 @@ import type { Adapter } from '..'
 import { GroupAdapter } from './group-adapter'
 import type { Signer } from 'ethers'
 import { create } from 'ipfs-http-client'
-import {createIdentity, generateRLNProofForNewPersona, prover} from './utils'
+import {createIdentity, generateRLNProofForNewPersona, prover, updateActivePosts} from './utils'
 import { posts } from '$lib/stores/post'
 import type {GenericDBAdapterInterface, Zkitter} from 'zkitter-js'
 import type { Persona } from '../../stores/persona'
 import { UserState } from '@unirep/core'
-import { getFromLocalStorage, type SavedSeedMessages } from '../../utils'
 import type { ZkIdentity as UnirepIdentity } from '@unirep/utils'
 import type { ZkIdentity } from '@zk-kit/identity'
 import { randomId } from '../in-memory-and-ipfs/utils'
 import type {GlobalAnonymousFeed} from "../../assets/typechain";
+import type {LevelDBAdapter} from "zkitter-js";
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -48,29 +48,22 @@ export class ZkitterAdapter implements Adapter {
 	async start() {
 		const { Zkitter } = await import('zkitter-js')
 
-		this.zkitter = await Zkitter.initialize({ groups: [], topicPrefix: 'kurate_dev2' })
+		this.zkitter = await Zkitter.initialize({ groups: [], topicPrefix: 'kurate_dev3' })
 
 		if (process.env.NODE_ENV !== 'production') {
 			this.zkitter.on('Zkitter.NewMessageCreated', async (msg, proof) => {
 				console.log('Zkitter.NewMessageCreated', msg, proof)
 			})
-		}
 
-		this.zkitter.on('Group.NewGroupMemberCreated', async (member, groupId) => {
-			if (process.env.NODE_ENV !== 'production') {
+			this.zkitter.on('Group.NewGroupMemberCreated', async (member, groupId) => {
 				console.log('Group.NewGroupMemberCreated', member, groupId)
-			}
-
-			const [protocol, personaId] = groupId.split('_');
-
-			if (protocol === 'kurate') {
-				this.processPendingQueue(personaId)
-			}
-		})
+			})
+		}
 
 		const contract = await getGlobalAnonymousFeed()
 
 		await this.syncPersonasFromContract(contract)
+		await this.syncActivePost(contract)
 
 		await this.zkitter.services.groups.watch()
 
@@ -82,12 +75,30 @@ export class ZkitterAdapter implements Adapter {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'stop')
 	}
+	private async syncActivePost(contract: GlobalAnonymousFeed) {
+		const groupIds = Object.keys(this.zkitter!.services.groups.groups);
+		const activePosts = await contract.queryFilter(contract.filters.NewPersonaMessage());
+		const activeMapping = await updateActivePosts(activePosts.map(p => p.args.messageHash));
+		for (let i = 0; i < groupIds.length; i++) {
+			const groupPosts = await (this.zkitter!.db as LevelDBAdapter).getGroupPosts(groupIds[i])
+			console.log(groupIds[i], groupPosts)
+			const [_, personaId] = groupIds[i].split('_')
+			groupPosts.forEach(groupPost => {
+				if (activeMapping['0x' + groupPost.hash()]) {
+					posts.addApproved({
+						timestamp: groupPost.createdAt.getTime(),
+						text: groupPost.payload.content,
+						images: groupPost.payload.attachment ? [groupPost.payload.attachment] : [],
+					}, personaId)
+				}
+			})
+		}
+	}
 	private async syncPersonasFromContract(contract: GlobalAnonymousFeed) {
 		if (this.timeout) clearTimeout(this.timeout)
 		await this.queryPersonasFromContract(contract);
 		this.timeout = setTimeout(() => this.syncPersonasFromContract(contract), this.contractSyncInterval)
 	}
-
 	private async queryPersonasFromContract(contract: GlobalAnonymousFeed) {
 		if (!this.zkitter) throw new Error('zkitter is not initialized')
 
@@ -111,6 +122,7 @@ export class ZkitterAdapter implements Adapter {
 				// TODO: fix type in next zkitter-js release
 				// @ts-ignore
 				await this.zkitter.updateFilter({ group: [group.groupId] })
+				console.log(group.groupId)
 
 				const personaData = await contract.personas(i)
 
@@ -138,8 +150,6 @@ export class ZkitterAdapter implements Adapter {
 
 		personas.update(state => ({ ...state, loading: false }))
 	}
-
-
 	addPersonaToFavorite(groupId: string): Promise<void> {
 		return new Promise((resolve) => {
 			personas.update(({ favorite, ...store }) => {
@@ -190,42 +200,6 @@ export class ZkitterAdapter implements Adapter {
 			}),
 		)
 	}
-	private async savePendingMessagesForPersonaId(
-		personaId: number,
-		serializedMessages: string[][],
-		idCommitment: string,
-	): Promise<void> {
-		await saveToLocalStorage<SavedSeedMessages>(`kurate/pendingMessages/${personaId}`, {
-			personaId,
-			serializedMessages,
-			idCommitment,
-		})
-	}
-	private async processPendingQueue(personaId: string) {
-		const {Post} = await import('zkitter-js')
-		const key = `kurate/pendingMessages/${personaId}`;
-		const pending = getFromLocalStorage<SavedSeedMessages | false>(key, false)
-		const {zkIdentity} = this.identity || {};
-
-		if (pending) {
-			const { serializedMessages } = pending;
-
-			for (const [hex, str] of serializedMessages) {
-				const post = Post.fromHex(hex);
-				const proof = await this.zkitter!.createProof({
-					hash: post.hash(),
-					groupId: `kurate_${personaId}`,
-					zkIdentity: zkIdentity!,
-				})
-				// const proof = JSON.parse(str);
-				await this.zkitter!.publish(post, proof)
-				await new Promise(r => setTimeout(r, 5000))
-			}
-
-			console.log('delete')
-			saveToLocalStorage<SavedSeedMessages | false>(key, false);
-		}
-	}
 	deleteDraftPersona(index: number): Promise<void> {
 		return new Promise((resolve) =>
 			personas.update(({ draft, ...state }) => {
@@ -262,8 +236,6 @@ export class ZkitterAdapter implements Adapter {
 		await state.sync.start()
 		await state.waitForSync()
 
-		const now = Date.now()
-
 		const newPersonaId = (await contract.numOfPersonas()).toNumber()
 
 		const pitch = new Post({
@@ -272,6 +244,7 @@ export class ZkitterAdapter implements Adapter {
 			payload: { content: draftPersona.pitch },
 		})
 
+		console.log(newPersonaId);
 		await this.zkitter!.services.pubsub.publish(
 			pitch,
 			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
