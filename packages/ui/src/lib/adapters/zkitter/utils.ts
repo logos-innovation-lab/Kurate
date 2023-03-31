@@ -4,7 +4,7 @@ import type { Circuit, Prover } from '@unirep/circuits'
 import type { SnarkProof, SnarkPublicSignals } from '@unirep/utils'
 import type { ZkIdentity } from '@zk-kit/identity'
 import {generateMerkleTree} from "@zk-kit/protocols";
-import type {ProofType} from "zkitter-js";
+import type {Proof, ProofType} from "zkitter-js";
 
 export const prover: Prover = {
 	verifyProof: async (
@@ -65,7 +65,7 @@ export async function createIdentity(
 	}
 }
 
-export async function generateRLNProofForNewPersona(hash: string, zkIdentity: ZkIdentity, newPersonaId: number | string) {
+export async function generateRLNProofForNewPersona(hash: string, zkIdentity: ZkIdentity, newPersonaId: number | string): Promise<Proof> {
 	const {createRLNProof, generateECDHKeyPairFromZKIdentity} = await import("zkitter-js")
 	const idcommit = zkIdentity.genIdentityCommitment()
 	const tree = generateMerkleTree(15, BigInt(0), [idcommit])
@@ -76,6 +76,6 @@ export async function generateRLNProofForNewPersona(hash: string, zkIdentity: Zk
 		ecdh: ecdh.pub,
 		groupId: `kurate_${newPersonaId}`,
 		proof,
-		type: 'rln',
+		type: 'rln' as ProofType.rln,
 	}
 }

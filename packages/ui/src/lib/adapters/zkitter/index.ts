@@ -48,7 +48,7 @@ export class ZkitterAdapter implements Adapter {
 	async start() {
 		const { Zkitter } = await import('zkitter-js')
 
-		this.zkitter = await Zkitter.initialize({ groups: [] })
+		this.zkitter = await Zkitter.initialize({ groups: [], topicPrefix: 'kurate_dev2' })
 
 		if (process.env.NODE_ENV !== 'production') {
 			this.zkitter.on('Zkitter.NewMessageCreated', async (msg, proof) => {
@@ -114,11 +114,14 @@ export class ZkitterAdapter implements Adapter {
 
 				const personaData = await contract.personas(i)
 
+				const pitch = await this.getPostByHash(personaData.pitch)
+				const description = await this.getPostByHash(personaData.description)
+
 				const persona: Persona = {
 					personaId,
 					name: personaData.name,
-					pitch: personaData.pitch,
-					description: personaData.description,
+					pitch: pitch?.payload.content || '',
+					description: description?.payload.content || '',
 					picture: personaData.profileImage,
 					cover: personaData.coverImage,
 					postsCount: 0,
@@ -202,14 +205,22 @@ export class ZkitterAdapter implements Adapter {
 		const {Post} = await import('zkitter-js')
 		const key = `kurate/pendingMessages/${personaId}`;
 		const pending = getFromLocalStorage<SavedSeedMessages | false>(key, false)
+		const {zkIdentity} = this.identity || {};
+
 		if (pending) {
 			const { serializedMessages } = pending;
-			const promises = serializedMessages.map(async ([hex, str]) => {
+
+			for (const [hex, str] of serializedMessages) {
 				const post = Post.fromHex(hex);
-				const proof = JSON.parse(str);
-				return this.zkitter!.publish(post, proof)
-			})
-			await Promise.all(promises)
+				const proof = await this.zkitter!.createProof({
+					hash: post.hash(),
+					groupId: `kurate_${personaId}`,
+					zkIdentity: zkIdentity!,
+				})
+				// const proof = JSON.parse(str);
+				await this.zkitter!.publish(post, proof)
+				await new Promise(r => setTimeout(r, 5000))
+			}
 
 			console.log('delete')
 			saveToLocalStorage<SavedSeedMessages | false>(key, false);
@@ -251,11 +262,21 @@ export class ZkitterAdapter implements Adapter {
 		await state.sync.start()
 		await state.waitForSync()
 
+		const now = Date.now()
+
+		const newPersonaId = (await contract.numOfPersonas()).toNumber()
+
 		const pitch = new Post({
 			type: MessageType.Post,
 			subtype: PostMessageSubType.Default,
 			payload: { content: draftPersona.pitch },
 		})
+
+		await this.zkitter!.services.pubsub.publish(
+			pitch,
+			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
+			true
+		)
 
 		const description = new Post({
 			type: MessageType.Post,
@@ -263,17 +284,31 @@ export class ZkitterAdapter implements Adapter {
 			payload: { content: draftPersona.description },
 		})
 
-		const seedPosts = draftPersona.posts.map(
-			(post) =>
-				new Post({
-					type: MessageType.Post,
-					subtype: PostMessageSubType.Default,
-					payload: {
-						content: post.text,
-						attachment: post.images.length ? post.images[0] : undefined,
-					},
-				}),
+		await this.zkitter!.services.pubsub.publish(
+			description,
+			await generateRLNProofForNewPersona(description.hash(), this.identity.zkIdentity, newPersonaId),
+			true
 		)
+
+		const seedPostHashes: string[] = []
+
+		for (let i = 0; i < draftPersona.posts.length; i++) {
+			const data = draftPersona.posts[i]
+			const post = new Post({
+				type: MessageType.Post,
+				subtype: PostMessageSubType.Default,
+				payload: {
+					content: data.text,
+					attachment: data.images.length ? data.images[0] : undefined,
+				},
+			})
+			seedPostHashes.push('0x' + post.hash())
+			await this.zkitter!.services.pubsub.publish(
+				post,
+				await generateRLNProofForNewPersona(post.hash(), this.identity.zkIdentity, newPersonaId),
+				true
+			)
+		}
 
 		if (draftPersona.posts.length !== 5) throw new Error('must contain exactly 5 seed posts')
 		if (!draftPersona.picture) throw new Error('must contain a profile picture')
@@ -281,16 +316,6 @@ export class ZkitterAdapter implements Adapter {
 
 		const signupProof = await state.genUserSignUpProof()
 		const contractWithSigner = await getGlobalAnonymousFeed(signer)
-		const newPersonaId = (await contract.numOfPersonas()).toNumber()
-
-		const pendingMsgs = seedPosts.concat([pitch, description]);
-		const savedMsgs = [];
-
-		for (let i = 0; i < pendingMsgs.length; i++) {
-			const msg = pendingMsgs[i]
-			const proof = await generateRLNProofForNewPersona(msg.hash(), this.identity.zkIdentity, newPersonaId)
-			savedMsgs.push([msg.toHex(), JSON.stringify(proof)])
-		}
 
 		await contractWithSigner[
 			'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'
@@ -300,18 +325,10 @@ export class ZkitterAdapter implements Adapter {
 			draftPersona.cover,
 			'0x' + pitch.hash(),
 			'0x' + description.hash(),
-			seedPosts.map(p => '0x' + p.hash()) as [string, string, string, string, string],
+			seedPostHashes as [string, string, string, string, string],
 			signupProof.publicSignals,
 			signupProof.proof,
 			{ gasLimit: 6721974 },
-		)
-
-		const idCommitment = this.identity.zkIdentity.genIdentityCommitment().toString()
-
-		await this.savePendingMessagesForPersonaId(
-			newPersonaId,
-			savedMsgs,
-			idCommitment,
 		)
 
 		// return new Promise((resolve) => {
@@ -349,6 +366,10 @@ export class ZkitterAdapter implements Adapter {
 
 	getPicture(cid: string): string {
 		return `${IPFS_GATEWAY}/${cid}`
+	}
+
+	getPostByHash(hash: string) {
+		return this.zkitter!.services.posts.getPost(hash.slice(0, 2) === '0x' ? hash.slice(2) : hash)
 	}
 
 	async publishPost(
