@@ -7,12 +7,17 @@ import type { Signer } from 'ethers'
 import { create } from 'ipfs-http-client'
 import {
 	CREATE_PERSONA_GO_PRICE,
+	DEFAULT_GO_AMOUNT,
 	NEW_POST_GO_PRICE,
+	NEW_POST_REP_LOSS,
 	NEW_POST_REP_PRICE,
+	NEW_POST_REP_WIN,
 	VOTE_GO_PRICE,
+	VOTE_REP_WIN,
 } from '$lib/constants'
-import { tokens } from '$lib/stores/tokens'
+import { tokens, type TokenData } from '$lib/stores/tokens'
 import { posts, type Post } from '$lib/stores/post'
+import { transaction, type TransactionRecord } from '$lib/stores/transaction'
 
 import type { Adapter } from '..'
 import {
@@ -69,6 +74,98 @@ function startAddition(): () => unknown {
 	}
 }
 
+export async function startNewEpoch() {
+	const newTransactions: TransactionRecord[] = []
+	const totalRepChange = await new Promise<number>((resolve) => {
+		posts.update((pState) => {
+			const { data } = pState
+			let repChange = 0
+
+			data.forEach((values, key) => {
+				const val = values
+				val.pending = []
+				values.pending.forEach((post) => {
+					const included = executeWithChance(0.5)
+					if (included) {
+						val.approved.push(post)
+					}
+
+					if (post.myPost) {
+						if (included) {
+							repChange += NEW_POST_REP_WIN
+							newTransactions.push({
+								timestamp: Date.now(),
+								goChange: 0,
+								repChange: NEW_POST_REP_WIN,
+								personaId: key,
+								type: 'post_included',
+							})
+						} else {
+							repChange -= NEW_POST_REP_LOSS
+							newTransactions.push({
+								timestamp: Date.now(),
+								goChange: 0,
+								repChange: NEW_POST_REP_WIN,
+								personaId: key,
+								type: 'post_rejected',
+							})
+						}
+					}
+
+					if (post.yourVote) {
+						if ((included && post.yourVote === '+') || (!included && post.yourVote === '-')) {
+							repChange += VOTE_REP_WIN
+							newTransactions.push({
+								timestamp: Date.now(),
+								goChange: 0,
+								repChange: VOTE_REP_WIN,
+								personaId: key,
+								type: 'vote_win',
+							})
+						}
+					}
+				})
+				data.set(key, val)
+			})
+
+			resolve(repChange)
+			return { data }
+		})
+	})
+
+	tokens.update((tState) => {
+		let { repStaked, repTotal, go } = tState
+
+		go = DEFAULT_GO_AMOUNT
+		repTotal = Math.max(repTotal + totalRepChange, 0)
+		repStaked = 0
+
+		return { ...tState, repStaked, repTotal, go }
+	})
+
+	transaction.update((tState) => {
+		return { ...tState, transaction: [...tState.transactions, newTransactions] }
+	})
+}
+
+function startEpochTimer(): () => unknown {
+	const interval = setInterval(() => {
+		tokens.update(({ timeToEpoch, epochDuration, ...rest }) => {
+			const newTimeToEpoch = epochDuration - (Date.now() % epochDuration)
+
+			if (timeToEpoch < newTimeToEpoch) {
+				startNewEpoch()
+			}
+
+			return { ...rest, epochDuration, timeToEpoch: newTimeToEpoch }
+		})
+	}, 1000)
+
+	return () => {
+		clearInterval(interval)
+	}
+}
+
 export class InMemoryAndIPFS implements Adapter {
 	private ipfs = create({
 		host: 'ipfs.infura.io',
@@ -87,6 +184,66 @@ export class InMemoryAndIPFS implements Adapter {
 		const storedPosts = new Map<string, { approved: Post[]; pending: Post[]; loading: boolean }>(
 			getFromLocalStorage('posts', []),
 		)
+		const storedTransactions = getFromLocalStorage<TransactionRecord[]>('transactions', [])
+		const epochDuration = 5 * 60 * 1000
+		const storedTokens = getFromLocalStorage('tokens', {
+			go: DEFAULT_GO_AMOUNT,
+			repTotal: 55,
+			repStaked: 5,
+			loading: false,
+			goHistoricalValues: [],
+			repStakedHistoricalValues: [],
+			repTotalHistoricalValues: [],
+			epochDuration,
+			timeToEpoch: epochDuration - (Date.now() % epochDuration),
+		})
+		transaction.set({ transactions: storedTransactions })
+
+		tokens.set(storedTokens)
+		this.subscriptions.push(
+			tokens.subscribe((state) => {
+				let newState: TokenData | undefined = undefined
+				if (
+					state.goHistoricalValues.length === 0 ||
+					state.go !== state.goHistoricalValues[state.goHistoricalValues.length - 1].value
+				) {
+					newState = { ...state }
+					newState.goHistoricalValues.push({ timestamp: Date.now(), value: state.go })
+				}
+				if (
+					state.repStakedHistoricalValues.length === 0 ||
+					state.repStaked !==
+						state.repStakedHistoricalValues[state.repStakedHistoricalValues.length - 1].value
+				) {
+					if (newState === undefined) {
+						newState = { ...state }
+					}
+					newState.repStakedHistoricalValues.push({ timestamp: Date.now(), value: state.repStaked })
+				}
+				if (
+					state.repTotalHistoricalValues.length === 0 ||
+					state.repTotal !==
+						state.repTotalHistoricalValues[state.repTotalHistoricalValues.length - 1].value
+				) {
+					if (newState === undefined) {
+						newState = { ...state }
+					}
+					newState.repTotalHistoricalValues.push({ timestamp: Date.now(), value: state.repTotal })
+				}
+				if (newState !== undefined) {
+					tokens.update(() => state)
+					saveToLocalStorage('tokens', state)
+				}
+			}),
+		)
+
+		this.subscriptions.push(
+			transaction.subscribe(({ transactions }) => {
+				saveToLocalStorage('transactions', transactions)
+			}),
+		)
+
+		this.subscriptions.push(startEpochTimer())
 
 		// It takes 1 second to load all the data :)
 		await sleep(1000)
@@ -205,8 +362,19 @@ export class InMemoryAndIPFS implements Adapter {
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
 		await signer.signMessage('This "transaction" publishes persona')
 
-		// FIXME: it can happen that this ID already exists
-		const groupId = randomId()
+		function getRandomNonExistingId(): Promise<string> {
+			let groupId = randomId()
+			return new Promise((resolve) => {
+				personas.subscribe((s) => {
+					while (s.all.has(groupId)) {
+						groupId = randomId()
+					}
+					resolve(groupId)
+				})
+			})
+		}
+
+		const groupId = await getRandomNonExistingId()
 
 		personas.update((state) => {
 			state.all.set(groupId, {
@@ -231,6 +399,17 @@ export class InMemoryAndIPFS implements Adapter {
 
 		tokens.update(({ go, ...state }) => {
 			return { ...state, go: go - CREATE_PERSONA_GO_PRICE }
+		})
+
+		transaction.update(({ transactions }) => {
+			transactions.push({
+				timestamp: Date.now(),
+				goChange: -CREATE_PERSONA_GO_PRICE,
+				repChange: 0,
+				personaId: groupId,
+				type: 'publish persona',
+			})
+			return { transactions }
 		})
 	}
 
@@ -272,6 +451,17 @@ export class InMemoryAndIPFS implements Adapter {
 		})
 
 		posts.addPending(post, groupId)
+
+		transaction.update(({ transactions }) => {
+			transactions.push({
+				timestamp: Date.now(),
+				goChange: -NEW_POST_GO_PRICE,
+				repChange: -NEW_POST_REP_PRICE,
+				personaId: groupId,
+				type: 'publish post',
+			})
+			return { transactions }
+		})
 	}
 
 	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {
@@ -301,6 +491,16 @@ export class InMemoryAndIPFS implements Adapter {
 				...state,
 				go: go - VOTE_GO_PRICE,
 			}
+		})
+		transaction.update(({ transactions }) => {
+			transactions.push({
+				timestamp: Date.now(),
+				goChange: -VOTE_GO_PRICE,
+				repChange: 0,
+				type: vote === '+' ? 'promote' : 'demote',
+				personaId: groupId,
+			})
+			return { transactions }
 		})
 	}
 

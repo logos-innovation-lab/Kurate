@@ -4,6 +4,7 @@ import type { Chat } from '$lib/stores/chat'
 import { InMemoryAndIPFS } from './in-memory-and-ipfs'
 import { ZkitterAdapter } from './zkitter'
 import { ADAPTER } from '$lib/constants'
+import { getFromLocalStorage } from '$lib/utils'
 
 export interface Adapter {
 	// This is run when the app is mounted and should start app wide subscriptions
@@ -32,8 +33,24 @@ export interface Adapter {
 	sendChatMessage(chatId: number, text: string): Promise<void>
 	subscribeToChat(chatId: number): () => void
 }
+
+export const adapters = ['in-memory', 'zkitter'] as const
+export type AdapterName = (typeof adapters)[number]
+export const adapterName: AdapterName = getFromLocalStorage<AdapterName>(
+	'adapter',
+	ADAPTER as AdapterName,
+)
+
 let adapter: Adapter
-if (ADAPTER === 'in-memory') adapter = new InMemoryAndIPFS() as Adapter
-else adapter = new ZkitterAdapter() as Adapter
+switch (adapterName) {
+	case 'in-memory':
+		adapter = new InMemoryAndIPFS()
+		break
+	case 'zkitter':
+		adapter = new ZkitterAdapter()
+		break
+	default:
+		throw new Error(`Invalid adapter ${ADAPTER}`)
+}
 
 export default adapter

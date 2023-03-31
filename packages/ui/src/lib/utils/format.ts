@@ -23,6 +23,18 @@ export function formatDateFromNow(timestamp: number) {
 	return `${Math.round(delta / year)}y`
 }
 
+export function formatEpoch(duration: number): string {
+	const second = 1000
+	const minute = second * 60
+	const hour = minute * 60
+
+	const hours = Math.floor(duration / hour)
+	const minutes = Math.floor((duration - hours * hour) / minute)
+	const seconds = Math.floor((duration - hours * hour - minutes * minute) / second)
+
+	return `${hours.toFixed()}h ${minutes.toFixed()}' ${seconds.toFixed()}''`
+}
+
 export function formatDateAndTime(timestamp: number) {
 	if (!browser) {
 		return ''

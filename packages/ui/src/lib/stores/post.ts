@@ -5,6 +5,7 @@ export interface Post {
 	text: string
 	images: string[]
 	yourVote?: '+' | '-'
+	myPost?: boolean
 }
 
 interface PostData {
