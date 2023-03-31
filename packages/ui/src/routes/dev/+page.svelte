@@ -11,7 +11,6 @@
 	import Select from '$lib/components/select.svelte'
 	import { saveToLocalStorage } from '$lib/utils'
 	import { startNewEpoch } from '$lib/adapters/in-memory-and-ipfs'
-	import { formatDateAndTime } from '$lib/utils/format'
 
 	let goTokenValue = $tokens.go.toFixed()
 	let repTokenValue = $tokens.repTotal.toFixed()
@@ -59,35 +58,6 @@
 			<Button label="Update" on:click={updateTokens} />
 		</section>
 		<Divider />
-		<section>
-			<h2>GO historical values</h2>
-			{#each $tokens.goHistoricalValues as transaction}
-				<section>
-					{formatDateAndTime(transaction.timestamp)} |
-					{transaction.value} GO
-				</section>
-			{/each}
-		</section>
-		<Divider />
-		<section>
-			<h2>REP staked historical values</h2>
-			{#each $tokens.repStakedHistoricalValues as transaction}
-				<section>
-					{formatDateAndTime(transaction.timestamp)} |
-					{transaction.value} REP
-				</section>
-			{/each}
-		</section>
-		<Divider />
-		<section>
-			<h2>REP total historical values</h2>
-			{#each $tokens.repTotalHistoricalValues as transaction}
-				<section>
-					{formatDateAndTime(transaction.timestamp)} |
-					{transaction.value} REP
-				</section>
-			{/each}
-		</section>
 	{/if}
 </Container>
 

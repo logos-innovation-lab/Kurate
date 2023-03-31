@@ -15,7 +15,7 @@ import {
 	VOTE_GO_PRICE,
 	VOTE_REP_WIN,
 } from '$lib/constants'
-import { tokens, type TokenData } from '$lib/stores/tokens'
+import { tokens } from '$lib/stores/tokens'
 import { posts, type Post } from '$lib/stores/post'
 import { transaction, type TransactionRecord } from '$lib/stores/transaction'
 
@@ -200,42 +200,6 @@ export class InMemoryAndIPFS implements Adapter {
 		transaction.set({ transactions: storedTransactions })
 
 		tokens.set(storedTokens)
-		this.subscriptions.push(
-			tokens.subscribe((state) => {
-				let newState: TokenData | undefined = undefined
-				if (
-					state.goHistoricalValues.length === 0 ||
-					state.go !== state.goHistoricalValues[state.goHistoricalValues.length - 1].value
-				) {
-					newState = { ...state }
-					newState.goHistoricalValues.push({ timestamp: Date.now(), value: state.go })
-				}
-				if (
-					state.repStakedHistoricalValues.length === 0 ||
-					state.repStaked !==
-						state.repStakedHistoricalValues[state.repStakedHistoricalValues.length - 1].value
-				) {
-					if (newState === undefined) {
-						newState = { ...state }
-					}
-					newState.repStakedHistoricalValues.push({ timestamp: Date.now(), value: state.repStaked })
-				}
-				if (
-					state.repTotalHistoricalValues.length === 0 ||
-					state.repTotal !==
-						state.repTotalHistoricalValues[state.repTotalHistoricalValues.length - 1].value
-				) {
-					if (newState === undefined) {
-						newState = { ...state }
-					}
-					newState.repTotalHistoricalValues.push({ timestamp: Date.now(), value: state.repTotal })
-				}
-				if (newState !== undefined) {
-					tokens.update(() => state)
-					saveToLocalStorage('tokens', state)
-				}
-			}),
-		)
 
 		this.subscriptions.push(
 			transaction.subscribe(({ transactions }) => {
