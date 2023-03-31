@@ -139,11 +139,14 @@
 				</SectionTitle>
 			</div>
 		</SingleColumn>
-		{#each $transaction.transactions.sort( (a, b) => (sortAsc ? b.timestamp - a.timestamp : a.timestamp - b.timestamp), ) as t}
-			<div>
+		<SingleColumn>
+		<div class="activity">
+			{#each $transaction.transactions.sort( (a, b) => (sortAsc ? b.timestamp - a.timestamp : a.timestamp - b.timestamp), ) as t}
 				{#if t.goChange !== 0}
+				
+				<div class="activity-item">
 					<h2>{t.goChange} GO</h2>
-					<div>
+					<div class="description">
 						{#if t.type === 'publish persona'}
 							You created persona <a href={ROUTES.PERSONA(t.personaId)}
 								>{$personas.all.get(t.personaId)?.name}</a
@@ -160,24 +163,46 @@
 								>Pending • {$personas.all.get(t.personaId)?.name}</a
 							>
 						{/if}
-						<div>{formatDateAndTime(t.timestamp)}</div>
 					</div>
+					<div class="timestamp">{formatDateAndTime(t.timestamp)}</div>
+				</div>
 				{/if}
+
 				{#if t.repChange !== 0}
+				<div class="activity-item">
 					<h2>Staked {t.repChange} REP</h2>
-					<div>
+					<div class="description">
 						You submitted a post to <a href={ROUTES.PERSONA_PENDING(t.personaId)}
 							>Pending • {$personas.all.get(t.personaId)?.name}</a
 						>
-						<div>{formatDateAndTime(t.timestamp)}</div>
 					</div>
+					<div class="timestamp">{formatDateAndTime(t.timestamp)}</div>
+				</div>
 				{/if}
+				{/each}
 			</div>
-		{/each}
+		</SingleColumn>
 	{/if}
 </div>
 
 <style lang="scss">
+	.activity {
+		margin-top: 36px;
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-48);
+		margin-bottom: var(--spacing-48);
+
+		.activity-item {
+			display: flex;
+			flex-direction: column;
+			gap: var(--spacing-6);
+
+			.timestamp {
+				font-size: var(--font-size-sm);
+			}
+		}
+	}
 	.wallet-icon-wrapper :global(svg) {
 		fill: var(--grey-100);
 
