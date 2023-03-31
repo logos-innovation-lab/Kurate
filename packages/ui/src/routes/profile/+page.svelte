@@ -95,7 +95,7 @@
 			<h2 class="cycle-data">Cycle data</h2>
 			<BorderBox noGap title="Current cycle">
 				<ProgressCircular progress={$tokens.timeToEpoch / $tokens.epochDuration} />
-				<div class='spacing-top'>{formatEpoch($tokens.timeToEpoch)} left in this cycle</div>
+				<div class="spacing-top">{formatEpoch($tokens.timeToEpoch)} left in this cycle</div>
 				<LearnMore />
 			</BorderBox>
 			<div class="side-by-side">
@@ -116,7 +116,7 @@
 			</div>
 			<BorderBox noGap title="Staked reputation">
 				<ProgressLinear progress={cycleProgress} />
-				<p class='spacing-top'>
+				<p class="spacing-top">
 					{$tokens.repTotal - $tokens.repStaked} out of {$tokens.repTotal} REP staked until cycle ends
 				</p>
 			</BorderBox>
