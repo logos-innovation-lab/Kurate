@@ -39,7 +39,8 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 			.connect(new providers.JsonRpcProvider(PROVIDER))
 			.queryFilter(
 				this.globalAnonymousFeed.filters.NewPersonaMember(this.personaId),
-				lastMember?.blockNumber || 13980010,
+				// lastMember?.blockNumber || 13980010,
+				lastMember?.blockNumber || 0,
 			)
 
 		for (const event of events) {

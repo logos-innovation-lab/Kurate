@@ -5,7 +5,7 @@ type JSONdecoded = string | number | boolean | object | Array<JSONdecoded>
 
 export type SavedSeedMessages = {
 	personaId: number
-	serializedMessages: string[]
+	serializedMessages: string[][]
 	idCommitment: string
 }
 /**
