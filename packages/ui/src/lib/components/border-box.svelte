@@ -23,11 +23,7 @@
 	{#if explanation}
 		<p>{explanation}</p>
 	{/if}
-	{#if $$slots.default}
-		<div class="slot">
-			<slot />
-		</div>
-	{/if}
+	<slot />
 	{#if link !== undefined}
 		<LearnMore href={link} />
 	{/if}

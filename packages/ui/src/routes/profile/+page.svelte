@@ -18,7 +18,8 @@
 	import { transaction } from '$lib/stores/transaction'
 	import { ROUTES } from '$lib/routes'
 	import { personas } from '$lib/stores/persona'
-	import Progress from '$lib/components/progress.svelte'
+	import ProgressCircular from '$lib/components/progress-circular.svelte'
+	import ProgressLinear from '$lib/components/progress-linear.svelte'
 	import Graph from '$lib/components/graph.svelte'
 	import SingleColumn from '$lib/components/single-column.svelte'
 	import Spacer from '$lib/components/spacer.svelte'
@@ -29,6 +30,9 @@
 
 	let filterQuery = ''
 	let sortAsc = true
+
+	let cycleProgress = ($tokens.repTotal - $tokens.repStaked) / $tokens.repTotal
+	$: cycleProgress = ($tokens.repTotal - $tokens.repStaked) / $tokens.repTotal
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -90,8 +94,8 @@
 		<SingleColumn>
 			<h2 class="cycle-data">Cycle data</h2>
 			<BorderBox noGap title="Current cycle">
-				<Progress variant="circle" max={$tokens.epochDuration} current={$tokens.timeToEpoch} />
-				<div>{formatEpoch($tokens.timeToEpoch)} left in this cycle</div>
+				<ProgressCircular progress={$tokens.timeToEpoch / $tokens.epochDuration} />
+				<div class='spacing-top'>{formatEpoch($tokens.timeToEpoch)} left in this cycle</div>
 				<LearnMore />
 			</BorderBox>
 			<div class="side-by-side">
@@ -111,18 +115,10 @@
 				/>
 			</div>
 			<BorderBox noGap title="Staked reputation">
-				<Progress
-					variant="line"
-					max={$tokens.repTotal}
-					current={$tokens.repTotal - $tokens.repStaked}
-				/>
-				<p>
+				<ProgressLinear progress={cycleProgress} />
+				<p class='spacing-top'>
 					{$tokens.repTotal - $tokens.repStaked} out of {$tokens.repTotal} REP staked until cycle ends
 				</p>
-			</BorderBox>
-			<BorderBox noGap title="Reputation over time">
-				<Graph minX={0} maxX={100} minY={0} maxY={0} values={$tokens.repTotalHistoricalValues} />
-				<LearnMore />
 			</BorderBox>
 		</SingleColumn>
 		<Spacer />
@@ -246,5 +242,9 @@
 		@media (min-width: 688px) {
 			padding-top: var(--spacing-24);
 		}
+	}
+
+	.spacing-top {
+		margin-top: var(--spacing-12);
 	}
 </style>
