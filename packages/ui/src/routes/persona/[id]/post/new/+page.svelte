@@ -10,7 +10,7 @@
 	import LearnMore from '$lib/components/learn-more.svelte'
 	import Button from '$lib/components/button.svelte'
 	import { tokens } from '$lib/stores/tokens'
-	import TokenInfo from '$lib/components/token-info.svelte'
+	import BorderBox from '$lib/components/border-box.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
 	import adapter from '$lib/adapters'
 	import { page } from '$app/stores'
@@ -69,7 +69,7 @@
 					</p>
 					<LearnMore href="/" />
 				</div>
-				<TokenInfo
+				<BorderBox
 					title="Available to stake"
 					amount={$tokens.repTotal.toFixed()}
 					tokenName="REP"
@@ -95,14 +95,14 @@
 					<LearnMore href="/" />
 				</div>
 				<div class="side-by-side">
-					<TokenInfo
+					<BorderBox
 						title="Available to stake"
 						amount={($tokens.repTotal - $tokens.repStaked).toFixed()}
 						tokenName="REP"
 						explanation={`${$tokens.repStaked} out of ${$tokens.repTotal} staked`}
 						error={$tokens.repTotal - $tokens.repStaked < NEW_POST_REP_PRICE}
 					/>
-					<TokenInfo
+					<BorderBox
 						title="Currently available"
 						amount={$tokens.go.toFixed()}
 						tokenName="GO"
@@ -131,13 +131,13 @@
 					<p><LearnMore href="/" /></p>
 				</div>
 				<div class="side-by-side">
-					<TokenInfo
+					<BorderBox
 						title="Available to stake"
 						amount={($tokens.repTotal - $tokens.repStaked).toFixed()}
 						tokenName="REP"
 						explanation={`${$tokens.repStaked} out of ${$tokens.repTotal} staked`}
 					/>
-					<TokenInfo
+					<BorderBox
 						title="Currently available"
 						amount={$tokens.go.toFixed()}
 						tokenName="GO"

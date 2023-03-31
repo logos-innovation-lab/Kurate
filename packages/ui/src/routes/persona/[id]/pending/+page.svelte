@@ -37,7 +37,7 @@
 	import { VOTE_GO_PRICE } from '$lib/constants'
 	import InfoScreen from '$lib/components/info_screen.svelte'
 	import LearnMore from '$lib/components/learn-more.svelte'
-	import TokenInfo from '$lib/components/token-info.svelte'
+	import BorderBox from '$lib/components/border-box.svelte'
 
 	const groupId = $page.params.id
 	const persona = $personas.all.get(groupId)
@@ -90,7 +90,7 @@
 				</p>
 				<p><LearnMore href="/" /></p>
 			</InfoBox>
-			<TokenInfo
+			<BorderBox
 				title="Currently available"
 				amount={$tokens.go.toFixed()}
 				tokenName="GO"
@@ -124,7 +124,7 @@
 				</p>
 				<p><LearnMore href="/" /></p>
 			</InfoBox>
-			<TokenInfo
+			<BorderBox
 				title="Currently available"
 				amount={$tokens.go.toFixed()}
 				tokenName="GO"

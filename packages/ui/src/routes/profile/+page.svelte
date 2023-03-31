@@ -12,7 +12,7 @@
 	import adapter from '$lib/adapters'
 	import { tokens } from '$lib/stores/tokens'
 	import LearnMore from '$lib/components/learn-more.svelte'
-	import TokenInfo from '$lib/components/token-info.svelte'
+	import BorderBox from '$lib/components/border-box.svelte'
 	import SectionTitle from '$lib/components/section-title.svelte'
 	import Search from '$lib/components/search.svelte'
 	import { transaction } from '$lib/stores/transaction'
@@ -21,6 +21,8 @@
 	import ProgressCircular from '$lib/components/progress-circular.svelte'
 	import ProgressLinear from '$lib/components/progress-linear.svelte'
 	import Graph from '$lib/components/graph.svelte'
+	import SingleColumn from '$lib/components/single-column.svelte'
+	import Spacer from '$lib/components/spacer.svelte'
 
 	let y: number
 
@@ -47,88 +49,97 @@
 <Divider />
 <div class="content">
 	{#if $profile.signer === undefined}
-		<div class="wallet-icon-wrapper">
-			<Wallet size={192} />
-		</div>
-		<div class="pad">
-			<Button
-				variant="primary"
-				icon={Wallet}
-				label="Connect wallet"
-				on:click={adapter.signIn}
-				disabled={!canConnectWallet()}
-			/>
-			<span class="connect-info">
-				{#if canConnectWallet()}
-					Connect a wallet to access or create your account.
-				{:else}
-					Please install a web3 wallet to access or create your account.
-				{/if}
-			</span>
-			{#if error !== undefined}
-				<span>Failed to connect {error.message}</span>
-			{/if}
-		</div>
+		<SingleColumn>
+			<div class="wallet-info">
+				<div class="wallet-icon-wrapper">
+					<Wallet size={192} />
+				</div>
+				<div class="pad">
+					<Button
+						variant="primary"
+						icon={Wallet}
+						label="Connect wallet"
+						on:click={adapter.signIn}
+						disabled={!canConnectWallet()}
+					/>
+					<span class="connect-info">
+						{#if canConnectWallet()}
+							Connect a wallet to access or create your account.
+						{:else}
+							Please install a web3 wallet to access or create your account.
+						{/if}
+					</span>
+					{#if error !== undefined}
+						<span>Failed to connect {error.message}</span>
+					{/if}
+				</div>
+			</div>
+		</SingleColumn>
 	{:else}
-		<h2>Connected wallet</h2>
-		<div class="wallet-info-wrapper">
-			{#await $profile.signer.getAddress()}
-				loading...
-			{:then address}
-				{formatAddress(address)}
-			{:catch error}
-				{error.message}
-			{/await}
-		</div>
+		<SingleColumn>
+			<div class="wallet-info">
+				<h2>Wallet address</h2>
+				<div class="wallet-info-wrapper">
+					{#await $profile.signer.getAddress()}
+						loading...
+					{:then address}
+						{formatAddress(address)}
+					{:catch error}
+						{error.message}
+					{/await}
+				</div>
+			</div>
+		</SingleColumn>
 		<Divider />
-		<h2>Cycle data</h2>
-		<div>
-			<h3>Current cycle</h3>
-			<ProgressCircular progress={$tokens.timeToEpoch / $tokens.epochDuration} />
-			<div>{formatEpoch($tokens.timeToEpoch)} left in this cycle</div>
-			<LearnMore />
+		<SingleColumn>
+			<h2 class="cycle-data">Cycle data</h2>
+			<BorderBox noGap title="Current cycle">
+				<ProgressCircular progress={$tokens.timeToEpoch / $tokens.epochDuration} />
+				<div class="spacing-top">{formatEpoch($tokens.timeToEpoch)} left in this cycle</div>
+				<LearnMore />
+			</BorderBox>
 			<div class="side-by-side">
-				<TokenInfo
+				<BorderBox
+					noGap
 					title="Total reputation"
 					amount={$tokens.repTotal.toFixed()}
 					tokenName="REP"
 					explanation={`Including staked`}
 				/>
-				<TokenInfo
+				<BorderBox
+					noGap
 					title="Currently available"
 					amount={$tokens.go.toFixed()}
 					tokenName="GO"
 					explanation="Until new cycle begins"
 				/>
 			</div>
-		</div>
-		<div>
-			<h2>Staked reputation</h2>
-			<ProgressLinear progress={cycleProgress} />
-			<p>
-				{$tokens.repTotal - $tokens.repStaked} out of {$tokens.repTotal} REP staked until cycle ends
-			</p>
-			<LearnMore />
-		</div>
-		<div>
-			<h2>Reputation over time</h2>
-			<Graph minX={0} maxX={100} minY={0} maxY={0} values={$tokens.repTotalHistoricalValues} />
-			<LearnMore />
-		</div>
+			<BorderBox noGap title="Staked reputation">
+				<ProgressLinear progress={cycleProgress} />
+				<p class="spacing-top">
+					{$tokens.repTotal - $tokens.repStaked} out of {$tokens.repTotal} REP staked until cycle ends
+				</p>
+			</BorderBox>
+		</SingleColumn>
+		<Spacer />
 		<Divider />
-		<SectionTitle title="Activity">
-			<svelte:fragment slot="buttons">
-				{#if $profile.signer !== undefined}
-					<Button
-						icon={sortAsc ? SortAscending : SortDescending}
-						on:click={() => (sortAsc = !sortAsc)}
-					/>
-				{/if}
-			</svelte:fragment>
-			{#if $profile.signer !== undefined}
-				<Search bind:filterQuery />
-			{/if}
-		</SectionTitle>
+		<SingleColumn>
+			<div class="filter">
+				<SectionTitle title="Activity" noDivider noPad>
+					<svelte:fragment slot="buttons">
+						{#if $profile.signer !== undefined}
+							<Button
+								icon={sortAsc ? SortAscending : SortDescending}
+								on:click={() => (sortAsc = !sortAsc)}
+							/>
+						{/if}
+					</svelte:fragment>
+					{#if $profile.signer !== undefined}
+						<Search bind:filterQuery />
+					{/if}
+				</SectionTitle>
+			</div>
+		</SingleColumn>
 		{#each $transaction.transactions.sort( (a, b) => (sortAsc ? b.timestamp - a.timestamp : a.timestamp - b.timestamp), ) as t}
 			<div>
 				{#if t.goChange !== 0}
@@ -202,15 +213,38 @@
 			margin-bottom: var(--spacing-24);
 		}
 
+		.wallet-info {
+			padding-block: var(--spacing-48);
+			display: flex;
+			flex-direction: column;
+			gap: var(--spacing-12);
+		}
+
 		.wallet-info-wrapper {
-			background-color: var(--grey-100);
-			width: 100%;
-			max-width: 480px;
+			background-color: var(--grey-150);
+			display: block;
+			padding: var(--spacing-12);
+			font-family: var(--font-mono);
 		}
 
 		.connect-info {
 			margin-top: var(--spacing-12);
 			text-align: center;
 		}
+	}
+
+	.cycle-data {
+		margin-top: var(--spacing-48);
+		margin-bottom: var(--spacing-12);
+	}
+
+	.filter {
+		@media (min-width: 688px) {
+			padding-top: var(--spacing-24);
+		}
+	}
+
+	.spacing-top {
+		margin-top: var(--spacing-12);
 	}
 </style>
