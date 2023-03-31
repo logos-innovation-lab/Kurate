@@ -17,7 +17,6 @@
 	import { profile } from '$lib/stores/profile'
 	import { ROUTES } from '$lib/routes'
 	import { formatDateAndTime } from '$lib/utils/format'
-	import adapter from '$lib/adapters'
 
 	interface ChatListItem {
 		chat: Chat
@@ -74,10 +73,10 @@
 	<Grid>
 		{#each openChats as { chat, id }}
 			<ChatComponent
-				chatPersonaPicture={adapter.getPicture(chat.persona.picture)}
-				chatPersonaName={chat.persona.name}
-				chatPostText={chat.post.text}
-				chatMessage={chat.messages[chat.messages.length - 1].text}
+				seed={chat.seed}
+				name={chat.persona.name}
+				postText={chat.post.text}
+				lastMessage={chat.messages[chat.messages.length - 1].text}
 				timeStamp={formatDateAndTime(chat.messages[chat.messages.length - 1].timestamp)}
 				on:click={() => goto(ROUTES.CHAT(id))}
 			/>
@@ -89,10 +88,10 @@
 		<Grid>
 			{#each closedChats as { chat, id }}
 				<ChatComponent
-					chatPersonaPicture={adapter.getPicture(chat.persona.picture)}
-					chatPersonaName={chat.persona.name}
-					chatPostText={chat.post.text}
-					chatMessage={chat.messages[chat.messages.length - 1].text}
+					seed={chat.seed}
+					name={chat.persona.name}
+					postText={chat.post.text}
+					lastMessage={chat.messages[chat.messages.length - 1].text}
 					timeStamp={formatDateAndTime(chat.messages[chat.messages.length - 1].timestamp)}
 					on:click={() => goto(ROUTES.CHAT(id))}
 				/>

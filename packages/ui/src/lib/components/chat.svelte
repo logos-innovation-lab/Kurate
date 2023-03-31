@@ -1,18 +1,30 @@
 <script lang="ts">
 	import Card from '$lib/components/grid-card.svelte'
+	import { botttsNeutral } from '@dicebear/collection'
+	import { createAvatar } from '@dicebear/core'
 
-	export let chatPersonaPicture: string | undefined
-	export let chatPersonaName: string | undefined
-	export let chatPostText: string | undefined
-	export let chatMessage: string | undefined
-	export let timeStamp: string | undefined
+	export let seed: string
+	export let name: string
+	export let postText: string
+	export let lastMessage: string
+	export let timeStamp: string
+
+	let avatar = createAvatar(botttsNeutral, {
+		size: 94,
+		seed,
+	}).toDataUriSync()
+
+	function cropText(text: string, length: number) {
+		if (text.length < length) return text
+		return `${text.substring(0, length)}...`
+	}
 </script>
 
 <Card on:click>
-	<div class="picture"><img src={chatPersonaPicture} alt={chatPersonaName} /></div>
+	<div class="picture"><img src={avatar} alt={name} /></div>
 	<div class="details">
-		<div class="post-text">{chatPostText}</div>
-		<div class="chat-message">{chatMessage}</div>
+		<div class="post-text">{cropText(postText, 30)}</div>
+		<div class="chat-message">{cropText(lastMessage, 60)}</div>
 		<div class="timestamp">
 			{timeStamp}
 		</div>
