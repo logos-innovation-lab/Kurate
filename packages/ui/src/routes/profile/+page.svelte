@@ -20,7 +20,6 @@
 	import { personas } from '$lib/stores/persona'
 	import ProgressCircular from '$lib/components/progress-circular.svelte'
 	import ProgressLinear from '$lib/components/progress-linear.svelte'
-	import Graph from '$lib/components/graph.svelte'
 	import SingleColumn from '$lib/components/single-column.svelte'
 	import Spacer from '$lib/components/spacer.svelte'
 
