@@ -18,7 +18,8 @@
 	import { transaction } from '$lib/stores/transaction'
 	import { ROUTES } from '$lib/routes'
 	import { personas } from '$lib/stores/persona'
-	import Progress from '$lib/components/progress.svelte'
+	import ProgressCircular from '$lib/components/progress-circular.svelte'
+	import ProgressLinear from '$lib/components/progress-linear.svelte'
 	import Graph from '$lib/components/graph.svelte'
 
 	let y: number
@@ -27,6 +28,9 @@
 
 	let filterQuery = ''
 	let sortAsc = true
+
+	let cycleProgress = ($tokens.repTotal - $tokens.repStaked) / $tokens.repTotal
+	$: cycleProgress = ($tokens.repTotal - $tokens.repStaked) / $tokens.repTotal
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -80,7 +84,7 @@
 		<h2>Cycle data</h2>
 		<div>
 			<h3>Current cycle</h3>
-			<Progress variant="circle" max={$tokens.epochDuration} current={$tokens.timeToEpoch} />
+			<ProgressCircular progress={$tokens.timeToEpoch / $tokens.epochDuration} />
 			<div>{formatEpoch($tokens.timeToEpoch)} left in this cycle</div>
 			<LearnMore />
 			<div class="side-by-side">
@@ -100,11 +104,7 @@
 		</div>
 		<div>
 			<h2>Staked reputation</h2>
-			<Progress
-				variant="line"
-				max={$tokens.repTotal}
-				current={$tokens.repTotal - $tokens.repStaked}
-			/>
+			<ProgressLinear progress={cycleProgress} />
 			<p>
 				{$tokens.repTotal - $tokens.repStaked} out of {$tokens.repTotal} REP staked until cycle ends
 			</p>
