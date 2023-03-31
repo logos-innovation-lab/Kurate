@@ -29,7 +29,7 @@
 	export let onBack: (() => unknown) | undefined = undefined
 	export let title: string
 
-	let showPost = true
+	let showPost = false
 	let messageText = ''
 	let sending = false
 
