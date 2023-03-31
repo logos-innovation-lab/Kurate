@@ -140,45 +140,44 @@
 			</div>
 		</SingleColumn>
 		<SingleColumn>
-		<div class="activity">
-			{#each $transaction.transactions.sort( (a, b) => (sortAsc ? b.timestamp - a.timestamp : a.timestamp - b.timestamp), ) as t}
-				{#if t.goChange !== 0}
-				
-				<div class="activity-item">
-					<h2>{t.goChange} GO</h2>
-					<div class="description">
-						{#if t.type === 'publish persona'}
-							You created persona <a href={ROUTES.PERSONA(t.personaId)}
-								>{$personas.all.get(t.personaId)?.name}</a
-							>
-						{:else}
-							You {#if t.type === 'promote'}
-								promoted a post on
-							{:else if t.type === 'demote'}
-								demoted a post on
-							{:else if t.type === 'publish post'}
-								submitted a post to
-							{/if}
-							<a href={ROUTES.PERSONA_PENDING(t.personaId)}
-								>Pending • {$personas.all.get(t.personaId)?.name}</a
-							>
-						{/if}
-					</div>
-					<div class="timestamp">{formatDateAndTime(t.timestamp)}</div>
-				</div>
-				{/if}
+			<div class="activity">
+				{#each $transaction.transactions.sort( (a, b) => (sortAsc ? b.timestamp - a.timestamp : a.timestamp - b.timestamp), ) as t}
+					{#if t.goChange !== 0}
+						<div class="activity-item">
+							<h2>{t.goChange} GO</h2>
+							<div class="description">
+								{#if t.type === 'publish persona'}
+									You created persona <a href={ROUTES.PERSONA(t.personaId)}
+										>{$personas.all.get(t.personaId)?.name}</a
+									>
+								{:else}
+									You {#if t.type === 'promote'}
+										promoted a post on
+									{:else if t.type === 'demote'}
+										demoted a post on
+									{:else if t.type === 'publish post'}
+										submitted a post to
+									{/if}
+									<a href={ROUTES.PERSONA_PENDING(t.personaId)}
+										>Pending • {$personas.all.get(t.personaId)?.name}</a
+									>
+								{/if}
+							</div>
+							<div class="timestamp">{formatDateAndTime(t.timestamp)}</div>
+						</div>
+					{/if}
 
-				{#if t.repChange !== 0}
-				<div class="activity-item">
-					<h2>Staked {t.repChange} REP</h2>
-					<div class="description">
-						You submitted a post to <a href={ROUTES.PERSONA_PENDING(t.personaId)}
-							>Pending • {$personas.all.get(t.personaId)?.name}</a
-						>
-					</div>
-					<div class="timestamp">{formatDateAndTime(t.timestamp)}</div>
-				</div>
-				{/if}
+					{#if t.repChange !== 0}
+						<div class="activity-item">
+							<h2>Staked {t.repChange} REP</h2>
+							<div class="description">
+								You submitted a post to <a href={ROUTES.PERSONA_PENDING(t.personaId)}
+									>Pending • {$personas.all.get(t.personaId)?.name}</a
+								>
+							</div>
+							<div class="timestamp">{formatDateAndTime(t.timestamp)}</div>
+						</div>
+					{/if}
 				{/each}
 			</div>
 		</SingleColumn>
