@@ -15,6 +15,7 @@ export const NEW_POST_REP_WIN = 5
 export const NEW_POST_REP_LOSS = 5
 export const VOTE_GO_PRICE = 1
 export const VOTE_REP_WIN = 1
+export const DEFAULT_GO_AMOUNT = 30
 
 export const MAX_DIMENSIONS = {
 	PERSONA_PICTURE: {

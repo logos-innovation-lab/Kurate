@@ -35,16 +35,19 @@ export interface Adapter {
 }
 
 export const adapters = ['in-memory', 'zkitter'] as const
-export type AdapterName = typeof adapters[number]
-export const adapterName: AdapterName = getFromLocalStorage<AdapterName>('adapter', ADAPTER as AdapterName)
+export type AdapterName = (typeof adapters)[number]
+export const adapterName: AdapterName = getFromLocalStorage<AdapterName>(
+	'adapter',
+	ADAPTER as AdapterName,
+)
 
 let adapter: Adapter
-switch(adapterName) {
+switch (adapterName) {
 	case 'in-memory':
-		adapter = new InMemoryAndIPFS() as Adapter
+		adapter = new InMemoryAndIPFS()
 		break
 	case 'zkitter':
-		adapter = new ZkitterAdapter() as Adapter
+		adapter = new ZkitterAdapter()
 		break
 	default:
 		throw new Error(`Invalid adapter ${ADAPTER}`)

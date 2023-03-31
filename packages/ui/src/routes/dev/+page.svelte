@@ -5,31 +5,16 @@
 	import Textarea from '$lib/components/textarea.svelte'
 	import { tokens } from '$lib/stores/tokens'
 	import Divider from '$lib/components/divider.svelte'
-	import { onDestroy, onMount } from 'svelte'
-	import adapter, { adapterName, adapters, type AdapterName } from '$lib/adapters'
+	import { adapterName, adapters, type AdapterName } from '$lib/adapters'
 	import Dropdown from '$lib/components/dropdown.svelte'
 	import DropdownItem from '$lib/components/dropdown-item.svelte'
 	import Select from '$lib/components/select.svelte'
 	import { saveToLocalStorage } from '$lib/utils'
-
-	function calculateTimeToEndEpoch() {
-		return $tokens.epochDuration - (Date.now() % $tokens.epochDuration)
-	}
+	import { startNewEpoch } from '$lib/adapters/in-memory-and-ipfs'
+	import { formatDateAndTime } from '$lib/utils/format'
 
 	let goTokenValue = $tokens.go.toFixed()
 	let repTokenValue = $tokens.repTotal.toFixed()
-	let timeToEndEpoch: number = calculateTimeToEndEpoch()
-	let interval: ReturnType<typeof setInterval>
-
-	onMount(() => {
-		interval = setInterval(() => {
-			timeToEndEpoch = calculateTimeToEndEpoch()
-		}, 1000)
-	})
-
-	onDestroy(() => {
-		interval && clearInterval(interval)
-	})
 
 	function updateTokens() {
 		tokens.update((tokens) => {
@@ -48,14 +33,13 @@
 <Header title="DEV DASHBOARD" onBack={() => history.back()} />
 <Container>
 	<section>
-		<h2>Adapter	</h2>
+		<h2>Adapter</h2>
 		<Dropdown>
 			<Select slot="button" label="Reputation level" value={adapterName} />
 
 			{#each adapters as adapter}
-				<DropdownItem
-					active={adapterName === adapter}
-					onClick={() => changeAdapter(adapter)}>{adapter}</DropdownItem
+				<DropdownItem active={adapterName === adapter} onClick={() => changeAdapter(adapter)}
+					>{adapter}</DropdownItem
 				>
 			{/each}
 		</Dropdown>
@@ -65,8 +49,8 @@
 		<section>
 			<h2>Epoch</h2>
 			<p>Epoch duration: {$tokens.epochDuration / 1000} seconds</p>
-			<p>Time to end epoch: {(timeToEndEpoch / 1000).toFixed()} seconds</p>
-			<Button label="Start new epoch" variant="primary" />
+			<p>Time to end epoch: {($tokens.timeToEpoch / 1000).toFixed()} seconds</p>
+			<Button label="End epoch now" variant="secondary" on:click={startNewEpoch} />
 		</section>
 		<Divider />
 		<section>
@@ -79,8 +63,8 @@
 			<h2>GO historical values</h2>
 			{#each $tokens.goHistoricalValues as transaction}
 				<section>
-					{transaction.timestamp}
-					{transaction.value}
+					{formatDateAndTime(transaction.timestamp)} |
+					{transaction.value} GO
 				</section>
 			{/each}
 		</section>
@@ -89,8 +73,8 @@
 			<h2>REP staked historical values</h2>
 			{#each $tokens.repStakedHistoricalValues as transaction}
 				<section>
-					{transaction.timestamp}
-					{transaction.value}
+					{formatDateAndTime(transaction.timestamp)} |
+					{transaction.value} REP
 				</section>
 			{/each}
 		</section>
@@ -99,8 +83,8 @@
 			<h2>REP total historical values</h2>
 			{#each $tokens.repTotalHistoricalValues as transaction}
 				<section>
-					{transaction.timestamp}
-					{transaction.value}
+					{formatDateAndTime(transaction.timestamp)} |
+					{transaction.value} REP
 				</section>
 			{/each}
 		</section>
@@ -109,6 +93,7 @@
 
 <style lang="scss">
 	section {
+		margin-top: 1rem;
 		margin-bottom: 1rem;
 		display: flex;
 		flex-direction: column;
