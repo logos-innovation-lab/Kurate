@@ -5,6 +5,7 @@ import type { SnarkProof, SnarkPublicSignals } from '@unirep/utils'
 import type { ZkIdentity } from '@zk-kit/identity'
 import {generateMerkleTree} from "@zk-kit/protocols";
 import type {Proof, ProofType} from "zkitter-js";
+import {getFromLocalStorage, saveToLocalStorage} from "../../utils";
 
 export const prover: Prover = {
 	verifyProof: async (
@@ -78,4 +79,21 @@ export async function generateRLNProofForNewPersona(hash: string, zkIdentity: Zk
 		proof,
 		type: 'rln' as ProofType.rln,
 	}
+}
+
+export async function updateActivePosts(postHashes: string[]): Promise<{[hash: string]: string}> {
+	const actives = getFromLocalStorage<{[hash: string]: string}>('kurate/actives', {});
+	const newActives = {
+		...actives,
+		...postHashes.reduce((acc: {[hash: string]: string}, hash: string) => {
+			acc[hash] = hash
+			return acc
+		}, {}),
+	};
+	saveToLocalStorage('kurate/actives', newActives)
+	return newActives
+}
+
+export async function getActivePosts(postHashes: string[]): Promise<{[hash: string]: string}> {
+	return getFromLocalStorage<{[hash: string]: string}>('kurate/actives', {});
 }
