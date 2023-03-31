@@ -10,6 +10,7 @@
 <style lang="scss">
 	.single-column {
 		padding: 0 var(--spacing-24);
+		width: 100%;
 		max-width: 498px;
 		margin-inline: auto;
 	}
