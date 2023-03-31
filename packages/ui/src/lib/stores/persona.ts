@@ -4,7 +4,7 @@ import type { Post } from './post'
 import type { ReputationOptions } from '$lib/types'
 
 export interface Persona {
-	personaId: number | string
+	personaId: string
 	identity?: Identity
 	picture: string
 	cover: string
@@ -24,7 +24,7 @@ export interface DraftPersona
 type PersonaStore = {
 	draft: DraftPersona[]
 	favorite: string[]
-	all: Map<number | string, Persona>
+	all: Map<string, Persona>
 	loading: boolean
 }
 
