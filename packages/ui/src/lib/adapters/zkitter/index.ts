@@ -8,9 +8,9 @@ import type { Adapter } from '..'
 import { GroupAdapter } from './group-adapter'
 import type { Signer } from 'ethers'
 import { create } from 'ipfs-http-client'
-import { createIdentity, prover } from './utils'
+import {createIdentity, generateRLNProofForNewPersona, prover} from './utils'
 import { posts } from '$lib/stores/post'
-import type { GenericDBAdapterInterface, Zkitter } from 'zkitter-js'
+import type {GenericDBAdapterInterface, Zkitter} from 'zkitter-js'
 import type { Persona } from '../../stores/persona'
 import { UserState } from '@unirep/core'
 import { getFromLocalStorage, type SavedSeedMessages } from '../../utils'
@@ -54,10 +54,19 @@ export class ZkitterAdapter implements Adapter {
 			this.zkitter.on('Zkitter.NewMessageCreated', async (msg, proof) => {
 				console.log('Zkitter.NewMessageCreated', msg, proof)
 			})
-			this.zkitter.on('Group.NewGroupMemberCreated', async (member, groupId) => {
-				console.log('Group.NewGroupMemberCreated', member, groupId)
-			})
 		}
+
+		this.zkitter.on('Group.NewGroupMemberCreated', async (member, groupId) => {
+			if (process.env.NODE_ENV !== 'production') {
+				console.log('Group.NewGroupMemberCreated', member, groupId)
+			}
+
+			const [protocol, personaId] = groupId.split('_');
+
+			if (protocol === 'kurate') {
+				this.processPendingQueue(personaId)
+			}
+		})
 
 		const contract = await getGlobalAnonymousFeed()
 
@@ -73,7 +82,6 @@ export class ZkitterAdapter implements Adapter {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'stop')
 	}
-
 	private async syncPersonasFromContract(contract: GlobalAnonymousFeed) {
 		if (this.timeout) clearTimeout(this.timeout)
 		await this.queryPersonasFromContract(contract);
@@ -83,8 +91,6 @@ export class ZkitterAdapter implements Adapter {
 	private async queryPersonasFromContract(contract: GlobalAnonymousFeed) {
 		if (!this.zkitter) throw new Error('zkitter is not initialized')
 
-		// personas.update(state => ({ ...state, loading: true }))
-
 		const numOfPersonas = (await contract.numOfPersonas()).toNumber()
 		const personaStore = get(personas)
 
@@ -92,18 +98,19 @@ export class ZkitterAdapter implements Adapter {
 			const personaId = '' + i;
 
 			if (!personaStore.all.has(personaId)) {
-				console.log({
+				const group = new GroupAdapter({
 					globalAnonymousFeed: contract,
 					db: this.zkitter.db as GenericDBAdapterInterface,
 					personaId: i,
 				})
-				this.zkitter.services.groups.addGroup(
-					new GroupAdapter({
-						globalAnonymousFeed: contract,
-						db: this.zkitter.db as GenericDBAdapterInterface,
-						personaId: i,
-					}),
-				)
+
+				this.zkitter.services.groups.addGroup(group)
+
+				await group.sync()
+
+				// TODO: fix type in next zkitter-js release
+				// @ts-ignore
+				await this.zkitter.updateFilter({ group: [group.groupId] })
 
 				const personaData = await contract.personas(i)
 
@@ -180,54 +187,32 @@ export class ZkitterAdapter implements Adapter {
 			}),
 		)
 	}
-	private async savePendingMessagesForIdCommitment(
+	private async savePendingMessagesForPersonaId(
 		personaId: number,
-		serializedMessages: string[],
+		serializedMessages: string[][],
 		idCommitment: string,
 	): Promise<void> {
-		await saveToLocalStorage<SavedSeedMessages>(`kurate/pendingMessages/${idCommitment}`, {
+		await saveToLocalStorage<SavedSeedMessages>(`kurate/pendingMessages/${personaId}`, {
 			personaId,
 			serializedMessages,
 			idCommitment,
 		})
 	}
-	private async getPendingMessagesForIdCommitment(idCommitment: string): Promise<SavedSeedMessages | null> {
-		return getFromLocalStorage<SavedSeedMessages | false>(
-			`kurate/pendingMessages/${idCommitment}`,
-			false
-		) || null
-	}
-	private async maybePublishPendingMessagesForIdCommitment(idCommitment: string) {
-		// FIXME: we should probably do something smarter here
-		if (!this.zkitter) throw new Error('Zkitter is not initiated yet')
+	private async processPendingQueue(personaId: string) {
+		const {Post} = await import('zkitter-js')
+		const key = `kurate/pendingMessages/${personaId}`;
+		const pending = getFromLocalStorage<SavedSeedMessages | false>(key, false)
+		if (pending) {
+			const { serializedMessages } = pending;
+			const promises = serializedMessages.map(async ([hex, str]) => {
+				const post = Post.fromHex(hex);
+				const proof = JSON.parse(str);
+				return this.zkitter!.publish(post, proof)
+			})
+			await Promise.all(promises)
 
-		const pending = await this.getPendingMessagesForIdCommitment(idCommitment)
-
-		if (!pending) return;
-		if (!this.identity) return;
-
-		const { personaId, serializedMessages } = pending;
-		const { zkIdentity } = this.identity
-
-		if (pending.idCommitment === zkIdentity.genIdentityCommitment().toString()) {
-			console.log(`kurate_${personaId}`)
-			if (personaId > -1) {
-				const { Post } = await import('zkitter-js')
-				const posts = serializedMessages.map((hex) => Post.fromHex(hex))
-
-				console.log(posts);
-				for (let i = 0; i < posts.length; i++) {
-					const post = posts[i]
-					const proof = await this.zkitter.createProof({
-						hash: post.hash(),
-						groupId: `kurate_${personaId}`,
-						zkIdentity,
-					})
-
-					console.log({ post, proof })
-					// await this.zkitter.publish(post, proof)
-				}
-			}
+			console.log('delete')
+			saveToLocalStorage<SavedSeedMessages | false>(key, false);
 		}
 	}
 	deleteDraftPersona(index: number): Promise<void> {
@@ -290,18 +275,24 @@ export class ZkitterAdapter implements Adapter {
 				}),
 		)
 
-		const seedPostHashes: string[] = []
-		seedPosts.forEach((seedPost) => seedPostHashes.push('0x' + seedPost.hash()))
-
-		if (seedPostHashes.length !== 5) throw new Error('must contain exactly 5 seed posts')
+		if (draftPersona.posts.length !== 5) throw new Error('must contain exactly 5 seed posts')
 		if (!draftPersona.picture) throw new Error('must contain a profile picture')
 		if (!draftPersona.cover) throw new Error('must contain a cover image')
 
 		const signupProof = await state.genUserSignUpProof()
-
 		const contractWithSigner = await getGlobalAnonymousFeed(signer)
 		const newPersonaId = (await contract.numOfPersonas()).toNumber()
-		const tx = await contractWithSigner[
+
+		const pendingMsgs = seedPosts.concat([pitch, description]);
+		const savedMsgs = [];
+
+		for (let i = 0; i < pendingMsgs.length; i++) {
+			const msg = pendingMsgs[i]
+			const proof = await generateRLNProofForNewPersona(msg.hash(), this.identity.zkIdentity, newPersonaId)
+			savedMsgs.push([msg.toHex(), JSON.stringify(proof)])
+		}
+
+		await contractWithSigner[
 			'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'
 		](
 			draftPersona.name,
@@ -309,30 +300,19 @@ export class ZkitterAdapter implements Adapter {
 			draftPersona.cover,
 			'0x' + pitch.hash(),
 			'0x' + description.hash(),
-			seedPostHashes as [string, string, string, string, string],
+			seedPosts.map(p => '0x' + p.hash()) as [string, string, string, string, string],
 			signupProof.publicSignals,
 			signupProof.proof,
 			{ gasLimit: 6721974 },
 		)
 
-		console.log(tx)
-
 		const idCommitment = this.identity.zkIdentity.genIdentityCommitment().toString()
 
-		await this.savePendingMessagesForIdCommitment(
+		await this.savePendingMessagesForPersonaId(
 			newPersonaId,
-			seedPosts.map((p) => p.toHex()).concat([pitch.toHex(), description.toHex()]),
+			savedMsgs,
 			idCommitment,
 		)
-
-		const cb = async (member: string, groupId: string) => {
-			if (member === idCommitment && groupId === `kurate_${newPersonaId}`) {
-				await this.maybePublishPendingMessagesForIdCommitment(idCommitment)
-				this.zkitter?.off('Group.NewGroupMemberCreated', cb)
-			}
-		}
-
-		this.zkitter.on('Group.NewGroupMemberCreated', cb)
 
 		// return new Promise((resolve) => {
 		// 	tokens.update(({ go, ...state }) => {
@@ -349,8 +329,6 @@ export class ZkitterAdapter implements Adapter {
 		const { zkIdentity, unirepIdentity, ecdsa } = await createIdentity(signer)
 
 		this.identity = { zkIdentity, unirepIdentity, ecdsa }
-
-		this.maybePublishPendingMessagesForIdCommitment(zkIdentity.genIdentityCommitment().toString())
 
 		profile.update((state) => ({
 			...state,
