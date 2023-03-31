@@ -6,12 +6,14 @@
 	export let arrow: boolean | undefined = undefined
 </script>
 
-<a class="root" {href} {target}>
-	Learn more
-	{#if arrow === true}
-		<ArrowRight size={12} />
-	{/if}
-</a>
+{#if href}
+	<a class="root" {href} {target}>
+		Learn more
+		{#if arrow === true}
+			<ArrowRight size={12} />
+		{/if}
+	</a>
+{/if}
 
 <style lang="scss">
 	.root {

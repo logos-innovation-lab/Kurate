@@ -28,7 +28,7 @@
 	import { tokens } from '$lib/stores/tokens'
 	import type { Post as PostType } from '$lib/stores/post'
 	import { page } from '$app/stores'
-	import TokenInfo from '$lib/components/token-info.svelte'
+	import BorderBox from '$lib/components/border-box.svelte'
 	import adapter from '$lib/adapters'
 	import { profile } from '$lib/stores/profile'
 	import { goto } from '$app/navigation'
@@ -353,7 +353,7 @@
 					<p>This Persona will be live, and everyone will be able to post with it.</p>
 					<p><LearnMore href="/" /></p>
 				</div>
-				<TokenInfo
+				<BorderBox
 					title="Currently available"
 					amount={$tokens.go.toFixed()}
 					tokenName="GO"
@@ -370,7 +370,7 @@
 					<p>You need {TOKEN_POST_COST} GO to publish a Persona.</p>
 					<LearnMore href="/" />
 				</div>
-				<TokenInfo
+				<BorderBox
 					title="Currently available"
 					amount={$tokens.go.toFixed()}
 					tokenName="GO"
