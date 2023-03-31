@@ -104,6 +104,7 @@ export class ZkitterAdapter implements Adapter {
 
 		const numOfPersonas = (await contract.numOfPersonas()).toNumber()
 		const personaStore = get(personas)
+		const groupIds: string[] = []
 
 		for (let i = 0; i < numOfPersonas; i++) {
 			const personaId = '' + i;
@@ -119,10 +120,7 @@ export class ZkitterAdapter implements Adapter {
 
 				await group.sync()
 
-				// TODO: fix type in next zkitter-js release
-				// @ts-ignore
-				await this.zkitter.updateFilter({ group: [group.groupId] })
-				console.log(group.groupId)
+				groupIds.push(group.groupId)
 
 				const personaData = await contract.personas(i)
 
@@ -147,6 +145,11 @@ export class ZkitterAdapter implements Adapter {
 				})
 			}
 		}
+
+		// TODO: fix type in next zkitter-js release
+		// @ts-ignore
+		await this.zkitter.updateFilter({ group: groupIds })
+		console.log(groupIds)
 
 		personas.update(state => ({ ...state, loading: false }))
 	}
