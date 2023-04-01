@@ -32,6 +32,8 @@ import {
 	addDoc,
 	onSnapshot,
 	query,
+	updateDoc,
+	arrayUnion,
 } from 'firebase/firestore'
 import { get } from 'svelte/store'
 // TODO: Add SDKs for Firebase products that you want to use
@@ -70,7 +72,9 @@ export class Firebase implements Adapter {
 			personas.update((state) => {
 				const all = new Map<string | number, Persona>()
 				data.docs.forEach((e) => {
-					all.set(e.id, e.data() as Persona)
+					const persona = e.data()
+					persona.participantsCount = persona.participants?.length
+					all.set(e.id, persona as Persona)
 				})
 
 				return { ...state, all, loading: false }
@@ -84,7 +88,12 @@ export class Firebase implements Adapter {
 				const subscribeTokens = onSnapshot(userSnapshot, (res) => {
 					type UserRes = { go: number; repStaked: number; repTotal: number }
 					const { go, repStaked, repTotal } = res.data() as UserRes
-					tokens.update((state) => ({ ...state, go, repStaked, repTotal }))
+					tokens.update((state) => ({
+						...state,
+						go: go ?? 5000, // FIXME: this should be DEFAULT_GO_AMOUNT
+						repStaked: repStaked ?? 0,
+						repTotal: repTotal ?? 5000, // FIXME: this should be 0
+					}))
 				})
 				this.userSubscriptions.push(subscribeTokens)
 				const transactionSnapshot = collection(db, `users/${p.address}/transactions`)
@@ -180,9 +189,9 @@ export class Firebase implements Adapter {
 		const { posts, ...persona } = draftPersona
 		const personaDoc = await addDoc(personasCollection, {
 			...persona,
-			participantsCount: 1,
+			participants: [address],
 			postsCount: 5,
-		} as Persona)
+		})
 		const postCollection = collection(db, `personas/${personaDoc.id}/posts`)
 		posts.forEach((p) =>
 			addDoc(postCollection, {
@@ -190,8 +199,6 @@ export class Firebase implements Adapter {
 				address,
 			}),
 		)
-		const participantsCollection = collection(db, `personas/${personaDoc.id}/participants`)
-		addDoc(participantsCollection, { address })
 
 		const profileCollection = collection(db, `users/${address}/transactions`)
 		await addDoc(profileCollection, {
@@ -245,8 +252,6 @@ export class Firebase implements Adapter {
 		images: string[],
 		signer: Signer,
 	): Promise<void> {
-		await signer.signMessage('This "transaction" publishes a post to pending')
-
 		const post = {
 			timestamp: Date.now(),
 			text,
@@ -255,11 +260,21 @@ export class Firebase implements Adapter {
 			demote: [],
 		}
 
+		const address = await signer.getAddress()
+		const isMemberOfGroup = get(personas).all.get(groupId)?.participants?.includes(address)
+
+		if (!isMemberOfGroup) {
+			await signer.signMessage('This "transaction" joins the persona')
+			const personaDoc = doc(db, `personas/${groupId}`)
+			updateDoc(personaDoc, { participants: arrayUnion(address) })
+		}
+
+		await signer.signMessage('This "transaction" publishes a post to pending')
+
 		// Store post to pending
 		const pendingPosts = collection(db, `personas/${groupId}/pending`)
 		addDoc(pendingPosts, post)
 
-		const address = await signer.getAddress()
 		const profileCollection = collection(db, `users/${address}/transactions`)
 		await addDoc(profileCollection, {
 			timestamp: Date.now(),
@@ -358,32 +373,27 @@ export class Firebase implements Adapter {
 
 	async voteOnPost(groupId: string, postId: number, vote: '+' | '-', signer: Signer) {
 		await signer.signMessage(`This "transaction" votes ${vote === '+' ? 'promote' : 'demote'}`)
+		const address = await signer.getAddress()
 
-		posts.update((state) => {
-			const posts = state.data.get(groupId)
-			if (posts) {
-				posts.pending[postId].yourVote = vote
-				state.data.set(groupId, posts)
-			}
+		const postData = get(posts).data.get(groupId)?.pending[postId]
+		if (!postData) return
 
-			return state
+		const postDoc = doc(db, `personas/${groupId}/pending/${postData.postId}`)
+		updateDoc(postDoc, {
+			[vote === '+' ? 'promote' : 'demote']: arrayUnion(address),
 		})
 
-		tokens.update(({ go, ...state }) => {
-			return {
-				...state,
-				go: go - VOTE_GO_PRICE,
-			}
-		})
-		transaction.update(({ transactions }) => {
-			transactions.push({
-				timestamp: Date.now(),
-				goChange: -VOTE_GO_PRICE,
-				repChange: 0,
-				type: vote === '+' ? 'promote' : 'demote',
-				personaId: groupId,
-			})
-			return { transactions }
+		const { go } = get(tokens)
+		const user = doc(db, `users/${address}`)
+		setDoc(user, { address, go: go - VOTE_GO_PRICE }, { merge: true })
+
+		const profileCollection = collection(db, `users/${address}/transactions`)
+		await addDoc(profileCollection, {
+			timestamp: Date.now(),
+			goChange: -VOTE_GO_PRICE,
+			repChange: 0,
+			type: vote === '+' ? 'promote' : 'demote',
+			personaId: groupId,
 		})
 	}
 
