@@ -3,6 +3,7 @@ import type { Signer } from 'ethers'
 import type { Chat } from '$lib/stores/chat'
 import { InMemoryAndIPFS } from './in-memory-and-ipfs'
 import { ZkitterAdapter } from './zkitter'
+import { Firebase } from './firebase'
 import { ADAPTER } from '$lib/constants'
 import { getFromLocalStorage } from '$lib/utils'
 
@@ -34,7 +35,7 @@ export interface Adapter {
 	subscribeToChat(chatId: number): () => void
 }
 
-export const adapters = ['in-memory', 'zkitter'] as const
+export const adapters = ['in-memory', 'zkitter', 'firebase'] as const
 export type AdapterName = (typeof adapters)[number]
 export const adapterName: AdapterName = getFromLocalStorage<AdapterName>(
 	'adapter',
@@ -48,6 +49,9 @@ switch (adapterName) {
 		break
 	case 'zkitter':
 		adapter = new ZkitterAdapter()
+		break
+	case 'firebase':
+		adapter = new Firebase()
 		break
 	default:
 		throw new Error(`Invalid adapter ${ADAPTER}`)
