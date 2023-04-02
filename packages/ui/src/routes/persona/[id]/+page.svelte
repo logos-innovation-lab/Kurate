@@ -39,7 +39,7 @@
 	let unsubscribe: () => unknown
 
 	onMount(() => {
-		adapter.syncPersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
+		adapter.subscribePersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
 	})
 
 	onDestroy(() => {

@@ -375,6 +375,9 @@ export class ZkitterAdapter implements Adapter {
 			ecdsa,
 		}))
 
+		console.log(this.identity)
+		console.log(await this.zkitter?.getChatByUser('0x' + this.identity.zkIdentity.genIdentityCommitment().toString(16)))
+
 		await this.loadFavorite()
 	}
 
@@ -450,7 +453,7 @@ export class ZkitterAdapter implements Adapter {
 		}, personaId)
 	}
 
-	async syncPersonaPosts(personaId: string): Promise<void> {
+	async subscribePersonaPosts(personaId: string): Promise<void> {
 		const groupId = GroupAdapter.createGroupId(personaId)
 		await this.zkitter!.queryGroup(groupId)
 		await this.syncActivePost(personaId)
@@ -526,7 +529,8 @@ export class ZkitterAdapter implements Adapter {
 			);
 		}
 
-		await this.zkitter!.publish(message, proof)
+		const data = await this.zkitter!.publish(message, proof)
+		console.log(data)
 	}
 	sendChatMessage(chatId: string, text: string): Promise<void> {
 		const chatStore = get(chats)
@@ -560,16 +564,15 @@ export class ZkitterAdapter implements Adapter {
 
 			await this.publishZkitterMessage(chat)
 
-			// chats.update((state) => {
-			// 	const newState = { ...state }
-			// 	newState.chats[chatId].messages.push({
-			// 		timestamp: Date.now(),
-			// 		text,
-			// 		myMessage: true,
-			// 	})
-			// 	resolve()
-			// 	return newState
-			// })
+			chats.update((state) => {
+				const newState = { ...state }
+				newState.chats.get(chatId)!.messages.push({
+					timestamp: Date.now(),
+					text,
+				})
+				resolve()
+				return newState
+			})
 		})
 	}
 

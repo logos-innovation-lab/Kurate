@@ -429,7 +429,7 @@ export class InMemoryAndIPFS implements Adapter {
 		})
 	}
 
-	async syncPersonaPosts(groupId: string): Promise<void> {
+	async subscribePersonaPosts(groupId: string): Promise<void> {
 		// const interval = setInterval(() => {
 		// 	// 5% chance every second to add new pending post
 		// 	if (executeWithChance(0.05)) addRandomPost(groupId, true)

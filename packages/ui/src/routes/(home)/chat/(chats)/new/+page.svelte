@@ -11,8 +11,7 @@
 
 	async function sendMessage(text: string) {
 		if (!draftChat) return
-		const length = await adapters.startChat(draftChat)
-		const chatId = length - 1
+		const chatId = await adapters.startChat(draftChat)
 		await adapters.sendChatMessage(chatId, text)
 		goto(ROUTES.CHAT(chatId))
 	}

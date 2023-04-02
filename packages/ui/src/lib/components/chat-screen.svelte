@@ -28,8 +28,7 @@
 	import adapter from '$lib/adapters'
 	import { createAvatar } from '@dicebear/core'
 	import { botttsNeutral } from '@dicebear/collection'
-	import { profile } from '$lib/stores/profile'
-	
+
 	let persona: PersonaType
 	let post: PostType
 

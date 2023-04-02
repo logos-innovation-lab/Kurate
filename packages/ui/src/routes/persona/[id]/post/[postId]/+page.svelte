@@ -9,7 +9,7 @@
 
 	import { posts } from '$lib/stores/post'
 	import { profile } from '$lib/stores/profile'
-	import { chats } from '$lib/stores/profile'
+	import { chats } from '$lib/stores/chat'
 	import type { DraftChat } from '$lib/stores/chat'
 	import { personas } from '$lib/stores/persona'
 	import { goto } from '$app/navigation'
@@ -33,6 +33,8 @@
 			messages: [],
 			closed: false,
 		}
+
+		goto(ROUTES.CHAT_NEW)
 	}
 
 	async function sendMessage(text: string) {

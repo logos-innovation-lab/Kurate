@@ -55,7 +55,7 @@
 	let vote: Vote | undefined = undefined
 
 	onMount(() => {
-		adapter.syncPersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
+		adapter.subscribePersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
 	})
 
 	onDestroy(() => {
