@@ -33,6 +33,7 @@
 		font-size: var(--font-size-normal);
 		white-space: nowrap;
 		color: var(--color-body-text);
+		margin: var(--spacing-24) calc(var(--spacing-24) * -1) var(--spacing-12);
 
 		.label {
 			font-size: var(--font-size-sm);
@@ -46,6 +47,7 @@
 			justify-content: space-between;
 			align-items: center;
 			width: 100%;
+			font-family: var(--font-serif);
 		}
 
 		& :global(svg) {

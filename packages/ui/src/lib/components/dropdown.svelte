@@ -7,6 +7,7 @@
 	let cls: string | undefined = undefined
 	export { cls as class }
 	export let disabled: boolean | undefined = undefined
+	export let rep: boolean | undefined = undefined
 
 	let showDropdown = false
 	let dropdownElement: HTMLElement
@@ -40,7 +41,7 @@
 	</div>
 
 	<div class={`root ${cls}`}>
-		<ul class={showDropdown ? '' : 'hidden'}>
+		<ul class={`${showDropdown ? '' : 'hidden'} ${rep ? 'rep' : ''} ${cls}`}>
 			<slot />
 		</ul>
 	</div>
@@ -60,6 +61,10 @@
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
 			background-color: rgba(var(--color-body-bg-rgb), 0.93);
 			overflow: hidden;
+
+			&.rep {
+				inset: calc(100% - var(--spacing-12)) calc(var(--spacing-24) * -1) auto auto;
+			}
 
 			@media (min-width: 450px) {
 				min-width: min(calc(100vw - 48px), 350px);
