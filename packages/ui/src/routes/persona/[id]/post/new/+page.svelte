@@ -166,8 +166,8 @@
 			</div>
 			<h2>Your post is now pending review</h2>
 			<p>
-				Your post has been added to "Persona name's" pending list for community review. If it gets
-				promoted it will be automatically published to "Persona name's" page when the new epoch
+				Your post has been added to "{persona.name}'s" pending list for community review. If it gets
+				promoted it will be automatically published to "{persona.name}'s" page when the new epoch
 				begins.
 			</p>
 			<LearnMore href="/" />
