@@ -24,14 +24,27 @@
 		...chat,
 		chatId,
 	}))
-	let sortAsc = true
-	let sortBy: 'date' | 'activity' | 'alphabetical' = 'date'
+	let sortAsc = false
+	let sortBy: 'activity' | 'alphabetical' = 'activity'
 	let filterQuery = ''
 
-	$: openChats = allChats.filter(
-		({ closed, persona, post }) =>
-			(!closed && persona.name.includes(filterQuery)) || post.text.includes(filterQuery),
-	)
+	$: openChats = allChats
+		.filter(
+			({ closed, persona, post }) =>
+				(!closed && persona.name.includes(filterQuery)) || post.text.includes(filterQuery),
+		)
+		.sort((a, b) => {
+			if (sortBy === 'activity') {
+				const lastMessageA = a.messages[a.messages.length - 1]
+				const lastMessageB = b.messages[b.messages.length - 1]
+				return sortAsc
+					? lastMessageA.timestamp - lastMessageB.timestamp
+					: lastMessageB.timestamp - lastMessageA.timestamp
+			}
+			return sortAsc
+				? a.post.text.localeCompare(b.post.text)
+				: b.post.text.localeCompare(a.post.text)
+		})
 	$: closedChats = allChats.filter(({ closed }) => closed)
 </script>
 
@@ -45,9 +58,6 @@
 			<Dropdown>
 				<Button slot="button" icon={SettingsView} />
 
-				<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
-					Sort by date of creation
-				</DropdownItem>
 				<DropdownItem active={sortBy === 'activity'} onClick={() => (sortBy = 'activity')}>
 					Sort by recent activity
 				</DropdownItem>
