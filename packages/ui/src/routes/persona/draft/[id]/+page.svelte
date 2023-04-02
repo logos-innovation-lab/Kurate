@@ -368,7 +368,7 @@
 						<Info size={32} />
 					</div>
 					<h2>This will use {TOKEN_POST_COST} GO</h2>
-					<p>This Persona will be live, and everyone will be able to post with it.</p>
+					<p>This Persona will be alive, and everyone will be able to play with it.</p>
 					<p><LearnMore href="/" /></p>
 				</div>
 				<BorderBox
