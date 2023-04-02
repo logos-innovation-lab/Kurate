@@ -6,6 +6,7 @@ import type { ZkIdentity } from '@zk-kit/identity'
 import {generateMerkleTree} from "@zk-kit/protocols";
 import type {Proof, ProofType} from "zkitter-js";
 import {getFromLocalStorage, saveToLocalStorage} from "../../utils";
+import {GroupAdapter} from "./group-adapter";
 
 export const prover: Prover = {
 	verifyProof: async (
@@ -75,7 +76,7 @@ export async function generateRLNProofForNewPersona(hash: string, zkIdentity: Zk
 	const ecdh = await generateECDHKeyPairFromZKIdentity(zkIdentity, hash)
 	return {
 		ecdh: ecdh.pub,
-		groupId: `kurate_${newPersonaId}`,
+		groupId: GroupAdapter.createGroupId(newPersonaId),
 		proof,
 		type: 'rln' as ProofType.rln,
 	}

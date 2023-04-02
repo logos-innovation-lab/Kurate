@@ -48,7 +48,7 @@ export class ZkitterAdapter implements Adapter {
 	async start() {
 		const { Zkitter } = await import('zkitter-js')
 
-		this.zkitter = await Zkitter.initialize({ groups: [], topicPrefix: 'kurate_dev3' })
+		this.zkitter = await Zkitter.initialize({ groups: [], topicPrefix: 'kurate_dev_5' })
 
 		if (process.env.NODE_ENV !== 'production') {
 			this.zkitter.on('Zkitter.NewMessageCreated', async (msg, proof) => {
@@ -82,8 +82,7 @@ export class ZkitterAdapter implements Adapter {
 		const activeMapping = await updateActivePosts(activePosts.map(p => p.args.messageHash));
 		for (let i = 0; i < groupIds.length; i++) {
 			const groupPosts = await (this.zkitter!.db as LevelDBAdapter).getGroupPosts(groupIds[i])
-			console.log(groupIds[i], groupPosts)
-			const [_, personaId] = groupIds[i].split('_')
+			const [_, __, personaId] = groupIds[i].split('_')
 			groupPosts.forEach(groupPost => {
 				if (activeMapping['0x' + groupPost.hash()]) {
 					posts.addApproved({
@@ -268,7 +267,6 @@ export class ZkitterAdapter implements Adapter {
 			payload: { content: draftPersona.pitch },
 		})
 
-		console.log(newPersonaId);
 		await this.zkitter!.services.pubsub.publish(
 			pitch,
 			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
@@ -391,10 +389,10 @@ export class ZkitterAdapter implements Adapter {
 		const proof = await this.zkitter!.createProof({
 			hash: post.hash(),
 			zkIdentity: this.identity!.zkIdentity,
-			groupId: 'kurate_' + personaId,
+			groupId: GroupAdapter.createGroupId(personaId),
 		})
 
-		await this.zkitter!.publish(post, proof)
+		await this.zkitter!.services.pubsub.publish(post, proof)
 
 		await contract['proposeMessage(uint256,uint8,bytes32)'](
 			Number(personaId),
