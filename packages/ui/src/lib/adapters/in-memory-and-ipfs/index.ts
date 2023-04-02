@@ -438,7 +438,7 @@ export class InMemoryAndIPFS implements Adapter {
 		return () => clearInterval(interval)
 	}
 
-	async voteOnPost(groupId: string, postId: number, vote: '+' | '-', signer: Signer) {
+	async voteOnPost(groupId: string, postId: string, vote: '+' | '-', signer: Signer) {
 		await signer.signMessage(`This "transaction" votes ${vote === '+' ? 'promote' : 'demote'}`)
 
 		posts.update((state) => {

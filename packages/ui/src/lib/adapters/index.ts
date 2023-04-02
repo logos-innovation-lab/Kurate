@@ -28,7 +28,7 @@ export interface Adapter {
 
 	publishPost(groupId: string, text: string, images: string[], signer: Signer): Promise<void>
 	subscribePersonaPosts(groupId: string): Promise<() => unknown>
-	voteOnPost(groupId: string, postId: number, vote: '+' | '-', signer: Signer): Promise<void>
+	voteOnPost(groupId: string, postHash: string, vote: '+' | '-', signer: Signer): Promise<void>
 
 	startChat(chat: DraftChat): Promise<string>
 	sendChatMessage(chatId: string, text: string): Promise<void>
