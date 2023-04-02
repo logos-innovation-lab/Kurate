@@ -58,9 +58,6 @@
 
 		.wrapper {
 			margin-right: 0px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
 		}
 
 		&.small {
@@ -72,6 +69,9 @@
 		width: 20px;
 		height: 20px;
 		margin-right: var(--spacing-6);
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 	.primary {
 		color: var(--color-body-bg);
