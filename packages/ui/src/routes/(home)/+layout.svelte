@@ -39,9 +39,9 @@
 	.nav-wrapper {
 		padding: 0 var(--spacing-24) var(--spacing-24);
 
-		@media (prefers-color-scheme: dark) {
-			border-bottom-color: var(--grey-500);
-		}
+		// @media (prefers-color-scheme: dark) {
+		// 	border-bottom-color: var(--grey-500);
+		// }
 
 		@media (min-width: 688px) {
 			padding: 0 var(--spacing-48) var(--spacing-48);

@@ -69,26 +69,26 @@
 			transition: background-color 0.2s;
 		}
 
-		@media (prefers-color-scheme: dark) {
-			background-color: var(--color-body-bg);
-			color: var(--color-body-text);
+		// @media (prefers-color-scheme: dark) {
+		// 	background-color: var(--color-body-bg);
+		// 	color: var(--color-body-text);
 
-			& :global(svg) {
-				fill: var(--color-body-text);
-			}
+		// 	& :global(svg) {
+		// 		fill: var(--color-body-text);
+		// 	}
 
-			&:disabled {
-				color: var(--grey-500);
+		// 	&:disabled {
+		// 		color: var(--grey-500);
 
-				& :global(svg) {
-					fill: var(--grey-500);
-				}
-			}
+		// 		& :global(svg) {
+		// 			fill: var(--grey-500);
+		// 		}
+		// 	}
 
-			&:active:not(:disabled),
-			&:hover:not(:disabled) {
-				transition: background-color 0.2s;
-			}
-		}
+		// 	&:active:not(:disabled),
+		// 	&:hover:not(:disabled) {
+		// 		transition: background-color 0.2s;
+		// 	}
+		// }
 	}
 </style>

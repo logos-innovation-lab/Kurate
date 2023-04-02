@@ -62,21 +62,21 @@
 		animation-timing-function: ease-out;
 	}
 
-	@media (prefers-color-scheme: dark) {
-		.root {
-			&:not(:last-child) {
-				border-bottom-color: var(--grey-500);
-			}
+	// @media (prefers-color-scheme: dark) {
+	// 	.root {
+	// 		&:not(:last-child) {
+	// 			border-bottom-color: var(--grey-500);
+	// 		}
 
-			&:hover {
-				background-color: var(--grey-500);
-			}
-		}
+	// 		&:hover {
+	// 			background-color: var(--grey-500);
+	// 		}
+	// 	}
 
-		:global(svg) {
-			fill: var(--grey-100);
-			width: 16px;
-			height: 16px;
-		}
-	}
+	// 	:global(svg) {
+	// 		fill: var(--grey-100);
+	// 		width: 16px;
+	// 		height: 16px;
+	// 	}
+	// }
 </style>

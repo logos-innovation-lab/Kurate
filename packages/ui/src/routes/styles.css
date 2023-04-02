@@ -121,7 +121,6 @@ body {
 
 img,
 picture,
-/* svg, */
 video {
 	display: block;
 	max-width: 100%;
@@ -131,14 +130,6 @@ video {
 a {
 	color: var(--color-black);
 	text-decoration: underline;
-}
-
-/* THIS CLASS SHOULD BE REMOVED WHEN NO LONGER NEEDED */
-.note {
-	background-color: palevioletred;
-	color: white;
-	text-align: center;
-	padding: var(--spacing-24);
 }
 
 @media (min-width: 1280px) {
