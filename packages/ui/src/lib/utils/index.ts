@@ -3,11 +3,6 @@ import { ethers } from 'ethers'
 
 type JSONdecoded = string | number | boolean | object | Array<JSONdecoded>
 
-export type SavedSeedMessages = {
-	personaId: number
-	serializedMessages: string[][]
-	idCommitment: string
-}
 /**
  * Sleep for N miliseconds
  *
