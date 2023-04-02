@@ -172,16 +172,8 @@
 			</Container>
 		{:else}
 			<Grid>
-				{#each personaPosts.approved
-					.filter((post) => post.text.toLowerCase().includes(filterQuery.toLowerCase()))
-					.sort((a, b) => {
-						if (sortBy === 'date') {
-							return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
-						} else {
-							return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
-						}
-					}) as post, index}
-					<Post {post} on:click={() => goto(ROUTES.PERSONA_POST(groupId, index))} />
+				{#each personaPosts.approved as hash}
+					<Post post={personaPosts.all.get(hash)} on:click={() => goto(ROUTES.PERSONA_POST(groupId, hash))} />
 				{/each}
 			</Grid>
 		{/if}

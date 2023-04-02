@@ -104,7 +104,7 @@
 				icon={Checkmark}
 				on:click={async () => {
 					if (!vote || !$profile.signer) return
-					await adapter.voteOnPost(groupId, vote.index, vote.vote, $profile.signer)
+					await adapter.voteOnPost(groupId, vote.hash, vote.vote, $profile.signer)
 					vote = undefined
 				}}
 			/>
@@ -139,7 +139,7 @@
 				icon={Checkmark}
 				on:click={() => {
 					if (!vote || !$profile.signer) return
-					adapter.voteOnPost(groupId, vote.index, vote.vote, $profile.signer)
+					adapter.voteOnPost(groupId, vote.hash, vote.vote, $profile.signer)
 					vote = undefined
 				}}
 			/>
@@ -239,19 +239,11 @@
 		</Container>
 	{:else}
 		<Grid>
-			{#each personaPosts.pending
-				.filter((post) => post.text.toLowerCase().includes(filterQuery.toLowerCase()))
-				.sort((a, b) => {
-					if (sortBy === 'date') {
-						return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
-					} else {
-						return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
-					}
-				}) as post, index}
-				<Post {post} on:click={() => goto(ROUTES.PERSONA_PENDING_POST(groupId, index))}>
-					{#if post.yourVote === '+' && $profile.signer !== undefined}
+			{#each personaPosts.pending as hash}
+				<Post post={personaPosts.all.get(hash)} on:click={() => goto(ROUTES.PERSONA_POST(groupId, hash))}>
+					{#if personaPosts.all.get(hash)?.yourVote === '+' && $profile.signer !== undefined}
 						<Button icon={FavoriteFilled} variant="accent" label="You promoted this" />
-					{:else if post.yourVote === '-' && $profile.signer !== undefined}
+					{:else if personaPosts.all.get(hash)?.yourVote === '-' && $profile.signer !== undefined}
 						<Button icon={ThumbsDown} variant="accent" label="You demoted this" />
 					{:else}
 						<Button
@@ -259,14 +251,14 @@
 							label="Promote"
 							icon={Favorite}
 							disabled={$profile.signer === undefined}
-							on:click={() => (vote = { index, vote: '+' })}
+							on:click={() => (vote = { hash, vote: '+' })}
 						/>
 						<Button
 							variant="secondary"
 							label="Demote"
 							icon={ThumbsDown}
 							disabled={$profile.signer === undefined}
-							on:click={() => (vote = { index, vote: '-' })}
+							on:click={() => (vote = { hash, vote: '-' })}
 						/>
 					{/if}
 				</Post>

@@ -63,6 +63,7 @@ export class ZkitterAdapter implements Adapter {
 		const contract = await getGlobalAnonymousFeed()
 
 		await this.syncPersonasFromContract(contract)
+		await this.syncPersonaData(contract)
 		await this.syncActivePost(contract)
 		await this.syncPendingPost(contract)
 
@@ -86,6 +87,7 @@ export class ZkitterAdapter implements Adapter {
 			groupPosts.forEach(groupPost => {
 				if (activeMapping['0x' + groupPost.hash()]) {
 					posts.addApproved({
+						hash: groupPost.hash(),
 						timestamp: groupPost.createdAt.getTime(),
 						text: groupPost.payload.content,
 						images: groupPost.payload.attachment ? [groupPost.payload.attachment] : [],
@@ -95,25 +97,25 @@ export class ZkitterAdapter implements Adapter {
 		}
 	}
 	private async syncPendingPost(contract: GlobalAnonymousFeed) {
-		const groupIds = Object.keys(this.zkitter!.services.groups.groups);
-		const proposedPosts = await contract.queryFilter(contract.filters.NewProposedMessage());
+		const currentEpoch = await contract.attesterCurrentEpoch();
+		const proposedPosts = await contract.queryFilter(contract.filters["NewProposedMessage(uint256,uint256,bytes32)"](undefined, currentEpoch));
 
-		console.log(proposedPosts);
-		// const activeMapping = await updateActivePosts(activePosts.map(p => p.args.messageHash));
-		// for (let i = 0; i < groupIds.length; i++) {
-		// 	const groupPosts = await (this.zkitter!.db as LevelDBAdapter).getGroupPosts(groupIds[i])
-		// 	console.log(groupIds[i], groupPosts)
-		// 	const [_, personaId] = groupIds[i].split('_')
-		// 	groupPosts.forEach(groupPost => {
-		// 		if (activeMapping['0x' + groupPost.hash()]) {
-		// 			posts.addApproved({
-		// 				timestamp: groupPost.createdAt.getTime(),
-		// 				text: groupPost.payload.content,
-		// 				images: groupPost.payload.attachment ? [groupPost.payload.attachment] : [],
-		// 			}, personaId)
-		// 		}
-		// 	})
-		// }
+		for (let i = 0; i < proposedPosts.length; i++) {
+			const {args: {personaId, messageHash}} = proposedPosts[i]
+			const post = await this.getPostByHash(messageHash)
+
+			if (post) {
+				posts.addPending(
+					{
+						hash: post.hash(),
+						text: post.payload.content,
+						timestamp: post.createdAt.getTime(),
+						images: post.payload.attachment ? [post.payload.attachment]: [],
+					},
+					personaId.toString(),
+				)
+			}
+		}
 	}
 	private async syncPersonasFromContract(contract: GlobalAnonymousFeed) {
 		if (this.timeout) clearTimeout(this.timeout)
@@ -142,28 +144,6 @@ export class ZkitterAdapter implements Adapter {
 				await group.sync()
 
 				groupIds.push(group.groupId)
-
-				const personaData = await contract.personas(i)
-
-				const pitch = await this.getPostByHash(personaData.pitch)
-				const description = await this.getPostByHash(personaData.description)
-
-				const persona: Persona = {
-					personaId,
-					name: personaData.name,
-					pitch: pitch?.payload.content || '',
-					description: description?.payload.content || '',
-					picture: personaData.profileImage,
-					cover: personaData.coverImage,
-					postsCount: 0,
-					participantsCount: 0,
-					minReputation: 5,
-				}
-
-				personas.update(state => {
-					state.all.set(personaId, persona);
-					return { ...state };
-				})
 			}
 		}
 
@@ -172,6 +152,36 @@ export class ZkitterAdapter implements Adapter {
 		await this.zkitter.updateFilter({ group: groupIds })
 
 		personas.update(state => ({ ...state, loading: false }))
+	}
+
+	private async syncPersonaData(contract: GlobalAnonymousFeed) {
+		const numOfPersonas = (await contract.numOfPersonas()).toNumber()
+
+		for (let i = 0; i < numOfPersonas; i++) {
+			const personaId = '' + i;
+
+			const personaData = await contract.personas(i)
+
+			const pitch = await this.getPostByHash(personaData.pitch)
+			const description = await this.getPostByHash(personaData.description)
+
+			const persona: Persona = {
+				personaId,
+				name: personaData.name,
+				pitch: pitch?.payload.content || '',
+				description: description?.payload.content || '',
+				picture: personaData.profileImage,
+				cover: personaData.coverImage,
+				postsCount: 0,
+				participantsCount: 0,
+				minReputation: 5,
+			}
+
+			personas.update(state => {
+				state.all.set(personaId, persona);
+				return { ...state };
+			})
+		}
 	}
 	addPersonaToFavorite(groupId: string): Promise<void> {
 		return new Promise((resolve) => {
@@ -402,6 +412,7 @@ export class ZkitterAdapter implements Adapter {
 		)
 
 		posts.addPending({
+			hash: post.hash(),
 			text,
 			images,
 			timestamp: post.createdAt.getTime(),
@@ -417,14 +428,14 @@ export class ZkitterAdapter implements Adapter {
 
 		const unsubscribe = this.zkitter.subscribe()
 
-		posts.addPending(
-			{
-				text: `This is some pending persona post`,
-				timestamp: Date.now(),
-				images: [],
-			},
-			groupId,
-		)
+		// posts.addPending(
+		// 	{
+		// 		text: `This is some pending persona post`,
+		// 		timestamp: Date.now(),
+		// 		images: [],
+		// 	},
+		// 	groupId,
+		// )
 
 		return unsubscribe
 	}
@@ -433,15 +444,16 @@ export class ZkitterAdapter implements Adapter {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'voteOnPost')
 
-		posts.update((state) => {
-			const posts = state.data.get(groupId)
-			if (posts) {
-				posts.pending[postId].yourVote = vote
-				state.data.set(groupId, posts)
-			}
-
-			return state
-		})
+		console.log(groupId, postId, vote)
+		// posts.update((state) => {
+		// 	const posts = state.data.get(groupId)
+		// 	if (posts) {
+		// 		posts.pending[postId].yourVote = vote
+		// 		state.data.set(groupId, posts)
+		// 	}
+		//
+		// 	return state
+		// })
 	}
 
 	startChat(chat: Chat): Promise<string> {
