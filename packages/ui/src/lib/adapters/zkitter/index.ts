@@ -439,20 +439,47 @@ export class ZkitterAdapter implements Adapter {
 		return unsubscribe
 	}
 
-	async voteOnPost(groupId: string, postId: number, vote: '+' | '-') {
-		// FIXME: properly implement
-		console.error('NOT IMPLEMENTED', 'voteOnPost')
+	async voteOnPost(
+		groupId: string,
+		postHash: string,
+		vote: '+' | '-',
+		signer: Signer,
+	) {
+		const contract = getGlobalAnonymousFeed(signer)
 
-		console.log(groupId, postId, vote)
-		// posts.update((state) => {
-		// 	const posts = state.data.get(groupId)
-		// 	if (posts) {
-		// 		posts.pending[postId].yourVote = vote
-		// 		state.data.set(groupId, posts)
-		// 	}
-		//
-		// 	return state
-		// })
+		const state = new UserState(
+			{
+				prover: prover, // a circuit prover
+				attesterId: (await contract.attesterId()).toBigInt(),
+				unirepAddress: await contract.unirep(),
+				provider: getProvider(), // an ethers.js provider
+			},
+			this.identity!.unirepIdentity,
+		)
+
+		await state.sync.start()
+		await state.waitForSync()
+
+		const {proof, publicSignals} = await state.genProveReputationProof({})
+
+		await contract.vote(
+			'0x' + postHash,
+			vote === '+',
+			publicSignals,
+			proof,
+		)
+
+		posts.update((state) => {
+			const posts = state.data.get(groupId)
+			const post = posts?.all.get(postHash)
+
+			if (posts && post) {
+				post.yourVote = vote
+				state.data.set(groupId, posts)
+			}
+
+			return state
+		})
 	}
 
 	startChat(chat: Chat): Promise<number> {

@@ -48,7 +48,7 @@
 	let unsubscribe: () => unknown
 
 	type Vote = {
-		index: number
+		hash: string
 		vote: '+' | '-'
 	}
 
