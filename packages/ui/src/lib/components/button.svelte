@@ -52,9 +52,15 @@
 	}
 	.icon-only {
 		width: 44px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 
 		.wrapper {
 			margin-right: 0px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 
 		&.small {
