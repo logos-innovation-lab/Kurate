@@ -65,7 +65,7 @@
 		/>
 	</Header>
 
-	<div class="parent center parent--adjusted-width">
+	<div class="parent parent--adjusted-width">
 		{#each images as image, index}
 			<div class="child">
 				<img src={adapter.getPicture(image)} alt="post" />
