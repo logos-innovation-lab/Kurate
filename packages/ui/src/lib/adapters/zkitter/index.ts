@@ -8,7 +8,7 @@ import type {Adapter} from '..'
 import {GroupAdapter} from './group-adapter'
 import type {Signer} from 'ethers'
 import {create} from 'ipfs-http-client'
-import {createIdentity, generateRLNProofForNewPersona, prover} from './utils'
+import {createIdentity, generateRLNProofForNewPersona, prover, rlnVkey} from './utils'
 import {posts} from '$lib/stores/post'
 import type {GenericDBAdapterInterface, PostMeta, Zkitter, Message} from 'zkitter-js'
 import type {Persona} from '../../stores/persona'
@@ -334,21 +334,27 @@ export class ZkitterAdapter implements Adapter {
 		if (!draftPersona.cover) throw new Error('must contain a cover image')
 
 		const signupProof = await state.genUserSignUpProof()
-		const contractWithSigner = await getGlobalAnonymousFeed(signer)
 
-		await contractWithSigner[
-			'createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'
-		](
-			draftPersona.name,
-			draftPersona.picture,
-			draftPersona.cover,
-			'0x' + pitch.hash(),
-			'0x' + description.hash(),
-			seedPostHashes as [string, string, string, string, string],
-			signupProof.publicSignals,
-			signupProof.proof,
-			{ gasLimit: 6721974 },
-		)
+		const resp = await fetch(`http://localhost:3000/create-and-join-without-rep`, {
+			method: 'post',
+			headers: {
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: draftPersona.name,
+				picture: draftPersona.picture,
+				cover: draftPersona.cover,
+				pitch: '0x' + pitch.hash(),
+				description: '0x' + description.hash(),
+				seedPostHashes: seedPostHashes as [string, string, string, string, string],
+				signupSignals: signupProof.publicSignals,
+				signupProof: signupProof.proof,
+			})
+		})
+
+		const json = await resp.json()
+
+		console.log(json)
 
 		// return new Promise((resolve) => {
 		// 	tokens.update(({ go, ...state }) => {
@@ -411,6 +417,16 @@ export class ZkitterAdapter implements Adapter {
 		return meta
 	}
 
+	getEpoch(): string[] {
+		const timeNow = new Date();
+		timeNow.setHours(Math.floor(timeNow.getHours() / 8) * 8);
+		timeNow.setMilliseconds(0);
+		timeNow.setSeconds(0);
+		timeNow.setMinutes(0);
+		const baseEpoch = timeNow.getTime();
+		return Array(10).fill(0).map((_, i) => String(baseEpoch + i * (28800000/10)))
+	}
+
 	async publishPost(
 		personaId: string,
 		text: string,
@@ -418,8 +434,7 @@ export class ZkitterAdapter implements Adapter {
 		signer: Signer,
 	): Promise<void> {
 		const {Post, MessageType, PostMessageSubType} = await import('zkitter-js')
-
-		const contract = getGlobalAnonymousFeed(signer)
+		const {Registry, RLN} = await import('rlnjs')
 
 		const post = new Post({
 			type: MessageType.Post,
@@ -436,14 +451,61 @@ export class ZkitterAdapter implements Adapter {
 			groupId: GroupAdapter.createGroupId(personaId),
 		})
 
+		// const members = await contract.queryFilter(contract.filters.NewPersonaMember())
+		// const rlnRegistry = new Registry(20)
+		// for (const { args } of members) {
+		// 	const idcommitmentBn = args.identityCommitment.toBigInt()
+		// 	if (rlnRegistry.indexOf(idcommitmentBn) < 0) {
+		// 		rlnRegistry.addMember(idcommitmentBn)
+		// 	}
+		// }
+
+		// const epochs = this.getEpoch()
+		// const merkleProof = rlnRegistry.generateMerkleProof(this.identity!.unirepIdentity.genIdentityCommitment());
+		// const rln = new RLN('http://localhost:3000/rln/rln.wasm', 'http://localhost:3000/rln/rln_final.zkey', rlnVkey)
+		// const goTokens: any[] = []
+		// for (let i = 0; i < epochs.length; i++) {
+		// 	console.log(`generating go token ${i}`)
+		// 	const go = await rln.generateProof(post.hash(), merkleProof, epochs[i])
+		// 	goTokens.push({
+		// 		...go,
+		// 		epoch: go.epoch.toString(),
+		// 		rlnIdentifier: go.rlnIdentifier.toString(),
+		// 		snarkProof: {
+		// 			...go.snarkProof,
+		// 			publicSignals: {
+		// 				...go.snarkProof.publicSignals,
+		// 				merkleRoot: merkleProof.root.toString(),
+		// 			},
+		// 		}
+		// 	})
+		// }
+		// console.log(goTokens)
+
+
 		await this.zkitter!.services.pubsub.publish(post, proof)
 
-		await contract['proposeMessage(uint256,uint8,bytes32)'](
-			Number(personaId),
-			0,
-			'0x' + post.hash(),
-			{ gasLimit: 6721974 },
-		)
+		const resp = await fetch(`http://localhost:3000/propose-message-without-rep`, {
+			method: 'post',
+			headers: {
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify({
+				personaId: Number(personaId),
+				type: 0,
+				postHash: '0x' + post.hash(),
+			})
+		})
+
+		const json = await resp.json()
+
+		console.log(json)
+		// await contract['proposeMessage(uint256,uint8,bytes32)'](
+		// 	Number(personaId),
+		// 	0,
+		// 	'0x' + post.hash(),
+		// 	{ gasLimit: 6721974 },
+		// )
 
 		posts.addPending({
 			hash: post.hash(),

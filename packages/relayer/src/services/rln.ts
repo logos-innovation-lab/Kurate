@@ -61,7 +61,10 @@ export const syncGroup = async (provider: Provider, address: string) => {
   // Fetch past events
   const identities = await feed.queryFilter(filter);
   for (const { args } of identities) {
-    rlnRegistry.addMember(args.identityCommitment.toBigInt());
+    const idcommitmentBn = args.identityCommitment.toBigInt()
+    if (rlnRegistry.indexOf(idcommitmentBn) < 0) {
+      rlnRegistry.addMember(idcommitmentBn)
+    }
   }
 
   // Keep registry in sync by listening to on-chain events
@@ -69,7 +72,10 @@ export const syncGroup = async (provider: Provider, address: string) => {
     _personaId: BigNumber,
     identityCommitment: BigNumber
   ) => {
-    rlnRegistry.addMember(identityCommitment.toBigInt());
+    const idcommitmentBn = identityCommitment.toBigInt()
+    if (rlnRegistry.indexOf(idcommitmentBn) < 0) {
+      rlnRegistry.addMember(idcommitmentBn)
+    }
   };
 
   feed.on<NewPersonaMemberEvent>(filter, listener);

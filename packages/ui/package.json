@@ -40,6 +40,7 @@
 		"knip": "^2.1.1",
 		"prettier": "^2.8.7",
 		"prettier-plugin-svelte": "^2.10.0",
+		"rlnjs": "^2.0.6",
 		"sass": "^1.60.0",
 		"snarkjs": "^0.6.7",
 		"svelte": "^3.57.0",

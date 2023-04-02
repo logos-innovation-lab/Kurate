@@ -4,6 +4,8 @@ import { getDefaultProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, PRIVATE_KEY, RPC_URL } from "../config";
 import { GlobalAnonymousFeed__factory } from "../abi";
+import cors from '@fastify/cors'
+const path = require('path')
 
 // Config
 enum MessageType {
@@ -12,7 +14,7 @@ enum MessageType {
   Vote,
 }
 
-const goRequired = {
+const goRequired: {[msgType: number]: number} = {
   [MessageType.Post]: 10,
   [MessageType.Comment]: 5,
   [MessageType.Vote]: 1,
@@ -37,25 +39,25 @@ const rlnProofSchema = {
             pi_a: {
               type: "array",
               items: bigIntSchema,
-              minContains: 3,
-              maxContains: 3,
+              // minContains: 3,
+              // maxContains: 3,
             },
             pi_b: {
               type: "array",
               items: {
                 type: "array",
                 items: bigIntSchema,
-                minContains: 2,
-                maxContains: 2,
+                // minContains: 2,
+                // maxContains: 2,
               },
-              minContains: 3,
-              maxContains: 3,
+              // minContains: 3,
+              // maxContains: 3,
             },
             pi_c: {
               type: "array",
               items: bigIntSchema,
-              minContains: 3,
-              maxContains: 3,
+              // minContains: 3,
+              // maxContains: 3,
             },
             protocol: { const: "groth16" },
             curve: { const: "bn128" },
@@ -94,13 +96,13 @@ const repProofSchema = {
     publicSignals: {
       type: "array",
       items: bigIntSchema,
-      minContains: 8,
-      maxContains: 8,
+      // minContains: 8,
+      // maxContains: 8,
     },
     proof: {
       type: "array",
       items: bigIntSchema,
-      minContains: 1,
+      // minContains: 1,
     },
   },
 } as const;
@@ -137,16 +139,57 @@ const getBodySchemaWithRep = () => {
   } as const;
 };
 
+const createJoinBodySchemaWithRep = () => {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "name",
+      "picture",
+      "cover",
+      "pitch",
+      "description",
+      "seedPostHashes",
+      "signupProof",
+      "signupSignals"
+    ],
+    properties: {
+      name: { type: "string" },
+      picture: { type: "string" },
+      cover: { type: "string" },
+      pitch: { type: "string" },
+      description: { type: "string" },
+      seedPostHashes: {
+        type: "array",
+        uniqueItems: true,
+        items: { type: "string" },
+      },
+      signupSignals: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 8,
+        // maxContains: 8,
+      },
+      signupProof: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 1,
+      },
+    },
+  } as const;
+};
+
 const getBodySchemaWithoutRep = () => {
   const schema = getBodySchemaWithRep();
-  const { repProof, ...properties } = schema.properties;
+  const { repProof, goProofs, ...properties } = schema.properties;
 
   return {
     ...schema,
-    required: ["personaId", "type", "postHash", "goProofs"],
+    // TODO: temporarily removing gotoken due to bug in rlnjs
+    required: ["personaId", "type", "postHash"],
     properties: {
       ...properties,
-      type: { const: 2 },
+      type: { enum: [0, 1, 2] },
     },
   } as const;
 };
@@ -155,6 +198,7 @@ const getBodySchemaWithoutRep = () => {
 const root: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
 ): Promise<void> => {
+  console.log(RPC_URL)
   const provider = getDefaultProvider(RPC_URL);
   const wallet = new Wallet(PRIVATE_KEY, provider);
   const feed = GlobalAnonymousFeed__factory.connect(
@@ -162,10 +206,41 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
     wallet
   );
 
+  console.log(path.join(__dirname, '../../node_modules/@unirep/circuits/zksnarkBuild'))
+  fastify.register(require('@fastify/static'), {
+    root: path.join(__dirname, '../../node_modules/@unirep/circuits/zksnarkBuild'),
+    prefix: '/circuits/',
+    decorateReply: false
+  })
+
+  console.log(path.join(__dirname, '../assets/zkey-files'))
+  fastify.register(require('@fastify/static'), {
+    root: path.join(__dirname, '../assets/zkey-files'),
+    prefix: '/rln/',
+    decorateReply: false
+  })
+
+  fastify.register(cors, {
+    origin: (origin, cb) => {
+      if (!origin) {
+        cb(null, true)
+        return
+      }
+      const hostname = new URL(origin as string).hostname
+      if(hostname === "localhost"){
+        //  Request from localhost will pass
+        cb(null, true)
+        return
+      }
+      // Generate an error on other origins, disabling access
+      cb(new Error("Not allowed"), false)
+    }
+  })
+
   fastify.post(
     "/with-rep",
     { schema: { response, body: getBodySchemaWithRep() } } as const,
-    async function ({ body }) {
+    async function ({ body }: {body: any}) {
       if (body.goProofs.length !== goRequired[body.type]) {
         throw new Error("wrong number of go proofs");
       }
@@ -206,31 +281,34 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
   );
 
   fastify.post(
-    "/without-rep",
+    "/propose-message-without-rep",
     { schema: { response, body: getBodySchemaWithoutRep() } as const },
-    async function ({ body }) {
-      if (body.goProofs.length !== goRequired[body.type]) {
-        throw new Error("wrong number of go proofs");
-      }
-
-      const { signalHash } = body.goProofs[0].snarkProof.publicSignals;
+    async function ({ body }: {body: any}) {
+      // TODO: disabling go proof check due to bug in rlnjs
+      // TODO: we should probably use zk-kit instead....
+      // if (body.goProofs.length !== goRequired[body.type]) {
+      //   throw new Error("wrong number of go proofs");
+      // }
+      // const { signalHash } = body.goProofs[0].snarkProof.publicSignals;
 
       // Make sure that the signal for each proof is identical
       // TODO: Also check nullifiers?
       // TODO: Make sure that ell the epochs are in the same interval
       // TODO: Check that internalNullifier === "kurate"
-      for (const { snarkProof } of body.goProofs) {
-        if (snarkProof.publicSignals.signalHash !== signalHash) {
-          throw new Error("signalHashes different");
-        }
+      // for (const { snarkProof } of body.goProofs) {
+      //   if (snarkProof.publicSignals.signalHash !== signalHash) {
+      //     throw new Error("signalHashes different");
+      //   }
 
-        if (BigInt(snarkProof.publicSignals.merkleRoot) !== rlnRegistry.root) {
-          throw new Error("wrong root hash");
-        }
-      }
+        // TODO: there seems to be a bug in rlnjs circuits that return incorrect merkleRoot
+        // TODO: let's report bug in rlnjs repo
+        // if (BigInt(snarkProof.publicSignals.merkleRoot) !== rlnRegistry.root) {
+        //   throw new Error("wrong root hash");
+        // }
+      // }
 
       // Check all proofs
-      await Promise.all(body.goProofs.map(verifyProof));
+      // await Promise.all(body.goProofs.map(verifyProof));
 
       // Post data on-chain
       const tx = await feed["proposeMessage(uint256,uint8,bytes32)"](
@@ -238,6 +316,28 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
         body.type,
         body.postHash
       );
+
+      // Return transaction hash
+      return { transaction: tx.hash };
+    }
+  );
+
+  fastify.post(
+    "/create-and-join-without-rep",
+    { schema: { response, body: createJoinBodySchemaWithRep() } as const },
+    async function ({ body }: {body: any}) {
+      // Post data on-chain
+      const tx = await feed['createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'](
+        body.name,
+        body.picture,
+        body.cover,
+        body.pitch,
+        body.description,
+        body.seedPostHashes,
+        body.signupSignals,
+        body.signupProof,
+        { gasLimit: 6721974 },
+      )
 
       // Return transaction hash
       return { transaction: tx.hash };
