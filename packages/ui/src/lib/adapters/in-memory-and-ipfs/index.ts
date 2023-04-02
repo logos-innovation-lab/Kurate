@@ -324,7 +324,7 @@ export class InMemoryAndIPFS implements Adapter {
 		)
 	}
 
-	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
+	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
 		await signer.signMessage('This "transaction" publishes persona')
 
 		function getRandomNonExistingId(): Promise<string> {
@@ -376,6 +376,8 @@ export class InMemoryAndIPFS implements Adapter {
 			})
 			return { transactions }
 		})
+
+		return groupId
 	}
 
 	async signIn(): Promise<void> {

@@ -209,7 +209,7 @@ export class Firebase implements Adapter {
 		)
 	}
 
-	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
+	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
 		await signer.signMessage('This "transaction" publishes persona')
 		const address = await signer.getAddress()
 		const personasCollection = collection(db, 'personas')
@@ -252,6 +252,8 @@ export class Firebase implements Adapter {
 
 			return { ...state, draft: newDraft }
 		})
+
+		return personaDoc.id
 	}
 
 	async signIn(): Promise<void> {
