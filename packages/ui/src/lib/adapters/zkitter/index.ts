@@ -77,6 +77,7 @@ export class ZkitterAdapter implements Adapter {
 				postsCount: 0,
 				participantsCount: 0,
 				minReputation: 5,
+				timestamp: Date.now(),
 			})
 		}
 

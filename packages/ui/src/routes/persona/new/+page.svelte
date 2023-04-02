@@ -30,6 +30,7 @@
 		picture: '',
 		cover: '',
 		minReputation: 5,
+		timestamp: Date.now(),
 	}
 
 	let name = ''
