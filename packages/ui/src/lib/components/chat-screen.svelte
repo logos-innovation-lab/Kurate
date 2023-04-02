@@ -162,7 +162,16 @@
 			<SingleColumn>
 				<div class="chat-input">
 					<div class="textarea">
-						<Textarea placeholder="Say something" bind:value={messageText} />
+						<Textarea
+							placeholder="Say something"
+							on:keypress={(e) => {
+								if (e.key === 'Enter') {
+									onSendMessage()
+									e.preventDefault()
+								}
+							}}
+							bind:value={messageText}
+						/>
 					</div>
 					<div class="chat-buttons">
 						<Button
