@@ -107,10 +107,10 @@
 						{@const myMessage = message.address === $profile.address}
 						{@const systemMessage = message.address === 'system'}
 						<div
-							class={`message ${myMessage ? 'my-message' : ''} ${systemMessage ? 'system' : ''}`}
+							class={`message ${myMessage ? '' : 'their-message'} ${systemMessage ? 'system' : ''}`}
 						>
 							<div class="message-content">
-								{#if myMessage}
+								{#if !myMessage}
 									<img src={avatar} class="avatar" alt="Avatar" />
 								{/if}
 								<div class="message-text">{message.text}</div>
@@ -238,7 +238,7 @@
 				font-size: var(--font-size-sm);
 			}
 
-			&.my-message {
+			&.their-message {
 				align-items: flex-start;
 
 				.message-text {
