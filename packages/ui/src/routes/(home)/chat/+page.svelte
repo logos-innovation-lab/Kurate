@@ -23,24 +23,15 @@
 		id: number
 	}
 
-	let openChats: ChatListItem[]
-	let closedChats: ChatListItem[] = $chatsStore.chats
-		.map((chat, id) => ({ chat, id }))
-		.filter(({ chat }) => chat.blocked || chat.closed)
+	let openChats: Chat[]
+	let closedChats: Chat[]
+	let allChats: Chat[] = Array.from($chatsStore.chats.entries()).map(([chatId, chat]) => ({ ...chat, chatId }))
 	let sortAsc = true
 	let sortBy: 'date' | 'activity' | 'alphabetical' = 'date'
 	let filterQuery = ''
 
-	$: openChats = $chatsStore.chats
-		.map((chat, id) => ({ chat, id }))
-		.filter(
-			({ chat }) =>
-				!chat.blocked &&
-				!chat.closed &&
-				(chat.persona.name.includes(filterQuery) ||
-					chat.post.text.includes(filterQuery) ||
-					chat.messages[chat.messages.length - 1].text.includes(filterQuery)),
-		)
+	$: openChats = allChats.filter(({ closed, persona, post }) => !closed && (persona.name.includes(filterQuery)) || post.text.includes(filterQuery))
+	$: closedChats = allChats.filter(({ closed }) => closed)
 </script>
 
 {#if $profile.signer === undefined}
@@ -71,14 +62,15 @@
 		<Search bind:filterQuery />
 	</SectionTitle>
 	<Grid>
-		{#each openChats as { chat, id }}
+		{#each openChats as chat}
+			{@const lastMessage = chat.messages[chat.messages.length - 1]}
 			<ChatComponent
-				seed={chat.seed}
-				name={chat.persona.name}
-				postText={chat.post.text}
-				lastMessage={chat.messages[chat.messages.length - 1].text}
-				timeStamp={formatDateAndTime(chat.messages[chat.messages.length - 1].timestamp)}
-				on:click={() => goto(ROUTES.CHAT(id))}
+				seed={chat.chatId}
+				name={chat.persona?.name}
+				postText={chat.post?.text}
+				lastMessage={lastMessage.text}
+				timeStamp={formatDateAndTime(lastMessage.timestamp)}
+				on:click={() => goto(ROUTES.CHAT(chat.chatId))}
 			/>
 		{/each}
 	</Grid>
@@ -86,14 +78,15 @@
 	{#if closedChats.length > 0}
 		<SectionTitle title="Closed chats" />
 		<Grid>
-			{#each closedChats as { chat, id }}
+			{#each closedChats as chat}
+				{@const lastMessage = chat.messages[chat.messages.length - 1]}
 				<ChatComponent
-					seed={chat.seed}
-					name={chat.persona.name}
-					postText={chat.post.text}
-					lastMessage={chat.messages[chat.messages.length - 1].text}
-					timeStamp={formatDateAndTime(chat.messages[chat.messages.length - 1].timestamp)}
-					on:click={() => goto(ROUTES.CHAT(id))}
+					seed={chat.chatId}
+					name={chat.persona?.name}
+					postText={chat.post?.text}
+					lastMessage={lastMessage.text}
+					timeStamp={formatDateAndTime(lastMessage.timestamp)}
+					on:click={() => goto(ROUTES.CHAT(chat.chatId))}
 				/>
 			{/each}
 		</Grid>

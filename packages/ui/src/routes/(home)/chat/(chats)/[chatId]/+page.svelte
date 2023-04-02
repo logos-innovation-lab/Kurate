@@ -10,12 +10,12 @@
 	import { chats, type Chat } from '$lib/stores/chat'
 	import { onDestroy, onMount } from 'svelte'
 
-	const chatId = $page.params.chatId as unknown as number
-	let chat: Chat
-	let unsubscribe: () => void
+	const chatId = $page.params.chatId
+	let chat: Chat | undefined
+	let unsubscribe: undefined | (() => unknown)
 
 	onMount(() => {
-		unsubscribe = adapter.subscribeToChat(chatId)
+		unsubscribe = adapter.subscribeToChat && adapter.subscribeToChat(chatId)
 	})
 
 	onDestroy(() => {
@@ -26,7 +26,7 @@
 		adapter.sendChatMessage(chatId, text)
 	}
 
-	$: chat = $chats.chats[chatId]
+	$: chat = $chats.chats.get(chatId)
 </script>
 
 {#if chat === undefined}
@@ -35,7 +35,7 @@
 	<ChatScreen
 		{chat}
 		{sendMessage}
-		title={chat.closed ? 'Closed chat' : chat.blocked ? 'Blocked chat' : 'Active chat'}
+		title={chat.closed ? 'Closed chat' : 'Active chat'}
 		onBack={() => goto(ROUTES.CHATS)}
 	/>
 {/if}

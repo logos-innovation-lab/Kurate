@@ -1,5 +1,5 @@
 import { connectWallet } from '$lib/services'
-import { chats, type Chat } from '$lib/stores/chat'
+import { chats, type Chat, type Message } from '$lib/stores/chat'
 import { personas, type DraftPersona, type Persona } from '$lib/stores/persona'
 import { profile } from '$lib/stores/profile'
 import { saveToLocalStorage } from '$lib/utils'
@@ -34,6 +34,7 @@ import {
 	query,
 	updateDoc,
 	arrayUnion,
+	where,
 } from 'firebase/firestore'
 import { get } from 'svelte/store'
 // TODO: Add SDKs for Firebase products that you want to use
@@ -74,6 +75,7 @@ export class Firebase implements Adapter {
 				data.docs.forEach((e) => {
 					const persona = e.data()
 					persona.participantsCount = persona.participants?.length
+					persona.personaId = e.id
 					all.set(e.id, persona as Persona)
 				})
 
@@ -105,6 +107,30 @@ export class Firebase implements Adapter {
 					transaction.set({ transactions: trns })
 				})
 				this.userSubscriptions.push(subscribeTransactions)
+
+				const chatsSnapshot = query(
+					collection(db, `chats`),
+					where('users', 'array-contains', p.address),
+				)
+				const subscribeChats = onSnapshot(chatsSnapshot, (res) => {
+					const newChats = new Map<string, Chat>()
+					const personasTemp = get(personas)
+					res.docs.forEach((d) => {
+						const data = d.data()
+						const persona = personasTemp.all.get(data.personaId)
+						if (!persona) return
+						const chat: Chat = {
+							persona,
+							post: data.post,
+							users: data.users,
+							chatId: d.id,
+							messages: data.messages,
+						}
+						newChats.set(d.id, chat)
+					})
+					chats.update((state) => ({ ...state, chats: newChats, loading: false }))
+				})
+				this.userSubscriptions.push(subscribeChats)
 			}
 			if (!p.signer && this.userSubscriptions.length !== 0) {
 				this.userSubscriptions.forEach((s) => s())
@@ -273,7 +299,7 @@ export class Firebase implements Adapter {
 
 		// Store post to pending
 		const pendingPosts = collection(db, `personas/${groupId}/pending`)
-		addDoc(pendingPosts, post)
+		addDoc(pendingPosts, { post, address })
 
 		const profileCollection = collection(db, `users/${address}/transactions`)
 		await addDoc(profileCollection, {
@@ -320,6 +346,7 @@ export class Firebase implements Adapter {
 					timestamp,
 					yourVote,
 					postId: d.id,
+					address,
 					myPost: loggedUser.address === address,
 				})
 			})
@@ -351,6 +378,7 @@ export class Firebase implements Adapter {
 					images,
 					timestamp,
 					postId: d.id,
+					address,
 					myPost: address === loggedUser.address,
 				})
 			})
@@ -397,50 +425,39 @@ export class Firebase implements Adapter {
 		})
 	}
 
-	startChat(chat: Chat): Promise<number> {
-		return new Promise((resolve) => {
-			chats.update((state) => {
-				const length = state.chats.push(chat)
-				resolve(length)
-				return state
-			})
-		})
-	}
+	async startChat(chat: Chat): Promise<string> {
+		const address = get(profile).address
 
-	sendChatMessage(chatId: number, text: string): Promise<void> {
-		return new Promise((resolve) => {
-			chats.update((state) => {
-				const newState = { ...state }
-				newState.chats[chatId].messages.push({
-					timestamp: Date.now(),
-					text,
-					myMessage: true,
-				})
-				resolve()
-				return newState
-			})
-		})
-	}
+		if (!address) throw new Error('You need to be logged in to start a chat')
+		if (!chat.post.address) throw new Error('Info about original poster is missing')
+		if (!chat.post.postId) throw new Error('PostId is missing')
+		if (!chat.persona.personaId) throw new Error('PersonaId is missing')
+		if (chat.messages.length === 0) throw new Error('No messages to start a chat')
 
-	subscribeToChat(chatId: number): () => unknown {
-		const interval = setInterval(() => {
-			chats.update((state) => {
-				const newState = { ...state }
-				// const lastMessage =
-				// 	newState.chats[chatId].messages[newState.chats[chatId].messages.length - 1]
-				// 10% chance every second to add new message and only when the last message was sent by me
-				// if (lastMessage.myMessage && executeWithChance(0.1)) {
-				// 	newState.chats[chatId].messages.push({
-				// 		timestamp: Date.now(),
-				// 		text: randomText(randomIntegerBetween(1, 5)),
-				// 	})
-				// }
-				return newState
-			})
-		}, 1000)
-
-		return () => {
-			clearInterval(interval)
+		const dbChat = {
+			users: [address, chat.post.address],
+			post: chat.post,
+			personaId: chat.persona.personaId,
+			messages: chat.messages,
 		}
+		const chatCollection = collection(db, `/chats`)
+		const chatDoc = await addDoc(chatCollection, dbChat)
+
+		return chatDoc.id
+	}
+
+	async sendChatMessage(chatId: string, text: string): Promise<void> {
+		const address = get(profile).address
+
+		if (!address) throw new Error('ChatId or address is missing')
+
+		const message: Message = {
+			timestamp: Date.now(),
+			text,
+			address,
+		}
+
+		const chatDoc = doc(db, `chats/${chatId}`)
+		updateDoc(chatDoc, { messages: arrayUnion(message), lastMessage: text })
 	}
 }

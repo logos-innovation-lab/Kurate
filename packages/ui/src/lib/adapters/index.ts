@@ -1,6 +1,6 @@
 import type { DraftPersona, Persona } from '$lib/stores/persona'
 import type { Signer } from 'ethers'
-import type { Chat } from '$lib/stores/chat'
+import type { DraftChat } from '$lib/stores/chat'
 import { InMemoryAndIPFS } from './in-memory-and-ipfs'
 import { ZkitterAdapter } from './zkitter'
 import { Firebase } from './firebase'
@@ -30,9 +30,9 @@ export interface Adapter {
 	subscribePersonaPosts(groupId: string): Promise<() => unknown>
 	voteOnPost(groupId: string, postId: number, vote: '+' | '-', signer: Signer): Promise<void>
 
-	startChat(chat: Chat): Promise<number>
-	sendChatMessage(chatId: number, text: string): Promise<void>
-	subscribeToChat(chatId: number): () => void
+	startChat(chat: DraftChat): Promise<string>
+	sendChatMessage(chatId: string, text: string): Promise<void>
+	subscribeToChat?: (chatId: string) => () => void
 }
 
 export const adapters = ['in-memory', 'zkitter', 'firebase'] as const

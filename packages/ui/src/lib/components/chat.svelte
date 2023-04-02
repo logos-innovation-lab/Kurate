@@ -3,9 +3,9 @@
 	import { botttsNeutral } from '@dicebear/collection'
 	import { createAvatar } from '@dicebear/core'
 
-	export let seed: string
-	export let name: string
-	export let postText: string
+	export let seed: string | undefined = undefined
+	export let name: string | undefined = undefined
+	export let postText: string | undefined = undefined
 	export let lastMessage: string
 	export let timeStamp: string
 
@@ -23,7 +23,7 @@
 <Card on:click>
 	<div class="picture"><img src={avatar} alt={name} /></div>
 	<div class="details">
-		<div class="post-text">{cropText(postText, 30)}</div>
+		<div class="post-text">{postText ? cropText(postText, 30) : ''}</div>
 		<div class="chat-message">{cropText(lastMessage, 60)}</div>
 		<div class="timestamp">
 			{timeStamp}
