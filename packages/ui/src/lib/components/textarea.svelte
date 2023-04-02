@@ -70,13 +70,16 @@
 		gap: var(--spacing-6);
 		font-size: var(--font-size-sm);
 		color: var(--color-body-text);
-		padding: var(--spacing-24);
+		padding-block: var(--spacing-24);
 		background-color: transparent;
 		transition: background-color 0.2s;
 
-		&.highlight:focus-within {
-			background-color: var(--grey-150);
-			transition: background-color 0.2s;
+		&.highlight {
+			padding-inline: var(--spacing-24);
+			&:focus-within {
+				background-color: var(--grey-150);
+				transition: background-color 0.2s;
+			}
 		}
 
 		.area-placeholder {
