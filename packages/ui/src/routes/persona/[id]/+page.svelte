@@ -172,8 +172,8 @@
 			</Container>
 		{:else}
 			<Grid>
-				{#each personaPosts.approved as post, index}
-					<Post {post} on:click={() => goto(ROUTES.PERSONA_POST(groupId, index))} />
+				{#each personaPosts.approved as hash}
+					<Post post={personaPosts.all.get(hash)} on:click={() => goto(ROUTES.PERSONA_POST(groupId, hash))} />
 				{/each}
 			</Grid>
 		{/if}
