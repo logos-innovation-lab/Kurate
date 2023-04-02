@@ -279,16 +279,17 @@ export class Firebase implements Adapter {
 		images: string[],
 		signer: Signer,
 	): Promise<void> {
+		const address = await signer.getAddress()
+		const isMemberOfGroup = get(personas).all.get(groupId)?.participants?.includes(address)
+
 		const post = {
 			timestamp: Date.now(),
 			text,
 			images,
 			promote: [],
 			demote: [],
+			address,
 		}
-
-		const address = await signer.getAddress()
-		const isMemberOfGroup = get(personas).all.get(groupId)?.participants?.includes(address)
 
 		if (!isMemberOfGroup) {
 			await signer.signMessage('This "transaction" joins the persona')
@@ -300,7 +301,7 @@ export class Firebase implements Adapter {
 
 		// Store post to pending
 		const pendingPosts = collection(db, `personas/${groupId}/pending`)
-		addDoc(pendingPosts, { post, address })
+		addDoc(pendingPosts, post)
 
 		const profileCollection = collection(db, `users/${address}/transactions`)
 		await addDoc(profileCollection, {
