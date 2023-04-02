@@ -15,7 +15,6 @@ interface PostData {
 }
 
 export interface PostStore extends Writable<PostData> {
-	setLoading: (groupId: string, loading: boolean) => void
 	addPending: (post: Post, groupId: string) => void
 	addApproved: (post: Post, groupId: string) => void
 }
@@ -25,16 +24,6 @@ function createPostStore(): PostStore {
 
 	return {
 		...store,
-		setLoading: (groupId, loading) => {
-			store.update(({ data }) => {
-				const personaPostData = data.get(groupId)
-				const approved = personaPostData?.approved ?? []
-				const pending = personaPostData?.pending ?? []
-				data.set(groupId, { loading, approved, pending })
-
-				return { data }
-			})
-		},
 		addPending: (post: Post, groupId: string) => {
 			store.update(({ data }) => {
 				const personaPostData = data.get(groupId)

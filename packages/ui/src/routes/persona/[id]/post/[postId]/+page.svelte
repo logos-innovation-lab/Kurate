@@ -17,8 +17,12 @@
 	import adapter from '$lib/adapters'
 	import { canConnectWallet } from '$lib/services'
 	import ChatScreen from '$lib/components/chat-screen.svelte'
+	import { onDestroy, onMount } from 'svelte'
 
-	const post = $posts.data.get($page.params.id)?.approved[$page.params.postId as unknown as number]
+	const postId = $page.params.postId as unknown as number
+	const groupId = $page.params.id
+	let post = $posts.data.get(groupId)?.approved[postId]
+	$: post = $posts.data.get(groupId)?.approved[postId]
 	const persona = $personas.all.get($page.params.id)
 	let draftChat: DraftChat | undefined = undefined
 
@@ -41,6 +45,15 @@
 		const chatId = await adapter.startChat(chat)
 		goto(ROUTES.CHAT(chatId))
 	}
+	let unsubscribe: () => unknown
+
+	onMount(() => {
+		adapter.subscribePersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
+	})
+
+	onDestroy(() => {
+		if (unsubscribe) unsubscribe()
+	})
 
 	let y: number
 
@@ -68,15 +81,15 @@
 	<!-- TODO: This is the post page so I'm thinking there shouldn't be an action on the post -->
 	<Post {post} on:click noHover />
 	<div class="center">
-		{#if $profile.signer !== undefined}
-			<Button variant="primary" label="Chat with poster" icon={ChatBot} on:click={startChat} />
-		{:else}
+		{#if $profile.signer === undefined}
 			<Button
 				variant="primary"
 				icon={Wallet}
 				on:click={adapter.signIn}
 				disabled={!canConnectWallet()}
 			/>
+		{:else if $profile.signer !== undefined && $profile.address !== post.address}
+			<Button variant="primary" label="Chat with poster" icon={ChatBot} on:click={startChat} />
 		{/if}
 	</div>
 {/if}
