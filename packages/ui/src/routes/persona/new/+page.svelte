@@ -244,11 +244,13 @@
 				setState('edit_text')
 			}}
 		/>
-		<Container>
-			<InfoBox>
-				<p>Please provide a profile picture and a cover image.</p>
-			</InfoBox>
-		</Container>
+		{#if !persona.picture || !persona.cover}
+			<Container>
+				<InfoBox>
+					<p>Please provide a profile picture and a cover image.</p>
+				</InfoBox>
+			</Container>
+		{/if}
 	</PersonaDetail>
 {:else}
 	<InfoScreen title="All changes saved">
