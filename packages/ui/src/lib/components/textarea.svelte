@@ -50,7 +50,15 @@
 			{placeholder}
 		</div>
 		<!-- svelte-ignore a11y-autofocus -->
-		<textarea bind:value bind:this={textarea} class={value != '' ? 'content' : ''} {autofocus} />
+		<textarea
+			bind:value
+			bind:this={textarea}
+			on:keydown
+			on:keypress
+			on:keyup
+			class={value != '' ? 'content' : ''}
+			{autofocus}
+		/>
 	</div>
 </label>
 

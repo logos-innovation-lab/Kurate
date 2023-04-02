@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ViewOff from '$lib/components/icons/view-off.svelte'
 	import View from '$lib/components/icons/view.svelte'
-	import Image from '$lib/components/icons/image.svelte'
 	import SendAltFilled from '$lib/components/icons/send-alt-filled.svelte'
 	import Info from '$lib/components/icons/information.svelte'
 	import Menu from '$lib/components/icons/overflow-menu-vertical.svelte'
@@ -24,6 +23,7 @@
 	import { createAvatar } from '@dicebear/core'
 	import { botttsNeutral } from '@dicebear/collection'
 	import { profile } from '$lib/stores/profile'
+	import { onDestroy, onMount } from 'svelte'
 
 	export let chat: Chat | DraftChat
 	export let sendMessage: (text: string) => unknown
@@ -33,19 +33,40 @@
 	let showPost = false
 	let messageText = ''
 	let sending = false
+	let scrollElement: HTMLElement
+	let scrolled = false
+	const observer = new IntersectionObserver(([ob]) => (scrolled = !ob.isIntersecting))
 
 	const toggleShowPost = () => (showPost = !showPost)
 	const onSendMessage = async () => {
+		if (messageText === '' || sending) return
+		const sc = scrolled
 		sending = true
 		await sendMessage(messageText)
 		sending = false
 		messageText = ''
+		if (!sc && scrollElement) setTimeout(() => scrollElement.scrollIntoView(), 100)
 	}
 
 	let avatar = createAvatar(botttsNeutral, {
 		size: 94, // This is 47pt at 2x resolution
 		seed: chat.chatId,
 	}).toDataUriSync()
+
+	$: if (scrollElement) observer.observe(scrollElement)
+
+	// This scrolls on new message from me
+	$: if (!scrolled && scrollElement) scrollElement.scrollIntoView()
+
+	// This scrolls on new message from counter party
+	let len = chat.messages.length
+	$: if (len < chat.messages.length && !scrolled) {
+		setTimeout(() => scrollElement.scrollIntoView(), 50)
+		len = chat.messages.length
+	}
+
+	onDestroy(() => observer.unobserve(scrollElement))
+	onMount(() => setTimeout(() => scrollElement.scrollIntoView(), 50))
 </script>
 
 <div class="root">
@@ -154,6 +175,7 @@
 				</InfoBox>
 			</SingleColumn>
 		{/if}
+		<div bind:this={scrollElement} />
 	</div>
 
 	<!-- Chat input -->
@@ -163,10 +185,18 @@
 			<SingleColumn>
 				<div class="chat-input">
 					<div class="textarea">
-						<Textarea placeholder="Say something" bind:value={messageText} />
+						<Textarea
+							placeholder="Say something"
+							on:keypress={(e) => {
+								if (e.key === 'Enter') {
+									onSendMessage()
+									e.preventDefault()
+								}
+							}}
+							bind:value={messageText}
+						/>
 					</div>
 					<div class="chat-buttons">
-						<Button icon={Image} />
 						<Button
 							icon={SendAltFilled}
 							variant="primary"
@@ -181,7 +211,6 @@
 </div>
 
 <style lang="scss">
-	// FIXME: style this properly please
 	.avatar {
 		width: var(--spacing-48);
 		height: var(--spacing-48);
