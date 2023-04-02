@@ -2,1664 +2,1863 @@
 /* tslint:disable */
 /* eslint-disable */
 import type {
-	BaseContract,
-	BigNumber,
-	BigNumberish,
-	BytesLike,
-	CallOverrides,
-	ContractTransaction,
-	Overrides,
-	PopulatedTransaction,
-	Signer,
-	utils,
-} from 'ethers'
-import type { FunctionFragment, Result, EventFragment } from '@ethersproject/abi'
-import type { Listener, Provider } from '@ethersproject/providers'
+  BaseContract,
+  BigNumber,
+  BigNumberish,
+  BytesLike,
+  CallOverrides,
+  ContractTransaction,
+  Overrides,
+  PopulatedTransaction,
+  Signer,
+  utils,
+} from "ethers";
 import type {
-	TypedEventFilter,
-	TypedEvent,
-	TypedListener,
-	OnEvent,
-	PromiseOrValue,
-} from '../../common'
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
+import type { Listener, Provider } from "@ethersproject/providers";
+import type {
+  TypedEventFilter,
+  TypedEvent,
+  TypedListener,
+  OnEvent,
+  PromiseOrValue,
+} from "../../common";
 
 export declare namespace IUnirep {
-	export type ConfigStruct = {
-		stateTreeDepth: PromiseOrValue<BigNumberish>
-		epochTreeDepth: PromiseOrValue<BigNumberish>
-		epochTreeArity: PromiseOrValue<BigNumberish>
-		fieldCount: PromiseOrValue<BigNumberish>
-		sumFieldCount: PromiseOrValue<BigNumberish>
-		numEpochKeyNoncePerEpoch: PromiseOrValue<BigNumberish>
-	}
+  export type ConfigStruct = {
+    stateTreeDepth: PromiseOrValue<BigNumberish>;
+    epochTreeDepth: PromiseOrValue<BigNumberish>;
+    epochTreeArity: PromiseOrValue<BigNumberish>;
+    fieldCount: PromiseOrValue<BigNumberish>;
+    sumFieldCount: PromiseOrValue<BigNumberish>;
+    numEpochKeyNoncePerEpoch: PromiseOrValue<BigNumberish>;
+  };
 
-	export type ConfigStructOutput = [number, number, number, number, number, number] & {
-		stateTreeDepth: number
-		epochTreeDepth: number
-		epochTreeArity: number
-		fieldCount: number
-		sumFieldCount: number
-		numEpochKeyNoncePerEpoch: number
-	}
+  export type ConfigStructOutput = [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number
+  ] & {
+    stateTreeDepth: number;
+    epochTreeDepth: number;
+    epochTreeArity: number;
+    fieldCount: number;
+    sumFieldCount: number;
+    numEpochKeyNoncePerEpoch: number;
+  };
 
-	export type EpochKeySignalsStruct = {
-		revealNonce: PromiseOrValue<BigNumberish>
-		stateTreeRoot: PromiseOrValue<BigNumberish>
-		epochKey: PromiseOrValue<BigNumberish>
-		data: PromiseOrValue<BigNumberish>
-		nonce: PromiseOrValue<BigNumberish>
-		epoch: PromiseOrValue<BigNumberish>
-		attesterId: PromiseOrValue<BigNumberish>
-	}
+  export type EpochKeySignalsStruct = {
+    revealNonce: PromiseOrValue<BigNumberish>;
+    stateTreeRoot: PromiseOrValue<BigNumberish>;
+    epochKey: PromiseOrValue<BigNumberish>;
+    data: PromiseOrValue<BigNumberish>;
+    nonce: PromiseOrValue<BigNumberish>;
+    epoch: PromiseOrValue<BigNumberish>;
+    attesterId: PromiseOrValue<BigNumberish>;
+  };
 
-	export type EpochKeySignalsStructOutput = [
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-	] & {
-		revealNonce: BigNumber
-		stateTreeRoot: BigNumber
-		epochKey: BigNumber
-		data: BigNumber
-		nonce: BigNumber
-		epoch: BigNumber
-		attesterId: BigNumber
-	}
+  export type EpochKeySignalsStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    revealNonce: BigNumber;
+    stateTreeRoot: BigNumber;
+    epochKey: BigNumber;
+    data: BigNumber;
+    nonce: BigNumber;
+    epoch: BigNumber;
+    attesterId: BigNumber;
+  };
 
-	export type ReputationSignalsStruct = {
-		stateTreeRoot: PromiseOrValue<BigNumberish>
-		epochKey: PromiseOrValue<BigNumberish>
-		graffitiPreImage: PromiseOrValue<BigNumberish>
-		proveGraffiti: PromiseOrValue<BigNumberish>
-		nonce: PromiseOrValue<BigNumberish>
-		epoch: PromiseOrValue<BigNumberish>
-		attesterId: PromiseOrValue<BigNumberish>
-		revealNonce: PromiseOrValue<BigNumberish>
-		proveMinRep: PromiseOrValue<BigNumberish>
-		proveMaxRep: PromiseOrValue<BigNumberish>
-		proveZeroRep: PromiseOrValue<BigNumberish>
-		minRep: PromiseOrValue<BigNumberish>
-		maxRep: PromiseOrValue<BigNumberish>
-	}
+  export type ReputationSignalsStruct = {
+    stateTreeRoot: PromiseOrValue<BigNumberish>;
+    epochKey: PromiseOrValue<BigNumberish>;
+    graffitiPreImage: PromiseOrValue<BigNumberish>;
+    proveGraffiti: PromiseOrValue<BigNumberish>;
+    nonce: PromiseOrValue<BigNumberish>;
+    epoch: PromiseOrValue<BigNumberish>;
+    attesterId: PromiseOrValue<BigNumberish>;
+    revealNonce: PromiseOrValue<BigNumberish>;
+    proveMinRep: PromiseOrValue<BigNumberish>;
+    proveMaxRep: PromiseOrValue<BigNumberish>;
+    proveZeroRep: PromiseOrValue<BigNumberish>;
+    minRep: PromiseOrValue<BigNumberish>;
+    maxRep: PromiseOrValue<BigNumberish>;
+  };
 
-	export type ReputationSignalsStructOutput = [
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-		BigNumber,
-	] & {
-		stateTreeRoot: BigNumber
-		epochKey: BigNumber
-		graffitiPreImage: BigNumber
-		proveGraffiti: BigNumber
-		nonce: BigNumber
-		epoch: BigNumber
-		attesterId: BigNumber
-		revealNonce: BigNumber
-		proveMinRep: BigNumber
-		proveMaxRep: BigNumber
-		proveZeroRep: BigNumber
-		minRep: BigNumber
-		maxRep: BigNumber
-	}
+  export type ReputationSignalsStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    stateTreeRoot: BigNumber;
+    epochKey: BigNumber;
+    graffitiPreImage: BigNumber;
+    proveGraffiti: BigNumber;
+    nonce: BigNumber;
+    epoch: BigNumber;
+    attesterId: BigNumber;
+    revealNonce: BigNumber;
+    proveMinRep: BigNumber;
+    proveMaxRep: BigNumber;
+    proveZeroRep: BigNumber;
+    minRep: BigNumber;
+    maxRep: BigNumber;
+  };
 }
 
 export interface UnirepInterface extends utils.Interface {
-	functions: {
-		'EPK_R()': FunctionFragment
-		'OMT_R()': FunctionFragment
-		'PoseidonT2_zero()': FunctionFragment
-		'SNARK_SCALAR_FIELD()': FunctionFragment
-		'_updateEpochIfNeeded(uint256)': FunctionFragment
-		'attest(uint256,uint256,uint256,uint256)': FunctionFragment
-		'attesterCurrentEpoch(uint160)': FunctionFragment
-		'attesterEpochLength(uint160)': FunctionFragment
-		'attesterEpochRemainingTime(uint160)': FunctionFragment
-		'attesterEpochRoot(uint160,uint256)': FunctionFragment
-		'attesterEpochSealed(uint160,uint256)': FunctionFragment
-		'attesterMemberCount(uint160)': FunctionFragment
-		'attesterSemaphoreGroupRoot(uint160)': FunctionFragment
-		'attesterSignUp(uint256)': FunctionFragment
-		'attesterSignUpViaRelayer(address,uint256,bytes)': FunctionFragment
-		'attesterStartTimestamp(uint160)': FunctionFragment
-		'attesterStateTreeLeafCount(uint160,uint256)': FunctionFragment
-		'attesterStateTreeRoot(uint160,uint256)': FunctionFragment
-		'attesterStateTreeRootExists(uint160,uint256,uint256)': FunctionFragment
-		'buildOrderedTreeVerifier()': FunctionFragment
-		'config()': FunctionFragment
-		'decodeEpochKeyControl(uint256)': FunctionFragment
-		'decodeEpochKeyLiteSignals(uint256[])': FunctionFragment
-		'decodeEpochKeySignals(uint256[])': FunctionFragment
-		'decodeReputationControl(uint256)': FunctionFragment
-		'decodeReputationSignals(uint256[])': FunctionFragment
-		'epochKeyLiteVerifier()': FunctionFragment
-		'epochKeyVerifier()': FunctionFragment
-		'epochTreeArity()': FunctionFragment
-		'epochTreeDepth()': FunctionFragment
-		'fieldCount()': FunctionFragment
-		'numEpochKeyNoncePerEpoch()': FunctionFragment
-		'reputationVerifier()': FunctionFragment
-		'sealEpoch(uint256,uint160,uint256[],uint256[8])': FunctionFragment
-		'signupVerifier()': FunctionFragment
-		'stateTreeDepth()': FunctionFragment
-		'sumFieldCount()': FunctionFragment
-		'updateEpochIfNeeded(uint160)': FunctionFragment
-		'usedNullifiers(uint256)': FunctionFragment
-		'userSignUp(uint256[],uint256[8])': FunctionFragment
-		'userStateTransition(uint256[],uint256[8])': FunctionFragment
-		'userStateTransitionVerifier()': FunctionFragment
-		'verifyEpochKeyLiteProof(uint256[],uint256[8])': FunctionFragment
-		'verifyEpochKeyProof(uint256[],uint256[8])': FunctionFragment
-		'verifyReputationProof(uint256[],uint256[8])': FunctionFragment
-	}
+  functions: {
+    "EPK_R()": FunctionFragment;
+    "OMT_R()": FunctionFragment;
+    "PoseidonT2_zero()": FunctionFragment;
+    "SNARK_SCALAR_FIELD()": FunctionFragment;
+    "_updateEpochIfNeeded(uint256)": FunctionFragment;
+    "attest(uint256,uint256,uint256,uint256)": FunctionFragment;
+    "attesterCurrentEpoch(uint160)": FunctionFragment;
+    "attesterEpochLength(uint160)": FunctionFragment;
+    "attesterEpochRemainingTime(uint160)": FunctionFragment;
+    "attesterEpochRoot(uint160,uint256)": FunctionFragment;
+    "attesterEpochSealed(uint160,uint256)": FunctionFragment;
+    "attesterMemberCount(uint160)": FunctionFragment;
+    "attesterSemaphoreGroupRoot(uint160)": FunctionFragment;
+    "attesterSignUp(uint256)": FunctionFragment;
+    "attesterSignUpViaRelayer(address,uint256,bytes)": FunctionFragment;
+    "attesterStartTimestamp(uint160)": FunctionFragment;
+    "attesterStateTreeLeafCount(uint160,uint256)": FunctionFragment;
+    "attesterStateTreeRoot(uint160,uint256)": FunctionFragment;
+    "attesterStateTreeRootExists(uint160,uint256,uint256)": FunctionFragment;
+    "buildOrderedTreeVerifier()": FunctionFragment;
+    "config()": FunctionFragment;
+    "decodeEpochKeyControl(uint256)": FunctionFragment;
+    "decodeEpochKeyLiteSignals(uint256[])": FunctionFragment;
+    "decodeEpochKeySignals(uint256[])": FunctionFragment;
+    "decodeReputationControl(uint256)": FunctionFragment;
+    "decodeReputationSignals(uint256[])": FunctionFragment;
+    "epochKeyLiteVerifier()": FunctionFragment;
+    "epochKeyVerifier()": FunctionFragment;
+    "epochTreeArity()": FunctionFragment;
+    "epochTreeDepth()": FunctionFragment;
+    "fieldCount()": FunctionFragment;
+    "numEpochKeyNoncePerEpoch()": FunctionFragment;
+    "reputationVerifier()": FunctionFragment;
+    "sealEpoch(uint256,uint160,uint256[],uint256[8])": FunctionFragment;
+    "signupVerifier()": FunctionFragment;
+    "stateTreeDepth()": FunctionFragment;
+    "sumFieldCount()": FunctionFragment;
+    "updateEpochIfNeeded(uint160)": FunctionFragment;
+    "usedNullifiers(uint256)": FunctionFragment;
+    "userSignUp(uint256[],uint256[8])": FunctionFragment;
+    "userStateTransition(uint256[],uint256[8])": FunctionFragment;
+    "userStateTransitionVerifier()": FunctionFragment;
+    "verifyEpochKeyLiteProof(uint256[],uint256[8])": FunctionFragment;
+    "verifyEpochKeyProof(uint256[],uint256[8])": FunctionFragment;
+    "verifyReputationProof(uint256[],uint256[8])": FunctionFragment;
+  };
 
-	getFunction(
-		nameOrSignatureOrTopic:
-			| 'EPK_R'
-			| 'OMT_R'
-			| 'PoseidonT2_zero'
-			| 'SNARK_SCALAR_FIELD'
-			| '_updateEpochIfNeeded'
-			| 'attest'
-			| 'attesterCurrentEpoch'
-			| 'attesterEpochLength'
-			| 'attesterEpochRemainingTime'
-			| 'attesterEpochRoot'
-			| 'attesterEpochSealed'
-			| 'attesterMemberCount'
-			| 'attesterSemaphoreGroupRoot'
-			| 'attesterSignUp'
-			| 'attesterSignUpViaRelayer'
-			| 'attesterStartTimestamp'
-			| 'attesterStateTreeLeafCount'
-			| 'attesterStateTreeRoot'
-			| 'attesterStateTreeRootExists'
-			| 'buildOrderedTreeVerifier'
-			| 'config'
-			| 'decodeEpochKeyControl'
-			| 'decodeEpochKeyLiteSignals'
-			| 'decodeEpochKeySignals'
-			| 'decodeReputationControl'
-			| 'decodeReputationSignals'
-			| 'epochKeyLiteVerifier'
-			| 'epochKeyVerifier'
-			| 'epochTreeArity'
-			| 'epochTreeDepth'
-			| 'fieldCount'
-			| 'numEpochKeyNoncePerEpoch'
-			| 'reputationVerifier'
-			| 'sealEpoch'
-			| 'signupVerifier'
-			| 'stateTreeDepth'
-			| 'sumFieldCount'
-			| 'updateEpochIfNeeded'
-			| 'usedNullifiers'
-			| 'userSignUp'
-			| 'userStateTransition'
-			| 'userStateTransitionVerifier'
-			| 'verifyEpochKeyLiteProof'
-			| 'verifyEpochKeyProof'
-			| 'verifyReputationProof',
-	): FunctionFragment
+  getFunction(
+    nameOrSignatureOrTopic:
+      | "EPK_R"
+      | "OMT_R"
+      | "PoseidonT2_zero"
+      | "SNARK_SCALAR_FIELD"
+      | "_updateEpochIfNeeded"
+      | "attest"
+      | "attesterCurrentEpoch"
+      | "attesterEpochLength"
+      | "attesterEpochRemainingTime"
+      | "attesterEpochRoot"
+      | "attesterEpochSealed"
+      | "attesterMemberCount"
+      | "attesterSemaphoreGroupRoot"
+      | "attesterSignUp"
+      | "attesterSignUpViaRelayer"
+      | "attesterStartTimestamp"
+      | "attesterStateTreeLeafCount"
+      | "attesterStateTreeRoot"
+      | "attesterStateTreeRootExists"
+      | "buildOrderedTreeVerifier"
+      | "config"
+      | "decodeEpochKeyControl"
+      | "decodeEpochKeyLiteSignals"
+      | "decodeEpochKeySignals"
+      | "decodeReputationControl"
+      | "decodeReputationSignals"
+      | "epochKeyLiteVerifier"
+      | "epochKeyVerifier"
+      | "epochTreeArity"
+      | "epochTreeDepth"
+      | "fieldCount"
+      | "numEpochKeyNoncePerEpoch"
+      | "reputationVerifier"
+      | "sealEpoch"
+      | "signupVerifier"
+      | "stateTreeDepth"
+      | "sumFieldCount"
+      | "updateEpochIfNeeded"
+      | "usedNullifiers"
+      | "userSignUp"
+      | "userStateTransition"
+      | "userStateTransitionVerifier"
+      | "verifyEpochKeyLiteProof"
+      | "verifyEpochKeyProof"
+      | "verifyReputationProof"
+  ): FunctionFragment;
 
-	encodeFunctionData(functionFragment: 'EPK_R', values?: undefined): string
-	encodeFunctionData(functionFragment: 'OMT_R', values?: undefined): string
-	encodeFunctionData(functionFragment: 'PoseidonT2_zero', values?: undefined): string
-	encodeFunctionData(functionFragment: 'SNARK_SCALAR_FIELD', values?: undefined): string
-	encodeFunctionData(
-		functionFragment: '_updateEpochIfNeeded',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attest',
-		values: [
-			PromiseOrValue<BigNumberish>,
-			PromiseOrValue<BigNumberish>,
-			PromiseOrValue<BigNumberish>,
-			PromiseOrValue<BigNumberish>,
-		],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterCurrentEpoch',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterEpochLength',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterEpochRemainingTime',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterEpochRoot',
-		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterEpochSealed',
-		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterMemberCount',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterSemaphoreGroupRoot',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterSignUp',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterSignUpViaRelayer',
-		values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>, PromiseOrValue<BytesLike>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterStartTimestamp',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterStateTreeLeafCount',
-		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterStateTreeRoot',
-		values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'attesterStateTreeRootExists',
-		values: [
-			PromiseOrValue<BigNumberish>,
-			PromiseOrValue<BigNumberish>,
-			PromiseOrValue<BigNumberish>,
-		],
-	): string
-	encodeFunctionData(functionFragment: 'buildOrderedTreeVerifier', values?: undefined): string
-	encodeFunctionData(functionFragment: 'config', values?: undefined): string
-	encodeFunctionData(
-		functionFragment: 'decodeEpochKeyControl',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'decodeEpochKeyLiteSignals',
-		values: [PromiseOrValue<BigNumberish>[]],
-	): string
-	encodeFunctionData(
-		functionFragment: 'decodeEpochKeySignals',
-		values: [PromiseOrValue<BigNumberish>[]],
-	): string
-	encodeFunctionData(
-		functionFragment: 'decodeReputationControl',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'decodeReputationSignals',
-		values: [PromiseOrValue<BigNumberish>[]],
-	): string
-	encodeFunctionData(functionFragment: 'epochKeyLiteVerifier', values?: undefined): string
-	encodeFunctionData(functionFragment: 'epochKeyVerifier', values?: undefined): string
-	encodeFunctionData(functionFragment: 'epochTreeArity', values?: undefined): string
-	encodeFunctionData(functionFragment: 'epochTreeDepth', values?: undefined): string
-	encodeFunctionData(functionFragment: 'fieldCount', values?: undefined): string
-	encodeFunctionData(functionFragment: 'numEpochKeyNoncePerEpoch', values?: undefined): string
-	encodeFunctionData(functionFragment: 'reputationVerifier', values?: undefined): string
-	encodeFunctionData(
-		functionFragment: 'sealEpoch',
-		values: [
-			PromiseOrValue<BigNumberish>,
-			PromiseOrValue<BigNumberish>,
-			PromiseOrValue<BigNumberish>[],
-			PromiseOrValue<BigNumberish>[],
-		],
-	): string
-	encodeFunctionData(functionFragment: 'signupVerifier', values?: undefined): string
-	encodeFunctionData(functionFragment: 'stateTreeDepth', values?: undefined): string
-	encodeFunctionData(functionFragment: 'sumFieldCount', values?: undefined): string
-	encodeFunctionData(
-		functionFragment: 'updateEpochIfNeeded',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'usedNullifiers',
-		values: [PromiseOrValue<BigNumberish>],
-	): string
-	encodeFunctionData(
-		functionFragment: 'userSignUp',
-		values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]],
-	): string
-	encodeFunctionData(
-		functionFragment: 'userStateTransition',
-		values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]],
-	): string
-	encodeFunctionData(functionFragment: 'userStateTransitionVerifier', values?: undefined): string
-	encodeFunctionData(
-		functionFragment: 'verifyEpochKeyLiteProof',
-		values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]],
-	): string
-	encodeFunctionData(
-		functionFragment: 'verifyEpochKeyProof',
-		values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]],
-	): string
-	encodeFunctionData(
-		functionFragment: 'verifyReputationProof',
-		values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]],
-	): string
+  encodeFunctionData(functionFragment: "EPK_R", values?: undefined): string;
+  encodeFunctionData(functionFragment: "OMT_R", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "PoseidonT2_zero",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "SNARK_SCALAR_FIELD",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_updateEpochIfNeeded",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attest",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterCurrentEpoch",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterEpochLength",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterEpochRemainingTime",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterEpochRoot",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterEpochSealed",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterMemberCount",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterSemaphoreGroupRoot",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterSignUp",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterSignUpViaRelayer",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterStartTimestamp",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterStateTreeLeafCount",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterStateTreeRoot",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "attesterStateTreeRootExists",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "buildOrderedTreeVerifier",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "config", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "decodeEpochKeyControl",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "decodeEpochKeyLiteSignals",
+    values: [PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "decodeEpochKeySignals",
+    values: [PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "decodeReputationControl",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "decodeReputationSignals",
+    values: [PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "epochKeyLiteVerifier",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "epochKeyVerifier",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "epochTreeArity",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "epochTreeDepth",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "fieldCount",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "numEpochKeyNoncePerEpoch",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "reputationVerifier",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sealEpoch",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>[],
+      PromiseOrValue<BigNumberish>[]
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "signupVerifier",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "stateTreeDepth",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sumFieldCount",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateEpochIfNeeded",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "usedNullifiers",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "userSignUp",
+    values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "userStateTransition",
+    values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "userStateTransitionVerifier",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "verifyEpochKeyLiteProof",
+    values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "verifyEpochKeyProof",
+    values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "verifyReputationProof",
+    values: [PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>[]]
+  ): string;
 
-	decodeFunctionResult(functionFragment: 'EPK_R', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'OMT_R', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'PoseidonT2_zero', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'SNARK_SCALAR_FIELD', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: '_updateEpochIfNeeded', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attest', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterCurrentEpoch', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterEpochLength', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterEpochRemainingTime', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterEpochRoot', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterEpochSealed', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterMemberCount', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterSemaphoreGroupRoot', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterSignUp', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterSignUpViaRelayer', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterStartTimestamp', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterStateTreeLeafCount', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterStateTreeRoot', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'attesterStateTreeRootExists', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'buildOrderedTreeVerifier', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'config', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'decodeEpochKeyControl', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'decodeEpochKeyLiteSignals', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'decodeEpochKeySignals', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'decodeReputationControl', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'decodeReputationSignals', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'epochKeyLiteVerifier', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'epochKeyVerifier', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'epochTreeArity', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'epochTreeDepth', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'fieldCount', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'numEpochKeyNoncePerEpoch', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'reputationVerifier', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'sealEpoch', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'signupVerifier', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'stateTreeDepth', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'sumFieldCount', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'updateEpochIfNeeded', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'usedNullifiers', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'userSignUp', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'userStateTransition', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'userStateTransitionVerifier', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'verifyEpochKeyLiteProof', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'verifyEpochKeyProof', data: BytesLike): Result
-	decodeFunctionResult(functionFragment: 'verifyReputationProof', data: BytesLike): Result
+  decodeFunctionResult(functionFragment: "EPK_R", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "OMT_R", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "PoseidonT2_zero",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "SNARK_SCALAR_FIELD",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_updateEpochIfNeeded",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "attest", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterCurrentEpoch",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterEpochLength",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterEpochRemainingTime",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterEpochRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterEpochSealed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterMemberCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterSemaphoreGroupRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterSignUp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterSignUpViaRelayer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterStartTimestamp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterStateTreeLeafCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterStateTreeRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "attesterStateTreeRootExists",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "buildOrderedTreeVerifier",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "config", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "decodeEpochKeyControl",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "decodeEpochKeyLiteSignals",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "decodeEpochKeySignals",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "decodeReputationControl",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "decodeReputationSignals",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "epochKeyLiteVerifier",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "epochKeyVerifier",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "epochTreeArity",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "epochTreeDepth",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "fieldCount", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "numEpochKeyNoncePerEpoch",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "reputationVerifier",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "sealEpoch", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "signupVerifier",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "stateTreeDepth",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "sumFieldCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateEpochIfNeeded",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "usedNullifiers",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "userSignUp", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "userStateTransition",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "userStateTransitionVerifier",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "verifyEpochKeyLiteProof",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "verifyEpochKeyProof",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "verifyReputationProof",
+    data: BytesLike
+  ): Result;
 
-	events: {
-		'Attestation(uint256,uint256,uint160,uint256,uint256,uint256)': EventFragment
-		'AttesterSignedUp(uint160,uint256,uint256)': EventFragment
-		'EpochEnded(uint256,uint160)': EventFragment
-		'EpochSealed(uint256,uint160)': EventFragment
-		'EpochTreeLeaf(uint256,uint160,uint256,uint256)': EventFragment
-		'StateTreeLeaf(uint256,uint160,uint256,uint256)': EventFragment
-		'UserSignedUp(uint256,uint256,uint160,uint256)': EventFragment
-		'UserStateTransitioned(uint256,uint160,uint256,uint256,uint256)': EventFragment
-	}
+  events: {
+    "Attestation(uint256,uint256,uint160,uint256,uint256,uint256)": EventFragment;
+    "AttesterSignedUp(uint160,uint256,uint256)": EventFragment;
+    "EpochEnded(uint256,uint160)": EventFragment;
+    "EpochSealed(uint256,uint160)": EventFragment;
+    "EpochTreeLeaf(uint256,uint160,uint256,uint256)": EventFragment;
+    "StateTreeLeaf(uint256,uint160,uint256,uint256)": EventFragment;
+    "UserSignedUp(uint256,uint256,uint160,uint256)": EventFragment;
+    "UserStateTransitioned(uint256,uint160,uint256,uint256,uint256)": EventFragment;
+  };
 
-	getEvent(nameOrSignatureOrTopic: 'Attestation'): EventFragment
-	getEvent(nameOrSignatureOrTopic: 'AttesterSignedUp'): EventFragment
-	getEvent(nameOrSignatureOrTopic: 'EpochEnded'): EventFragment
-	getEvent(nameOrSignatureOrTopic: 'EpochSealed'): EventFragment
-	getEvent(nameOrSignatureOrTopic: 'EpochTreeLeaf'): EventFragment
-	getEvent(nameOrSignatureOrTopic: 'StateTreeLeaf'): EventFragment
-	getEvent(nameOrSignatureOrTopic: 'UserSignedUp'): EventFragment
-	getEvent(nameOrSignatureOrTopic: 'UserStateTransitioned'): EventFragment
+  getEvent(nameOrSignatureOrTopic: "Attestation"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AttesterSignedUp"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EpochEnded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EpochSealed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EpochTreeLeaf"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "StateTreeLeaf"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UserSignedUp"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UserStateTransitioned"): EventFragment;
 }
 
 export interface AttestationEventObject {
-	epoch: BigNumber
-	epochKey: BigNumber
-	attesterId: BigNumber
-	fieldIndex: BigNumber
-	change: BigNumber
-	timestamp: BigNumber
+  epoch: BigNumber;
+  epochKey: BigNumber;
+  attesterId: BigNumber;
+  fieldIndex: BigNumber;
+  change: BigNumber;
+  timestamp: BigNumber;
 }
 export type AttestationEvent = TypedEvent<
-	[BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
-	AttestationEventObject
->
+  [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
+  AttestationEventObject
+>;
 
-export type AttestationEventFilter = TypedEventFilter<AttestationEvent>
+export type AttestationEventFilter = TypedEventFilter<AttestationEvent>;
 
 export interface AttesterSignedUpEventObject {
-	attesterId: BigNumber
-	epochLength: BigNumber
-	timestamp: BigNumber
+  attesterId: BigNumber;
+  epochLength: BigNumber;
+  timestamp: BigNumber;
 }
 export type AttesterSignedUpEvent = TypedEvent<
-	[BigNumber, BigNumber, BigNumber],
-	AttesterSignedUpEventObject
->
+  [BigNumber, BigNumber, BigNumber],
+  AttesterSignedUpEventObject
+>;
 
-export type AttesterSignedUpEventFilter = TypedEventFilter<AttesterSignedUpEvent>
+export type AttesterSignedUpEventFilter =
+  TypedEventFilter<AttesterSignedUpEvent>;
 
 export interface EpochEndedEventObject {
-	epoch: BigNumber
-	attesterId: BigNumber
+  epoch: BigNumber;
+  attesterId: BigNumber;
 }
-export type EpochEndedEvent = TypedEvent<[BigNumber, BigNumber], EpochEndedEventObject>
+export type EpochEndedEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  EpochEndedEventObject
+>;
 
-export type EpochEndedEventFilter = TypedEventFilter<EpochEndedEvent>
+export type EpochEndedEventFilter = TypedEventFilter<EpochEndedEvent>;
 
 export interface EpochSealedEventObject {
-	epoch: BigNumber
-	attesterId: BigNumber
+  epoch: BigNumber;
+  attesterId: BigNumber;
 }
-export type EpochSealedEvent = TypedEvent<[BigNumber, BigNumber], EpochSealedEventObject>
+export type EpochSealedEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  EpochSealedEventObject
+>;
 
-export type EpochSealedEventFilter = TypedEventFilter<EpochSealedEvent>
+export type EpochSealedEventFilter = TypedEventFilter<EpochSealedEvent>;
 
 export interface EpochTreeLeafEventObject {
-	epoch: BigNumber
-	attesterId: BigNumber
-	index: BigNumber
-	leaf: BigNumber
+  epoch: BigNumber;
+  attesterId: BigNumber;
+  index: BigNumber;
+  leaf: BigNumber;
 }
 export type EpochTreeLeafEvent = TypedEvent<
-	[BigNumber, BigNumber, BigNumber, BigNumber],
-	EpochTreeLeafEventObject
->
+  [BigNumber, BigNumber, BigNumber, BigNumber],
+  EpochTreeLeafEventObject
+>;
 
-export type EpochTreeLeafEventFilter = TypedEventFilter<EpochTreeLeafEvent>
+export type EpochTreeLeafEventFilter = TypedEventFilter<EpochTreeLeafEvent>;
 
 export interface StateTreeLeafEventObject {
-	epoch: BigNumber
-	attesterId: BigNumber
-	index: BigNumber
-	leaf: BigNumber
+  epoch: BigNumber;
+  attesterId: BigNumber;
+  index: BigNumber;
+  leaf: BigNumber;
 }
 export type StateTreeLeafEvent = TypedEvent<
-	[BigNumber, BigNumber, BigNumber, BigNumber],
-	StateTreeLeafEventObject
->
+  [BigNumber, BigNumber, BigNumber, BigNumber],
+  StateTreeLeafEventObject
+>;
 
-export type StateTreeLeafEventFilter = TypedEventFilter<StateTreeLeafEvent>
+export type StateTreeLeafEventFilter = TypedEventFilter<StateTreeLeafEvent>;
 
 export interface UserSignedUpEventObject {
-	epoch: BigNumber
-	identityCommitment: BigNumber
-	attesterId: BigNumber
-	leafIndex: BigNumber
+  epoch: BigNumber;
+  identityCommitment: BigNumber;
+  attesterId: BigNumber;
+  leafIndex: BigNumber;
 }
 export type UserSignedUpEvent = TypedEvent<
-	[BigNumber, BigNumber, BigNumber, BigNumber],
-	UserSignedUpEventObject
->
+  [BigNumber, BigNumber, BigNumber, BigNumber],
+  UserSignedUpEventObject
+>;
 
-export type UserSignedUpEventFilter = TypedEventFilter<UserSignedUpEvent>
+export type UserSignedUpEventFilter = TypedEventFilter<UserSignedUpEvent>;
 
 export interface UserStateTransitionedEventObject {
-	epoch: BigNumber
-	attesterId: BigNumber
-	leafIndex: BigNumber
-	hashedLeaf: BigNumber
-	nullifier: BigNumber
+  epoch: BigNumber;
+  attesterId: BigNumber;
+  leafIndex: BigNumber;
+  hashedLeaf: BigNumber;
+  nullifier: BigNumber;
 }
 export type UserStateTransitionedEvent = TypedEvent<
-	[BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
-	UserStateTransitionedEventObject
->
+  [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
+  UserStateTransitionedEventObject
+>;
 
-export type UserStateTransitionedEventFilter = TypedEventFilter<UserStateTransitionedEvent>
+export type UserStateTransitionedEventFilter =
+  TypedEventFilter<UserStateTransitionedEvent>;
 
 export interface Unirep extends BaseContract {
-	connect(signerOrProvider: Signer | Provider | string): this
-	attach(addressOrName: string): this
-	deployed(): Promise<this>
-
-	interface: UnirepInterface
-
-	queryFilter<TEvent extends TypedEvent>(
-		event: TypedEventFilter<TEvent>,
-		fromBlockOrBlockhash?: string | number | undefined,
-		toBlock?: string | number | undefined,
-	): Promise<Array<TEvent>>
-
-	listeners<TEvent extends TypedEvent>(
-		eventFilter?: TypedEventFilter<TEvent>,
-	): Array<TypedListener<TEvent>>
-	listeners(eventName?: string): Array<Listener>
-	removeAllListeners<TEvent extends TypedEvent>(eventFilter: TypedEventFilter<TEvent>): this
-	removeAllListeners(eventName?: string): this
-	off: OnEvent<this>
-	on: OnEvent<this>
-	once: OnEvent<this>
-	removeListener: OnEvent<this>
-
-	functions: {
-		EPK_R(overrides?: CallOverrides): Promise<[BigNumber]>
-
-		OMT_R(overrides?: CallOverrides): Promise<[BigNumber]>
-
-		PoseidonT2_zero(overrides?: CallOverrides): Promise<[BigNumber]>
-
-		SNARK_SCALAR_FIELD(overrides?: CallOverrides): Promise<[BigNumber]>
-
-		_updateEpochIfNeeded(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		attest(
-			epochKey: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			fieldIndex: PromiseOrValue<BigNumberish>,
-			change: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		attesterCurrentEpoch(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[BigNumber]>
-
-		attesterEpochLength(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[BigNumber]>
-
-		attesterEpochRemainingTime(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[BigNumber]>
-
-		attesterEpochRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[BigNumber]>
-
-		attesterEpochSealed(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[boolean]>
-
-		attesterMemberCount(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[BigNumber]>
-
-		attesterSemaphoreGroupRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[BigNumber]>
-
-		attesterSignUp(
-			epochLength: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		attesterSignUpViaRelayer(
-			attester: PromiseOrValue<string>,
-			epochLength: PromiseOrValue<BigNumberish>,
-			signature: PromiseOrValue<BytesLike>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		attesterStartTimestamp(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[BigNumber]>
-
-		attesterStateTreeLeafCount(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[BigNumber]>
-
-		attesterStateTreeRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[BigNumber]>
-
-		attesterStateTreeRootExists(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			root: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[boolean]>
-
-		buildOrderedTreeVerifier(overrides?: CallOverrides): Promise<[string]>
-
-		config(overrides?: CallOverrides): Promise<[IUnirep.ConfigStructOutput]>
-
-		decodeEpochKeyControl(
-			control: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<
-			[BigNumber, BigNumber, BigNumber, BigNumber] & {
-				revealNonce: BigNumber
-				attesterId: BigNumber
-				epoch: BigNumber
-				nonce: BigNumber
-			}
-		>
-
-		decodeEpochKeyLiteSignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<[IUnirep.EpochKeySignalsStructOutput]>
-
-		decodeEpochKeySignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<[IUnirep.EpochKeySignalsStructOutput]>
-
-		decodeReputationControl(
-			control: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<
-			[BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-				minRep: BigNumber
-				maxRep: BigNumber
-				proveMinRep: BigNumber
-				proveMaxRep: BigNumber
-				proveZeroRep: BigNumber
-				proveGraffiti: BigNumber
-			}
-		>
-
-		decodeReputationSignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<[IUnirep.ReputationSignalsStructOutput]>
-
-		epochKeyLiteVerifier(overrides?: CallOverrides): Promise<[string]>
-
-		epochKeyVerifier(overrides?: CallOverrides): Promise<[string]>
-
-		epochTreeArity(overrides?: CallOverrides): Promise<[number]>
-
-		epochTreeDepth(overrides?: CallOverrides): Promise<[number]>
-
-		fieldCount(overrides?: CallOverrides): Promise<[number]>
-
-		numEpochKeyNoncePerEpoch(overrides?: CallOverrides): Promise<[number]>
-
-		reputationVerifier(overrides?: CallOverrides): Promise<[string]>
-
-		sealEpoch(
-			epoch: PromiseOrValue<BigNumberish>,
-			attesterId: PromiseOrValue<BigNumberish>,
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		signupVerifier(overrides?: CallOverrides): Promise<[string]>
-
-		stateTreeDepth(overrides?: CallOverrides): Promise<[number]>
-
-		sumFieldCount(overrides?: CallOverrides): Promise<[number]>
-
-		updateEpochIfNeeded(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		usedNullifiers(
-			arg0: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<[boolean]>
-
-		userSignUp(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		userStateTransition(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		userStateTransitionVerifier(overrides?: CallOverrides): Promise<[string]>
-
-		verifyEpochKeyLiteProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		verifyEpochKeyProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-
-		verifyReputationProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<ContractTransaction>
-	}
-
-	EPK_R(overrides?: CallOverrides): Promise<BigNumber>
-
-	OMT_R(overrides?: CallOverrides): Promise<BigNumber>
-
-	PoseidonT2_zero(overrides?: CallOverrides): Promise<BigNumber>
-
-	SNARK_SCALAR_FIELD(overrides?: CallOverrides): Promise<BigNumber>
-
-	_updateEpochIfNeeded(
-		attesterId: PromiseOrValue<BigNumberish>,
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	attest(
-		epochKey: PromiseOrValue<BigNumberish>,
-		epoch: PromiseOrValue<BigNumberish>,
-		fieldIndex: PromiseOrValue<BigNumberish>,
-		change: PromiseOrValue<BigNumberish>,
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	attesterCurrentEpoch(
-		attesterId: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<BigNumber>
-
-	attesterEpochLength(
-		attesterId: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<BigNumber>
-
-	attesterEpochRemainingTime(
-		attesterId: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<BigNumber>
-
-	attesterEpochRoot(
-		attesterId: PromiseOrValue<BigNumberish>,
-		epoch: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<BigNumber>
-
-	attesterEpochSealed(
-		attesterId: PromiseOrValue<BigNumberish>,
-		epoch: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<boolean>
-
-	attesterMemberCount(
-		attesterId: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<BigNumber>
-
-	attesterSemaphoreGroupRoot(
-		attesterId: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<BigNumber>
-
-	attesterSignUp(
-		epochLength: PromiseOrValue<BigNumberish>,
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	attesterSignUpViaRelayer(
-		attester: PromiseOrValue<string>,
-		epochLength: PromiseOrValue<BigNumberish>,
-		signature: PromiseOrValue<BytesLike>,
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	attesterStartTimestamp(
-		attesterId: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<BigNumber>
-
-	attesterStateTreeLeafCount(
-		attesterId: PromiseOrValue<BigNumberish>,
-		epoch: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<BigNumber>
-
-	attesterStateTreeRoot(
-		attesterId: PromiseOrValue<BigNumberish>,
-		epoch: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<BigNumber>
-
-	attesterStateTreeRootExists(
-		attesterId: PromiseOrValue<BigNumberish>,
-		epoch: PromiseOrValue<BigNumberish>,
-		root: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<boolean>
-
-	buildOrderedTreeVerifier(overrides?: CallOverrides): Promise<string>
-
-	config(overrides?: CallOverrides): Promise<IUnirep.ConfigStructOutput>
-
-	decodeEpochKeyControl(
-		control: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<
-		[BigNumber, BigNumber, BigNumber, BigNumber] & {
-			revealNonce: BigNumber
-			attesterId: BigNumber
-			epoch: BigNumber
-			nonce: BigNumber
-		}
-	>
-
-	decodeEpochKeyLiteSignals(
-		publicSignals: PromiseOrValue<BigNumberish>[],
-		overrides?: CallOverrides,
-	): Promise<IUnirep.EpochKeySignalsStructOutput>
-
-	decodeEpochKeySignals(
-		publicSignals: PromiseOrValue<BigNumberish>[],
-		overrides?: CallOverrides,
-	): Promise<IUnirep.EpochKeySignalsStructOutput>
-
-	decodeReputationControl(
-		control: PromiseOrValue<BigNumberish>,
-		overrides?: CallOverrides,
-	): Promise<
-		[BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-			minRep: BigNumber
-			maxRep: BigNumber
-			proveMinRep: BigNumber
-			proveMaxRep: BigNumber
-			proveZeroRep: BigNumber
-			proveGraffiti: BigNumber
-		}
-	>
-
-	decodeReputationSignals(
-		publicSignals: PromiseOrValue<BigNumberish>[],
-		overrides?: CallOverrides,
-	): Promise<IUnirep.ReputationSignalsStructOutput>
-
-	epochKeyLiteVerifier(overrides?: CallOverrides): Promise<string>
-
-	epochKeyVerifier(overrides?: CallOverrides): Promise<string>
-
-	epochTreeArity(overrides?: CallOverrides): Promise<number>
-
-	epochTreeDepth(overrides?: CallOverrides): Promise<number>
-
-	fieldCount(overrides?: CallOverrides): Promise<number>
-
-	numEpochKeyNoncePerEpoch(overrides?: CallOverrides): Promise<number>
-
-	reputationVerifier(overrides?: CallOverrides): Promise<string>
-
-	sealEpoch(
-		epoch: PromiseOrValue<BigNumberish>,
-		attesterId: PromiseOrValue<BigNumberish>,
-		publicSignals: PromiseOrValue<BigNumberish>[],
-		proof: PromiseOrValue<BigNumberish>[],
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	signupVerifier(overrides?: CallOverrides): Promise<string>
-
-	stateTreeDepth(overrides?: CallOverrides): Promise<number>
-
-	sumFieldCount(overrides?: CallOverrides): Promise<number>
-
-	updateEpochIfNeeded(
-		attesterId: PromiseOrValue<BigNumberish>,
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	usedNullifiers(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>
-
-	userSignUp(
-		publicSignals: PromiseOrValue<BigNumberish>[],
-		proof: PromiseOrValue<BigNumberish>[],
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	userStateTransition(
-		publicSignals: PromiseOrValue<BigNumberish>[],
-		proof: PromiseOrValue<BigNumberish>[],
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	userStateTransitionVerifier(overrides?: CallOverrides): Promise<string>
-
-	verifyEpochKeyLiteProof(
-		publicSignals: PromiseOrValue<BigNumberish>[],
-		proof: PromiseOrValue<BigNumberish>[],
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	verifyEpochKeyProof(
-		publicSignals: PromiseOrValue<BigNumberish>[],
-		proof: PromiseOrValue<BigNumberish>[],
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	verifyReputationProof(
-		publicSignals: PromiseOrValue<BigNumberish>[],
-		proof: PromiseOrValue<BigNumberish>[],
-		overrides?: Overrides & { from?: PromiseOrValue<string> },
-	): Promise<ContractTransaction>
-
-	callStatic: {
-		EPK_R(overrides?: CallOverrides): Promise<BigNumber>
-
-		OMT_R(overrides?: CallOverrides): Promise<BigNumber>
-
-		PoseidonT2_zero(overrides?: CallOverrides): Promise<BigNumber>
-
-		SNARK_SCALAR_FIELD(overrides?: CallOverrides): Promise<BigNumber>
-
-		_updateEpochIfNeeded(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attest(
-			epochKey: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			fieldIndex: PromiseOrValue<BigNumberish>,
-			change: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<void>
-
-		attesterCurrentEpoch(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterEpochLength(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterEpochRemainingTime(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterEpochRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterEpochSealed(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<boolean>
-
-		attesterMemberCount(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterSemaphoreGroupRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterSignUp(
-			epochLength: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<void>
-
-		attesterSignUpViaRelayer(
-			attester: PromiseOrValue<string>,
-			epochLength: PromiseOrValue<BigNumberish>,
-			signature: PromiseOrValue<BytesLike>,
-			overrides?: CallOverrides,
-		): Promise<void>
-
-		attesterStartTimestamp(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterStateTreeLeafCount(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterStateTreeRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterStateTreeRootExists(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			root: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<boolean>
-
-		buildOrderedTreeVerifier(overrides?: CallOverrides): Promise<string>
-
-		config(overrides?: CallOverrides): Promise<IUnirep.ConfigStructOutput>
-
-		decodeEpochKeyControl(
-			control: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<
-			[BigNumber, BigNumber, BigNumber, BigNumber] & {
-				revealNonce: BigNumber
-				attesterId: BigNumber
-				epoch: BigNumber
-				nonce: BigNumber
-			}
-		>
-
-		decodeEpochKeyLiteSignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<IUnirep.EpochKeySignalsStructOutput>
-
-		decodeEpochKeySignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<IUnirep.EpochKeySignalsStructOutput>
-
-		decodeReputationControl(
-			control: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<
-			[BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-				minRep: BigNumber
-				maxRep: BigNumber
-				proveMinRep: BigNumber
-				proveMaxRep: BigNumber
-				proveZeroRep: BigNumber
-				proveGraffiti: BigNumber
-			}
-		>
-
-		decodeReputationSignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<IUnirep.ReputationSignalsStructOutput>
-
-		epochKeyLiteVerifier(overrides?: CallOverrides): Promise<string>
-
-		epochKeyVerifier(overrides?: CallOverrides): Promise<string>
-
-		epochTreeArity(overrides?: CallOverrides): Promise<number>
-
-		epochTreeDepth(overrides?: CallOverrides): Promise<number>
-
-		fieldCount(overrides?: CallOverrides): Promise<number>
-
-		numEpochKeyNoncePerEpoch(overrides?: CallOverrides): Promise<number>
-
-		reputationVerifier(overrides?: CallOverrides): Promise<string>
-
-		sealEpoch(
-			epoch: PromiseOrValue<BigNumberish>,
-			attesterId: PromiseOrValue<BigNumberish>,
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<void>
-
-		signupVerifier(overrides?: CallOverrides): Promise<string>
-
-		stateTreeDepth(overrides?: CallOverrides): Promise<number>
-
-		sumFieldCount(overrides?: CallOverrides): Promise<number>
-
-		updateEpochIfNeeded(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		usedNullifiers(arg0: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>
-
-		userSignUp(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<void>
-
-		userStateTransition(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<void>
-
-		userStateTransitionVerifier(overrides?: CallOverrides): Promise<string>
-
-		verifyEpochKeyLiteProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<void>
-
-		verifyEpochKeyProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<void>
-
-		verifyReputationProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<void>
-	}
-
-	filters: {
-		'Attestation(uint256,uint256,uint160,uint256,uint256,uint256)'(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			epochKey?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			fieldIndex?: null,
-			change?: null,
-			timestamp?: null,
-		): AttestationEventFilter
-		Attestation(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			epochKey?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			fieldIndex?: null,
-			change?: null,
-			timestamp?: null,
-		): AttestationEventFilter
-
-		'AttesterSignedUp(uint160,uint256,uint256)'(
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			epochLength?: null,
-			timestamp?: null,
-		): AttesterSignedUpEventFilter
-		AttesterSignedUp(
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			epochLength?: null,
-			timestamp?: null,
-		): AttesterSignedUpEventFilter
-
-		'EpochEnded(uint256,uint160)'(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-		): EpochEndedEventFilter
-		EpochEnded(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-		): EpochEndedEventFilter
-
-		'EpochSealed(uint256,uint160)'(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-		): EpochSealedEventFilter
-		EpochSealed(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-		): EpochSealedEventFilter
-
-		'EpochTreeLeaf(uint256,uint160,uint256,uint256)'(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			index?: PromiseOrValue<BigNumberish> | null,
-			leaf?: null,
-		): EpochTreeLeafEventFilter
-		EpochTreeLeaf(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			index?: PromiseOrValue<BigNumberish> | null,
-			leaf?: null,
-		): EpochTreeLeafEventFilter
-
-		'StateTreeLeaf(uint256,uint160,uint256,uint256)'(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			index?: PromiseOrValue<BigNumberish> | null,
-			leaf?: null,
-		): StateTreeLeafEventFilter
-		StateTreeLeaf(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			index?: PromiseOrValue<BigNumberish> | null,
-			leaf?: null,
-		): StateTreeLeafEventFilter
-
-		'UserSignedUp(uint256,uint256,uint160,uint256)'(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			identityCommitment?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			leafIndex?: null,
-		): UserSignedUpEventFilter
-		UserSignedUp(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			identityCommitment?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			leafIndex?: null,
-		): UserSignedUpEventFilter
-
-		'UserStateTransitioned(uint256,uint160,uint256,uint256,uint256)'(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			leafIndex?: PromiseOrValue<BigNumberish> | null,
-			hashedLeaf?: null,
-			nullifier?: null,
-		): UserStateTransitionedEventFilter
-		UserStateTransitioned(
-			epoch?: PromiseOrValue<BigNumberish> | null,
-			attesterId?: PromiseOrValue<BigNumberish> | null,
-			leafIndex?: PromiseOrValue<BigNumberish> | null,
-			hashedLeaf?: null,
-			nullifier?: null,
-		): UserStateTransitionedEventFilter
-	}
-
-	estimateGas: {
-		EPK_R(overrides?: CallOverrides): Promise<BigNumber>
-
-		OMT_R(overrides?: CallOverrides): Promise<BigNumber>
-
-		PoseidonT2_zero(overrides?: CallOverrides): Promise<BigNumber>
-
-		SNARK_SCALAR_FIELD(overrides?: CallOverrides): Promise<BigNumber>
-
-		_updateEpochIfNeeded(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		attest(
-			epochKey: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			fieldIndex: PromiseOrValue<BigNumberish>,
-			change: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		attesterCurrentEpoch(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterEpochLength(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterEpochRemainingTime(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterEpochRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterEpochSealed(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterMemberCount(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterSemaphoreGroupRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterSignUp(
-			epochLength: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		attesterSignUpViaRelayer(
-			attester: PromiseOrValue<string>,
-			epochLength: PromiseOrValue<BigNumberish>,
-			signature: PromiseOrValue<BytesLike>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		attesterStartTimestamp(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterStateTreeLeafCount(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterStateTreeRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		attesterStateTreeRootExists(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			root: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		buildOrderedTreeVerifier(overrides?: CallOverrides): Promise<BigNumber>
-
-		config(overrides?: CallOverrides): Promise<BigNumber>
-
-		decodeEpochKeyControl(
-			control: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		decodeEpochKeyLiteSignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		decodeEpochKeySignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		decodeReputationControl(
-			control: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		decodeReputationSignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		epochKeyLiteVerifier(overrides?: CallOverrides): Promise<BigNumber>
-
-		epochKeyVerifier(overrides?: CallOverrides): Promise<BigNumber>
-
-		epochTreeArity(overrides?: CallOverrides): Promise<BigNumber>
-
-		epochTreeDepth(overrides?: CallOverrides): Promise<BigNumber>
-
-		fieldCount(overrides?: CallOverrides): Promise<BigNumber>
-
-		numEpochKeyNoncePerEpoch(overrides?: CallOverrides): Promise<BigNumber>
-
-		reputationVerifier(overrides?: CallOverrides): Promise<BigNumber>
-
-		sealEpoch(
-			epoch: PromiseOrValue<BigNumberish>,
-			attesterId: PromiseOrValue<BigNumberish>,
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		signupVerifier(overrides?: CallOverrides): Promise<BigNumber>
-
-		stateTreeDepth(overrides?: CallOverrides): Promise<BigNumber>
-
-		sumFieldCount(overrides?: CallOverrides): Promise<BigNumber>
-
-		updateEpochIfNeeded(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		usedNullifiers(
-			arg0: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<BigNumber>
-
-		userSignUp(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		userStateTransition(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		userStateTransitionVerifier(overrides?: CallOverrides): Promise<BigNumber>
-
-		verifyEpochKeyLiteProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		verifyEpochKeyProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-
-		verifyReputationProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<BigNumber>
-	}
-
-	populateTransaction: {
-		EPK_R(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		OMT_R(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		PoseidonT2_zero(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		SNARK_SCALAR_FIELD(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		_updateEpochIfNeeded(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		attest(
-			epochKey: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			fieldIndex: PromiseOrValue<BigNumberish>,
-			change: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		attesterCurrentEpoch(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterEpochLength(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterEpochRemainingTime(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterEpochRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterEpochSealed(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterMemberCount(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterSemaphoreGroupRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterSignUp(
-			epochLength: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		attesterSignUpViaRelayer(
-			attester: PromiseOrValue<string>,
-			epochLength: PromiseOrValue<BigNumberish>,
-			signature: PromiseOrValue<BytesLike>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		attesterStartTimestamp(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterStateTreeLeafCount(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterStateTreeRoot(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		attesterStateTreeRootExists(
-			attesterId: PromiseOrValue<BigNumberish>,
-			epoch: PromiseOrValue<BigNumberish>,
-			root: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		buildOrderedTreeVerifier(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		config(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		decodeEpochKeyControl(
-			control: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		decodeEpochKeyLiteSignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		decodeEpochKeySignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		decodeReputationControl(
-			control: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		decodeReputationSignals(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		epochKeyLiteVerifier(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		epochKeyVerifier(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		epochTreeArity(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		epochTreeDepth(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		fieldCount(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		numEpochKeyNoncePerEpoch(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		reputationVerifier(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		sealEpoch(
-			epoch: PromiseOrValue<BigNumberish>,
-			attesterId: PromiseOrValue<BigNumberish>,
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		signupVerifier(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		stateTreeDepth(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		sumFieldCount(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		updateEpochIfNeeded(
-			attesterId: PromiseOrValue<BigNumberish>,
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		usedNullifiers(
-			arg0: PromiseOrValue<BigNumberish>,
-			overrides?: CallOverrides,
-		): Promise<PopulatedTransaction>
-
-		userSignUp(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		userStateTransition(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		userStateTransitionVerifier(overrides?: CallOverrides): Promise<PopulatedTransaction>
-
-		verifyEpochKeyLiteProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		verifyEpochKeyProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-
-		verifyReputationProof(
-			publicSignals: PromiseOrValue<BigNumberish>[],
-			proof: PromiseOrValue<BigNumberish>[],
-			overrides?: Overrides & { from?: PromiseOrValue<string> },
-		): Promise<PopulatedTransaction>
-	}
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
+  deployed(): Promise<this>;
+
+  interface: UnirepInterface;
+
+  queryFilter<TEvent extends TypedEvent>(
+    event: TypedEventFilter<TEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TEvent>>;
+
+  listeners<TEvent extends TypedEvent>(
+    eventFilter?: TypedEventFilter<TEvent>
+  ): Array<TypedListener<TEvent>>;
+  listeners(eventName?: string): Array<Listener>;
+  removeAllListeners<TEvent extends TypedEvent>(
+    eventFilter: TypedEventFilter<TEvent>
+  ): this;
+  removeAllListeners(eventName?: string): this;
+  off: OnEvent<this>;
+  on: OnEvent<this>;
+  once: OnEvent<this>;
+  removeListener: OnEvent<this>;
+
+  functions: {
+    EPK_R(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    OMT_R(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    PoseidonT2_zero(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    SNARK_SCALAR_FIELD(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    _updateEpochIfNeeded(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    attest(
+      epochKey: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      fieldIndex: PromiseOrValue<BigNumberish>,
+      change: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    attesterCurrentEpoch(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    attesterEpochLength(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    attesterEpochRemainingTime(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    attesterEpochRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    attesterEpochSealed(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    attesterMemberCount(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    attesterSemaphoreGroupRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    attesterSignUp(
+      epochLength: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    attesterSignUpViaRelayer(
+      attester: PromiseOrValue<string>,
+      epochLength: PromiseOrValue<BigNumberish>,
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    attesterStartTimestamp(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    attesterStateTreeLeafCount(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    attesterStateTreeRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    attesterStateTreeRootExists(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      root: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    buildOrderedTreeVerifier(overrides?: CallOverrides): Promise<[string]>;
+
+    config(overrides?: CallOverrides): Promise<[IUnirep.ConfigStructOutput]>;
+
+    decodeEpochKeyControl(
+      control: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        revealNonce: BigNumber;
+        attesterId: BigNumber;
+        epoch: BigNumber;
+        nonce: BigNumber;
+      }
+    >;
+
+    decodeEpochKeyLiteSignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<[IUnirep.EpochKeySignalsStructOutput]>;
+
+    decodeEpochKeySignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<[IUnirep.EpochKeySignalsStructOutput]>;
+
+    decodeReputationControl(
+      control: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        minRep: BigNumber;
+        maxRep: BigNumber;
+        proveMinRep: BigNumber;
+        proveMaxRep: BigNumber;
+        proveZeroRep: BigNumber;
+        proveGraffiti: BigNumber;
+      }
+    >;
+
+    decodeReputationSignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<[IUnirep.ReputationSignalsStructOutput]>;
+
+    epochKeyLiteVerifier(overrides?: CallOverrides): Promise<[string]>;
+
+    epochKeyVerifier(overrides?: CallOverrides): Promise<[string]>;
+
+    epochTreeArity(overrides?: CallOverrides): Promise<[number]>;
+
+    epochTreeDepth(overrides?: CallOverrides): Promise<[number]>;
+
+    fieldCount(overrides?: CallOverrides): Promise<[number]>;
+
+    numEpochKeyNoncePerEpoch(overrides?: CallOverrides): Promise<[number]>;
+
+    reputationVerifier(overrides?: CallOverrides): Promise<[string]>;
+
+    sealEpoch(
+      epoch: PromiseOrValue<BigNumberish>,
+      attesterId: PromiseOrValue<BigNumberish>,
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    signupVerifier(overrides?: CallOverrides): Promise<[string]>;
+
+    stateTreeDepth(overrides?: CallOverrides): Promise<[number]>;
+
+    sumFieldCount(overrides?: CallOverrides): Promise<[number]>;
+
+    updateEpochIfNeeded(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    usedNullifiers(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    userSignUp(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    userStateTransition(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    userStateTransitionVerifier(overrides?: CallOverrides): Promise<[string]>;
+
+    verifyEpochKeyLiteProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    verifyEpochKeyProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    verifyReputationProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+  };
+
+  EPK_R(overrides?: CallOverrides): Promise<BigNumber>;
+
+  OMT_R(overrides?: CallOverrides): Promise<BigNumber>;
+
+  PoseidonT2_zero(overrides?: CallOverrides): Promise<BigNumber>;
+
+  SNARK_SCALAR_FIELD(overrides?: CallOverrides): Promise<BigNumber>;
+
+  _updateEpochIfNeeded(
+    attesterId: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  attest(
+    epochKey: PromiseOrValue<BigNumberish>,
+    epoch: PromiseOrValue<BigNumberish>,
+    fieldIndex: PromiseOrValue<BigNumberish>,
+    change: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  attesterCurrentEpoch(
+    attesterId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  attesterEpochLength(
+    attesterId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  attesterEpochRemainingTime(
+    attesterId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  attesterEpochRoot(
+    attesterId: PromiseOrValue<BigNumberish>,
+    epoch: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  attesterEpochSealed(
+    attesterId: PromiseOrValue<BigNumberish>,
+    epoch: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  attesterMemberCount(
+    attesterId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  attesterSemaphoreGroupRoot(
+    attesterId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  attesterSignUp(
+    epochLength: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  attesterSignUpViaRelayer(
+    attester: PromiseOrValue<string>,
+    epochLength: PromiseOrValue<BigNumberish>,
+    signature: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  attesterStartTimestamp(
+    attesterId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  attesterStateTreeLeafCount(
+    attesterId: PromiseOrValue<BigNumberish>,
+    epoch: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  attesterStateTreeRoot(
+    attesterId: PromiseOrValue<BigNumberish>,
+    epoch: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  attesterStateTreeRootExists(
+    attesterId: PromiseOrValue<BigNumberish>,
+    epoch: PromiseOrValue<BigNumberish>,
+    root: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  buildOrderedTreeVerifier(overrides?: CallOverrides): Promise<string>;
+
+  config(overrides?: CallOverrides): Promise<IUnirep.ConfigStructOutput>;
+
+  decodeEpochKeyControl(
+    control: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber, BigNumber] & {
+      revealNonce: BigNumber;
+      attesterId: BigNumber;
+      epoch: BigNumber;
+      nonce: BigNumber;
+    }
+  >;
+
+  decodeEpochKeyLiteSignals(
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    overrides?: CallOverrides
+  ): Promise<IUnirep.EpochKeySignalsStructOutput>;
+
+  decodeEpochKeySignals(
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    overrides?: CallOverrides
+  ): Promise<IUnirep.EpochKeySignalsStructOutput>;
+
+  decodeReputationControl(
+    control: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      minRep: BigNumber;
+      maxRep: BigNumber;
+      proveMinRep: BigNumber;
+      proveMaxRep: BigNumber;
+      proveZeroRep: BigNumber;
+      proveGraffiti: BigNumber;
+    }
+  >;
+
+  decodeReputationSignals(
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    overrides?: CallOverrides
+  ): Promise<IUnirep.ReputationSignalsStructOutput>;
+
+  epochKeyLiteVerifier(overrides?: CallOverrides): Promise<string>;
+
+  epochKeyVerifier(overrides?: CallOverrides): Promise<string>;
+
+  epochTreeArity(overrides?: CallOverrides): Promise<number>;
+
+  epochTreeDepth(overrides?: CallOverrides): Promise<number>;
+
+  fieldCount(overrides?: CallOverrides): Promise<number>;
+
+  numEpochKeyNoncePerEpoch(overrides?: CallOverrides): Promise<number>;
+
+  reputationVerifier(overrides?: CallOverrides): Promise<string>;
+
+  sealEpoch(
+    epoch: PromiseOrValue<BigNumberish>,
+    attesterId: PromiseOrValue<BigNumberish>,
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    proof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  signupVerifier(overrides?: CallOverrides): Promise<string>;
+
+  stateTreeDepth(overrides?: CallOverrides): Promise<number>;
+
+  sumFieldCount(overrides?: CallOverrides): Promise<number>;
+
+  updateEpochIfNeeded(
+    attesterId: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  usedNullifiers(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  userSignUp(
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    proof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  userStateTransition(
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    proof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  userStateTransitionVerifier(overrides?: CallOverrides): Promise<string>;
+
+  verifyEpochKeyLiteProof(
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    proof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  verifyEpochKeyProof(
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    proof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  verifyReputationProof(
+    publicSignals: PromiseOrValue<BigNumberish>[],
+    proof: PromiseOrValue<BigNumberish>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  callStatic: {
+    EPK_R(overrides?: CallOverrides): Promise<BigNumber>;
+
+    OMT_R(overrides?: CallOverrides): Promise<BigNumber>;
+
+    PoseidonT2_zero(overrides?: CallOverrides): Promise<BigNumber>;
+
+    SNARK_SCALAR_FIELD(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _updateEpochIfNeeded(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attest(
+      epochKey: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      fieldIndex: PromiseOrValue<BigNumberish>,
+      change: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    attesterCurrentEpoch(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterEpochLength(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterEpochRemainingTime(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterEpochRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterEpochSealed(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    attesterMemberCount(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterSemaphoreGroupRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterSignUp(
+      epochLength: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    attesterSignUpViaRelayer(
+      attester: PromiseOrValue<string>,
+      epochLength: PromiseOrValue<BigNumberish>,
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    attesterStartTimestamp(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterStateTreeLeafCount(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterStateTreeRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterStateTreeRootExists(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      root: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    buildOrderedTreeVerifier(overrides?: CallOverrides): Promise<string>;
+
+    config(overrides?: CallOverrides): Promise<IUnirep.ConfigStructOutput>;
+
+    decodeEpochKeyControl(
+      control: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        revealNonce: BigNumber;
+        attesterId: BigNumber;
+        epoch: BigNumber;
+        nonce: BigNumber;
+      }
+    >;
+
+    decodeEpochKeyLiteSignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<IUnirep.EpochKeySignalsStructOutput>;
+
+    decodeEpochKeySignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<IUnirep.EpochKeySignalsStructOutput>;
+
+    decodeReputationControl(
+      control: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        minRep: BigNumber;
+        maxRep: BigNumber;
+        proveMinRep: BigNumber;
+        proveMaxRep: BigNumber;
+        proveZeroRep: BigNumber;
+        proveGraffiti: BigNumber;
+      }
+    >;
+
+    decodeReputationSignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<IUnirep.ReputationSignalsStructOutput>;
+
+    epochKeyLiteVerifier(overrides?: CallOverrides): Promise<string>;
+
+    epochKeyVerifier(overrides?: CallOverrides): Promise<string>;
+
+    epochTreeArity(overrides?: CallOverrides): Promise<number>;
+
+    epochTreeDepth(overrides?: CallOverrides): Promise<number>;
+
+    fieldCount(overrides?: CallOverrides): Promise<number>;
+
+    numEpochKeyNoncePerEpoch(overrides?: CallOverrides): Promise<number>;
+
+    reputationVerifier(overrides?: CallOverrides): Promise<string>;
+
+    sealEpoch(
+      epoch: PromiseOrValue<BigNumberish>,
+      attesterId: PromiseOrValue<BigNumberish>,
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    signupVerifier(overrides?: CallOverrides): Promise<string>;
+
+    stateTreeDepth(overrides?: CallOverrides): Promise<number>;
+
+    sumFieldCount(overrides?: CallOverrides): Promise<number>;
+
+    updateEpochIfNeeded(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    usedNullifiers(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    userSignUp(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    userStateTransition(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    userStateTransitionVerifier(overrides?: CallOverrides): Promise<string>;
+
+    verifyEpochKeyLiteProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    verifyEpochKeyProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    verifyReputationProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+  };
+
+  filters: {
+    "Attestation(uint256,uint256,uint160,uint256,uint256,uint256)"(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      epochKey?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      fieldIndex?: null,
+      change?: null,
+      timestamp?: null
+    ): AttestationEventFilter;
+    Attestation(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      epochKey?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      fieldIndex?: null,
+      change?: null,
+      timestamp?: null
+    ): AttestationEventFilter;
+
+    "AttesterSignedUp(uint160,uint256,uint256)"(
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      epochLength?: null,
+      timestamp?: null
+    ): AttesterSignedUpEventFilter;
+    AttesterSignedUp(
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      epochLength?: null,
+      timestamp?: null
+    ): AttesterSignedUpEventFilter;
+
+    "EpochEnded(uint256,uint160)"(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null
+    ): EpochEndedEventFilter;
+    EpochEnded(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null
+    ): EpochEndedEventFilter;
+
+    "EpochSealed(uint256,uint160)"(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null
+    ): EpochSealedEventFilter;
+    EpochSealed(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null
+    ): EpochSealedEventFilter;
+
+    "EpochTreeLeaf(uint256,uint160,uint256,uint256)"(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      index?: PromiseOrValue<BigNumberish> | null,
+      leaf?: null
+    ): EpochTreeLeafEventFilter;
+    EpochTreeLeaf(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      index?: PromiseOrValue<BigNumberish> | null,
+      leaf?: null
+    ): EpochTreeLeafEventFilter;
+
+    "StateTreeLeaf(uint256,uint160,uint256,uint256)"(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      index?: PromiseOrValue<BigNumberish> | null,
+      leaf?: null
+    ): StateTreeLeafEventFilter;
+    StateTreeLeaf(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      index?: PromiseOrValue<BigNumberish> | null,
+      leaf?: null
+    ): StateTreeLeafEventFilter;
+
+    "UserSignedUp(uint256,uint256,uint160,uint256)"(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      identityCommitment?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      leafIndex?: null
+    ): UserSignedUpEventFilter;
+    UserSignedUp(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      identityCommitment?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      leafIndex?: null
+    ): UserSignedUpEventFilter;
+
+    "UserStateTransitioned(uint256,uint160,uint256,uint256,uint256)"(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      leafIndex?: PromiseOrValue<BigNumberish> | null,
+      hashedLeaf?: null,
+      nullifier?: null
+    ): UserStateTransitionedEventFilter;
+    UserStateTransitioned(
+      epoch?: PromiseOrValue<BigNumberish> | null,
+      attesterId?: PromiseOrValue<BigNumberish> | null,
+      leafIndex?: PromiseOrValue<BigNumberish> | null,
+      hashedLeaf?: null,
+      nullifier?: null
+    ): UserStateTransitionedEventFilter;
+  };
+
+  estimateGas: {
+    EPK_R(overrides?: CallOverrides): Promise<BigNumber>;
+
+    OMT_R(overrides?: CallOverrides): Promise<BigNumber>;
+
+    PoseidonT2_zero(overrides?: CallOverrides): Promise<BigNumber>;
+
+    SNARK_SCALAR_FIELD(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _updateEpochIfNeeded(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    attest(
+      epochKey: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      fieldIndex: PromiseOrValue<BigNumberish>,
+      change: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    attesterCurrentEpoch(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterEpochLength(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterEpochRemainingTime(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterEpochRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterEpochSealed(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterMemberCount(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterSemaphoreGroupRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterSignUp(
+      epochLength: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    attesterSignUpViaRelayer(
+      attester: PromiseOrValue<string>,
+      epochLength: PromiseOrValue<BigNumberish>,
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    attesterStartTimestamp(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterStateTreeLeafCount(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterStateTreeRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    attesterStateTreeRootExists(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      root: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    buildOrderedTreeVerifier(overrides?: CallOverrides): Promise<BigNumber>;
+
+    config(overrides?: CallOverrides): Promise<BigNumber>;
+
+    decodeEpochKeyControl(
+      control: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    decodeEpochKeyLiteSignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    decodeEpochKeySignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    decodeReputationControl(
+      control: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    decodeReputationSignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    epochKeyLiteVerifier(overrides?: CallOverrides): Promise<BigNumber>;
+
+    epochKeyVerifier(overrides?: CallOverrides): Promise<BigNumber>;
+
+    epochTreeArity(overrides?: CallOverrides): Promise<BigNumber>;
+
+    epochTreeDepth(overrides?: CallOverrides): Promise<BigNumber>;
+
+    fieldCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    numEpochKeyNoncePerEpoch(overrides?: CallOverrides): Promise<BigNumber>;
+
+    reputationVerifier(overrides?: CallOverrides): Promise<BigNumber>;
+
+    sealEpoch(
+      epoch: PromiseOrValue<BigNumberish>,
+      attesterId: PromiseOrValue<BigNumberish>,
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    signupVerifier(overrides?: CallOverrides): Promise<BigNumber>;
+
+    stateTreeDepth(overrides?: CallOverrides): Promise<BigNumber>;
+
+    sumFieldCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    updateEpochIfNeeded(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    usedNullifiers(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    userSignUp(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    userStateTransition(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    userStateTransitionVerifier(overrides?: CallOverrides): Promise<BigNumber>;
+
+    verifyEpochKeyLiteProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    verifyEpochKeyProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    verifyReputationProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    EPK_R(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    OMT_R(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    PoseidonT2_zero(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    SNARK_SCALAR_FIELD(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _updateEpochIfNeeded(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    attest(
+      epochKey: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      fieldIndex: PromiseOrValue<BigNumberish>,
+      change: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    attesterCurrentEpoch(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterEpochLength(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterEpochRemainingTime(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterEpochRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterEpochSealed(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterMemberCount(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterSemaphoreGroupRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterSignUp(
+      epochLength: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    attesterSignUpViaRelayer(
+      attester: PromiseOrValue<string>,
+      epochLength: PromiseOrValue<BigNumberish>,
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    attesterStartTimestamp(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterStateTreeLeafCount(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterStateTreeRoot(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    attesterStateTreeRootExists(
+      attesterId: PromiseOrValue<BigNumberish>,
+      epoch: PromiseOrValue<BigNumberish>,
+      root: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    buildOrderedTreeVerifier(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    config(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    decodeEpochKeyControl(
+      control: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    decodeEpochKeyLiteSignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    decodeEpochKeySignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    decodeReputationControl(
+      control: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    decodeReputationSignals(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    epochKeyLiteVerifier(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    epochKeyVerifier(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    epochTreeArity(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    epochTreeDepth(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    fieldCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    numEpochKeyNoncePerEpoch(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    reputationVerifier(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    sealEpoch(
+      epoch: PromiseOrValue<BigNumberish>,
+      attesterId: PromiseOrValue<BigNumberish>,
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    signupVerifier(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    stateTreeDepth(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    sumFieldCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    updateEpochIfNeeded(
+      attesterId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    usedNullifiers(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    userSignUp(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    userStateTransition(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    userStateTransitionVerifier(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    verifyEpochKeyLiteProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    verifyEpochKeyProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    verifyReputationProof(
+      publicSignals: PromiseOrValue<BigNumberish>[],
+      proof: PromiseOrValue<BigNumberish>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+  };
 }
