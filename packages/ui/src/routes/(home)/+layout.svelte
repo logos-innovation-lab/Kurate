@@ -63,10 +63,10 @@
 		border: solid 3px var(--grey-200);
 		position: relative;
 
-		@media (prefers-color-scheme: dark) {
-			background-color: var(--grey-500);
-			border-color: var(--grey-500);
-		}
+		// @media (prefers-color-scheme: dark) {
+		// 	background-color: var(--grey-500);
+		// 	border-color: var(--grey-500);
+		// }
 
 		&::before {
 			content: '';
