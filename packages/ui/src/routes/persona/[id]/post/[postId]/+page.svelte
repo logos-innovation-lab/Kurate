@@ -9,30 +9,37 @@
 
 	import { posts } from '$lib/stores/post'
 	import { profile } from '$lib/stores/profile'
-	import { chats } from '$lib/stores/chat'
+	import type { DraftChat } from '$lib/stores/chat'
 	import { personas } from '$lib/stores/persona'
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 	import { ROUTES } from '$lib/routes'
 	import adapter from '$lib/adapters'
 	import { canConnectWallet } from '$lib/services'
-	import { randomSeed } from '$lib/utils'
+	import ChatScreen from '$lib/components/chat-screen.svelte'
 
 	const post = $posts.data.get($page.params.id)?.approved[$page.params.postId as unknown as number]
 	const persona = $personas.all.get($page.params.id)
+	let draftChat: DraftChat | undefined = undefined
 
 	const startChat = async () => {
 		if (!persona || !post) return
 
-		$chats.draft = {
+		draftChat = {
 			persona,
 			post,
 			messages: [],
-			closed: false,
-			seed: randomSeed(),
 		}
+	}
 
-		goto(ROUTES.CHAT_NEW)
+	async function sendMessage(text: string) {
+		if (!draftChat) return
+		const chat = {
+			...draftChat,
+			messages: [{ timestamp: Date.now(), text, address: $profile.address }],
+		}
+		const chatId = await adapter.startChat(chat)
+		goto(ROUTES.CHAT(chatId))
 	}
 
 	let y: number
@@ -54,6 +61,8 @@
 			<div>There is no persona with ID {$page.params.id}</div>
 		</InfoBox>
 	</Container>
+{:else if draftChat !== undefined}
+	<ChatScreen chat={draftChat} {sendMessage} title="New chat" onBack={() => history.back()} />
 {:else}
 	<Header title="Post" {onBack} />
 	<!-- TODO: This is the post page so I'm thinking there shouldn't be an action on the post -->

@@ -51,5 +51,8 @@
 		"vitest": "^0.29.7",
 		"zkitter-js": "^1.2.4"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"firebase": "^9.19.1"
+	}
 }

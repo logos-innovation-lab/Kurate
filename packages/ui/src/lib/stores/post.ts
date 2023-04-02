@@ -6,6 +6,8 @@ export interface Post {
 	images: string[]
 	yourVote?: '+' | '-'
 	myPost?: boolean
+	postId?: string //FIXME: only needed for firebase, might want to remove
+	address?: string // FIXME: only needed for firebase, might want to remove
 }
 
 interface PostData {

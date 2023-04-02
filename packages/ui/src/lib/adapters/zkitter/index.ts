@@ -15,6 +15,8 @@ import { UserState } from '@unirep/core'
 import { getFromLocalStorage, type SavedSeedMessages } from '../../utils'
 import type { ZkIdentity as UnirepIdentity } from '@unirep/utils'
 import type { ZkIdentity } from '@zk-kit/identity'
+import { get } from 'svelte/store'
+import { randomId } from '../in-memory-and-ipfs/utils'
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -376,50 +378,60 @@ export class ZkitterAdapter implements Adapter {
 		})
 	}
 
-	startChat(chat: Chat): Promise<number> {
+	startChat(chat: Chat): Promise<string> {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'startChat')
 
 		return new Promise((resolve) => {
+			const seed = randomId()
 			chats.update((state) => {
-				const length = state.chats.push(chat)
-				resolve(length)
+				state.chats.set(seed, chat)
+				resolve(seed)
 				return state
 			})
 		})
 	}
-	sendChatMessage(chatId: number, text: string): Promise<void> {
+	sendChatMessage(chatId: string, text: string): Promise<void> {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'sendChatMessage')
 
 		return new Promise((resolve) => {
 			chats.update((state) => {
-				const newState = { ...state }
-				newState.chats[chatId].messages.push({
+				const chat = state.chats.get(chatId)
+				const address = get(profile).address
+				if (!chat || !address) throw new Error('Chat not found')
+
+				chat.messages.push({
 					timestamp: Date.now(),
 					text,
-					myMessage: true,
+					address,
 				})
+				state.chats.set(chatId, chat)
 				resolve()
-				return newState
+				return { ...state }
 			})
 		})
 	}
 
-	subscribeToChat(chatId: number): () => unknown {
+	subscribeToChat(chatId: string): () => unknown {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'subscribeToChat')
-
 		const interval = setInterval(() => {
 			chats.update((state) => {
-				const newState = { ...state }
-				newState.chats[chatId].messages.push({
+				const chat = state.chats.get(chatId)
+				const address = get(profile).address
+				if (!chat || !address) throw new Error('Chat not found')
+
+				const newMessage = {
 					timestamp: Date.now(),
-					text: 'Another second has passed',
-				})
-				return newState
+					text: 'Some random Message',
+					address: randomId(),
+				}
+				chat.messages.push(newMessage)
+				state.chats.set(chatId, chat)
+				return { ...state }
 			})
-		}, 1000)
+		}, 10000)
 
 		return () => {
 			clearInterval(interval)

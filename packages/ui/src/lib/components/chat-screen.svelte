@@ -19,12 +19,13 @@
 	import SingleColumn from '$lib/components/single-column.svelte'
 	import LearnMore from './learn-more.svelte'
 
-	import type { Chat } from '$lib/stores/chat'
+	import type { Chat, DraftChat } from '$lib/stores/chat'
 	import { formatDateAndTime } from '$lib/utils/format'
 	import { createAvatar } from '@dicebear/core'
 	import { botttsNeutral } from '@dicebear/collection'
+	import { profile } from '$lib/stores/profile'
 
-	export let chat: Chat
+	export let chat: Chat | DraftChat
 	export let sendMessage: (text: string) => unknown
 	export let onBack: (() => unknown) | undefined = undefined
 	export let title: string
@@ -43,7 +44,7 @@
 
 	let avatar = createAvatar(botttsNeutral, {
 		size: 94, // This is 47pt at 2x resolution
-		seed: chat.seed,
+		seed: chat.chatId,
 	}).toDataUriSync()
 </script>
 
@@ -53,12 +54,7 @@
 		<Dropdown>
 			<Button slot="button" icon={Menu} />
 
-			{#if chat.blocked === true}
-				<DropdownItem onClick={() => console.log('delete for me')}>Delete for me</DropdownItem>
-				<DropdownItem onClick={() => console.log('delete & block')} danger>
-					Delete & block sender...
-				</DropdownItem>
-			{:else if chat.closed === true}
+			{#if chat.closed === true}
 				<DropdownItem onClick={() => console.log('re-open')}>Re-open chat</DropdownItem>
 				<DropdownItem onClick={() => console.log('delete for me')}>Delete for me</DropdownItem>
 				<DropdownItem onClick={() => console.log('delete & block')} danger>
@@ -108,20 +104,20 @@
 				<div class="messages-inner">
 					<!-- Chat bubbles -->
 					{#each chat.messages as message}
+						{@const myMessage = message.address === $profile.address}
+						{@const systemMessage = message.address === 'system'}
 						<div
-							class={`message ${message.myMessage ? 'my-message' : ''} ${
-								message.system ? 'system' : ''
-							}`}
+							class={`message ${myMessage ? 'my-message' : ''} ${systemMessage ? 'system' : ''}`}
 						>
 							<div class="message-content">
-								{#if message.myMessage}
+								{#if myMessage}
 									<img src={avatar} class="avatar" alt="Avatar" />
 								{/if}
 								<div class="message-text">{message.text}</div>
 							</div>
 							<div class="timestamp">
 								{formatDateAndTime(message.timestamp)}
-								{#if message.system}
+								{#if systemMessage}
 									<br />
 									This is an automated message
 								{/if}
@@ -144,20 +140,7 @@
 				</InfoBox>
 			</SingleColumn>
 		{/if}
-		{#if chat.blocked === true}
-			<Divider />
-			<SingleColumn>
-				<Spacer />
-				<InfoBox>
-					<div class="icon">
-						<Info size={32} />
-					</div>
-					<h3>Your interlocutor has deleted this chat and blocked you.</h3>
-					<p>You can't re-open this chat or contact that person.</p>
-					<LearnMore />
-				</InfoBox>
-			</SingleColumn>
-		{:else if chat.closed === true}
+		{#if chat.closed === true}
 			<Divider />
 			<SingleColumn>
 				<Spacer />
@@ -174,7 +157,7 @@
 	</div>
 
 	<!-- Chat input -->
-	{#if chat.blocked !== true && chat.closed !== true}
+	{#if chat.closed !== true}
 		<div class="chat-input-wrapper">
 			<Divider />
 			<SingleColumn>

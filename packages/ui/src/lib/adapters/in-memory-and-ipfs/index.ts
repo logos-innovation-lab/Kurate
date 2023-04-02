@@ -28,6 +28,7 @@ import {
 	randomPost,
 	randomText,
 } from './utils'
+import { get } from 'svelte/store'
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -180,7 +181,7 @@ export class InMemoryAndIPFS implements Adapter {
 	async start() {
 		const storedPersonas = new Map<string, Persona>(getFromLocalStorage('personas', []))
 		const draftPersonas = getFromLocalStorage('drafts', [])
-		const storedChats = getFromLocalStorage('chats', [])
+		const storedChats = new Map<string, Chat>(getFromLocalStorage('chats', []))
 		const storedPosts = new Map<string, { approved: Post[]; pending: Post[]; loading: boolean }>(
 			getFromLocalStorage('posts', []),
 		)
@@ -241,7 +242,7 @@ export class InMemoryAndIPFS implements Adapter {
 		)
 		this.subscriptions.push(
 			chats.subscribe(({ chats }) => {
-				saveToLocalStorage('chats', chats)
+				saveToLocalStorage('chats', Array.from(chats.entries()))
 			}),
 		)
 		this.subscriptions.push(
@@ -468,45 +469,55 @@ export class InMemoryAndIPFS implements Adapter {
 		})
 	}
 
-	startChat(chat: Chat): Promise<number> {
+	startChat(chat: Chat): Promise<string> {
 		return new Promise((resolve) => {
+			const seed = randomId()
 			chats.update((state) => {
-				const length = state.chats.push(chat)
-				resolve(length)
+				state.chats.set(seed, { ...chat, chatId: seed })
+				resolve(seed)
 				return state
 			})
 		})
 	}
 
-	sendChatMessage(chatId: number, text: string): Promise<void> {
+	sendChatMessage(chatId: string, text: string): Promise<void> {
 		return new Promise((resolve) => {
 			chats.update((state) => {
-				const newState = { ...state }
-				newState.chats[chatId].messages.push({
+				const chat = state.chats.get(chatId)
+				const address = get(profile).address
+				if (!chat || !address) throw new Error('Chat not found')
+
+				chat.messages.push({
 					timestamp: Date.now(),
 					text,
-					myMessage: true,
+					address,
 				})
+				state.chats.set(chatId, chat)
 				resolve()
-				return newState
+				return { ...state }
 			})
 		})
 	}
 
-	subscribeToChat(chatId: number): () => unknown {
+	subscribeToChat(chatId: string): () => unknown {
 		const interval = setInterval(() => {
 			chats.update((state) => {
-				const newState = { ...state }
-				const lastMessage =
-					newState.chats[chatId].messages[newState.chats[chatId].messages.length - 1]
+				const chat = state.chats.get(chatId)
+				const address = get(profile).address
+				if (!chat || !address) throw new Error('Chat not found')
+
+				const lastMessage = chat.messages[chat.messages.length - 1]
 				// 10% chance every second to add new message and only when the last message was sent by me
-				if (lastMessage.myMessage && executeWithChance(0.1)) {
-					newState.chats[chatId].messages.push({
+				if (lastMessage.address === address && executeWithChance(0.1)) {
+					const newMessage = {
 						timestamp: Date.now(),
 						text: randomText(randomIntegerBetween(1, 5)),
-					})
+						address: randomId(),
+					}
+					chat.messages.push(newMessage)
+					state.chats.set(chatId, chat)
 				}
-				return newState
+				return { ...state }
 			})
 		}, 1000)
 

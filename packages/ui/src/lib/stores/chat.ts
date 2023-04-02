@@ -2,33 +2,35 @@ import { writable, type Writable } from 'svelte/store'
 import type { Post } from './post'
 import type { Persona } from './persona'
 
-interface Message {
+export interface Message {
 	timestamp: number
 	text: string
-	myMessage?: boolean
-	system?: boolean
+	address?: string
 }
 
-export interface Chat {
+export interface DraftChat {
 	persona: Persona
 	post: Post
 	messages: Message[]
-	seed: string
 	closed?: boolean
-	blocked?: boolean
+	chatId?: string
+}
+
+export interface Chat extends DraftChat {
+	users: string[]
+	chatId: string
 }
 
 interface ChatData {
 	loading: boolean
 	unread: number
-	chats: Chat[]
-	draft: Chat | undefined
+	chats: Map<string, Chat>
 }
 
 export type ChatStore = Writable<ChatData>
 
 function createChatStore(): ChatStore {
-	const store = writable<ChatData>({ loading: true, unread: 0, chats: [], draft: undefined })
+	const store = writable<ChatData>({ loading: true, unread: 0, chats: new Map<string, Chat>() })
 
 	return store
 }
