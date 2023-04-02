@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ViewOff from '$lib/components/icons/view-off.svelte'
 	import View from '$lib/components/icons/view.svelte'
-	import Image from '$lib/components/icons/image.svelte'
 	import SendAltFilled from '$lib/components/icons/send-alt-filled.svelte'
 	import Info from '$lib/components/icons/information.svelte'
 	import Menu from '$lib/components/icons/overflow-menu-vertical.svelte'
@@ -166,7 +165,6 @@
 						<Textarea placeholder="Say something" bind:value={messageText} />
 					</div>
 					<div class="chat-buttons">
-						<Button icon={Image} />
 						<Button
 							icon={SendAltFilled}
 							variant="primary"
