@@ -11,9 +11,10 @@
 
 	async function sendMessage(text: string) {
 		if (!draftChat) return
-		draftChat.messages = [{ timestamp: Date.now(), text, myMessage: true }]
 		const length = await adapters.startChat(draftChat)
-		goto(ROUTES.CHAT(length - 1))
+		const chatId = length - 1
+		await adapters.sendChatMessage(chatId, text)
+		goto(ROUTES.CHAT(chatId))
 	}
 </script>
 

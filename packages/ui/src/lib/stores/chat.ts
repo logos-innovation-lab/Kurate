@@ -1,6 +1,4 @@
 import { writable, type Writable } from 'svelte/store'
-import type { Post } from './post'
-import type { Persona } from './persona'
 
 interface Message {
 	timestamp: number
@@ -10,10 +8,8 @@ interface Message {
 }
 
 export interface Chat {
-	persona: Persona
-	post: Post
+	postHash: string
 	messages: Message[]
-	seed: string
 	closed?: boolean
 	blocked?: boolean
 }

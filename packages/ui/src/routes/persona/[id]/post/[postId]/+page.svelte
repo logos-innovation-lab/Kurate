@@ -16,7 +16,6 @@
 	import { ROUTES } from '$lib/routes'
 	import adapter from '$lib/adapters'
 	import { canConnectWallet } from '$lib/services'
-	import { randomSeed } from '$lib/utils'
 
 	const post = $posts.data.get($page.params.id)?.all?.get($page.params.postId as unknown as string)
 	const persona = $personas.all.get($page.params.id)
@@ -25,11 +24,9 @@
 		if (!persona || !post) return
 
 		$chats.draft = {
-			persona,
-			post,
+			postHash: post.hash,
 			messages: [],
 			closed: false,
-			seed: randomSeed(),
 		}
 
 		goto(ROUTES.CHAT_NEW)
