@@ -32,9 +32,8 @@
 <Header title="DEV DASHBOARD" onBack={() => history.back()} />
 <Container>
 	<section>
-		<h2>Adapter</h2>
 		<Dropdown>
-			<Select slot="button" label="Reputation level" value={adapterName} />
+			<Select slot="button" label="Adapter" value={adapterName} />
 
 			{#each adapters as adapter}
 				<DropdownItem active={adapterName === adapter} onClick={() => changeAdapter(adapter)}
