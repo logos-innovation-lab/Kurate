@@ -1,14 +1,14 @@
 <script lang="ts">
 	import Card from '$lib/components/grid-card.svelte'
 	import { formatDateAndTime } from '$lib/utils/format'
-	import type { Post } from '$lib/stores/post'
+	import type { DraftPost, Post } from '$lib/stores/post'
 	import adapter from '$lib/adapters'
 
 	let cls: string | undefined = undefined
 	export let noHover: boolean | undefined = undefined
 	export { cls as class }
 
-	export let post: Post
+	export let post: Post | DraftPost
 </script>
 
 <Card on:click class={` ${cls}`} {noHover}>

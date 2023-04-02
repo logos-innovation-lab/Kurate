@@ -26,7 +26,7 @@
 
 	import { personas } from '$lib/stores/persona'
 	import { tokens } from '$lib/stores/tokens'
-	import type { Post as PostType } from '$lib/stores/post'
+	import type { DraftPost } from '$lib/stores/post'
 	import { page } from '$app/stores'
 	import BorderBox from '$lib/components/border-box.svelte'
 	import adapter from '$lib/adapters'
@@ -44,10 +44,10 @@
 	let pitch = persona.pitch
 	let description = persona.description
 	let minReputation = persona.minReputation
-	let postToEdit: PostType | undefined = undefined
+	let postToEdit: DraftPost | undefined = undefined
 	let postToEditText = ''
 	let postToEditImages: string[] = []
-	let postToDelete: PostType | undefined = undefined
+	let postToDelete: DraftPost | undefined = undefined
 
 	type State =
 		| 'persona_preview'

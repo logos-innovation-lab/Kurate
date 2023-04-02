@@ -1,10 +1,10 @@
 import { writable, type Writable } from 'svelte/store'
 import type { Identity } from '@semaphore-protocol/identity'
-import type { Post } from './post'
+import type { DraftPost } from './post'
 import type { ReputationOptions } from '$lib/types'
 
 export interface Persona {
-	personaId: number | string
+	personaId: string
 	identity?: Identity
 	picture: string
 	cover: string
@@ -14,19 +14,19 @@ export interface Persona {
 	participantsCount: number
 	postsCount: number
 	minReputation: ReputationOptions
-	participants?: string[] // FIXME: this is only needed for firebase, might want to remove
 	timestamp: number
+	participants?: string[] // FIXME: this is only needed for firebase, might want to remove
 }
 
 export interface DraftPersona
 	extends Omit<Persona, 'postsCount' | 'participantsCount' | 'personaId'> {
-	posts: Post[]
+	posts: DraftPost[]
 }
 
 type PersonaStore = {
 	draft: DraftPersona[]
 	favorite: string[]
-	all: Map<number | string, Persona>
+	all: Map<string, Persona>
 	loading: boolean
 }
 

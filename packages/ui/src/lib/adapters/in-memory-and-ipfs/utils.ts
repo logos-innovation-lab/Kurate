@@ -44,6 +44,7 @@ export function randomPost(): Post {
 	}
 
 	const post: Post = {
+		postId: randomId(),
 		text: randomText(randomIntegerBetween(1, 15)),
 		timestamp: Date.now(),
 		images,
@@ -52,7 +53,7 @@ export function randomPost(): Post {
 	return post
 }
 
-export function randomPersona(personaId: string | number): Persona {
+export function randomPersona(personaId: string): Persona {
 	const name = randomText(1).split(' ')[0]
 	const pitch = randomText(randomIntegerBetween(1, 3))
 	const description = randomText(randomIntegerBetween(5, 20))

@@ -352,7 +352,7 @@ export class InMemoryAndIPFS implements Adapter {
 			return { ...state }
 		})
 
-		draftPersona.posts.forEach((p) => posts.addApproved(p, groupId))
+		draftPersona.posts.forEach((p) => posts.addApproved({ ...p, postId: randomId() }, groupId))
 
 		personas.update(({ draft, ...state }) => {
 			const newDraft = draft.filter((d) => d !== draftPersona)
@@ -409,6 +409,7 @@ export class InMemoryAndIPFS implements Adapter {
 			timestamp: Date.now(),
 			text,
 			images,
+			postId: randomId(),
 		}
 
 		tokens.update(({ go, repStaked, ...state }) => {
@@ -438,14 +439,18 @@ export class InMemoryAndIPFS implements Adapter {
 		return () => clearInterval(interval)
 	}
 
-	async voteOnPost(groupId: string, postId: number, vote: '+' | '-', signer: Signer) {
+	async voteOnPost(groupId: string, postId: string, vote: '+' | '-', signer: Signer) {
 		await signer.signMessage(`This "transaction" votes ${vote === '+' ? 'promote' : 'demote'}`)
 
 		posts.update((state) => {
 			const posts = state.data.get(groupId)
 			if (posts) {
-				posts.pending[postId].yourVote = vote
-				state.data.set(groupId, posts)
+				const newPosts = posts.pending.filter((p) => p.postId !== postId)
+				const newPost = posts.pending.find((p) => p.postId === postId)
+				if (newPost) {
+					newPost.yourVote = vote
+					state.data.set(groupId, { ...posts, pending: [...newPosts, newPost] })
+				}
 			}
 
 			return state
