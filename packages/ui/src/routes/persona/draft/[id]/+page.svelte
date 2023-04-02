@@ -176,8 +176,7 @@
 		bind:images={postToEditImages}
 		submit={(text, images) => {
 			const psts = persona.posts.filter((p) => p !== postToEdit)
-			psts.push({ timestamp: Date.now(), text, images })
-			persona.posts = psts
+			persona.posts = [{ timestamp: Date.now(), text, images }, ...psts]
 			adapter.updatePersonaDraft(personaIndex, persona)
 			postToEdit = undefined
 			state = 'persona_preview'
@@ -348,7 +347,7 @@
 {:else if state === 'post_new'}
 	<PostNew
 		submit={(text, images) => {
-			persona.posts.push({ timestamp: Date.now(), text, images })
+			persona.posts = [{ timestamp: Date.now(), text, images }, ...persona.posts]
 			adapter.updatePersonaDraft(personaIndex, persona)
 			state = 'persona_preview'
 		}}
