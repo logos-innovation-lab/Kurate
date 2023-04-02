@@ -13,13 +13,13 @@
 
 <Card on:click class={` ${cls}`} {noHover}>
 	<div class={`content-wrapper`}>
-		<div class="imgs">
+		<div class="parent parent--adjusted-width">
 			{#each post.images as image, index}
-				{#if index <= 5}
-					<div>
+				{#if index <= 2}
+					<div class="child">
 						<img src={adapter.getPicture(image)} alt="post" />
-						{#if index === 5 && post.images.length > 6}
-							<div class="more">+{post.images.length - 6}</div>
+						{#if index === 2 && post.images.length > 3}
+							<div class="more">+{post.images.length - 3}</div>
 						{/if}
 					</div>
 				{/if}
@@ -43,59 +43,111 @@
 		justify-content: flex-start;
 		gap: var(--spacing-12);
 	}
-	.imgs {
-		display: flex;
-		flex-direction: row;
-		gap: var(--spacing-6);
-		justify-content: flex-start;
-		align-items: center;
-		flex-wrap: wrap;
 
-		div {
-			position: relative;
-			img {
-				max-height: 300px;
-			}
-			&:not(:only-child) img {
-				aspect-ratio: 1;
-				object-fit: cover;
-				width: 100%;
-				height: 100%;
-			}
+	.more {
+		position: absolute;
+		background-color: rgba(var(--color-black-rgb), 0.5);
+		color: var(--color-body-bg);
+		border-radius: var(--spacing-24);
+		padding: var(--spacing-12);
+		min-width: 44px;
+		text-align: center;
+		inset: 50% 50% auto auto;
+		transform: translate(50%, -50%);
+	}
+
+	/* The magic */
+	/* Mixins for defining a grid with min and max columns */
+	// Thanks to https://stackoverflow.com/questions/28028297/how-can-i-delete-a-window-history-state
+
+	/* Adjusted columns width */
+	@mixin grid-cols-adjusted($min-cols, $max-cols, $cols-min-width, $row-gap: 0px, $col-gap: 0px) {
+		--min-cols: #{$min-cols};
+		--max-cols: #{$max-cols};
+		--cols-min-width: #{$cols-min-width};
+		--row-gap: #{$row-gap};
+		--col-gap: #{$col-gap};
+
+		display: grid;
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(
+				min(
+					(100% / var(--min-cols) - var(--col-gap) * (var(--min-cols) - 1) / var(--min-cols)),
+					max(
+						var(--cols-min-width),
+						(100% / var(--max-cols) - var(--col-gap) * (var(--max-cols) - 1) / var(--max-cols))
+					)
+				),
+				1fr
+			)
+		);
+		gap: var(--row-gap) var(--col-gap);
+	}
+
+	/* Fixed columns width */
+	@mixin grid-cols-fixed($min-cols, $max-cols, $cols-min-width, $row-gap: 0px, $col-gap: 0px) {
+		--min-cols: #{$min-cols};
+		--max-cols: #{$max-cols};
+		--cols-min-width: #{$cols-min-width};
+		--row-gap: #{$row-gap};
+		--col-gap: #{$col-gap};
+
+		display: grid;
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(
+				0,
+				min(
+					(100% / var(--min-cols) - var(--col-gap) * (var(--min-cols) - 1) / var(--min-cols)),
+					max(
+						var(--cols-min-width),
+						(100% / var(--max-cols) - var(--col-gap) * (var(--max-cols) - 1) / var(--max-cols))
+					)
+				)
+			)
+		);
+		gap: var(--row-gap) var(--col-gap);
+	}
+
+	.parent {
+		/* Set styles to see the parent */
+		max-width: 450px;
+
+		/* Grid systems */
+		$min-cols: 1;
+		$max-cols: 3;
+		$cols-min-width: 2rem;
+		$row-gap: var(--spacing-6);
+		$col-gap: var(--spacing-6);
+		&--adjusted-width {
+			@include grid-cols-adjusted($min-cols, $max-cols, $cols-min-width, $row-gap, $col-gap);
+		}
+		&--fixed-width {
+			@include grid-cols-fixed($min-cols, $max-cols, $cols-min-width, $row-gap, $col-gap);
+		}
+	}
+
+	.child {
+		flex-basis: 100%;
+		position: relative;
+
+		img {
+			max-height: 300px;
+			max-height: 300px;
 		}
 
-		/* one item */
-		div:first-child:nth-last-child(1) {
+		&:not(:only-child) img {
+			aspect-ratio: 1;
+			object-fit: cover;
 			width: 100%;
+			height: 100%;
 		}
 
-		/* two items */
-		div:first-child:nth-last-child(2),
-		div:first-child:nth-last-child(2) ~ div {
-			width: calc(calc(100% - var(--spacing-6)) / 2);
-		}
-
-		/* three items */
-		div:first-child:nth-last-child(3),
-		div:first-child:nth-last-child(3) ~ div,
-		div:first-child:not(:nth-last-child(1)):not(:nth-last-child(2)),
-		div:nth-child(2):not(:last-child),
-		div:nth-child(3),
-		div:nth-child(4),
-		div:nth-child(5),
-		div:nth-child(6) {
-			width: calc(calc(100% - var(--spacing-12)) / 3);
-		}
-		.more {
+		.icon {
 			position: absolute;
-			background-color: rgba(var(--color-black-rgb), 0.5);
-			color: var(--color-body-bg);
-			border-radius: var(--spacing-24);
-			padding: var(--spacing-12);
-			min-width: 44px;
-			text-align: center;
-			inset: 50% 50% auto auto;
-			transform: translate(50%, -50%);
+			right: var(--spacing-12);
+			top: var(--spacing-12);
 		}
 	}
 
