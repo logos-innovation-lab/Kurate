@@ -63,6 +63,7 @@ export class ZkitterAdapter implements Adapter {
 
 		await this.syncPersonasFromContract(contract)
 		await this.syncActivePost(contract)
+		await this.syncPendingPost(contract)
 
 		await this.zkitter.services.groups.watch()
 
@@ -92,6 +93,27 @@ export class ZkitterAdapter implements Adapter {
 				}
 			})
 		}
+	}
+	private async syncPendingPost(contract: GlobalAnonymousFeed) {
+		const groupIds = Object.keys(this.zkitter!.services.groups.groups);
+		const proposedPosts = await contract.queryFilter(contract.filters.NewProposedMessage());
+
+		console.log(proposedPosts);
+		// const activeMapping = await updateActivePosts(activePosts.map(p => p.args.messageHash));
+		// for (let i = 0; i < groupIds.length; i++) {
+		// 	const groupPosts = await (this.zkitter!.db as LevelDBAdapter).getGroupPosts(groupIds[i])
+		// 	console.log(groupIds[i], groupPosts)
+		// 	const [_, personaId] = groupIds[i].split('_')
+		// 	groupPosts.forEach(groupPost => {
+		// 		if (activeMapping['0x' + groupPost.hash()]) {
+		// 			posts.addApproved({
+		// 				timestamp: groupPost.createdAt.getTime(),
+		// 				text: groupPost.payload.content,
+		// 				images: groupPost.payload.attachment ? [groupPost.payload.attachment] : [],
+		// 			}, personaId)
+		// 		}
+		// 	})
+		// }
 	}
 	private async syncPersonasFromContract(contract: GlobalAnonymousFeed) {
 		if (this.timeout) clearTimeout(this.timeout)
@@ -148,7 +170,6 @@ export class ZkitterAdapter implements Adapter {
 		// TODO: fix type in next zkitter-js release
 		// @ts-ignore
 		await this.zkitter.updateFilter({ group: groupIds })
-		console.log(groupIds)
 
 		personas.update(state => ({ ...state, loading: false }))
 	}
@@ -348,21 +369,44 @@ export class ZkitterAdapter implements Adapter {
 	}
 
 	async publishPost(
-		groupId: string,
+		personaId: string,
 		text: string,
 		images: string[],
 		signer: Signer,
 	): Promise<void> {
-		// FIXME: properly implement
-		console.error('NOT IMPLEMENTED', 'publishPost', signer)
+		const {Post, MessageType, PostMessageSubType} = await import('zkitter-js')
 
-		const post = {
-			timestamp: Date.now(),
+		const contract = getGlobalAnonymousFeed(signer)
+
+		const post = new Post({
+			type: MessageType.Post,
+			subtype: PostMessageSubType.Default,
+			payload: {
+				content: text,
+				attachment: images.length ? images[0] : undefined,
+			},
+		})
+
+		const proof = await this.zkitter!.createProof({
+			hash: post.hash(),
+			zkIdentity: this.identity!.zkIdentity,
+			groupId: 'kurate_' + personaId,
+		})
+
+		await this.zkitter!.publish(post, proof)
+
+		await contract['proposeMessage(uint256,uint8,bytes32)'](
+			Number(personaId),
+			0,
+			'0x' + post.hash(),
+			{ gasLimit: 6721974 },
+		)
+
+		posts.addPending({
 			text,
 			images,
-		}
-
-		posts.addPending(post, groupId)
+			timestamp: post.createdAt.getTime(),
+		}, personaId)
 	}
 
 	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {

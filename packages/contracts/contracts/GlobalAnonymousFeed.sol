@@ -50,7 +50,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
     event NewPersona(uint256 personaId);
     event NewPersonaMember(uint256 indexed personaId, uint256 identityCommitment);
-    event NewProposedMessage(uint256 indexed personaId, bytes32 messageHash);
+    event NewProposedMessage(uint256 indexed personaId, uint256 indexed epoch, bytes32 messageHash);
     event NewPersonaMessage(uint256 indexed personaId, bytes32 messageHash);
 
     /// Restricted to members of the admin role.
@@ -381,7 +381,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
         proposedMessageListByEpoch[epoch].push(messageHash);
 
-        emit NewProposedMessage(personaId, messageHash);
+        emit NewProposedMessage(personaId, epoch, messageHash);
     }
 
     function proposeMessage(
@@ -410,7 +410,7 @@ contract GlobalAnonymousFeed is IGlobalAnonymousFeed {
 
         proposedMessageListByEpoch[epoch].push(messageHash);
 
-        emit NewProposedMessage(personaId, messageHash);
+        emit NewProposedMessage(personaId, epoch, messageHash);
     }
 
     function vote(
