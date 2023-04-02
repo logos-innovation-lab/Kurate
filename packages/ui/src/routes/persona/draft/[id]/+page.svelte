@@ -78,6 +78,7 @@
 		if (!$profile.signer) return
 
 		publishedPersonaId = await adapter.publishPersona(persona, $profile.signer)
+		adapter.addPersonaToFavorite(publishedPersonaId)
 	}
 
 	let y: number
