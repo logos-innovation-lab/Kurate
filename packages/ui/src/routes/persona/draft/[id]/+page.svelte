@@ -252,7 +252,7 @@
 		<svelte:fragment slot="button_other">
 			<Button
 				variant="secondary"
-				label={screenSize > 498 ? 'Edit Persona details' : ''}
+				label={screenSize > 498 ? 'Edit Persona details' : undefined}
 				icon={EditPersona}
 				on:click={() => {
 					name = persona.name
