@@ -10,7 +10,7 @@ import type {Signer} from 'ethers'
 import {create} from 'ipfs-http-client'
 import {createIdentity, generateRLNProofForNewPersona, prover} from './utils'
 import {posts} from '$lib/stores/post'
-import type {GenericDBAdapterInterface, PostMeta, Zkitter, AnyMessage, Proof} from 'zkitter-js'
+import type {GenericDBAdapterInterface, PostMeta, Zkitter, Message, Proof} from 'zkitter-js'
 import type {Persona} from '../../stores/persona'
 import {UserState} from '@unirep/core'
 import type {ZkIdentity as UnirepIdentity} from '@unirep/utils'
@@ -508,7 +508,7 @@ export class ZkitterAdapter implements Adapter {
 		})
 	}
 
-	async publishZkitterMessage(message: AnyMessage) {
+	async publishZkitterMessage(message: Message) {
 		const {zkIdentity} = this.identity!
 		const proof = await this.zkitter!.createProof({
 			hash: message.hash(),
