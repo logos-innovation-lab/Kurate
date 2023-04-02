@@ -16,6 +16,8 @@
 	import { page } from '$app/stores'
 	import { personas } from '$lib/stores/persona'
 	import { NEW_POST_GO_PRICE, NEW_POST_REP_PRICE } from '$lib/constants'
+	import { ROUTES } from '$lib/routes'
+	import { goto } from '$app/navigation'
 
 	const persona = $personas.all.get($page.params.id)
 
@@ -166,15 +168,20 @@
 			</div>
 			<h2>Your post is now pending review</h2>
 			<p>
-				Your post has been added to "Persona name's" pending list for community review. If it gets
-				promoted it will be automatically published to "Persona name's" page when the new epoch
+				Your post has been added to "{persona.name}'s" pending list for community review. If it gets
+				promoted it will be automatically published to "{persona.name}'s" page when the new epoch
 				begins.
 			</p>
 			<LearnMore href="/" />
 		</div>
 
 		<svelte:fragment slot="buttons">
-			<Button icon={Checkmark} variant="primary" label="Done" on:click={() => history.back()} />
+			<Button
+				icon={Checkmark}
+				variant="primary"
+				label="Done"
+				on:click={() => goto(ROUTES.PERSONA_PENDING(persona.personaId))}
+			/>
 		</svelte:fragment>
 	</InfoScreen>
 {/if}

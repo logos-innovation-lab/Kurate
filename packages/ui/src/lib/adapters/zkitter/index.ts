@@ -332,7 +332,7 @@ export class ZkitterAdapter implements Adapter {
 		text: string,
 		images: string[],
 		signer: Signer,
-	): Promise<void> {
+	): Promise<string> {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'publishPost', signer)
 
@@ -344,6 +344,8 @@ export class ZkitterAdapter implements Adapter {
 		}
 
 		posts.addPending(post, groupId)
+
+		return post.postId
 	}
 
 	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {

@@ -26,7 +26,7 @@ export interface Adapter {
 	uploadPicture(picture: string): Promise<string>
 	getPicture(cid: string): string
 
-	publishPost(groupId: string, text: string, images: string[], signer: Signer): Promise<void>
+	publishPost(groupId: string, text: string, images: string[], signer: Signer): Promise<string>
 	subscribePersonaPosts(groupId: string): Promise<() => unknown>
 	voteOnPost(groupId: string, postId: string, vote: '+' | '-', signer: Signer): Promise<void>
 
