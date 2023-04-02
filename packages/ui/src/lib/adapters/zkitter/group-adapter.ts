@@ -4,6 +4,7 @@ import { generateMerkleTree } from '@zk-kit/protocols'
 import { providers } from 'ethers'
 import { PROVIDER } from '$lib/constants'
 import type { GenericDBAdapterInterface, GenericGroupAdapter } from 'zkitter-js'
+import {GLOBAL_ANONYMOUS_FEED_ADDRESS} from "../../constants";
 
 export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 	db: GenericDBAdapterInterface
@@ -13,6 +14,10 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 	groupId: string
 
 	personaId: number
+
+	static createGroupId(personaId: number | string) {
+		return `kurate_${GLOBAL_ANONYMOUS_FEED_ADDRESS}_${personaId}`
+	}
 
 	constructor(
 		opts: {
@@ -24,7 +29,7 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 		super(opts)
 		this.db = opts.db
 		this.globalAnonymousFeed = opts.globalAnonymousFeed
-		this.groupId = `kurate_${opts.personaId}`
+		this.groupId = GroupAdapter.createGroupId(opts.personaId)
 		this.personaId = opts.personaId
 	}
 
