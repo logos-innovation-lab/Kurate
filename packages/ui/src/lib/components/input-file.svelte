@@ -58,6 +58,9 @@
 	.wrapper {
 		width: 20px;
 		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.primary {
 		color: var(--color-body-bg);
