@@ -25,7 +25,7 @@ export interface Adapter {
 	getPicture(cid: string): string
 
 	publishPost(groupId: string, text: string, images: string[], signer: Signer): Promise<void>
-	subscribePersonaPosts(groupId: string): Promise<() => unknown>
+	syncPersonaPosts(groupId: string): Promise<void>
 	voteOnPost(groupId: string, postHash: string, vote: '+' | '-', signer: Signer): Promise<void>
 
 	startChat(chat: Chat): Promise<number>

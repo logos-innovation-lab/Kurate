@@ -63,8 +63,6 @@ export class ZkitterAdapter implements Adapter {
 
 		await this.syncPersonasFromContract(contract)
 		await this.syncPersonaData(contract)
-		await this.syncActivePost(contract)
-		await this.syncPendingPost(contract)
 
 		await this.zkitter.services.groups.watch()
 
@@ -76,31 +74,45 @@ export class ZkitterAdapter implements Adapter {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'stop')
 	}
-	private async syncActivePost(contract: GlobalAnonymousFeed) {
-		const groupIds = Object.keys(this.zkitter!.services.groups.groups);
-		const activePosts = await contract.queryFilter(contract.filters.NewPersonaMessage());
-		const activeMapping = await updateActivePosts(activePosts.map(p => p.args.messageHash));
-		for (let i = 0; i < groupIds.length; i++) {
-			const groupPosts = await (this.zkitter!.db as LevelDBAdapter).getGroupPosts(groupIds[i])
-			const [_, __, personaId] = groupIds[i].split('_')
-			groupPosts.forEach(groupPost => {
-				if (activeMapping['0x' + groupPost.hash()]) {
-					posts.addApproved({
-						hash: groupPost.hash(),
-						timestamp: groupPost.createdAt.getTime(),
-						text: groupPost.payload.content,
-						images: groupPost.payload.attachment ? [groupPost.payload.attachment] : [],
-					}, personaId)
-				}
-			})
+	private async syncActivePost(personaId: string) {
+		const contract = getGlobalAnonymousFeed()
+		const activePosts = await contract.queryFilter(contract.filters.NewPersonaMessage(personaId));
+
+		for (let i = 0; i < activePosts.length; i++) {
+			const {args: {messageHash}} = activePosts[i]
+			const post = await this.getPostByHash(messageHash)
+
+			if (post) {
+				posts.addApproved({
+					hash: post.hash(),
+					timestamp: post.createdAt.getTime(),
+					text: post.payload.content,
+					images: post.payload.attachment ? [post.payload.attachment] : [],
+				}, personaId)
+			}
 		}
+		// const activeMapping = await updateActivePosts(activePosts.map(p => p.args.messageHash));
+		//
+		// const groupPosts = await (this.zkitter!.db as LevelDBAdapter).getGroupPosts(groupId)
+		//
+		// groupPosts.forEach(groupPost => {
+		// 	if (activeMapping['0x' + groupPost.hash()]) {
+		// 		posts.addApproved({
+		// 			hash: groupPost.hash(),
+		// 			timestamp: groupPost.createdAt.getTime(),
+		// 			text: groupPost.payload.content,
+		// 			images: groupPost.payload.attachment ? [groupPost.payload.attachment] : [],
+		// 		}, personaId)
+		// 	}
+		// })
 	}
-	private async syncPendingPost(contract: GlobalAnonymousFeed) {
+	private async syncPendingPost(personaId: string) {
+		const contract = getGlobalAnonymousFeed()
 		const currentEpoch = await contract.attesterCurrentEpoch();
-		const proposedPosts = await contract.queryFilter(contract.filters["NewProposedMessage(uint256,uint256,bytes32)"](undefined, currentEpoch));
+		const proposedPosts = await contract.queryFilter(contract.filters["NewProposedMessage(uint256,uint256,bytes32)"](personaId, currentEpoch));
 
 		for (let i = 0; i < proposedPosts.length; i++) {
-			const {args: {personaId, messageHash}} = proposedPosts[i]
+			const {args: {messageHash}} = proposedPosts[i]
 			const post = await this.getPostByHash(messageHash)
 
 			if (post) {
@@ -111,7 +123,7 @@ export class ZkitterAdapter implements Adapter {
 						timestamp: post.createdAt.getTime(),
 						images: post.payload.attachment ? [post.payload.attachment]: [],
 					},
-					personaId.toString(),
+					personaId,
 				)
 			}
 		}
@@ -146,9 +158,9 @@ export class ZkitterAdapter implements Adapter {
 			}
 		}
 
-		// TODO: fix type in next zkitter-js release
-		// @ts-ignore
-		await this.zkitter.updateFilter({ group: groupIds })
+		// // TODO: fix type in next zkitter-js release
+		// // @ts-ignore
+		// await this.zkitter.updateFilter({ group: groupIds })
 
 		personas.update(state => ({ ...state, loading: false }))
 	}
@@ -372,8 +384,15 @@ export class ZkitterAdapter implements Adapter {
 		return `${IPFS_GATEWAY}/${cid}`
 	}
 
-	getPostByHash(hash: string) {
-		return this.zkitter!.services.posts.getPost(hash.slice(0, 2) === '0x' ? hash.slice(2) : hash)
+	async getPostByHash(hash: string) {
+		const msgHash = hash.slice(0, 2) === '0x' ? hash.slice(2) : hash
+		let post = await this.zkitter!.services.posts.getPost(msgHash)
+
+		if (!post) await this.zkitter!.queryThread(msgHash)
+
+		post = await this.zkitter!.services.posts.getPost(msgHash)
+
+		return post
 	}
 
 	async publishPost(
@@ -418,25 +437,11 @@ export class ZkitterAdapter implements Adapter {
 		}, personaId)
 	}
 
-	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {
-		// FIXME: properly implement
-		console.error('NOT IMPLEMENTED', 'subscribePersonaPosts')
-
-		// FIXME:
-		if (!this.zkitter) throw new Error('Zkitter is not initiated yet')
-
-		const unsubscribe = this.zkitter.subscribe()
-
-		// posts.addPending(
-		// 	{
-		// 		text: `This is some pending persona post`,
-		// 		timestamp: Date.now(),
-		// 		images: [],
-		// 	},
-		// 	groupId,
-		// )
-
-		return unsubscribe
+	async syncPersonaPosts(personaId: string): Promise<void> {
+		const groupId = GroupAdapter.createGroupId(personaId)
+		await this.zkitter!.queryGroup(groupId)
+		await this.syncActivePost(personaId)
+		await this.syncPendingPost(personaId)
 	}
 
 	async voteOnPost(

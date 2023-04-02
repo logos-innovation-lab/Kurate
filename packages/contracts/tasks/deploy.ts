@@ -17,7 +17,7 @@ task("deploy", "Deploy a GlobalAnonymousFeed contract")
 
     const gasPrice = await globalAnonymousFeedFactory.signer.getGasPrice();
     // const estimatedGas = await globalAnonymousFeedFactory.signer.estimateGas(globalAnonymousFeedFactory.getDeployTransaction('0xF309DDf2Cc1b2701fED5171C5150092bAc946f07', 28800));
-    const estimatedGas = await globalAnonymousFeedFactory.signer.estimateGas(globalAnonymousFeedFactory.getDeployTransaction('0x5e5384c3EA26185BADF41d6980397eB4D36b850e', 60));
+    const estimatedGas = await globalAnonymousFeedFactory.signer.estimateGas(globalAnonymousFeedFactory.getDeployTransaction('0x5e5384c3EA26185BADF41d6980397eB4D36b850e', 300));
     console.log(`Estimated gas: ${estimatedGas}`);
     console.log(`Gas Price: ${gasPrice}`)
     const deploymentPrice = gasPrice.mul(estimatedGas);
@@ -31,7 +31,7 @@ task("deploy", "Deploy a GlobalAnonymousFeed contract")
 
     // This was used for local dev
     // 60 seconds = 1 minute per epoch
-    const globalAnonymousFeedContract = await globalAnonymousFeedFactory.deploy('0x5e5384c3EA26185BADF41d6980397eB4D36b850e', 60);
+    const globalAnonymousFeedContract = await globalAnonymousFeedFactory.deploy('0x5e5384c3EA26185BADF41d6980397eB4D36b850e', 300);
 
     await globalAnonymousFeedContract.deployed();
 

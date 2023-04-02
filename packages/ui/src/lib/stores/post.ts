@@ -61,7 +61,6 @@ function createPostStore(): PostStore {
 					approved.unshift(post.hash)
 				}
 
-				console.log({ loading: false, approved, pending, all, groupId })
 				data.set(groupId, { loading: false, approved, pending, all })
 
 				return { data }
