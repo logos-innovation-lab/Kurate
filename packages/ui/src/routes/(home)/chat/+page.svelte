@@ -18,19 +18,20 @@
 	import { ROUTES } from '$lib/routes'
 	import { formatDateAndTime } from '$lib/utils/format'
 
-	interface ChatListItem {
-		chat: Chat
-		id: number
-	}
-
 	let openChats: Chat[]
 	let closedChats: Chat[]
-	let allChats: Chat[] = Array.from($chatsStore.chats.entries()).map(([chatId, chat]) => ({ ...chat, chatId }))
+	let allChats: Chat[] = Array.from($chatsStore.chats.entries()).map(([chatId, chat]) => ({
+		...chat,
+		chatId,
+	}))
 	let sortAsc = true
 	let sortBy: 'date' | 'activity' | 'alphabetical' = 'date'
 	let filterQuery = ''
 
-	$: openChats = allChats.filter(({ closed, persona, post }) => !closed && (persona.name.includes(filterQuery)) || post.text.includes(filterQuery))
+	$: openChats = allChats.filter(
+		({ closed, persona, post }) =>
+			(!closed && persona.name.includes(filterQuery)) || post.text.includes(filterQuery),
+	)
 	$: closedChats = allChats.filter(({ closed }) => closed)
 </script>
 

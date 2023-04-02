@@ -394,7 +394,7 @@ export class ZkitterAdapter implements Adapter {
 	sendChatMessage(chatId: string, text: string): Promise<void> {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'sendChatMessage')
-		
+
 		return new Promise((resolve) => {
 			chats.update((state) => {
 				const chat = state.chats.get(chatId)
@@ -403,11 +403,12 @@ export class ZkitterAdapter implements Adapter {
 
 				chat.messages.push({
 					timestamp: Date.now(),
-					text,address
+					text,
+					address,
 				})
 				state.chats.set(chatId, chat)
 				resolve()
-				return {...state}
+				return { ...state }
 			})
 		})
 	}
@@ -420,7 +421,7 @@ export class ZkitterAdapter implements Adapter {
 				const chat = state.chats.get(chatId)
 				const address = get(profile).address
 				if (!chat || !address) throw new Error('Chat not found')
-				
+
 				const newMessage = {
 					timestamp: Date.now(),
 					text: 'Some random Message',
@@ -428,7 +429,7 @@ export class ZkitterAdapter implements Adapter {
 				}
 				chat.messages.push(newMessage)
 				state.chats.set(chatId, chat)
-				return {...state}
+				return { ...state }
 			})
 		}, 10000)
 

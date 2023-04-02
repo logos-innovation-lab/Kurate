@@ -242,7 +242,7 @@ export class InMemoryAndIPFS implements Adapter {
 		)
 		this.subscriptions.push(
 			chats.subscribe(({ chats }) => {
-				saveToLocalStorage('chats', chats)
+				saveToLocalStorage('chats', Array.from(chats.entries()))
 			}),
 		)
 		this.subscriptions.push(
@@ -473,7 +473,7 @@ export class InMemoryAndIPFS implements Adapter {
 		return new Promise((resolve) => {
 			const seed = randomId()
 			chats.update((state) => {
-				state.chats.set(seed, chat)
+				state.chats.set(seed, { ...chat, chatId: seed })
 				resolve(seed)
 				return state
 			})
@@ -489,11 +489,12 @@ export class InMemoryAndIPFS implements Adapter {
 
 				chat.messages.push({
 					timestamp: Date.now(),
-					text,address
+					text,
+					address,
 				})
 				state.chats.set(chatId, chat)
 				resolve()
-				return {...state}
+				return { ...state }
 			})
 		})
 	}
@@ -504,7 +505,7 @@ export class InMemoryAndIPFS implements Adapter {
 				const chat = state.chats.get(chatId)
 				const address = get(profile).address
 				if (!chat || !address) throw new Error('Chat not found')
-				
+
 				const lastMessage = chat.messages[chat.messages.length - 1]
 				// 10% chance every second to add new message and only when the last message was sent by me
 				if (lastMessage.address === address && executeWithChance(0.1)) {
@@ -516,7 +517,7 @@ export class InMemoryAndIPFS implements Adapter {
 					chat.messages.push(newMessage)
 					state.chats.set(chatId, chat)
 				}
-				return {...state}
+				return { ...state }
 			})
 		}, 1000)
 

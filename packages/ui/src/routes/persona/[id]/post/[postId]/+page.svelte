@@ -9,7 +9,7 @@
 
 	import { posts } from '$lib/stores/post'
 	import { profile } from '$lib/stores/profile'
-	import type { Chat, DraftChat } from '$lib/stores/chat'
+	import type { DraftChat } from '$lib/stores/chat'
 	import { personas } from '$lib/stores/persona'
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'

@@ -104,12 +104,10 @@
 				<div class="messages-inner">
 					<!-- Chat bubbles -->
 					{#each chat.messages as message}
-					{@const myMessage = message.address === $profile.address}
-					{@const systemMessage = message.address === 'system'}
+						{@const myMessage = message.address === $profile.address}
+						{@const systemMessage = message.address === 'system'}
 						<div
-							class={`message ${myMessage ? 'my-message' : ''} ${
-								systemMessage ? 'system' : ''
-							}`}
+							class={`message ${myMessage ? 'my-message' : ''} ${systemMessage ? 'system' : ''}`}
 						>
 							<div class="message-content">
 								{#if myMessage}

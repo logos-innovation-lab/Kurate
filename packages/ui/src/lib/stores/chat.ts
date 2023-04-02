@@ -27,23 +27,12 @@ interface ChatData {
 	chats: Map<string, Chat>
 }
 
-export interface ChatStore extends Writable<ChatData> {
-	saveChat: (chat: Chat) => void
-}
+export type ChatStore = Writable<ChatData>
 
 function createChatStore(): ChatStore {
 	const store = writable<ChatData>({ loading: true, unread: 0, chats: new Map<string, Chat>() })
 
-	return {
-		...store,
-		saveChat: (chat: Chat) => {
-			store.update(({ chats, unread }) => {
-				const chatId = chat.chatId
-				chats.set(chatId, chat)
-				return { loading: false, unread, chats }
-			})	
-		}
-	}
+	return store
 }
 
 export const chats = createChatStore()
