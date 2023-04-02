@@ -24,6 +24,11 @@
 		...chat,
 		chatId,
 	}))
+	$: if ($profile.signer)
+		allChats = Array.from($chatsStore.chats.entries()).map(([chatId, chat]) => ({
+			...chat,
+			chatId,
+		}))
 	let sortAsc = false
 	let sortBy: 'activity' | 'alphabetical' = 'activity'
 	let filterQuery = ''
