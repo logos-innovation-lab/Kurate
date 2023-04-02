@@ -281,7 +281,7 @@ export class Firebase implements Adapter {
 		text: string,
 		images: string[],
 		signer: Signer,
-	): Promise<void> {
+	): Promise<string> {
 		const address = await signer.getAddress()
 		const isMemberOfGroup = get(personas).all.get(groupId)?.participants?.includes(address)
 
@@ -304,7 +304,7 @@ export class Firebase implements Adapter {
 
 		// Store post to pending
 		const pendingPosts = collection(db, `personas/${groupId}/pending`)
-		addDoc(pendingPosts, post)
+		const postDoc = await addDoc(pendingPosts, post)
 
 		const profileCollection = collection(db, `users/${address}/transactions`)
 		await addDoc(profileCollection, {
@@ -322,6 +322,8 @@ export class Firebase implements Adapter {
 			{ address, go: go - NEW_POST_GO_PRICE, repTotal, repStaked: repStaked + NEW_POST_REP_PRICE },
 			{ merge: true },
 		)
+
+		return postDoc.id
 	}
 
 	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {

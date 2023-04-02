@@ -404,7 +404,7 @@ export class InMemoryAndIPFS implements Adapter {
 		text: string,
 		images: string[],
 		signer: Signer,
-	): Promise<void> {
+	): Promise<string> {
 		await signer.signMessage('This "transaction" publishes a post to pending')
 
 		const post = {
@@ -430,6 +430,8 @@ export class InMemoryAndIPFS implements Adapter {
 			})
 			return { transactions }
 		})
+
+		return post.postId
 	}
 
 	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {
