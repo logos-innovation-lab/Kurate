@@ -66,6 +66,7 @@ export class Firebase implements Adapter {
 	})
 	private subscriptions: Array<() => unknown> = []
 	private userSubscriptions: Array<() => unknown> = []
+	private votes = new Map<string, { promote: string[]; demote: string[] }>()
 
 	async start() {
 		const personasQuery = query(collection(db, 'personas'))
@@ -340,6 +341,7 @@ export class Firebase implements Adapter {
 				const { text, images, timestamp, demote, promote, address } = d.data() as PendingPost
 				const loggedUser = get(profile)
 				let yourVote: '+' | '-' | undefined = undefined
+				this.votes.set(d.id, { promote, demote })
 				if (loggedUser.address && promote.includes(loggedUser.address)) yourVote = '+'
 				if (loggedUser.address && demote.includes(loggedUser.address)) yourVote = '-'
 				newPending.push({
@@ -361,6 +363,30 @@ export class Firebase implements Adapter {
 
 				return { data }
 			})
+		})
+
+		// Ensures that votuse and whether the post is yours is updated after user logs in
+		const subscribeProfileChangePending = profile.subscribe(({ address }) => {
+			if (address) {
+				posts.update(({ data }) => {
+					const personaPostData = data.get(groupId)
+					if (!personaPostData) return { data }
+
+					const pending = personaPostData.pending.map((p) => {
+						if (p.postId === undefined) return p
+						const vt = this.votes.get(p.postId)
+						if (vt === undefined) return p
+						let yourVote: '+' | '-' | undefined = undefined
+						if (vt.promote.includes(address)) yourVote = '+'
+						if (vt.demote.includes(address)) yourVote = '-'
+
+						return { ...p, myPost: p.address === address, yourVote }
+					})
+					data.set(groupId, { ...personaPostData, pending })
+
+					return { data }
+				})
+			}
 		})
 
 		const subscribePosts = onSnapshot(postsCollection, (res) => {
@@ -396,13 +422,17 @@ export class Firebase implements Adapter {
 		})
 
 		return () => {
+			subscribeProfileChangePending()
 			subscribePending()
 			subscribePosts()
 		}
 	}
 
 	async voteOnPost(groupId: string, postId: number, vote: '+' | '-', signer: Signer) {
-		await signer.signMessage(`This "transaction" votes ${vote === '+' ? 'promote' : 'demote'}`)
+		const promoteDemote: 'promote' | 'demote' = vote === '+' ? 'promote' : 'demote'
+		await signer.signMessage(
+			`By confirming this "transaction" you are casting ${promoteDemote} vote on the post`,
+		)
 		const address = await signer.getAddress()
 
 		const postData = get(posts).data.get(groupId)?.pending[postId]
@@ -410,7 +440,7 @@ export class Firebase implements Adapter {
 
 		const postDoc = doc(db, `personas/${groupId}/pending/${postData.postId}`)
 		updateDoc(postDoc, {
-			[vote === '+' ? 'promote' : 'demote']: arrayUnion(address),
+			[promoteDemote]: arrayUnion(address),
 		})
 
 		const { go } = get(tokens)
@@ -422,7 +452,7 @@ export class Firebase implements Adapter {
 			timestamp: Date.now(),
 			goChange: -VOTE_GO_PRICE,
 			repChange: 0,
-			type: vote === '+' ? 'promote' : 'demote',
+			type: promoteDemote,
 			personaId: groupId,
 		})
 	}

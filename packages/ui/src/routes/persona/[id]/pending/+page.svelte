@@ -19,6 +19,13 @@
 	import InfoBox from '$lib/components/info-box.svelte'
 	import Banner from '$lib/components/message-banner.svelte'
 	import SingleColumn from '$lib/components/single-column.svelte'
+	import SectionTitle from '$lib/components/section-title.svelte'
+	import Dropdown from '$lib/components/dropdown.svelte'
+	import DropdownItem from '$lib/components/dropdown-item.svelte'
+	import Search from '$lib/components/search.svelte'
+	import InfoScreen from '$lib/components/info_screen.svelte'
+	import LearnMore from '$lib/components/learn-more.svelte'
+	import BorderBox from '$lib/components/border-box.svelte'
 
 	import { posts } from '$lib/stores/post'
 	import { personas } from '$lib/stores/persona'
@@ -29,15 +36,8 @@
 	import adapter from '$lib/adapters'
 	import { canConnectWallet } from '$lib/services'
 	import { onDestroy, onMount } from 'svelte'
-	import SectionTitle from '$lib/components/section-title.svelte'
-	import Dropdown from '$lib/components/dropdown.svelte'
-	import DropdownItem from '$lib/components/dropdown-item.svelte'
-	import Search from '$lib/components/search.svelte'
 	import { tokens } from '$lib/stores/tokens'
 	import { VOTE_GO_PRICE } from '$lib/constants'
-	import InfoScreen from '$lib/components/info_screen.svelte'
-	import LearnMore from '$lib/components/learn-more.svelte'
-	import BorderBox from '$lib/components/border-box.svelte'
 
 	const groupId = $page.params.id
 	const persona = $personas.all.get(groupId)
@@ -240,7 +240,7 @@
 	{:else}
 		<Grid>
 			{#each personaPosts.pending as post, index}
-				<Post {post} on:click={() => goto(ROUTES.PERSONA_POST(groupId, index))}>
+				<Post {post} on:click={() => goto(ROUTES.PERSONA_PENDING_POST(groupId, index))}>
 					{#if post.yourVote === '+' && $profile.signer !== undefined}
 						<Button icon={FavoriteFilled} variant="accent" label="You promoted this" />
 					{:else if post.yourVote === '-' && $profile.signer !== undefined}
