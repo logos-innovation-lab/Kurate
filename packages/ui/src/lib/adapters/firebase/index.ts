@@ -217,6 +217,7 @@ export class Firebase implements Adapter {
 			...persona,
 			participants: [address],
 			postsCount: 5,
+			timestamp: Date.now(),
 		})
 		const postCollection = collection(db, `personas/${personaDoc.id}/posts`)
 		posts.forEach((p) =>

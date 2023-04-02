@@ -96,6 +96,7 @@ export function randomPersona(personaId: string | number): Persona {
 		picture,
 		personaId,
 		minReputation,
+		timestamp: Date.now(),
 	}
 
 	return persona

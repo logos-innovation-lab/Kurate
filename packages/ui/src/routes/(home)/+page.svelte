@@ -19,8 +19,8 @@
 	import { goto } from '$app/navigation'
 
 	let filterQuery = ''
-	let sortAsc = true
-	let sortBy: 'date' | 'activity' | 'participantsCount' | 'postsCount' | 'alphabetical' = 'date'
+	let sortAsc = false
+	let sortBy: 'date' | 'participantsCount' | 'postsCount' | 'alphabetical' = 'date'
 
 	function createDraft() {
 		goto(ROUTES.PERSONA_NEW)
@@ -79,9 +79,6 @@
 					<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
 						Sort by date of creation
 					</DropdownItem>
-					<DropdownItem active={sortBy === 'activity'} onClick={() => (sortBy = 'activity')}>
-						Sort by recent activity
-					</DropdownItem>
 					<DropdownItem
 						active={sortBy === 'participantsCount'}
 						onClick={() => (sortBy = 'participantsCount')}
@@ -110,9 +107,20 @@
 	</SectionTitle>
 
 	<Grid>
-		{#each [...$personas.all].filter(([, data]) => data.name
-				.toLowerCase()
-				.includes(filterQuery.toLowerCase())) as [groupId, data]}
+		{#each [...$personas.all]
+			.filter(([, data]) => data.name.toLowerCase().includes(filterQuery.toLowerCase()))
+			.sort(([, a], [, b]) => {
+				switch (sortBy) {
+					case 'date':
+						return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
+					case 'participantsCount':
+						return sortAsc ? a.participantsCount - b.participantsCount : b.participantsCount - a.participantsCount
+					case 'postsCount':
+						return sortAsc ? a.postsCount - b.postsCount : b.postsCount - a.postsCount
+					case 'alphabetical':
+						return sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+				}
+			}) as [groupId, data]}
 			<Persona
 				name={data.name}
 				pitch={data.pitch}
