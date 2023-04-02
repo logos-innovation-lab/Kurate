@@ -82,9 +82,9 @@
 				padding-block: var(--spacing-12);
 				transition: padding 0.2s;
 			}
-			@media (prefers-color-scheme: dark) {
-				box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
-			}
+			// @media (prefers-color-scheme: dark) {
+			// 	box-shadow: 0 1px 5px 0 rgba(var(--color-body-bg-rgb), 0.75);
+			// }
 		}
 	}
 </style>
