@@ -9,6 +9,7 @@
 
 	import { posts } from '$lib/stores/post'
 	import { profile } from '$lib/stores/profile'
+	import { chats } from '$lib/stores/profile'
 	import type { DraftChat } from '$lib/stores/chat'
 	import { personas } from '$lib/stores/persona'
 	import { goto } from '$app/navigation'
@@ -27,10 +28,10 @@
 	const startChat = async () => {
 		if (!persona || !post) return
 
-		draftChat = {
-			persona,
-			post,
+		$chats.draft = {
+			postHash: post.hash,
 			messages: [],
+			closed: false,
 		}
 	}
 

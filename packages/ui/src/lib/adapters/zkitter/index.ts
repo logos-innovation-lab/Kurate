@@ -1,23 +1,22 @@
-import { connectWallet, getGlobalAnonymousFeed, getProvider } from '$lib/services'
-import { type Chat, chats } from '$lib/stores/chat'
-import { type DraftPersona, personas } from '$lib/stores/persona'
-import { get } from 'svelte/store'
-import { profile } from '$lib/stores/profile'
-import { saveToLocalStorage } from '$lib/utils'
-import type { Adapter } from '..'
-import { GroupAdapter } from './group-adapter'
-import type { Signer } from 'ethers'
-import { create } from 'ipfs-http-client'
-import {createIdentity, generateRLNProofForNewPersona, prover, updateActivePosts} from './utils'
-import { posts } from '$lib/stores/post'
-import type {GenericDBAdapterInterface, Zkitter} from 'zkitter-js'
-import type { Persona } from '../../stores/persona'
-import { UserState } from '@unirep/core'
-import type { ZkIdentity as UnirepIdentity } from '@unirep/utils'
-import type { ZkIdentity } from '@zk-kit/identity'
-import { randomId } from '../in-memory-and-ipfs/utils'
+import {connectWallet, getGlobalAnonymousFeed, getProvider} from '$lib/services'
+import {type Chat, chats} from '$lib/stores/chat'
+import {type DraftPersona, personas} from '$lib/stores/persona'
+import {get} from 'svelte/store'
+import {profile} from '$lib/stores/profile'
+import {saveToLocalStorage} from '$lib/utils'
+import type {Adapter} from '..'
+import {GroupAdapter} from './group-adapter'
+import type {Signer} from 'ethers'
+import {create} from 'ipfs-http-client'
+import {createIdentity, generateRLNProofForNewPersona, prover} from './utils'
+import {posts} from '$lib/stores/post'
+import type {GenericDBAdapterInterface, PostMeta, Zkitter, Message} from 'zkitter-js'
+import type {Persona} from '../../stores/persona'
+import {UserState} from '@unirep/core'
+import type {ZkIdentity as UnirepIdentity} from '@unirep/utils'
+import type {ZkIdentity} from '@zk-kit/identity'
 import type {GlobalAnonymousFeed} from "../../assets/typechain";
-import type {LevelDBAdapter} from "zkitter-js";
+import {getFromLocalStorage} from "../../utils";
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -67,6 +66,8 @@ export class ZkitterAdapter implements Adapter {
 
 		await this.zkitter.services.groups.watch()
 
+		await this.loadFavorite()
+
 		chats.update((state) => {
 			return { ...state, loading: false }
 		})
@@ -92,20 +93,6 @@ export class ZkitterAdapter implements Adapter {
 				}, personaId)
 			}
 		}
-		// const activeMapping = await updateActivePosts(activePosts.map(p => p.args.messageHash));
-		//
-		// const groupPosts = await (this.zkitter!.db as LevelDBAdapter).getGroupPosts(groupId)
-		//
-		// groupPosts.forEach(groupPost => {
-		// 	if (activeMapping['0x' + groupPost.hash()]) {
-		// 		posts.addApproved({
-		// 			hash: groupPost.hash(),
-		// 			timestamp: groupPost.createdAt.getTime(),
-		// 			text: groupPost.payload.content,
-		// 			images: groupPost.payload.attachment ? [groupPost.payload.attachment] : [],
-		// 		}, personaId)
-		// 	}
-		// })
 	}
 	private async syncPendingPost(personaId: string) {
 		const contract = getGlobalAnonymousFeed()
@@ -159,10 +146,6 @@ export class ZkitterAdapter implements Adapter {
 			}
 		}
 
-		// // TODO: fix type in next zkitter-js release
-		// // @ts-ignore
-		// await this.zkitter.updateFilter({ group: groupIds })
-
 		personas.update(state => ({ ...state, loading: false }))
 	}
 
@@ -187,11 +170,30 @@ export class ZkitterAdapter implements Adapter {
 				postsCount: 0,
 				participantsCount: 0,
 				minReputation: 5,
+				// TODO: fix this timestamp
+				timestamp: Date.now(),
 			}
 
 			personas.update(state => {
 				state.all.set(personaId, persona);
 				return { ...state };
+			})
+		}
+	}
+	private async loadFavorite(): Promise<void> {
+		if (!this.identity) return
+
+		const favorite = getFromLocalStorage<string[]>('favorite', [])
+
+		if (favorite.length) {
+			// @ts-ignore
+			await this.zkitter!.updateFilter({ group: favorite.map(GroupAdapter.createGroupId) })
+
+			personas.update(store => {
+				return {
+					...store,
+					favorite,
+				}
 			})
 		}
 	}
@@ -372,6 +374,8 @@ export class ZkitterAdapter implements Adapter {
 			unirepIdentity,
 			ecdsa,
 		}))
+
+		await this.loadFavorite()
 	}
 
 	async uploadPicture(picture: string): Promise<string> {
@@ -394,6 +398,14 @@ export class ZkitterAdapter implements Adapter {
 		post = await this.zkitter!.services.posts.getPost(msgHash)
 
 		return post
+	}
+
+	async getPostMetaByHash(hash: string): Promise<PostMeta> {
+		const msgHash = hash.slice(0, 2) === '0x' ? hash.slice(2) : hash
+		let meta = await this.zkitter!.getPostMeta(msgHash)
+		if (!meta) await this.zkitter!.queryThread(msgHash)
+		meta = await this.zkitter!.getPostMeta(msgHash)
+		return meta
 	}
 
 	async publishPost(
@@ -489,62 +501,95 @@ export class ZkitterAdapter implements Adapter {
 	}
 
 	startChat(chat: Chat): Promise<string> {
-		// FIXME: properly implement
-		console.error('NOT IMPLEMENTED', 'startChat')
-
 		return new Promise((resolve) => {
-			const seed = randomId()
 			chats.update((state) => {
-				state.chats.set(seed, chat)
-				resolve(seed)
+				state.chats.set(chat.postHash, chat)
+				resolve(chat.postHash)
 				return state
 			})
 		})
 	}
+
+	async publishZkitterMessage(message: Message) {
+		const {zkIdentity} = this.identity!
+		const proof = await this.zkitter!.createProof({
+			hash: message.hash(),
+			zkIdentity: this.identity!.zkIdentity,
+		})
+
+		if (proof.type !== 'rln') throw new Error('invalid proof')
+
+		if (proof.ecdh) {
+			await this.zkitter!.db.saveChatECDH(
+				'0x' + zkIdentity.genIdentityCommitment().toString(16),
+				proof.ecdh
+			);
+		}
+
+		await this.zkitter!.publish(message, proof)
+	}
 	sendChatMessage(chatId: string, text: string): Promise<void> {
-		// FIXME: properly implement
-		console.error('NOT IMPLEMENTED', 'sendChatMessage')
+		const chatStore = get(chats)
+		const chatData = chatStore.chats.get(chatId)
 
-		return new Promise((resolve) => {
-			chats.update((state) => {
-				const chat = state.chats.get(chatId)
-				const address = get(profile).address
-				if (!chat || !address) throw new Error('Chat not found')
+		return new Promise(async (resolve) => {
+			if (!chatData) return;
 
-				chat.messages.push({
-					timestamp: Date.now(),
-					text,
-					address,
-				})
-				state.chats.set(chatId, chat)
-				resolve()
-				return { ...state }
+			const {postHash} = chatData
+			const {zkIdentity} = this.identity!
+			const msgProof = await this.zkitter!.getProof(postHash)
+
+			if (msgProof?.type !== 'rln' || !msgProof.ecdh) return;
+
+			const {Chat, MessageType, ChatMessageSubType, generateECDHKeyPairFromZKIdentity, deriveSharedSecret, encrypt} = await import('zkitter-js')
+			const {pub, priv} = await generateECDHKeyPairFromZKIdentity(zkIdentity, postHash)
+			const {ecdh: receiverECDH} = msgProof;
+			const sharedKey = await deriveSharedSecret(receiverECDH, priv)
+			const encryptedContent = encrypt(text, sharedKey)
+
+			const chat = new Chat({
+				type: MessageType.Chat,
+				subtype: ChatMessageSubType.Direct,
+				payload: {
+					encryptedContent,
+					receiverECDH,
+					senderECDH: pub,
+					senderSeed: postHash,
+				}
 			})
+
+			await this.publishZkitterMessage(chat)
+
+			// chats.update((state) => {
+			// 	const newState = { ...state }
+			// 	newState.chats[chatId].messages.push({
+			// 		timestamp: Date.now(),
+			// 		text,
+			// 		myMessage: true,
+			// 	})
+			// 	resolve()
+			// 	return newState
+			// })
 		})
 	}
 
 	subscribeToChat(chatId: string): () => unknown {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'subscribeToChat')
-		const interval = setInterval(() => {
-			chats.update((state) => {
-				const chat = state.chats.get(chatId)
-				const address = get(profile).address
-				if (!chat || !address) throw new Error('Chat not found')
 
-				const newMessage = {
-					timestamp: Date.now(),
-					text: 'Some random Message',
-					address: randomId(),
-				}
-				chat.messages.push(newMessage)
-				state.chats.set(chatId, chat)
-				return { ...state }
-			})
-		}, 10000)
+		// const interval = setInterval(() => {
+		// 	chats.update((state) => {
+		// 		const newState = { ...state }
+		// 		newState.chats[chatId].messages.push({
+		// 			timestamp: Date.now(),
+		// 			text: 'Another second has passed',
+		// 		})
+		// 		return newState
+		// 	})
+		// }, 1000)
 
 		return () => {
-			clearInterval(interval)
+			// clearInterval(interval)
 		}
 	}
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy, onMount } from 'svelte'
 	import ViewOff from '$lib/components/icons/view-off.svelte'
 	import View from '$lib/components/icons/view.svelte'
 	import Image from '$lib/components/icons/image.svelte'
@@ -18,14 +19,21 @@
 	import DropdownItem from '$lib/components/dropdown-item.svelte'
 	import SingleColumn from '$lib/components/single-column.svelte'
 	import LearnMore from './learn-more.svelte'
-
-	import type { Chat, DraftChat } from '$lib/stores/chat'
+	
+	import type { Chat } from '$lib/stores/chat'
+	import { posts, type Post as PostType } from '$lib/stores/post'
+	import { profile } from '$lib/stores/profile'
+	import { personas, type Persona as PersonaType } from '$lib/stores/persona'
 	import { formatDateAndTime } from '$lib/utils/format'
+	import adapter from '$lib/adapters'
 	import { createAvatar } from '@dicebear/core'
 	import { botttsNeutral } from '@dicebear/collection'
 	import { profile } from '$lib/stores/profile'
+	
+	let persona: PersonaType
+	let post: PostType
 
-	export let chat: Chat | DraftChat
+	export let chat: Chat
 	export let sendMessage: (text: string) => unknown
 	export let onBack: (() => unknown) | undefined = undefined
 	export let title: string
@@ -33,6 +41,13 @@
 	let showPost = false
 	let messageText = ''
 	let sending = false
+
+	onMount(async () => {
+		const m = await adapter.getPostMetaByHash(chat.postHash)
+		const [_, __, personaId] = m?.groupId.split('_') || []
+		persona = $personas.all.get(personaId)
+		post = $posts.data.get(personaId).all.get(chat.postHash)
+	})
 
 	const toggleShowPost = () => (showPost = !showPost)
 	const onSendMessage = async () => {
@@ -42,9 +57,10 @@
 		messageText = ''
 	}
 
-	let avatar = createAvatar(botttsNeutral, {
+	let avatar = createAvatar<any>(botttsNeutral, {
 		size: 94, // This is 47pt at 2x resolution
-		seed: chat.chatId,
+		// seed: chat?.postHash,
+		seed: chat.postHash,
 	}).toDataUriSync()
 </script>
 
@@ -76,17 +92,21 @@
 					<Button icon={ViewOff} on:click={toggleShowPost} />
 				</div>
 			</SingleColumn>
-			<Post class="detail" post={chat.post} noHover />
-			<Persona
-				noHover
-				noBorder
-				name={chat.persona.name}
-				pitch={chat.persona.pitch}
-				postsCount={chat.persona.postsCount}
-				picture={chat.persona.picture}
-				participantsCount={chat.persona.participantsCount}
-				minReputation={chat.persona.minReputation}
-			/>
+			{#if post}
+				<Post class="detail" post={post} noHover />
+			{/if}
+			{#if persona}
+				<Persona
+					noHover
+					noBorder
+					name={persona.name}
+					pitch={persona.pitch}
+					postsCount={persona.postsCount}
+					picture={persona.picture}
+					participantsCount={persona.participantsCount}
+					minReputation={persona.minReputation}
+				/>
+			{/if}
 		{:else}
 			<div class="btn">
 				<Button icon={View} label="View original post" on:click={toggleShowPost} />
