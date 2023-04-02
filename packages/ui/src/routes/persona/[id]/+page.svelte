@@ -33,7 +33,7 @@
 	const groupId = $page.params.id
 	const persona = $personas.all.get(groupId)
 	let personaPosts = $posts.data.get(groupId)
-	let sortAsc = true
+	let sortAsc = false
 	let sortBy: 'date' | 'alphabetical' = 'date'
 	let filterQuery = ''
 	let unsubscribe: () => unknown
@@ -172,7 +172,15 @@
 			</Container>
 		{:else}
 			<Grid>
-				{#each personaPosts.approved as post, index}
+				{#each personaPosts.approved
+					.filter((post) => post.text.toLowerCase().includes(filterQuery.toLowerCase()))
+					.sort((a, b) => {
+						if (sortBy === 'date') {
+							return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
+						} else {
+							return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
+						}
+					}) as post, index}
 					<Post {post} on:click={() => goto(ROUTES.PERSONA_POST(groupId, index))} />
 				{/each}
 			</Grid>
