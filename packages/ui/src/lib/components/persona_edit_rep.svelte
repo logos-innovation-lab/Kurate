@@ -23,7 +23,7 @@
 <InfoScreen {title} {onBack} {onClose}>
 	<Container>
 		<h2>Reputation level</h2>
-		<Dropdown>
+		<Dropdown rep>
 			<Select slot="button" label="Reputation level" value={`Minimum ${minReputation} REP`} />
 
 			<DropdownItem
