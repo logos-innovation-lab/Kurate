@@ -182,7 +182,7 @@ export class ZkitterAdapter implements Adapter {
 			idCommitment: '',
 		})
 	}
-	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
+	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
 		if (!this.identity) throw new Error('must sign in first')
 
 		const pending = await this.getPersonaSeedMessages()
@@ -265,6 +265,8 @@ export class ZkitterAdapter implements Adapter {
 			seedPosts.map((p) => p.toHex()).concat([pitch.toHex(), description.toHex()]),
 			this.identity.zkIdentity.genIdentityCommitment().toString(),
 		)
+
+		return 'FIXME'
 
 		// return new Promise((resolve) => {
 		// 	tokens.update(({ go, ...state }) => {

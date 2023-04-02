@@ -21,7 +21,7 @@ export interface Adapter {
 	addPersonaDraft: (draftPersona: DraftPersona) => Promise<number>
 	updatePersonaDraft: (index: number, draftPersona: DraftPersona) => Promise<void>
 	deleteDraftPersona: (index: number) => Promise<void>
-	publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void>
+	publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string>
 
 	uploadPicture(picture: string): Promise<string>
 	getPicture(cid: string): string

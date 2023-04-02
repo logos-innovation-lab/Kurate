@@ -48,14 +48,9 @@
 	let postToEditText = ''
 	let postToEditImages: string[] = []
 	let postToDelete: DraftPost | undefined = undefined
+	let publishedPersonaId: string | undefined = undefined
 
-	type State =
-		| 'persona_preview'
-		| 'edit_text'
-		| 'edit_rep'
-		| 'post_new'
-		| 'publish_warning'
-		| 'done'
+	type State = 'persona_preview' | 'edit_text' | 'edit_rep' | 'post_new' | 'publish_warning'
 
 	let showWarningDiscardModal = false
 	let showWarningDeletePersona = false
@@ -82,8 +77,7 @@
 	async function publishPersona() {
 		if (!$profile.signer) return
 
-		await adapter.publishPersona(persona, $profile.signer)
-		state = 'done'
+		publishedPersonaId = await adapter.publishPersona(persona, $profile.signer)
 	}
 
 	let y: number
@@ -182,8 +176,7 @@
 		bind:images={postToEditImages}
 		submit={(text, images) => {
 			const psts = persona.posts.filter((p) => p !== postToEdit)
-			psts.push({ timestamp: Date.now(), text, images })
-			persona.posts = psts
+			persona.posts = [{ timestamp: Date.now(), text, images }, ...psts]
 			adapter.updatePersonaDraft(personaIndex, persona)
 			postToEdit = undefined
 			state = 'persona_preview'
@@ -196,6 +189,30 @@
 				? (showWarningDiscardModal = true)
 				: (postToEdit = undefined)}
 	/>
+{:else if publishedPersonaId !== undefined}
+	<InfoScreen title="Persona published">
+		<div class="token-info">
+			<div class="icon-success">
+				<Checkmark />
+			</div>
+			<h2>This Persona is now public</h2>
+			<p>
+				Anyone can now submit posts with this Persona. All posts will be subject to community review
+				before being published. This Persona was added to your favorites.
+			</p>
+			<LearnMore href="/" />
+		</div>
+
+		<svelte:fragment slot="buttons">
+			<Button
+				icon={Checkmark}
+				variant="primary"
+				label="Done"
+				disabled={!publishedPersonaId}
+				on:click={() => publishedPersonaId && goto(ROUTES.PERSONA(publishedPersonaId))}
+			/>
+		</svelte:fragment>
+	</InfoScreen>
 {:else if state === 'persona_preview'}
 	<Banner icon={Info}>This is a preview of the Persona's page</Banner>
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
@@ -330,7 +347,7 @@
 {:else if state === 'post_new'}
 	<PostNew
 		submit={(text, images) => {
-			persona.posts.push({ timestamp: Date.now(), text, images })
+			persona.posts = [{ timestamp: Date.now(), text, images }, ...persona.posts]
 			adapter.updatePersonaDraft(personaIndex, persona)
 			state = 'persona_preview'
 		}}
@@ -350,7 +367,7 @@
 						<Info size={32} />
 					</div>
 					<h2>This will use {TOKEN_POST_COST} GO</h2>
-					<p>This Persona will be live, and everyone will be able to post with it.</p>
+					<p>This Persona will be alive, and everyone will be able to play with it.</p>
 					<p><LearnMore href="/" /></p>
 				</div>
 				<BorderBox
@@ -397,24 +414,6 @@
 					on:click={() => setState('persona_preview')}
 				/>
 			{/if}
-		</svelte:fragment>
-	</InfoScreen>
-{:else}
-	<InfoScreen title="Persona published">
-		<div class="token-info">
-			<div class="icon-success">
-				<Checkmark />
-			</div>
-			<h2>This Persona is now public</h2>
-			<p>
-				Anyone can now submit posts with this Persona. All posts will be subject to community review
-				before being published. This Persona was added to your favorites.
-			</p>
-			<LearnMore href="/" />
-		</div>
-
-		<svelte:fragment slot="buttons">
-			<Button icon={Checkmark} variant="primary" label="Done" on:click={() => history.back()} />
 		</svelte:fragment>
 	</InfoScreen>
 {/if}
