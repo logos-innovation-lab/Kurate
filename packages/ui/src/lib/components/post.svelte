@@ -3,23 +3,80 @@
 	import { formatDateAndTime } from '$lib/utils/format'
 	import type { DraftPost, Post } from '$lib/stores/post'
 	import adapter from '$lib/adapters'
+	import Button from './button.svelte'
+	import Close from './icons/close.svelte'
+	import ArrowRight from './icons/arrow-right.svelte'
+	import ArrowLeft from './icons/arrow-left.svelte'
 
 	let cls: string | undefined = undefined
 	export let noHover: boolean | undefined = undefined
 	export { cls as class }
 
 	export let post: Post | DraftPost
+	let openedImageIndex: number | undefined = undefined
+
+	const MAX_IMAGES = 3
+
+	function nextImage() {
+		if (openedImageIndex === undefined) return
+		openedImageIndex += openedImageIndex === post.images.length - 1 ? 0 : 1
+	}
+
+	function previousImage() {
+		if (openedImageIndex === undefined) return
+		openedImageIndex -= openedImageIndex === 0 ? 0 : 1
+	}
+
+	function closeImage() {
+		openedImageIndex = undefined
+	}
 </script>
+
+<svelte:window
+	on:keydown={({ key }) => {
+		if (!openedImageIndex) return
+
+		switch (key) {
+			case 'ArrowLeft':
+				previousImage()
+				break
+
+			case 'ArrowRight':
+				nextImage()
+				break
+			case 'Escape':
+				closeImage()
+				break
+		}
+	}}
+/>
+
+{#if openedImageIndex !== undefined}
+	<!-- Show image in full screen modal -->
+	<div class="fullscreen-image">
+		<img src={adapter.getPicture(post.images[openedImageIndex])} alt="post" />
+	</div>
+	<div class="button-close">
+		<Button icon={Close} variant="overlay" on:click={closeImage} />
+	</div>
+	<div class="button-next">
+		<Button icon={ArrowRight} variant="overlay" on:click={nextImage} />
+	</div>
+	<div class="button-previous">
+		<Button icon={ArrowLeft} variant="overlay" on:click={previousImage} />
+	</div>
+{/if}
 
 <Card on:click class={` ${cls}`} {noHover}>
 	<div class={`content-wrapper`}>
 		<div class="parent parent--adjusted-width">
 			{#each post.images as image, index}
-				{#if index <= 2}
-					<div class="child">
+				{#if index < MAX_IMAGES}
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<div class="child" on:click={() => (openedImageIndex = index)}>
 						<img src={adapter.getPicture(image)} alt="post" />
-						{#if index === 2 && post.images.length > 3}
-							<div class="more">+{post.images.length - 3}</div>
+						{#if index === MAX_IMAGES - 1 && post.images.length > MAX_IMAGES}
+							<div class="more">+{post.images.length - MAX_IMAGES}</div>
 						{/if}
 					</div>
 				{/if}
@@ -36,6 +93,38 @@
 </Card>
 
 <style lang="scss">
+	.fullscreen-image {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		z-index: 1000;
+		background-color: black;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.button-close {
+		position: fixed;
+		top: 24px;
+		right: 24px;
+		z-index: 1005;
+	}
+	.button-next {
+		position: fixed;
+		top: 50%;
+		transform: translateY(-50%);
+		right: 24px;
+		z-index: 1005;
+	}
+	.button-previous {
+		position: fixed;
+		top: 50%;
+		transform: translateY(-50%);
+		left: 24px;
+		z-index: 1005;
+	}
 	.btns {
 		display: flex;
 		flex-direction: row;
@@ -142,12 +231,6 @@
 			object-fit: cover;
 			width: 100%;
 			height: 100%;
-		}
-
-		.icon {
-			position: absolute;
-			right: var(--spacing-12);
-			top: var(--spacing-12);
 		}
 	}
 
