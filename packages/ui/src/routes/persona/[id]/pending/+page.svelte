@@ -48,7 +48,7 @@
 	let unsubscribe: () => unknown
 
 	type Vote = {
-		index: number
+		index: string
 		vote: '+' | '-'
 	}
 
@@ -247,8 +247,8 @@
 					} else {
 						return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
 					}
-				}) as post, index}
-				<Post {post} on:click={() => goto(ROUTES.PERSONA_PENDING_POST(groupId, index))}>
+				}) as post}
+				<Post {post} on:click={() => goto(ROUTES.PERSONA_PENDING_POST(groupId, post.postId))}>
 					{#if post.yourVote === '+' && $profile.signer !== undefined}
 						<Button icon={FavoriteFilled} variant="accent" label="You promoted this" />
 					{:else if post.yourVote === '-' && $profile.signer !== undefined}
@@ -259,14 +259,14 @@
 							label="Promote"
 							icon={Favorite}
 							disabled={$profile.signer === undefined}
-							on:click={() => (vote = { index, vote: '+' })}
+							on:click={() => (vote = { index: post.postId, vote: '+' })}
 						/>
 						<Button
 							variant="secondary"
 							label="Demote"
 							icon={ThumbsDown}
 							disabled={$profile.signer === undefined}
-							on:click={() => (vote = { index, vote: '-' })}
+							on:click={() => (vote = { index: post.postId, vote: '-' })}
 						/>
 					{/if}
 				</Post>

@@ -72,7 +72,7 @@ export class Firebase implements Adapter {
 		const personasQuery = query(collection(db, 'personas'))
 		const unsubscribePersonas = onSnapshot(personasQuery, (data) => {
 			personas.update((state) => {
-				const all = new Map<string | number, Persona>()
+				const all = new Map<string, Persona>()
 				data.docs.forEach((e) => {
 					const persona = e.data()
 					persona.participantsCount = persona.participants?.length
@@ -428,14 +428,16 @@ export class Firebase implements Adapter {
 		}
 	}
 
-	async voteOnPost(groupId: string, postId: number, vote: '+' | '-', signer: Signer) {
+	async voteOnPost(groupId: string, postId: string, vote: '+' | '-', signer: Signer) {
 		const promoteDemote: 'promote' | 'demote' = vote === '+' ? 'promote' : 'demote'
 		await signer.signMessage(
 			`By confirming this "transaction" you are casting ${promoteDemote} vote on the post`,
 		)
 		const address = await signer.getAddress()
 
-		const postData = get(posts).data.get(groupId)?.pending[postId]
+		const postData = get(posts)
+			.data.get(groupId)
+			?.pending.find((p) => p.postId === postId)
 		if (!postData) return
 
 		const postDoc = doc(db, `personas/${groupId}/pending/${postData.postId}`)

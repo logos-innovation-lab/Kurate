@@ -68,7 +68,7 @@ export class ZkitterAdapter implements Adapter {
 			const personaData = await contract.personas(i)
 
 			toAdd.push({
-				personaId: i,
+				personaId: i.toString(),
 				name: personaData.name,
 				pitch: personaData.pitch,
 				description: personaData.description,
@@ -338,6 +338,7 @@ export class ZkitterAdapter implements Adapter {
 			timestamp: Date.now(),
 			text,
 			images,
+			postId: randomId(),
 		}
 
 		posts.addPending(post, groupId)
@@ -357,6 +358,7 @@ export class ZkitterAdapter implements Adapter {
 				text: `This is some pending persona post`,
 				timestamp: Date.now(),
 				images: [],
+				postId: randomId(),
 			},
 			groupId,
 		)
@@ -364,15 +366,19 @@ export class ZkitterAdapter implements Adapter {
 		return unsubscribe
 	}
 
-	async voteOnPost(groupId: string, postId: number, vote: '+' | '-') {
+	async voteOnPost(groupId: string, postId: string, vote: '+' | '-') {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'voteOnPost')
 
 		posts.update((state) => {
 			const posts = state.data.get(groupId)
 			if (posts) {
-				posts.pending[postId].yourVote = vote
-				state.data.set(groupId, posts)
+				const newPosts = posts.pending.filter((p) => p.postId !== postId)
+				const newPost = posts.pending.find((p) => p.postId === postId)
+				if (newPost) {
+					newPost.yourVote = vote
+					state.data.set(groupId, { ...posts, pending: [...newPosts, newPost] })
+				}
 			}
 
 			return state

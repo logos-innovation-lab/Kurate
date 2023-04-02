@@ -180,8 +180,8 @@
 						} else {
 							return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
 						}
-					}) as post, index}
-					<Post {post} on:click={() => goto(ROUTES.PERSONA_POST(groupId, index))} />
+					}) as post}
+					<Post {post} on:click={() => goto(ROUTES.PERSONA_POST(groupId, post.postId))} />
 				{/each}
 			</Grid>
 		{/if}
