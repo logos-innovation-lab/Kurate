@@ -2,7 +2,7 @@
 	import Checkmark from '$lib/components/icons/checkmark.svelte'
 	import Close from '$lib/components/icons/close.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
-	import EditPersona from '$lib/components/icons/request-quote.svelte'
+	import EditPersona from '$lib/components/icons/user-settings.svelte'
 	import Undo from '$lib/components/icons/undo.svelte'
 	import Info from '$lib/components/icons/information.svelte'
 	import Launch from '$lib/components/icons/rocket.svelte'
@@ -82,9 +82,10 @@
 	}
 
 	let y: number
+	let screenSize: number
 </script>
 
-<svelte:window bind:scrollY={y} />
+<svelte:window bind:scrollY={y} bind:innerWidth={screenSize} />
 
 {#if persona === undefined}
 	<div>No draft persona with id {personaIndex}</div>
@@ -251,7 +252,7 @@
 		<svelte:fragment slot="button_other">
 			<Button
 				variant="secondary"
-				label="Edit Persona details"
+				label={screenSize > 498 ? 'Edit Persona details' : undefined}
 				icon={EditPersona}
 				on:click={() => {
 					name = persona.name
