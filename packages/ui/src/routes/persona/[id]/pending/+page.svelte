@@ -153,7 +153,7 @@
 		<Banner icon={Info} variant="danger">No GO left in this cycle</Banner>
 	{/if}
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
-		<Header title={`Pending • ${persona.name}`} onBack={() => history.back()}>
+		<Header title={`Pending • ${persona.name}`} onBack={() => goto(ROUTES.PERSONA(groupId))}>
 			{#if $profile.signer !== undefined}
 				<Button variant="primary" icon={Edit} on:click={() => goto(ROUTES.POST_NEW(groupId))} />
 			{:else}
