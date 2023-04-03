@@ -129,7 +129,6 @@
 				<Info size={32} />
 			</div>
 			<h2>Discard changes?</h2>
-			<LearnMore href="/" />
 			<svelte:fragment slot="buttons">
 				<Button
 					icon={Checkmark}
@@ -265,7 +264,7 @@
 					“seed” posts. These posts should serve as inspiring examples for people willing to post
 					with this persona.
 				</p>
-				<LearnMore href="/" />
+				<LearnMore href="https://kurate-faq.vercel.app/persona/what-are-seed-posts" />
 				<svelte:fragment slot="buttons">
 					<Button variant="secondary" label="Continue later" on:click={() => history.back()} />
 					<Button

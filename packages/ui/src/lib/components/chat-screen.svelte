@@ -157,7 +157,7 @@
 					</div>
 					<p class="h2">Start a new chat</p>
 					<p>This will send an anonymous and private message to the writer of this post.</p>
-					<LearnMore href="/" />
+					<LearnMore href="https://kurate-faq.vercel.app/chat/what-is-chat" />
 				</InfoBox>
 			</SingleColumn>
 		{/if}
@@ -171,7 +171,7 @@
 					</div>
 					<h3>This chat is closed.</h3>
 					<p>You can use the menu in the top-right corner to re-open it.</p>
-					<LearnMore />
+					<LearnMore href="https://kurate-faq.vercel.app/chat/close-and-reopen-chat" />
 				</InfoBox>
 			</SingleColumn>
 		{/if}

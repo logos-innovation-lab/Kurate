@@ -96,7 +96,6 @@
 				<Info size={32} />
 			</div>
 			<h2>Discard changes?</h2>
-			<LearnMore href="/" />
 			<svelte:fragment slot="buttons">
 				<Button
 					icon={Checkmark}
@@ -124,7 +123,6 @@
 				<Info size={32} />
 			</div>
 			<h2>Are you sure you want to delete this draft persona?</h2>
-			<LearnMore href="/" />
 			<svelte:fragment slot="buttons">
 				<Button
 					icon={Checkmark}
@@ -151,7 +149,6 @@
 				<Info size={32} />
 			</div>
 			<h2>Are you sure you want to delete this seed post?</h2>
-			<LearnMore href="/" />
 			<svelte:fragment slot="buttons">
 				<Button
 					icon={Checkmark}
@@ -202,7 +199,7 @@
 				Anyone can now submit posts with this Persona. All posts will be subject to community review
 				before being published. This Persona was added to your favorites.
 			</p>
-			<LearnMore href="/" />
+			<LearnMore href="https://kurate-faq.vercel.app/persona/persona-character-development" />
 		</div>
 
 		<svelte:fragment slot="buttons">
@@ -276,16 +273,15 @@
 					<div class="icon">
 						<Info size={32} />
 					</div>
-					<p class="h2">{persona.posts.length} out {PERSONA_LIMIT} seed posts added</p>
+					<p class="h2">{persona.posts.length} out of {PERSONA_LIMIT} seed posts added</p>
 					<p>You need {PERSONA_LIMIT} seed posts to publish this Persona.</p>
-					<LearnMore href="/" />
+					<LearnMore href="https://kurate-faq.vercel.app/persona/what-are-seed-posts" />
 				{:else}
 					<div class="icon icon-success">
 						<Checkmark />
 					</div>
-					<p>{PERSONA_LIMIT} out {PERSONA_LIMIT} seed posts added</p>
+					<p>{PERSONA_LIMIT} out of {PERSONA_LIMIT} seed posts added</p>
 					<p>You can publish this Persona.</p>
-					<LearnMore href="/" />
 				{/if}
 			</InfoBox>
 		</Container>
@@ -370,7 +366,7 @@
 					</div>
 					<h2>This will use {TOKEN_POST_COST} GO</h2>
 					<p>This Persona will be alive, and everyone will be able to play with it.</p>
-					<p><LearnMore href="/" /></p>
+					<p><LearnMore href="https://kurate-faq.vercel.app/persona/what-is-a-persona" /></p>
 				</div>
 				<BorderBox
 					title="Currently available"
@@ -387,7 +383,7 @@
 					</div>
 					<h2>Sorry, you can't publish now</h2>
 					<p>You need {TOKEN_POST_COST} GO to publish a Persona.</p>
-					<LearnMore href="/" />
+					<LearnMore href="https://kurate-faq.vercel.app/token%20mechanics/what-is-go" />
 				</div>
 				<BorderBox
 					title="Currently available"
