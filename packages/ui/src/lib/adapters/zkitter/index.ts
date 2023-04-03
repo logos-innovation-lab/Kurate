@@ -636,12 +636,22 @@ export class ZkitterAdapter implements Adapter {
 
 		const {proof, publicSignals} = await state.genProveReputationProof({})
 
-		await contract.vote(
-			'0x' + postId,
-			vote === '+',
-			publicSignals,
-			proof,
-		)
+		const resp = await fetch(`http://localhost:3000/vote-on-post`, {
+			method: 'post',
+			headers: {
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify({
+				postId: '0x' + postId,
+				isUpvote: vote === '+',
+				publicSignals,
+				proof,
+			})
+		})
+
+		const json = await resp.json()
+
+		console.log(json)
 
 		posts.update((state) => {
 			const posts = state.data.get(groupId)

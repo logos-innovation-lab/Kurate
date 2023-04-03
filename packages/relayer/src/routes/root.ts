@@ -205,6 +205,29 @@ const joinPersonaBodySchemaWithProof = () => {
   } as const;
 };
 
+const voteBody = () => {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["postId", "isUpvote", "publicSignals", "proof"],
+    properties: {
+      postId: { type: "string" },
+      isUpvote: { type: "boolean" },
+      publicSignals: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 8,
+        // maxContains: 8,
+      },
+      proof: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 1,
+      },
+    },
+  } as const;
+};
+
 const getBodySchemaWithoutRep = () => {
   const schema = getBodySchemaWithRep();
   const { repProof, goProofs, ...properties } = schema.properties;
@@ -391,6 +414,22 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
           { gasLimit: 6721974 },
         )
       }
+
+      return { transaction: tx.hash };
+    }
+  )
+
+  fastify.post(
+  "/vote-on-post",
+    { schema: { response, body: voteBody() } as const },
+    async function ({ body }: {body: any}) {
+      const tx = await feed.vote(
+        body.postId,
+        body.isUpvote,
+        body.publicSignals,
+        body.proof,
+        { gasLimit: 6721974 },
+      )
 
       return { transaction: tx.hash };
     }
