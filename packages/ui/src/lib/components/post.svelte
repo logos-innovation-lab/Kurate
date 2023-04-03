@@ -98,35 +98,45 @@
 <style lang="scss">
 	.fullscreen-image {
 		position: fixed;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
+		inset: 0;
 		z-index: 1000;
-		background-color: black;
+		background-color: var(--color-black);
 		display: flex;
 		justify-content: center;
 		align-items: center;
 	}
 	.button-close {
 		position: fixed;
-		top: 24px;
-		right: 24px;
+		top: var(--spacing-24);
+		right: var(--spacing-24);
 		z-index: 1005;
+
+		@media (min-width: 668px) {
+			top: var(--spacing-48);
+			right: var(--spacing-48);
+		}
 	}
 	.button-next {
 		position: fixed;
 		top: 50%;
 		transform: translateY(-50%);
-		right: 24px;
+		right: var(--spacing-24);
 		z-index: 1005;
+
+		@media (min-width: 668px) {
+			right: var(--spacing-48);
+		}
 	}
 	.button-previous {
 		position: fixed;
 		top: 50%;
 		transform: translateY(-50%);
-		left: 24px;
+		left: var(--spacing-24);
 		z-index: 1005;
+
+		@media (min-width: 668px) {
+			left: var(--spacing-48);
+		}
 	}
 	.btns {
 		display: flex;
