@@ -47,7 +47,7 @@
 	})
 
 	let y: number
-	let onBack = () => history.back()
+	let onBack = () => goto(ROUTES.HOME)
 
 	const addToFavorite = () => adapter.addPersonaToFavorite(groupId, persona)
 	const removeFromFavorite = () => adapter.removePersonaFromFavorite(groupId, persona)
