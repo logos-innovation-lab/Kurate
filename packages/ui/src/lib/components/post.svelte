@@ -111,9 +111,9 @@
 		right: var(--spacing-24);
 		z-index: 1005;
 
-		@media (min-width: 668px){
+		@media (min-width: 668px) {
 			top: var(--spacing-48);
-			right: var(--spacing-48);	
+			right: var(--spacing-48);
 		}
 	}
 	.button-next {
@@ -123,8 +123,8 @@
 		right: var(--spacing-24);
 		z-index: 1005;
 
-		@media (min-width: 668px){
-			right: var(--spacing-48);	
+		@media (min-width: 668px) {
+			right: var(--spacing-48);
 		}
 	}
 	.button-previous {
@@ -134,8 +134,8 @@
 		left: var(--spacing-24);
 		z-index: 1005;
 
-		@media (min-width: 668px){
-			left: var(--spacing-48);	
+		@media (min-width: 668px) {
+			left: var(--spacing-48);
 		}
 	}
 	.btns {
