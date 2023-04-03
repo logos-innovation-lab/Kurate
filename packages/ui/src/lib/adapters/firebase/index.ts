@@ -55,6 +55,20 @@ const app = initializeApp(firebaseConfig)
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app)
 
+function epochCounter(): () => unknown {
+	const interval = setInterval(() => {
+		tokens.update(({ epochDuration, ...rest }) => {
+			const newTimeToEpoch = epochDuration - (Date.now() % epochDuration)
+
+			return { ...rest, epochDuration, timeToEpoch: newTimeToEpoch }
+		})
+	}, 1000)
+
+	return () => {
+		clearInterval(interval)
+	}
+}
+
 export class Firebase implements Adapter {
 	private ipfs = create({
 		host: 'ipfs.infura.io',
@@ -139,6 +153,7 @@ export class Firebase implements Adapter {
 			}
 		})
 		this.subscriptions.push(unsubscribeUser)
+		this.subscriptions.push(epochCounter())
 	}
 	stop() {
 		this.subscriptions.forEach((s) => s())
