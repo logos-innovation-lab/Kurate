@@ -33,6 +33,8 @@ export interface Adapter {
 	startChat(chat: DraftChat): Promise<string>
 	sendChatMessage(chatId: string, text: string): Promise<void>
 	subscribeToChat?: (chatId: string) => () => void
+	queryPersonaJoined(personId: string): Promise<boolean>
+	joinPersona(personaId: string): Promise<void>
 }
 
 export const adapters = ['in-memory', 'zkitter', 'firebase'] as const

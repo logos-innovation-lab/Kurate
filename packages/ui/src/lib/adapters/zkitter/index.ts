@@ -10,7 +10,7 @@ import type {Signer} from 'ethers'
 import {create} from 'ipfs-http-client'
 import {createIdentity, generateRLNProofForNewPersona, prover, rlnVkey} from './utils'
 import {posts} from '$lib/stores/post'
-import type {GenericDBAdapterInterface, PostMeta, Zkitter, Message} from 'zkitter-js'
+import type {GenericDBAdapterInterface, PostMeta, Zkitter, Message, Chat as ZKitterChat} from 'zkitter-js'
 import type {Persona} from '../../stores/persona'
 import {UserState} from '@unirep/core'
 import type {ZkIdentity as UnirepIdentity} from '@unirep/utils'
@@ -63,6 +63,7 @@ export class ZkitterAdapter implements Adapter {
 
 		await this.syncPersonasFromContract(contract)
 		await this.syncPersonaData(contract)
+		await this.syncChats()
 
 		await this.zkitter.services.groups.watch()
 
@@ -75,6 +76,41 @@ export class ZkitterAdapter implements Adapter {
 	stop() {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'stop')
+	}
+	private async syncChats() {
+		if (!this.identity) return
+
+		const chatMetas = await this.zkitter!.getChatByUser('0x' + this.identity.zkIdentity.genIdentityCommitment().toString(16))
+
+		for (let i = 0; i < chatMetas.length; i++) {
+			const meta = chatMetas[i]
+			const post = await this.zkitter!.db.getPost(meta.senderSeed)
+			const postMeta = await this.zkitter!.getPostMeta(meta.senderSeed)
+
+			if (meta && post && postMeta) {
+				const [_, __, personaId] = postMeta.groupId.split('_')
+				const persona = get(personas).all.get(personaId)
+				if (persona) {
+					chats.update((state) => {
+						const newState = { ...state }
+						newState.chats.set(meta.chatId, {
+							persona,
+							post: {
+								postId: meta.senderSeed,
+								timestamp: post.createdAt.getTime(),
+								text: post.payload.content,
+								images: post.payload.attachment ? [post.payload.attachment] : [],
+							},
+							users: [],
+							chatId: meta.chatId,
+							messages: [],
+						})
+						return newState
+					})
+				}
+			}
+
+		}
 	}
 	private async syncActivePost(personaId: string) {
 		const contract = getGlobalAnonymousFeed()
@@ -179,6 +215,15 @@ export class ZkitterAdapter implements Adapter {
 				return { ...state };
 			})
 		}
+	}
+
+	async queryPersonaJoined(personaId: string): Promise<boolean> {
+		const identityCommitment = this.identity?.unirepIdentity.genIdentityCommitment()
+
+		if (!identityCommitment) return false;
+
+		const contract = getGlobalAnonymousFeed()
+		return contract.membersByPersona(personaId, identityCommitment)
 	}
 	private async loadFavorite(): Promise<void> {
 		if (!this.identity) return
@@ -366,6 +411,46 @@ export class ZkitterAdapter implements Adapter {
 		// })
 	}
 
+	async joinPersona(personaId: string): Promise<void> {
+		if (!this.identity) throw new Error('must sign in first')
+		if (!this.zkitter) throw new Error('zkitter is not initialized')
+
+		const { unirepIdentity } = this.identity
+
+		const contract = getGlobalAnonymousFeed()
+
+		const state = new UserState(
+			{
+				prover: prover, // a circuit prover
+				attesterId: (await contract.attesterId()).toBigInt(),
+				unirepAddress: await contract.unirep(),
+				provider: getProvider(), // an ethers.js provider
+			},
+			unirepIdentity,
+		)
+
+		await state.sync.start()
+		await state.waitForSync()
+
+		const signupProof = await state.genUserSignUpProof()
+
+		const resp = await fetch(`http://localhost:3000/join-persona`, {
+			method: 'post',
+			headers: {
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify({
+				personaId: Number(personaId),
+				signupSignals: signupProof.publicSignals,
+				signupProof: signupProof.proof,
+			})
+		})
+
+		const json = await resp.json()
+
+		console.log(json)
+	}
+
 	signIn = async (): Promise<void> => {
 		const signer = await connectWallet()
 		const address = await signer.getAddress()
@@ -383,8 +468,7 @@ export class ZkitterAdapter implements Adapter {
 			ecdsa,
 		}))
 
-		console.log(this.identity)
-		console.log(await this.zkitter?.getChatByUser('0x' + this.identity.zkIdentity.genIdentityCommitment().toString(16)))
+		await this.syncChats()
 
 		await this.loadFavorite()
 	}
@@ -572,14 +656,27 @@ export class ZkitterAdapter implements Adapter {
 		})
 	}
 
-	startChat(chat: Chat): Promise<string> {
-		return new Promise((resolve) => {
-			chats.update((state) => {
-				state.chats.set(chat.chatId, chat)
-				resolve(chat.chatId)
-				return state
+	async startChat(chat: Chat): Promise<string> {
+		const {zkIdentity} = this.identity!
+		const msgProof = await this.zkitter!.getProof(chat.post.postId)
+
+		if (msgProof?.type !== 'rln' || !msgProof.ecdh) throw new Error('invalid proof');
+
+		const {generateECDHKeyPairFromZKIdentity, deriveChatId, encrypt} = await import('zkitter-js')
+		const {pub} = await generateECDHKeyPairFromZKIdentity(zkIdentity, chat.post.postId)
+		const {ecdh: receiverECDH} = msgProof;
+		const chatId = await deriveChatId(receiverECDH, pub)
+
+		chats.update((state) => {
+			state.chats.set(chatId, {
+				...chat,
+				chatId,
 			})
+			return state
 		})
+
+		return chatId
+
 	}
 
 	async publishZkitterMessage(message: Message) {
@@ -598,50 +695,51 @@ export class ZkitterAdapter implements Adapter {
 			);
 		}
 
+		if (message.type === 'CHAT') {
+			await this.zkitter!.db.saveChatECDH(
+				'0x' + zkIdentity.genIdentityCommitment().toString(16),
+				(message as ZKitterChat).payload.senderECDH,
+			);
+		}
+
 		const data = await this.zkitter!.publish(message, proof)
 		console.log(data)
 	}
-	sendChatMessage(chatId: string, text: string): Promise<void> {
+	async sendChatMessage(chatId: string, text: string): Promise<void> {
 		const chatStore = get(chats)
 		const chatData = chatStore.chats.get(chatId)
+		const {post: {postId}} = chatData!
+		const {zkIdentity} = this.identity!
+		const msgProof = await this.zkitter!.getProof(postId)
 
-		return new Promise(async (resolve) => {
-			if (!chatData) return;
+		if (msgProof?.type !== 'rln' || !msgProof.ecdh) return;
 
-			const {post: {postId}} = chatData
-			const {zkIdentity} = this.identity!
-			const msgProof = await this.zkitter!.getProof(postId)
+		const {Chat, MessageType, ChatMessageSubType, generateECDHKeyPairFromZKIdentity, deriveSharedSecret, encrypt} = await import('zkitter-js')
+		const {pub, priv} = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
+		const {ecdh: receiverECDH} = msgProof;
+		const sharedKey = await deriveSharedSecret(receiverECDH, priv)
+		const encryptedContent = encrypt(text, sharedKey)
 
-			if (msgProof?.type !== 'rln' || !msgProof.ecdh) return;
+		const chat = new Chat({
+			type: MessageType.Chat,
+			subtype: ChatMessageSubType.Direct,
+			payload: {
+				encryptedContent,
+				receiverECDH,
+				senderECDH: pub,
+				senderSeed: postId,
+			}
+		})
 
-			const {Chat, MessageType, ChatMessageSubType, generateECDHKeyPairFromZKIdentity, deriveSharedSecret, encrypt} = await import('zkitter-js')
-			const {pub, priv} = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
-			const {ecdh: receiverECDH} = msgProof;
-			const sharedKey = await deriveSharedSecret(receiverECDH, priv)
-			const encryptedContent = encrypt(text, sharedKey)
+		await this.publishZkitterMessage(chat)
 
-			const chat = new Chat({
-				type: MessageType.Chat,
-				subtype: ChatMessageSubType.Direct,
-				payload: {
-					encryptedContent,
-					receiverECDH,
-					senderECDH: pub,
-					senderSeed: postId,
-				}
+		chats.update((state) => {
+			const newState = { ...state }
+			newState.chats.get(chatId)!.messages.push({
+				timestamp: Date.now(),
+				text,
 			})
-
-			await this.publishZkitterMessage(chat)
-
-			chats.update((state) => {
-				const newState = { ...state }
-				newState.chats.get(chatId)!.messages.push({
-					timestamp: Date.now(),
-					text,
-				})
-				resolve()
-				return newState
-			})
+			return newState
 		})
 	}
 
@@ -649,19 +747,37 @@ export class ZkitterAdapter implements Adapter {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'subscribeToChat')
 
-		// const interval = setInterval(() => {
-		// 	chats.update((state) => {
-		// 		const newState = { ...state }
-		// 		newState.chats[chatId].messages.push({
-		// 			timestamp: Date.now(),
-		// 			text: 'Another second has passed',
-		// 		})
-		// 		return newState
-		// 	})
-		// }, 1000)
+		new Promise(async (resolve, reject) => {
+			const chatStore = get(chats)
+			const chatData = chatStore.chats.get(chatId)
+			const {post: {postId}} = chatData!
 
-		return () => {
-			// clearInterval(interval)
-		}
+			const {zkIdentity} = this.identity!
+			const msgProof = await this.zkitter!.getProof(postId)
+
+			if (msgProof?.type !== 'rln' || !msgProof.ecdh) return;
+
+			const {generateECDHKeyPairFromZKIdentity} = await import('zkitter-js')
+			const {pub, priv} = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
+			const {ecdh: receiverECDH} = msgProof;
+			// @ts-ignore
+			await this.zkitter!.updateFilter({ ecdh: [pub, receiverECDH] })
+
+			const chatMsgs = await this.zkitter!.getChatMessages(chatId, undefined, undefined, { type: 'zk', zkIdentity, groupId: '' })
+
+			chatMsgs.forEach(msg => {
+					chats.update((state) => {
+						const newState = { ...state }
+						newState.chats.get(chatId)!.messages.push({
+							timestamp: msg.createdAt.getTime(),
+							text: typeof msg.payload.content === 'undefined' ? 'encryption error' : msg.payload.content,
+							address: msg.payload.senderECDH,
+						})
+						return newState
+					})
+			})
+		})
+
+		return () => null
 	}
 }

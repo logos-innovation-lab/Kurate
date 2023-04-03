@@ -54,7 +54,7 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 
 			if (tree.indexOf(BigInt(identityCommitment)) < 0) {
 				const member = {
-					idCommitment: identityCommitment,
+					idCommitment: '0x' + BigInt(identityCommitment).toString(16),
 					newRoot: '',
 					index: tree.leaves.length,
 					blockNumber: event.blockNumber,

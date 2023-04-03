@@ -179,6 +179,32 @@ const createJoinBodySchemaWithRep = () => {
   } as const;
 };
 
+const joinPersonaBodySchemaWithProof = () => {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "personaId",
+      "signupProof",
+      "signupSignals"
+    ],
+    properties: {
+      personaId: { type: "number" },
+      signupSignals: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 8,
+        // maxContains: 8,
+      },
+      signupProof: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 1,
+      },
+    },
+  } as const;
+};
+
 const getBodySchemaWithoutRep = () => {
   const schema = getBodySchemaWithRep();
   const { repProof, goProofs, ...properties } = schema.properties;
@@ -343,6 +369,32 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
       return { transaction: tx.hash };
     }
   );
+
+  fastify.post(
+  "/join-persona",
+    { schema: { response, body: joinPersonaBodySchemaWithProof() } as const },
+    async function ({ body }: {body: any}) {
+      const hasJoinedUnirep = await feed.members(body.signupSignals[0]);
+      let tx;
+
+      if (hasJoinedUnirep) {
+        tx = await feed["joinPersona(uint256,uint256)"](
+          body.personaId,
+          body.signupSignals[0],
+          { gasLimit: 6721974 },
+        )
+      } else {
+        tx = await feed["joinPersona(uint256,uint256[],uint256[8])"](
+          body.personaId,
+          body.signupSignals,
+          body.signupProof,
+          { gasLimit: 6721974 },
+        )
+      }
+
+      return { transaction: tx.hash };
+    }
+  )
 };
 
 export default root;
