@@ -233,14 +233,14 @@
 	{:else}
 		<Grid>
 			{#each personaPosts.pending
-					.filter((post) => post.text.toLowerCase().includes(filterQuery.toLowerCase()))
-					.sort((a, b) => {
-						if (sortBy === 'date') {
-							return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
-						} else {
-							return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
-						}
-					}) as post}
+				.filter((post) => post.text.toLowerCase().includes(filterQuery.toLowerCase()))
+				.sort((a, b) => {
+					if (sortBy === 'date') {
+						return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
+					} else {
+						return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
+					}
+				}) as post}
 				<Post {post} on:click={() => goto(ROUTES.PERSONA_PENDING_POST(groupId, post.postId))}>
 					{#if post.yourVote === '+' && $profile.signer !== undefined}
 						<Button icon={FavoriteFilled} variant="accent" label="You promoted this" />
