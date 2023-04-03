@@ -29,9 +29,6 @@
 
 	let filterQuery = ''
 	let sortAsc = true
-
-	let cycleProgress = ($tokens.repTotal - $tokens.repStaked) / $tokens.repTotal
-	$: cycleProgress = ($tokens.repTotal - $tokens.repStaked) / $tokens.repTotal
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -114,9 +111,9 @@
 				/>
 			</div>
 			<BorderBox noGap title="Staked reputation">
-				<ProgressLinear progress={cycleProgress} />
+				<ProgressLinear progress={$tokens.repStaked / $tokens.repTotal} />
 				<p class="spacing-top">
-					{$tokens.repTotal - $tokens.repStaked} out of {$tokens.repTotal} REP staked until cycle ends
+					{$tokens.repStaked} out of {$tokens.repTotal} REP staked until cycle ends
 				</p>
 			</BorderBox>
 		</SingleColumn>
