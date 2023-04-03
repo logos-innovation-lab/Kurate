@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ArrowRight from '$lib/components/icons/arrow-right.svelte'
 
-	// export let href: string | undefined = undefined
 	export let href: string
 	export let target: string | undefined = '_blank'
 	export let arrow: boolean | undefined = undefined
