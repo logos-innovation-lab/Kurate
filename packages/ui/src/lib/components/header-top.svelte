@@ -11,23 +11,27 @@
 	let cls: string | undefined = undefined
 	export { cls as class }
 
+	let innerWidth: number
 	let y: number
 	let clientHeight: number
 	let topOffset: number
 	let spacerElement: HTMLDivElement
-	const PADDING_MAX = 48
+	let padding: number
 	const PADDING_MIN = 12
+	let PADDING_MAX = 48
+
+	$: PADDING_MAX = innerWidth > 688 ? 48 : 24
+	$: topOffset = spacerElement?.getBoundingClientRect().top ?? 0
+	$: padding = Math.max(PADDING_MAX - PADDING_MIN - y / 2, 0) + PADDING_MIN
 
 	export let address: string | undefined = undefined
 </script>
 
-<svelte:window bind:scrollY={y} />
+<svelte:window bind:scrollY={y} bind:innerWidth />
 
 <header
 	class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}
-	style={`margin-top: ${topOffset}px; padding: ${
-		Math.max(PADDING_MAX - PADDING_MIN - y / 2, 0) + PADDING_MIN
-	}px`}
+	style={`margin-top: ${topOffset}px; padding: ${padding}px`}
 >
 	<div class="content" bind:clientHeight>
 		<h1 class={`title ${cls}`}>Kurate</h1>

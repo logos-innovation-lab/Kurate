@@ -7,14 +7,17 @@
 	export { cls as class }
 
 	let y: number
+	let innerWidth: number
 	let clientHeight: number
 	let topOffset: number
 	let spacerElement: HTMLDivElement
-	const PADDING_MAX = 48
+	let padding: number
 	const PADDING_MIN = 12
+	let PADDING_MAX = 48
 
+	$: PADDING_MAX = innerWidth > 688 ? 48 : 24
 	$: topOffset = spacerElement?.getBoundingClientRect().top ?? 0
-	$: console.log(topOffset)
+	$: padding = Math.max(PADDING_MAX - PADDING_MIN - y / 2, 0) + PADDING_MIN
 
 	export let onBack: (() => unknown) | undefined = undefined
 	export let onClose: (() => unknown) | undefined = undefined
@@ -22,13 +25,11 @@
 	export let onlyScrolled = false
 </script>
 
-<svelte:window bind:scrollY={y} />
+<svelte:window bind:scrollY={y} bind:innerWidth />
 
 <header
 	class={`root ${onlyScrolled ? 'initially-hidden' : ''} ${y > 0 ? 'scrolled' : ''} ${cls}`}
-	style={`margin-top: ${topOffset}px; padding: ${
-		Math.max(PADDING_MAX - PADDING_MIN - y / 2, 0) + PADDING_MIN
-	}px`}
+	style={`margin-top: ${topOffset}px; padding: ${padding}px`}
 >
 	<div class="content" bind:clientHeight>
 		<div>
@@ -114,13 +115,12 @@
 			line-height: 245%;
 		}
 
+		// Hide header when not scrolled
 		&.initially-hidden {
 			display: none;
 		}
 
 		&.scrolled {
-			// padding-block: var(--spacing-12);
-			// padding-inline: 12px;
 			transition: box-shadow 0.2s, padding 0.2s;
 			box-shadow: 0 1px 5px 0 rgba(var(--color-body-text-rgb), 0.25);
 			display: initial;
