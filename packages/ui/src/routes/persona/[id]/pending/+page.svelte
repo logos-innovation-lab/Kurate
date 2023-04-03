@@ -91,20 +91,20 @@
 				<p><LearnMore href="https://kurate-faq.vercel.app/curation/earn-rep-by-curating" /></p>
 			</InfoBox>
 			<BorderBox
-				title="Currently available"
-				amount={$tokens.go.toFixed()}
-				tokenName="GO"
-				explanation="Until new cycle begins"
+					title="Currently available"
+					amount={$tokens.go.toFixed()}
+					tokenName="GO"
+					explanation="Until new cycle begins"
 			/>
 		</SingleColumn>
 		<svelte:fragment slot="buttons">
 			<Button
-				label="I agree"
-				variant="primary"
-				icon={Checkmark}
-				on:click={async () => {
+					label="I agree"
+					variant="primary"
+					icon={Checkmark}
+					on:click={async () => {
 					if (!vote || !$profile.signer) return
-					await adapter.voteOnPost(groupId, vote.hash, vote.vote, $profile.signer)
+					await adapter.voteOnPost(groupId, vote.index, vote.vote, $profile.signer)
 					vote = undefined
 				}}
 			/>
@@ -125,21 +125,21 @@
 				<p><LearnMore href="https://kurate-faq.vercel.app/token%20mechanics/what-is-go" /></p>
 			</InfoBox>
 			<BorderBox
-				title="Currently available"
-				amount={$tokens.go.toFixed()}
-				tokenName="GO"
-				explanation="Until new cycle begins"
-				error
+					title="Currently available"
+					amount={$tokens.go.toFixed()}
+					tokenName="GO"
+					explanation="Until new cycle begins"
+					error
 			/>
 		</SingleColumn>
 		<svelte:fragment slot="buttons">
 			<Button
-				label="I agree"
-				variant="primary"
-				icon={Checkmark}
-				on:click={() => {
+					label="I agree"
+					variant="primary"
+					icon={Checkmark}
+					on:click={() => {
 					if (!vote || !$profile.signer) return
-					adapter.voteOnPost(groupId, vote.hash, vote.vote, $profile.signer)
+					adapter.voteOnPost(groupId, vote.index, vote.vote, $profile.signer)
 					vote = undefined
 				}}
 			/>
@@ -158,10 +158,10 @@
 				<Button variant="primary" icon={Edit} on:click={() => goto(ROUTES.POST_NEW(groupId))} />
 			{:else}
 				<Button
-					variant="primary"
-					icon={Wallet}
-					on:click={adapter.signIn}
-					disabled={!canConnectWallet()}
+						variant="primary"
+						icon={Wallet}
+						on:click={adapter.signIn}
+						disabled={!canConnectWallet()}
 				/>
 			{/if}
 		</Header>
@@ -180,18 +180,18 @@
 			<svelte:fragment slot="buttons">
 				{#if $profile.signer !== undefined}
 					<Button
-						variant="primary"
-						label="Submit post"
-						icon={Edit}
-						on:click={() => goto(ROUTES.POST_NEW(groupId))}
+							variant="primary"
+							label="Submit post"
+							icon={Edit}
+							on:click={() => goto(ROUTES.POST_NEW(groupId))}
 					/>
 				{:else}
 					<Button
-						variant="primary"
-						label="Connect to post"
-						icon={Wallet}
-						on:click={adapter.signIn}
-						disabled={!canConnectWallet()}
+							variant="primary"
+							label="Connect to post"
+							icon={Wallet}
+							on:click={adapter.signIn}
+							disabled={!canConnectWallet()}
 					/>
 				{/if}
 			</svelte:fragment>
@@ -211,8 +211,8 @@
 				</DropdownItem>
 			</Dropdown>
 			<Button
-				icon={sortAsc ? SortAscending : SortDescending}
-				on:click={() => (sortAsc = !sortAsc)}
+					icon={sortAsc ? SortAscending : SortDescending}
+					on:click={() => (sortAsc = !sortAsc)}
 			/>
 		</svelte:fragment>
 		<Search bind:filterQuery />
@@ -233,33 +233,33 @@
 	{:else}
 		<Grid>
 			{#each personaPosts.pending
-				.filter((post) => post.text.toLowerCase().includes(filterQuery.toLowerCase()))
-				.sort((a, b) => {
-					if (sortBy === 'date') {
-						return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
-					} else {
-						return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
-					}
-				}) as post}
+					.filter((post) => post.text.toLowerCase().includes(filterQuery.toLowerCase()))
+					.sort((a, b) => {
+						if (sortBy === 'date') {
+							return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
+						} else {
+							return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
+						}
+					}) as post}
 				<Post {post} on:click={() => goto(ROUTES.PERSONA_PENDING_POST(groupId, post.postId))}>
 					{#if post.yourVote === '+' && $profile.signer !== undefined}
 						<Button icon={FavoriteFilled} variant="accent" label="You promoted this" />
-					{:else if personaPosts.all.get(hash)?.yourVote === '-' && $profile.signer !== undefined}
+					{:else if post.yourVote === '-' && $profile.signer !== undefined}
 						<Button icon={ThumbsDown} variant="accent" label="You demoted this" />
 					{:else}
 						<Button
-							variant="secondary"
-							label="Promote"
-							icon={Favorite}
-							disabled={$profile.signer === undefined}
-							on:click={() => (vote = { index: post.postId, vote: '+' })}
+								variant="secondary"
+								label="Promote"
+								icon={Favorite}
+								disabled={$profile.signer === undefined}
+								on:click={() => (vote = { index: post.postId, vote: '+' })}
 						/>
 						<Button
-							variant="secondary"
-							label="Demote"
-							icon={ThumbsDown}
-							disabled={$profile.signer === undefined}
-							on:click={() => (vote = { index: post.postId, vote: '-' })}
+								variant="secondary"
+								label="Demote"
+								icon={ThumbsDown}
+								disabled={$profile.signer === undefined}
+								on:click={() => (vote = { index: post.postId, vote: '-' })}
 						/>
 					{/if}
 				</Post>

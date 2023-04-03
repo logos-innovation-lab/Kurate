@@ -9,7 +9,6 @@
 
 	import { posts } from '$lib/stores/post'
 	import { profile } from '$lib/stores/profile'
-	import { chats } from '$lib/stores/chat'
 	import type { DraftChat } from '$lib/stores/chat'
 	import { personas } from '$lib/stores/persona'
 	import { goto } from '$app/navigation'
@@ -30,13 +29,11 @@
 	const startChat = async () => {
 		if (!persona || !post) return
 
-		$chats.draft = {
-			postHash: post.hash,
+		draftChat = {
+			persona,
+			post,
 			messages: [],
-			closed: false,
 		}
-
-		goto(ROUTES.CHAT_NEW)
 	}
 
 	async function sendMessage(text: string) {
@@ -86,10 +83,10 @@
 	<div class="center">
 		{#if $profile.signer === undefined}
 			<Button
-				variant="primary"
-				icon={Wallet}
-				on:click={adapter.signIn}
-				disabled={!canConnectWallet()}
+					variant="primary"
+					icon={Wallet}
+					on:click={adapter.signIn}
+					disabled={!canConnectWallet()}
 			/>
 		{:else if $profile.signer !== undefined && $profile.address !== post.address}
 			<Button variant="primary" label="Chat with poster" icon={ChatBot} on:click={startChat} />

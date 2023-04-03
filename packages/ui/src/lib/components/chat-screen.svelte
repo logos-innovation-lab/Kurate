@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte'
 	import ViewOff from '$lib/components/icons/view-off.svelte'
 	import View from '$lib/components/icons/view.svelte'
 	import SendAltFilled from '$lib/components/icons/send-alt-filled.svelte'
@@ -18,22 +17,15 @@
 	import DropdownItem from '$lib/components/dropdown-item.svelte'
 	import SingleColumn from '$lib/components/single-column.svelte'
 	import LearnMore from './learn-more.svelte'
-	
-	import type { Chat } from '$lib/stores/chat'
-	import { posts, type Post as PostType } from '$lib/stores/post'
-	import { profile } from '$lib/stores/profile'
-	import { personas, type Persona as PersonaType } from '$lib/stores/persona'
+
+	import type { Chat, DraftChat } from '$lib/stores/chat'
 	import { formatDateAndTime } from '$lib/utils/format'
-	import adapter from '$lib/adapters'
 	import { createAvatar } from '@dicebear/core'
 	import { botttsNeutral } from '@dicebear/collection'
 	import { profile } from '$lib/stores/profile'
 	import { onDestroy, onMount } from 'svelte'
 
-	let persona: PersonaType
-	let post: PostType
-
-	export let chat: Chat
+	export let chat: Chat | DraftChat
 	export let sendMessage: (text: string) => unknown
 	export let onBack: (() => unknown) | undefined = undefined
 	export let title: string
@@ -44,13 +36,6 @@
 	let scrollElement: HTMLElement
 	let scrolled = false
 	const observer = new IntersectionObserver(([ob]) => (scrolled = !ob.isIntersecting))
-
-	onMount(async () => {
-		const m = await adapter.getPostMetaByHash(chat.postHash)
-		const [_, __, personaId] = m?.groupId.split('_') || []
-		persona = $personas.all.get(personaId)
-		post = $posts.data.get(personaId).all.get(chat.postHash)
-	})
 
 	const toggleShowPost = () => (showPost = !showPost)
 	const onSendMessage = async () => {
@@ -63,10 +48,9 @@
 		if (!sc && scrollElement) setTimeout(() => scrollElement.scrollIntoView(), 100)
 	}
 
-	let avatar = createAvatar<any>(botttsNeutral, {
+	let avatar = createAvatar(botttsNeutral, {
 		size: 94, // This is 47pt at 2x resolution
-		// seed: chat?.postHash,
-		seed: chat.postHash,
+		seed: chat.chatId,
 	}).toDataUriSync()
 
 	$: if (scrollElement) observer.observe(scrollElement)
@@ -113,21 +97,17 @@
 					<Button icon={ViewOff} on:click={toggleShowPost} />
 				</div>
 			</SingleColumn>
-			{#if post}
-				<Post class="detail" post={post} noHover />
-			{/if}
-			{#if persona}
-				<Persona
+			<Post class="detail" post={chat.post} noHover />
+			<Persona
 					noHover
 					noBorder
-					name={persona.name}
-					pitch={persona.pitch}
-					postsCount={persona.postsCount}
-					picture={persona.picture}
-					participantsCount={persona.participantsCount}
-					minReputation={persona.minReputation}
-				/>
-			{/if}
+					name={chat.persona.name}
+					pitch={chat.persona.pitch}
+					postsCount={chat.persona.postsCount}
+					picture={chat.persona.picture}
+					participantsCount={chat.persona.participantsCount}
+					minReputation={chat.persona.minReputation}
+			/>
 		{:else}
 			<div class="btn">
 				<Button icon={View} label="View original post" on:click={toggleShowPost} />
@@ -148,7 +128,7 @@
 						{@const myMessage = message.address === $profile.address}
 						{@const systemMessage = message.address === 'system'}
 						<div
-							class={`message ${myMessage ? '' : 'their-message'} ${systemMessage ? 'system' : ''}`}
+								class={`message ${myMessage ? '' : 'their-message'} ${systemMessage ? 'system' : ''}`}
 						>
 							<div class="message-content">
 								{#if !myMessage}
@@ -206,22 +186,22 @@
 				<div class="chat-input">
 					<div class="textarea">
 						<Textarea
-							placeholder="Say something"
-							on:keypress={(e) => {
+								placeholder="Say something"
+								on:keypress={(e) => {
 								if (e.key === 'Enter') {
 									onSendMessage()
 									e.preventDefault()
 								}
 							}}
-							bind:value={messageText}
+								bind:value={messageText}
 						/>
 					</div>
 					<div class="chat-buttons">
 						<Button
-							icon={SendAltFilled}
-							variant="primary"
-							on:click={onSendMessage}
-							disabled={messageText === '' || sending}
+								icon={SendAltFilled}
+								variant="primary"
+								on:click={onSendMessage}
+								disabled={messageText === '' || sending}
 						/>
 					</div>
 				</div>
