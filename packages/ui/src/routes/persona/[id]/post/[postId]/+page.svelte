@@ -83,10 +83,10 @@
 	<div class="center">
 		{#if $profile.signer === undefined}
 			<Button
-					variant="primary"
-					icon={Wallet}
-					on:click={adapter.signIn}
-					disabled={!canConnectWallet()}
+				variant="primary"
+				icon={Wallet}
+				on:click={adapter.signIn}
+				disabled={!canConnectWallet()}
 			/>
 		{:else if $profile.signer !== undefined && $profile.address !== post.address}
 			<Button variant="primary" label="Chat with poster" icon={ChatBot} on:click={startChat} />

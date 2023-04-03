@@ -99,14 +99,14 @@
 			</SingleColumn>
 			<Post class="detail" post={chat.post} noHover />
 			<Persona
-					noHover
-					noBorder
-					name={chat.persona.name}
-					pitch={chat.persona.pitch}
-					postsCount={chat.persona.postsCount}
-					picture={chat.persona.picture}
-					participantsCount={chat.persona.participantsCount}
-					minReputation={chat.persona.minReputation}
+				noHover
+				noBorder
+				name={chat.persona.name}
+				pitch={chat.persona.pitch}
+				postsCount={chat.persona.postsCount}
+				picture={chat.persona.picture}
+				participantsCount={chat.persona.participantsCount}
+				minReputation={chat.persona.minReputation}
 			/>
 		{:else}
 			<div class="btn">
@@ -128,7 +128,7 @@
 						{@const myMessage = message.address === $profile.address}
 						{@const systemMessage = message.address === 'system'}
 						<div
-								class={`message ${myMessage ? '' : 'their-message'} ${systemMessage ? 'system' : ''}`}
+							class={`message ${myMessage ? '' : 'their-message'} ${systemMessage ? 'system' : ''}`}
 						>
 							<div class="message-content">
 								{#if !myMessage}
@@ -186,22 +186,22 @@
 				<div class="chat-input">
 					<div class="textarea">
 						<Textarea
-								placeholder="Say something"
-								on:keypress={(e) => {
+							placeholder="Say something"
+							on:keypress={(e) => {
 								if (e.key === 'Enter') {
 									onSendMessage()
 									e.preventDefault()
 								}
 							}}
-								bind:value={messageText}
+							bind:value={messageText}
 						/>
 					</div>
 					<div class="chat-buttons">
 						<Button
-								icon={SendAltFilled}
-								variant="primary"
-								on:click={onSendMessage}
-								disabled={messageText === '' || sending}
+							icon={SendAltFilled}
+							variant="primary"
+							on:click={onSendMessage}
+							disabled={messageText === '' || sending}
 						/>
 					</div>
 				</div>
