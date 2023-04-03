@@ -95,7 +95,7 @@
 			<BorderBox noGap title="Current cycle">
 				<ProgressCircular progress={$tokens.timeToEpoch / $tokens.epochDuration} />
 				<div class="spacing-top">{formatEpoch($tokens.timeToEpoch)} left in this cycle</div>
-				<LearnMore />
+				<LearnMore href="https://kurate-faq.vercel.app/token%20mechanics/what-is-a-cycle" />
 			</BorderBox>
 			<div class="side-by-side">
 				<BorderBox

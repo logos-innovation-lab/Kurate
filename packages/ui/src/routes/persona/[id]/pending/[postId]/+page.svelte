@@ -116,7 +116,7 @@
 						? 'promote'
 						: 'demote'} this content.
 				</p>
-				<p><LearnMore href="/" /></p>
+				<p><LearnMore href="https://kurate-faq.vercel.app/curation/earn-rep-by-curating" /></p>
 			</InfoBox>
 			<BorderBox
 				title="Currently available"
@@ -150,7 +150,7 @@
 				<p>
 					You need {VOTE_GO_PRICE} GO to promote or demote content.
 				</p>
-				<p><LearnMore href="/" /></p>
+				<p><LearnMore href="https://kurate-faq.vercel.app/token%20mechanics/what-is-go" /></p>
 			</InfoBox>
 			<BorderBox
 				title="Currently available"
