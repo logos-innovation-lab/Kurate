@@ -73,37 +73,32 @@
 		<svelte:fragment slot="buttons">
 			{#if $profile.signer !== undefined}
 				<Button icon={Add} label="Create persona" on:click={createDraft} />
-				<Dropdown>
-					<Button slot="button" icon={SettingsView} />
-
-					<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
-						Sort by date of creation
-					</DropdownItem>
-					<DropdownItem
-						active={sortBy === 'participantsCount'}
-						onClick={() => (sortBy = 'participantsCount')}
-					>
-						Sort by number of participants
-					</DropdownItem>
-					<DropdownItem active={sortBy === 'postsCount'} onClick={() => (sortBy = 'postsCount')}>
-						Sort by number of posts
-					</DropdownItem>
-					<DropdownItem
-						active={sortBy === 'alphabetical'}
-						onClick={() => (sortBy = 'alphabetical')}
-					>
-						Sort by name (alphabetical)
-					</DropdownItem>
-				</Dropdown>
-				<Button
-					icon={sortAsc ? SortAscending : SortDescending}
-					on:click={() => (sortAsc = !sortAsc)}
-				/>
 			{/if}
+			<Dropdown>
+				<Button slot="button" icon={SettingsView} />
+
+				<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
+					Sort by date of creation
+				</DropdownItem>
+				<DropdownItem
+					active={sortBy === 'participantsCount'}
+					onClick={() => (sortBy = 'participantsCount')}
+				>
+					Sort by number of participants
+				</DropdownItem>
+				<DropdownItem active={sortBy === 'postsCount'} onClick={() => (sortBy = 'postsCount')}>
+					Sort by number of posts
+				</DropdownItem>
+				<DropdownItem active={sortBy === 'alphabetical'} onClick={() => (sortBy = 'alphabetical')}>
+					Sort by name (alphabetical)
+				</DropdownItem>
+			</Dropdown>
+			<Button
+				icon={sortAsc ? SortAscending : SortDescending}
+				on:click={() => (sortAsc = !sortAsc)}
+			/>
 		</svelte:fragment>
-		{#if $profile.signer !== undefined}
-			<Search bind:filterQuery />
-		{/if}
+		<Search bind:filterQuery />
 	</SectionTitle>
 
 	<Grid>
