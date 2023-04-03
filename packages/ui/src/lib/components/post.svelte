@@ -73,7 +73,10 @@
 			{#each post.images as image, index}
 				{#if index < MAX_IMAGES}
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<div class="child" on:click={() => (openedImageIndex = index)}>
+					<div
+						class="child"
+						on:click|preventDefault|stopPropagation={() => (openedImageIndex = index)}
+					>
 						<img src={adapter.getPicture(image)} alt="post" />
 						{#if index === MAX_IMAGES - 1 && post.images.length > MAX_IMAGES}
 							<div class="more">+{post.images.length - MAX_IMAGES}</div>
