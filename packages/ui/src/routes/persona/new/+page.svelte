@@ -129,7 +129,6 @@
 				<Info size={32} />
 			</div>
 			<h2>Discard changes?</h2>
-			<LearnMore href="/" />
 			<svelte:fragment slot="buttons">
 				<Button
 					icon={Checkmark}
@@ -244,11 +243,13 @@
 				setState('edit_text')
 			}}
 		/>
-		<Container>
-			<InfoBox>
-				<p>Please provide a profile picture and a cover image.</p>
-			</InfoBox>
-		</Container>
+		{#if !persona.picture || !persona.cover}
+			<Container>
+				<InfoBox>
+					<p>Please provide a profile picture and a cover image.</p>
+				</InfoBox>
+			</Container>
+		{/if}
 	</PersonaDetail>
 {:else}
 	<InfoScreen title="All changes saved">
@@ -263,7 +264,7 @@
 					“seed” posts. These posts should serve as inspiring examples for people willing to post
 					with this persona.
 				</p>
-				<LearnMore href="/" />
+				<LearnMore href="https://kurate-faq.vercel.app/persona/what-are-seed-posts" />
 				<svelte:fragment slot="buttons">
 					<Button variant="secondary" label="Continue later" on:click={() => history.back()} />
 					<Button

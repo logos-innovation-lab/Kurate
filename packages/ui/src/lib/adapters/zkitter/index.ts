@@ -356,6 +356,8 @@ export class ZkitterAdapter implements Adapter {
 
 		console.log(json)
 
+		return 'FIXME'
+
 		// return new Promise((resolve) => {
 		// 	tokens.update(({ go, ...state }) => {
 		// 		resolve()

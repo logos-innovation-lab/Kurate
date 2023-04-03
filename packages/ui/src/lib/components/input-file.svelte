@@ -58,6 +58,9 @@
 	.wrapper {
 		width: 20px;
 		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.primary {
 		color: var(--color-body-bg);
@@ -81,21 +84,21 @@
 			transition: border-color 0.2s, background-color 0.2s;
 		}
 
-		@media (prefers-color-scheme: dark) {
-			&:disabled {
-				background-color: var(--grey-200);
-				color: var(--color-body-bg);
+		// @media (prefers-color-scheme: dark) {
+		// 	&:disabled {
+		// 		background-color: var(--grey-200);
+		// 		color: var(--color-body-bg);
 
-				& :global(svg) {
-					fill: var(--color-body-bg);
-				}
-			}
+		// 		& :global(svg) {
+		// 			fill: var(--color-body-bg);
+		// 		}
+		// 	}
 
-			&:active:not(:disabled),
-			&:hover:not(:disabled) {
-				transition: border-color 0.2s, background-color 0.2s;
-			}
-		}
+		// 	&:active:not(:disabled),
+		// 	&:hover:not(:disabled) {
+		// 		transition: border-color 0.2s, background-color 0.2s;
+		// 	}
+		// }
 	}
 	.secondary {
 		background-color: var(--color-body-bg);
@@ -120,29 +123,29 @@
 			transition: border-color 0.2s, background-color 0.2s;
 		}
 
-		@media (prefers-color-scheme: dark) {
-			background-color: var(--color-body-bg);
-			border-color: var(--color-body-text);
-			color: var(--color-body-text);
+		// @media (prefers-color-scheme: dark) {
+		// 	background-color: var(--color-body-bg);
+		// 	border-color: var(--color-body-text);
+		// 	color: var(--color-body-text);
 
-			& :global(svg) {
-				fill: var(--color-body-text);
-			}
+		// 	& :global(svg) {
+		// 		fill: var(--color-body-text);
+		// 	}
 
-			&:disabled {
-				background-color: var(--color-body-bg);
-				color: var(--grey-500);
+		// 	&:disabled {
+		// 		background-color: var(--color-body-bg);
+		// 		color: var(--grey-500);
 
-				& :global(svg) {
-					fill: var(--grey-500);
-				}
-			}
+		// 		& :global(svg) {
+		// 			fill: var(--grey-500);
+		// 		}
+		// 	}
 
-			&:active:not(:disabled),
-			&:hover:not(:disabled) {
-				transition: border-color 0.2s, background-color 0.2s;
-			}
-		}
+		// 	&:active:not(:disabled),
+		// 	&:hover:not(:disabled) {
+		// 		transition: border-color 0.2s, background-color 0.2s;
+		// 	}
+		// }
 	}
 	.overlay {
 		background-color: rgba(var(--color-black-rgb), 0.5);

@@ -1,13 +1,15 @@
 import { writable, type Writable } from 'svelte/store'
 
-export interface Post {
-	hash: string
+export interface DraftPost {
 	timestamp: number
 	text: string
 	images: string[]
+}
+
+export interface Post extends DraftPost {
 	yourVote?: '+' | '-'
 	myPost?: boolean
-	postId?: string //FIXME: only needed for firebase, might want to remove
+	postId: string
 	address?: string // FIXME: only needed for firebase, might want to remove
 }
 

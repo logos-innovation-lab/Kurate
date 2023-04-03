@@ -324,7 +324,7 @@ export class InMemoryAndIPFS implements Adapter {
 		)
 	}
 
-	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
+	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
 		await signer.signMessage('This "transaction" publishes persona')
 
 		function getRandomNonExistingId(): Promise<string> {
@@ -352,7 +352,7 @@ export class InMemoryAndIPFS implements Adapter {
 			return { ...state }
 		})
 
-		draftPersona.posts.forEach((p) => posts.addApproved(p, groupId))
+		draftPersona.posts.forEach((p) => posts.addApproved({ ...p, postId: randomId() }, groupId))
 
 		personas.update(({ draft, ...state }) => {
 			const newDraft = draft.filter((d) => d !== draftPersona)
@@ -376,6 +376,8 @@ export class InMemoryAndIPFS implements Adapter {
 			})
 			return { transactions }
 		})
+
+		return groupId
 	}
 
 	async signIn(): Promise<void> {
@@ -402,13 +404,14 @@ export class InMemoryAndIPFS implements Adapter {
 		text: string,
 		images: string[],
 		signer: Signer,
-	): Promise<void> {
+	): Promise<string> {
 		await signer.signMessage('This "transaction" publishes a post to pending')
 
 		const post = {
 			timestamp: Date.now(),
 			text,
 			images,
+			postId: randomId(),
 		}
 
 		tokens.update(({ go, repStaked, ...state }) => {
@@ -427,6 +430,8 @@ export class InMemoryAndIPFS implements Adapter {
 			})
 			return { transactions }
 		})
+
+		return post.postId
 	}
 
 	async subscribePersonaPosts(groupId: string): Promise<void> {
@@ -444,8 +449,12 @@ export class InMemoryAndIPFS implements Adapter {
 		posts.update((state) => {
 			const posts = state.data.get(groupId)
 			if (posts) {
-				posts.pending[postId].yourVote = vote
-				state.data.set(groupId, posts)
+				const newPosts = posts.pending.filter((p) => p.postId !== postId)
+				const newPost = posts.pending.find((p) => p.postId === postId)
+				if (newPost) {
+					newPost.yourVote = vote
+					state.data.set(groupId, { ...posts, pending: [...newPosts, newPost] })
+				}
 			}
 
 			return state

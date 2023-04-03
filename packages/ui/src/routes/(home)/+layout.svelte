@@ -39,9 +39,9 @@
 	.nav-wrapper {
 		padding: 0 var(--spacing-24) var(--spacing-24);
 
-		@media (prefers-color-scheme: dark) {
-			border-bottom-color: var(--grey-500);
-		}
+		// @media (prefers-color-scheme: dark) {
+		// 	border-bottom-color: var(--grey-500);
+		// }
 
 		@media (min-width: 688px) {
 			padding: 0 var(--spacing-48) var(--spacing-48);
@@ -63,10 +63,10 @@
 		border: solid 3px var(--grey-200);
 		position: relative;
 
-		@media (prefers-color-scheme: dark) {
-			background-color: var(--grey-500);
-			border-color: var(--grey-500);
-		}
+		// @media (prefers-color-scheme: dark) {
+		// 	background-color: var(--grey-500);
+		// 	border-color: var(--grey-500);
+		// }
 
 		&::before {
 			content: '';

@@ -16,6 +16,8 @@
 	import { page } from '$app/stores'
 	import { personas } from '$lib/stores/persona'
 	import { NEW_POST_GO_PRICE, NEW_POST_REP_PRICE } from '$lib/constants'
+	import { ROUTES } from '$lib/routes'
+	import { goto } from '$app/navigation'
 
 	const persona = $personas.all.get($page.params.id)
 
@@ -48,7 +50,6 @@
 				</div>
 				<h2>Sorry, we couldn't find the Persona you were looking for</h2>
 				<p>It might have been deleted or you might have the wrong link.</p>
-				<LearnMore href="/" />
 			</div>
 		</div>
 		<svelte:fragment slot="buttons">
@@ -67,7 +68,9 @@
 					<p>
 						You need at least {persona.minReputation} REP to submit a post through this Persona.
 					</p>
-					<LearnMore href="/" />
+					<LearnMore
+						href="https://kurate-faq.vercel.app/token%20mechanics/staking-rep-to-post-content"
+					/>
 				</div>
 				<BorderBox
 					title="Available to stake"
@@ -92,7 +95,9 @@
 					<p>
 						You need {NEW_POST_REP_PRICE} REP to stake and {NEW_POST_GO_PRICE} GO to submit a post.
 					</p>
-					<LearnMore href="/" />
+					<LearnMore
+						href="https://kurate-faq.vercel.app/token%20mechanics/staking-rep-to-post-content"
+					/>
 				</div>
 				<div class="side-by-side">
 					<BorderBox
@@ -128,7 +133,11 @@
 						votes to promote it. If promoted, you will earn {NEW_POST_REP_PRICE} REP. If demoted, you
 						will lose your staked REP.
 					</p>
-					<p><LearnMore href="/" /></p>
+					<p>
+						<LearnMore
+							href="https://kurate-faq.vercel.app/posting/what-happens-once-a-post-is-curated"
+						/>
+					</p>
 				</div>
 				<div class="side-by-side">
 					<BorderBox
@@ -166,15 +175,20 @@
 			</div>
 			<h2>Your post is now pending review</h2>
 			<p>
-				Your post has been added to "Persona name's" pending list for community review. If it gets
-				promoted it will be automatically published to "Persona name's" page when the new epoch
+				Your post has been added to "{persona.name}'s" pending list for community review. If it gets
+				promoted it will be automatically published to "{persona.name}'s" page when the new cycle
 				begins.
 			</p>
-			<LearnMore href="/" />
+			<LearnMore href="https://kurate-faq.vercel.app/posting/pending-posts" />
 		</div>
 
 		<svelte:fragment slot="buttons">
-			<Button icon={Checkmark} variant="primary" label="Done" on:click={() => history.back()} />
+			<Button
+				icon={Checkmark}
+				variant="primary"
+				label="Done"
+				on:click={() => goto(ROUTES.PERSONA_PENDING(persona.personaId))}
+			/>
 		</svelte:fragment>
 	</InfoScreen>
 {/if}

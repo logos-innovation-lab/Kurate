@@ -55,6 +55,20 @@ const app = initializeApp(firebaseConfig)
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app)
 
+function epochCounter(): () => unknown {
+	const interval = setInterval(() => {
+		tokens.update(({ epochDuration, ...rest }) => {
+			const newTimeToEpoch = epochDuration - (Date.now() % epochDuration)
+
+			return { ...rest, epochDuration, timeToEpoch: newTimeToEpoch }
+		})
+	}, 1000)
+
+	return () => {
+		clearInterval(interval)
+	}
+}
+
 export class Firebase implements Adapter {
 	private ipfs = create({
 		host: 'ipfs.infura.io',
@@ -72,7 +86,7 @@ export class Firebase implements Adapter {
 		const personasQuery = query(collection(db, 'personas'))
 		const unsubscribePersonas = onSnapshot(personasQuery, (data) => {
 			personas.update((state) => {
-				const all = new Map<string | number, Persona>()
+				const all = new Map<string, Persona>()
 				data.docs.forEach((e) => {
 					const persona = e.data()
 					persona.participantsCount = persona.participants?.length
@@ -139,6 +153,7 @@ export class Firebase implements Adapter {
 			}
 		})
 		this.subscriptions.push(unsubscribeUser)
+		this.subscriptions.push(epochCounter())
 	}
 	stop() {
 		this.subscriptions.forEach((s) => s())
@@ -209,7 +224,7 @@ export class Firebase implements Adapter {
 		)
 	}
 
-	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
+	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
 		await signer.signMessage('This "transaction" publishes persona')
 		const address = await signer.getAddress()
 		const personasCollection = collection(db, 'personas')
@@ -252,6 +267,8 @@ export class Firebase implements Adapter {
 
 			return { ...state, draft: newDraft }
 		})
+
+		return personaDoc.id
 	}
 
 	async signIn(): Promise<void> {
@@ -279,7 +296,7 @@ export class Firebase implements Adapter {
 		text: string,
 		images: string[],
 		signer: Signer,
-	): Promise<void> {
+	): Promise<string> {
 		const address = await signer.getAddress()
 		const isMemberOfGroup = get(personas).all.get(groupId)?.participants?.includes(address)
 
@@ -302,7 +319,7 @@ export class Firebase implements Adapter {
 
 		// Store post to pending
 		const pendingPosts = collection(db, `personas/${groupId}/pending`)
-		addDoc(pendingPosts, post)
+		const postDoc = await addDoc(pendingPosts, post)
 
 		const profileCollection = collection(db, `users/${address}/transactions`)
 		await addDoc(profileCollection, {
@@ -320,6 +337,8 @@ export class Firebase implements Adapter {
 			{ address, go: go - NEW_POST_GO_PRICE, repTotal, repStaked: repStaked + NEW_POST_REP_PRICE },
 			{ merge: true },
 		)
+
+		return postDoc.id
 	}
 
 	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {
@@ -428,14 +447,16 @@ export class Firebase implements Adapter {
 		}
 	}
 
-	async voteOnPost(groupId: string, postId: number, vote: '+' | '-', signer: Signer) {
+	async voteOnPost(groupId: string, postId: string, vote: '+' | '-', signer: Signer) {
 		const promoteDemote: 'promote' | 'demote' = vote === '+' ? 'promote' : 'demote'
 		await signer.signMessage(
 			`By confirming this "transaction" you are casting ${promoteDemote} vote on the post`,
 		)
 		const address = await signer.getAddress()
 
-		const postData = get(posts).data.get(groupId)?.pending[postId]
+		const postData = get(posts)
+			.data.get(groupId)
+			?.pending.find((p) => p.postId === postId)
 		if (!postData) return
 
 		const postDoc = doc(db, `personas/${groupId}/pending/${postData.postId}`)

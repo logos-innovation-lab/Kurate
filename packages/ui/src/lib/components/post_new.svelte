@@ -65,9 +65,9 @@
 		/>
 	</Header>
 
-	<div class="imgs">
+	<div class="parent parent--adjusted-width">
 		{#each images as image, index}
-			<div class="img-wrapper">
+			<div class="child">
 				<img src={adapter.getPicture(image)} alt="post" />
 				<div class="icon">
 					<Button icon={Close} variant="overlay" small on:click={removeImage(index)} />
@@ -85,35 +85,100 @@
 		max-width: 450px;
 		margin-inline: auto;
 	}
-	.imgs {
+
+	/* The magic */
+	/* Mixins for defining a grid with min and max columns */
+	// Thanks to https://stackoverflow.com/questions/28028297/how-can-i-delete-a-window-history-state
+
+	/* Adjusted columns width */
+	@mixin grid-cols-adjusted($min-cols, $max-cols, $cols-min-width, $row-gap: 0px, $col-gap: 0px) {
+		--min-cols: #{$min-cols};
+		--max-cols: #{$max-cols};
+		--cols-min-width: #{$cols-min-width};
+		--row-gap: #{$row-gap};
+		--col-gap: #{$col-gap};
+
+		display: grid;
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(
+				min(
+					(100% / var(--min-cols) - var(--col-gap) * (var(--min-cols) - 1) / var(--min-cols)),
+					max(
+						var(--cols-min-width),
+						(100% / var(--max-cols) - var(--col-gap) * (var(--max-cols) - 1) / var(--max-cols))
+					)
+				),
+				1fr
+			)
+		);
+		gap: var(--row-gap) var(--col-gap);
+	}
+
+	/* Fixed columns width */
+	@mixin grid-cols-fixed($min-cols, $max-cols, $cols-min-width, $row-gap: 0px, $col-gap: 0px) {
+		--min-cols: #{$min-cols};
+		--max-cols: #{$max-cols};
+		--cols-min-width: #{$cols-min-width};
+		--row-gap: #{$row-gap};
+		--col-gap: #{$col-gap};
+
+		display: grid;
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(
+				0,
+				min(
+					(100% / var(--min-cols) - var(--col-gap) * (var(--min-cols) - 1) / var(--min-cols)),
+					max(
+						var(--cols-min-width),
+						(100% / var(--max-cols) - var(--col-gap) * (var(--max-cols) - 1) / var(--max-cols))
+					)
+				)
+			)
+		);
+		gap: var(--row-gap) var(--col-gap);
+	}
+
+	.parent {
+		/* Set styles to see the parent */
 		margin-inline: auto;
 		max-width: 450px;
-		display: flex;
-		flex-direction: row;
-		gap: var(--spacing-6);
-		justify-content: flex-start;
-		align-items: center;
 
-		.img-wrapper {
-			flex-basis: 100%;
-			position: relative;
+		/* Grid systems */
+		$min-cols: 1;
+		$max-cols: 3;
+		$cols-min-width: 2rem;
+		$row-gap: var(--spacing-6);
+		$col-gap: var(--spacing-6);
+		&--adjusted-width {
+			@include grid-cols-adjusted($min-cols, $max-cols, $cols-min-width, $row-gap, $col-gap);
+		}
+		&--fixed-width {
+			@include grid-cols-fixed($min-cols, $max-cols, $cols-min-width, $row-gap, $col-gap);
+		}
+	}
 
-			img {
-				max-height: 300px;
-			}
+	.child {
+		flex-basis: 100%;
+		position: relative;
 
-			&:not(:only-child) img {
-				aspect-ratio: 1;
-				object-fit: cover;
-				width: 100%;
-				height: 100%;
-			}
+		img {
+			max-height: 300px;
+			max-height: 300px;
+		}
 
-			.icon {
-				position: absolute;
-				right: var(--spacing-12);
-				top: var(--spacing-12);
-			}
+		&:not(:only-child) img {
+			aspect-ratio: 1;
+			object-fit: cover;
+			width: 100%;
+			height: 100%;
+		}
+
+		.icon {
+			position: absolute;
+			right: var(--spacing-12);
+			top: var(--spacing-12);
 		}
 	}
 </style>

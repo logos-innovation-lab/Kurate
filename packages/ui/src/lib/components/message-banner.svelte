@@ -5,7 +5,9 @@
 </script>
 
 <div class={`info-banner ${variant}`}>
-	<svelte:component this={icon} />
+	<div class="wrapper">
+		<svelte:component this={icon} />
+	</div>
 	<slot />
 </div>
 
@@ -22,6 +24,14 @@
 		gap: var(--spacing-6);
 		font-size: 14px;
 		font-weight: var(--font-weight-sb);
+
+		.wrapper {
+			width: 20px;
+			height: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 
 		&.info {
 			color: (--color-body-text);

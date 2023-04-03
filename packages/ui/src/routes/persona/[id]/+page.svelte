@@ -133,29 +133,25 @@
 
 		<SectionTitle title="All posts">
 			<svelte:fragment slot="buttons">
-				{#if $profile.signer !== undefined}
-					<Dropdown>
-						<Button slot="button" icon={SettingsView} />
+				<Dropdown>
+					<Button slot="button" icon={SettingsView} />
 
-						<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
-							Sort by date of creation
-						</DropdownItem>
-						<DropdownItem
-							active={sortBy === 'alphabetical'}
-							onClick={() => (sortBy = 'alphabetical')}
-						>
-							Sort by name (alphabetical)
-						</DropdownItem>
-					</Dropdown>
-					<Button
-						icon={sortAsc ? SortAscending : SortDescending}
-						on:click={() => (sortAsc = !sortAsc)}
-					/>
-				{/if}
+					<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
+						Sort by date of creation
+					</DropdownItem>
+					<DropdownItem
+						active={sortBy === 'alphabetical'}
+						onClick={() => (sortBy = 'alphabetical')}
+					>
+						Sort by name (alphabetical)
+					</DropdownItem>
+				</Dropdown>
+				<Button
+					icon={sortAsc ? SortAscending : SortDescending}
+					on:click={() => (sortAsc = !sortAsc)}
+				/>
 			</svelte:fragment>
-			{#if $profile.signer !== undefined}
-				<Search bind:filterQuery />
-			{/if}
+			<Search bind:filterQuery />
 		</SectionTitle>
 
 		{#if !personaPosts || personaPosts.loading}
@@ -172,8 +168,16 @@
 			</Container>
 		{:else}
 			<Grid>
-				{#each personaPosts.approved as hash}
-					<Post post={personaPosts.all.get(hash)} on:click={() => goto(ROUTES.PERSONA_POST(groupId, hash))} />
+				{#each personaPosts.approved
+					.filter((post) => post.text.toLowerCase().includes(filterQuery.toLowerCase()))
+					.sort((a, b) => {
+						if (sortBy === 'date') {
+							return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
+						} else {
+							return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
+						}
+					}) as post}
+					<Post {post} on:click={() => goto(ROUTES.PERSONA_POST(groupId, post.postId))} />
 				{/each}
 			</Grid>
 		{/if}

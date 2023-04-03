@@ -48,7 +48,7 @@
 	let unsubscribe: () => unknown
 
 	type Vote = {
-		hash: string
+		index: string
 		vote: '+' | '-'
 	}
 
@@ -88,7 +88,7 @@
 						? 'promote'
 						: 'demote'} this content.
 				</p>
-				<p><LearnMore href="/" /></p>
+				<p><LearnMore href="https://kurate-faq.vercel.app/curation/earn-rep-by-curating" /></p>
 			</InfoBox>
 			<BorderBox
 				title="Currently available"
@@ -122,7 +122,7 @@
 				<p>
 					You need {VOTE_GO_PRICE} GO to promote or demote content.
 				</p>
-				<p><LearnMore href="/" /></p>
+				<p><LearnMore href="https://kurate-faq.vercel.app/token%20mechanics/what-is-go" /></p>
 			</InfoBox>
 			<BorderBox
 				title="Currently available"
@@ -153,7 +153,7 @@
 		<Banner icon={Info} variant="danger">No GO left in this cycle</Banner>
 	{/if}
 	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
-		<Header title={`Pending • ${persona.name}`} onBack={() => history.back()}>
+		<Header title={`Pending • ${persona.name}`} onBack={() => goto(ROUTES.PERSONA(groupId))}>
 			{#if $profile.signer !== undefined}
 				<Button variant="primary" icon={Edit} on:click={() => goto(ROUTES.POST_NEW(groupId))} />
 			{:else}
@@ -200,29 +200,22 @@
 
 	<SectionTitle title="All pending posts">
 		<svelte:fragment slot="buttons">
-			{#if $profile.signer !== undefined}
-				<Dropdown>
-					<Button slot="button" icon={SettingsView} />
+			<Dropdown>
+				<Button slot="button" icon={SettingsView} />
 
-					<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
-						Sort by date of creation
-					</DropdownItem>
-					<DropdownItem
-						active={sortBy === 'alphabetical'}
-						onClick={() => (sortBy = 'alphabetical')}
-					>
-						Sort by name (alphabetical)
-					</DropdownItem>
-				</Dropdown>
-				<Button
-					icon={sortAsc ? SortAscending : SortDescending}
-					on:click={() => (sortAsc = !sortAsc)}
-				/>
-			{/if}
+				<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
+					Sort by date of creation
+				</DropdownItem>
+				<DropdownItem active={sortBy === 'alphabetical'} onClick={() => (sortBy = 'alphabetical')}>
+					Sort by name (alphabetical)
+				</DropdownItem>
+			</Dropdown>
+			<Button
+				icon={sortAsc ? SortAscending : SortDescending}
+				on:click={() => (sortAsc = !sortAsc)}
+			/>
 		</svelte:fragment>
-		{#if $profile.signer !== undefined}
-			<Search bind:filterQuery />
-		{/if}
+		<Search bind:filterQuery />
 	</SectionTitle>
 
 	{#if !personaPosts || personaPosts.loading}
@@ -239,9 +232,17 @@
 		</Container>
 	{:else}
 		<Grid>
-			{#each personaPosts.pending as hash}
-				<Post post={personaPosts.all.get(hash)} on:click={() => goto(ROUTES.PERSONA_POST(groupId, hash))}>
-					{#if personaPosts.all.get(hash)?.yourVote === '+' && $profile.signer !== undefined}
+			{#each personaPosts.pending
+				.filter((post) => post.text.toLowerCase().includes(filterQuery.toLowerCase()))
+				.sort((a, b) => {
+					if (sortBy === 'date') {
+						return sortAsc ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
+					} else {
+						return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text)
+					}
+				}) as post}
+				<Post {post} on:click={() => goto(ROUTES.PERSONA_PENDING_POST(groupId, post.postId))}>
+					{#if post.yourVote === '+' && $profile.signer !== undefined}
 						<Button icon={FavoriteFilled} variant="accent" label="You promoted this" />
 					{:else if personaPosts.all.get(hash)?.yourVote === '-' && $profile.signer !== undefined}
 						<Button icon={ThumbsDown} variant="accent" label="You demoted this" />
@@ -251,14 +252,14 @@
 							label="Promote"
 							icon={Favorite}
 							disabled={$profile.signer === undefined}
-							on:click={() => (vote = { hash, vote: '+' })}
+							on:click={() => (vote = { index: post.postId, vote: '+' })}
 						/>
 						<Button
 							variant="secondary"
 							label="Demote"
 							icon={ThumbsDown}
 							disabled={$profile.signer === undefined}
-							on:click={() => (vote = { hash, vote: '-' })}
+							on:click={() => (vote = { index: post.postId, vote: '-' })}
 						/>
 					{/if}
 				</Post>

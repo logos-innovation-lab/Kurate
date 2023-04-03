@@ -33,6 +33,7 @@
 		font-size: var(--font-size-normal);
 		white-space: nowrap;
 		color: var(--color-body-text);
+		margin: var(--spacing-24) calc(var(--spacing-24) * -1) var(--spacing-12);
 
 		.label {
 			font-size: var(--font-size-sm);
@@ -46,6 +47,7 @@
 			justify-content: space-between;
 			align-items: center;
 			width: 100%;
+			font-family: var(--font-serif);
 		}
 
 		& :global(svg) {
@@ -67,26 +69,26 @@
 			transition: background-color 0.2s;
 		}
 
-		@media (prefers-color-scheme: dark) {
-			background-color: var(--color-body-bg);
-			color: var(--color-body-text);
+		// @media (prefers-color-scheme: dark) {
+		// 	background-color: var(--color-body-bg);
+		// 	color: var(--color-body-text);
 
-			& :global(svg) {
-				fill: var(--color-body-text);
-			}
+		// 	& :global(svg) {
+		// 		fill: var(--color-body-text);
+		// 	}
 
-			&:disabled {
-				color: var(--grey-500);
+		// 	&:disabled {
+		// 		color: var(--grey-500);
 
-				& :global(svg) {
-					fill: var(--grey-500);
-				}
-			}
+		// 		& :global(svg) {
+		// 			fill: var(--grey-500);
+		// 		}
+		// 	}
 
-			&:active:not(:disabled),
-			&:hover:not(:disabled) {
-				transition: background-color 0.2s;
-			}
-		}
+		// 	&:active:not(:disabled),
+		// 	&:hover:not(:disabled) {
+		// 		transition: background-color 0.2s;
+		// 	}
+		// }
 	}
 </style>

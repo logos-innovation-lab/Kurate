@@ -34,7 +34,7 @@
 	import { onDestroy, onMount } from 'svelte'
 
 	type Vote = {
-		index: number
+		index: string
 		vote: '+' | '-'
 	}
 
@@ -49,10 +49,10 @@
 		if (unsubscribe) unsubscribe()
 	})
 
-	const postId = $page.params.postId as unknown as number
+	const postId = $page.params.postId
 	const groupId = $page.params.id
-	let post = $posts.data.get(groupId)?.pending[postId]
-	$: post = $posts.data.get(groupId)?.pending[postId]
+	let post = $posts.data.get(groupId)?.pending.find((p) => p.postId === postId)
+	$: post = $posts.data.get(groupId)?.pending.find((p) => p.postId === postId)
 	const persona = $personas.all.get(groupId)
 	let draftChat: DraftChat | undefined = undefined
 
@@ -116,7 +116,7 @@
 						? 'promote'
 						: 'demote'} this content.
 				</p>
-				<p><LearnMore href="/" /></p>
+				<p><LearnMore href="https://kurate-faq.vercel.app/curation/earn-rep-by-curating" /></p>
 			</InfoBox>
 			<BorderBox
 				title="Currently available"
@@ -150,7 +150,7 @@
 				<p>
 					You need {VOTE_GO_PRICE} GO to promote or demote content.
 				</p>
-				<p><LearnMore href="/" /></p>
+				<p><LearnMore href="https://kurate-faq.vercel.app/token%20mechanics/what-is-go" /></p>
 			</InfoBox>
 			<BorderBox
 				title="Currently available"
@@ -188,14 +188,18 @@
 				label="Promote"
 				icon={Favorite}
 				disabled={$profile.signer === undefined}
-				on:click={() => (vote = { index: postId, vote: '+' })}
+				on:click={() => {
+					if (post) vote = { index: post.postId, vote: '+' }
+				}}
 			/>
 			<Button
 				variant="secondary"
 				label="Demote"
 				icon={ThumbsDown}
 				disabled={$profile.signer === undefined}
-				on:click={() => (vote = { index: postId, vote: '-' })}
+				on:click={() => {
+					if (post) vote = { index: post.postId, vote: '-' }
+				}}
 			/>
 		{/if}
 		{#if $profile.signer === undefined}

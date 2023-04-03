@@ -20,8 +20,10 @@
 	import ChatScreen from '$lib/components/chat-screen.svelte'
 	import { onDestroy, onMount } from 'svelte'
 
+	const postId = $page.params.postId
 	const groupId = $page.params.id
-	const post = $posts.data.get($page.params.id)?.all?.get($page.params.postId as unknown as string)
+	let post = $posts.data.get(groupId)?.approved.find((p) => p.postId === postId)
+	$: post = $posts.data.get(groupId)?.approved.find((p) => p.postId === postId)
 	const persona = $personas.all.get($page.params.id)
 	let draftChat: DraftChat | undefined = undefined
 
