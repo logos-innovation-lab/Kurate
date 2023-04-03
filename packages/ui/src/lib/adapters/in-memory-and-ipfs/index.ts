@@ -434,13 +434,13 @@ export class InMemoryAndIPFS implements Adapter {
 		return post.postId
 	}
 
-	async subscribePersonaPosts(groupId: string): Promise<void> {
-		// const interval = setInterval(() => {
-		// 	// 5% chance every second to add new pending post
-		// 	if (executeWithChance(0.05)) addRandomPost(groupId, true)
-		// }, 1000)
-		//
-		// return () => clearInterval(interval)
+	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {
+		const interval = setInterval(() => {
+			// 5% chance every second to add new pending post
+			if (executeWithChance(0.05)) addRandomPost(groupId, true)
+		}, 1000)
+
+		return () => clearInterval(interval)
 	}
 
 	async voteOnPost(groupId: string, postId: string, vote: '+' | '-', signer: Signer) {

@@ -14,11 +14,10 @@ export interface Post extends DraftPost {
 }
 
 interface PostData {
-	data: Map<string, { all: Map<string, Post>, approved: string[]; pending: string[]; loading: boolean }>
+	data: Map<string, { approved: Post[]; pending: Post[]; loading: boolean }>
 }
 
 export interface PostStore extends Writable<PostData> {
-	setLoading: (groupId: string, loading: boolean) => void
 	addPending: (post: Post, groupId: string) => void
 	addApproved: (post: Post, groupId: string) => void
 }
@@ -28,45 +27,22 @@ function createPostStore(): PostStore {
 
 	return {
 		...store,
-		setLoading: (groupId, loading) => {
-			store.update(({ data }) => {
-				const personaPostData = data.get(groupId)
-				const approved = personaPostData?.approved ?? []
-				const pending = personaPostData?.pending ?? []
-				const all = personaPostData?.all ?? new Map()
-				data.set(groupId, { loading, approved, pending, all })
-				return { data }
-			})
-		},
 		addPending: (post: Post, groupId: string) => {
 			store.update(({ data }) => {
 				const personaPostData = data.get(groupId)
-				const all = personaPostData?.all ?? new Map()
-				const pending = personaPostData?.pending ?? []
+				const pending = [post, ...(personaPostData?.pending ?? [])]
 				const approved = personaPostData?.approved ?? []
+				data.set(groupId, { loading: false, approved, pending })
 
-				if (!all.has(post.hash)) {
-					all.set(post.hash, post)
-					pending.unshift(post.hash)
-				}
-
-				data.set(groupId, { loading: false, approved, pending, all })
 				return { data }
 			})
 		},
 		addApproved: (post: Post, groupId: string) => {
 			store.update(({ data }) => {
 				const personaPostData = data.get(groupId)
-				const all = personaPostData?.all ?? new Map()
 				const pending = personaPostData?.pending ?? []
-				const approved = personaPostData?.approved ?? []
-
-				if (!all.has(post.hash)) {
-					all.set(post.hash, post)
-					approved.unshift(post.hash)
-				}
-
-				data.set(groupId, { loading: false, approved, pending, all })
+				const approved = [post, ...(personaPostData?.approved ?? [])]
+				data.set(groupId, { loading: false, approved, pending })
 
 				return { data }
 			})
