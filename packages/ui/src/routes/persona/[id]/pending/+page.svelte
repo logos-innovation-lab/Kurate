@@ -200,29 +200,22 @@
 
 	<SectionTitle title="All pending posts">
 		<svelte:fragment slot="buttons">
-			{#if $profile.signer !== undefined}
-				<Dropdown>
-					<Button slot="button" icon={SettingsView} />
+			<Dropdown>
+				<Button slot="button" icon={SettingsView} />
 
-					<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
-						Sort by date of creation
-					</DropdownItem>
-					<DropdownItem
-						active={sortBy === 'alphabetical'}
-						onClick={() => (sortBy = 'alphabetical')}
-					>
-						Sort by name (alphabetical)
-					</DropdownItem>
-				</Dropdown>
-				<Button
-					icon={sortAsc ? SortAscending : SortDescending}
-					on:click={() => (sortAsc = !sortAsc)}
-				/>
-			{/if}
+				<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
+					Sort by date of creation
+				</DropdownItem>
+				<DropdownItem active={sortBy === 'alphabetical'} onClick={() => (sortBy = 'alphabetical')}>
+					Sort by name (alphabetical)
+				</DropdownItem>
+			</Dropdown>
+			<Button
+				icon={sortAsc ? SortAscending : SortDescending}
+				on:click={() => (sortAsc = !sortAsc)}
+			/>
 		</svelte:fragment>
-		{#if $profile.signer !== undefined}
-			<Search bind:filterQuery />
-		{/if}
+		<Search bind:filterQuery />
 	</SectionTitle>
 
 	{#if !personaPosts || personaPosts.loading}
