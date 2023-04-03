@@ -152,20 +152,18 @@
 	{:else}
 		<Banner icon={Info} variant="danger">No GO left in this cycle</Banner>
 	{/if}
-	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
-		<Header title={`Pending • ${persona.name}`} onBack={() => goto(ROUTES.PERSONA(groupId))}>
-			{#if $profile.signer !== undefined}
-				<Button variant="primary" icon={Edit} on:click={() => goto(ROUTES.POST_NEW(groupId))} />
-			{:else}
-				<Button
-					variant="primary"
-					icon={Wallet}
-					on:click={adapter.signIn}
-					disabled={!canConnectWallet()}
-				/>
-			{/if}
-		</Header>
-	</div>
+	<Header title={`Pending • ${persona.name}`} onBack={() => goto(ROUTES.PERSONA(groupId))}>
+		{#if $profile.signer !== undefined}
+			<Button variant="primary" icon={Edit} on:click={() => goto(ROUTES.POST_NEW(groupId))} />
+		{:else}
+			<Button
+				variant="primary"
+				icon={Wallet}
+				on:click={adapter.signIn}
+				disabled={!canConnectWallet()}
+			/>
+		{/if}
+	</Header>
 	<SingleColumn>
 		<InfoBox>
 			<div class="icon">
@@ -267,16 +265,3 @@
 		</Grid>
 	{/if}
 {/if}
-
-<style lang="scss">
-	.header {
-		z-index: 50;
-		transition: inset 0.5s;
-
-		&.scrolled {
-			position: fixed;
-			inset: 44px 0 auto;
-			transition: inset 0.3s;
-		}
-	}
-</style>
