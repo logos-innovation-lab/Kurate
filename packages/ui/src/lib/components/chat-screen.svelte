@@ -291,13 +291,20 @@
 		position: fixed;
 		inset: auto 0 0 0;
 		background-color: var(--color-body-bg);
-
+		transition: background-color 0.2s;
+		
+		&:focus-within {
+			background-color: var(--grey-150);
+			transition: background-color 0.2s;
+		}
+		
 		.chat-input {
 			display: flex;
 			flex-direction: row;
 			justify-content: space-between;
 			align-items: center;
 			gap: var(--spacing-12);
+			padding-block: var(--spacing-12);
 
 			.textarea {
 				flex-basis: 100%;
