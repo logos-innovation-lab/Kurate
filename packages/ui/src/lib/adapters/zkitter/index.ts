@@ -86,7 +86,7 @@ export class ZkitterAdapter implements Adapter {
 
 			if (post) {
 				posts.addApproved({
-					hash: post.hash(),
+					postId: post.hash(),
 					timestamp: post.createdAt.getTime(),
 					text: post.payload.content,
 					images: post.payload.attachment ? [post.payload.attachment] : [],
@@ -106,7 +106,7 @@ export class ZkitterAdapter implements Adapter {
 			if (post) {
 				posts.addPending(
 					{
-						hash: post.hash(),
+						postId: post.hash(),
 						text: post.payload.content,
 						timestamp: post.createdAt.getTime(),
 						images: post.payload.attachment ? [post.payload.attachment]: [],
@@ -260,7 +260,7 @@ export class ZkitterAdapter implements Adapter {
 			}),
 		)
 	}
-	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<void> {
+	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
 		if (!this.identity) throw new Error('must sign in first')
 		if (!this.zkitter) throw new Error('zkitter is not initialized')
 
@@ -356,7 +356,7 @@ export class ZkitterAdapter implements Adapter {
 
 		console.log(json)
 
-		return 'FIXME'
+		return String(newPersonaId)
 
 		// return new Promise((resolve) => {
 		// 	tokens.update(({ go, ...state }) => {
@@ -434,9 +434,9 @@ export class ZkitterAdapter implements Adapter {
 		text: string,
 		images: string[],
 		signer: Signer,
-	): Promise<void> {
+	): Promise<string> {
 		const {Post, MessageType, PostMessageSubType} = await import('zkitter-js')
-		const {Registry, RLN} = await import('rlnjs')
+		// const {Registry, RLN} = await import('rlnjs')
 
 		const post = new Post({
 			type: MessageType.Post,
@@ -509,24 +509,29 @@ export class ZkitterAdapter implements Adapter {
 		// 	{ gasLimit: 6721974 },
 		// )
 
+		const hash = post.hash()
+
 		posts.addPending({
-			hash: post.hash(),
+			postId: post.hash(),
 			text,
 			images,
 			timestamp: post.createdAt.getTime(),
 		}, personaId)
+
+		return hash
 	}
 
-	async subscribePersonaPosts(personaId: string): Promise<void> {
+	async subscribePersonaPosts(personaId: string): Promise<() => unknown> {
 		const groupId = GroupAdapter.createGroupId(personaId)
 		await this.zkitter!.queryGroup(groupId)
 		await this.syncActivePost(personaId)
 		await this.syncPendingPost(personaId)
+		return () => null
 	}
 
 	async voteOnPost(
 		groupId: string,
-		postHash: string,
+		postId: string,
 		vote: '+' | '-',
 		signer: Signer,
 	) {
@@ -548,7 +553,7 @@ export class ZkitterAdapter implements Adapter {
 		const {proof, publicSignals} = await state.genProveReputationProof({})
 
 		await contract.vote(
-			'0x' + postHash,
+			'0x' + postId,
 			vote === '+',
 			publicSignals,
 			proof,
@@ -556,10 +561,10 @@ export class ZkitterAdapter implements Adapter {
 
 		posts.update((state) => {
 			const posts = state.data.get(groupId)
-			const post = posts?.all.get(postHash)
 
-			if (posts && post) {
-				post.yourVote = vote
+			if (posts) {
+				const i = posts.pending.findIndex(post => post.postId === postId);
+				posts.pending[i].yourVote = vote
 				state.data.set(groupId, posts)
 			}
 
@@ -570,8 +575,8 @@ export class ZkitterAdapter implements Adapter {
 	startChat(chat: Chat): Promise<string> {
 		return new Promise((resolve) => {
 			chats.update((state) => {
-				state.chats.set(chat.postHash, chat)
-				resolve(chat.postHash)
+				state.chats.set(chat.chatId, chat)
+				resolve(chat.chatId)
 				return state
 			})
 		})
@@ -603,14 +608,14 @@ export class ZkitterAdapter implements Adapter {
 		return new Promise(async (resolve) => {
 			if (!chatData) return;
 
-			const {postHash} = chatData
+			const {post: {postId}} = chatData
 			const {zkIdentity} = this.identity!
-			const msgProof = await this.zkitter!.getProof(postHash)
+			const msgProof = await this.zkitter!.getProof(postId)
 
 			if (msgProof?.type !== 'rln' || !msgProof.ecdh) return;
 
 			const {Chat, MessageType, ChatMessageSubType, generateECDHKeyPairFromZKIdentity, deriveSharedSecret, encrypt} = await import('zkitter-js')
-			const {pub, priv} = await generateECDHKeyPairFromZKIdentity(zkIdentity, postHash)
+			const {pub, priv} = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
 			const {ecdh: receiverECDH} = msgProof;
 			const sharedKey = await deriveSharedSecret(receiverECDH, priv)
 			const encryptedContent = encrypt(text, sharedKey)
@@ -622,7 +627,7 @@ export class ZkitterAdapter implements Adapter {
 					encryptedContent,
 					receiverECDH,
 					senderECDH: pub,
-					senderSeed: postHash,
+					senderSeed: postId,
 				}
 			})
 
