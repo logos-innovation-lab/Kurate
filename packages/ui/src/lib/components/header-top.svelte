@@ -11,15 +11,30 @@
 	let cls: string | undefined = undefined
 	export { cls as class }
 
+	let innerWidth: number
 	let y: number
+	let clientHeight: number
+	let topOffset: number
+	let spacerElement: HTMLDivElement
+	let padding: number
+	const PADDING_MIN = 12
+	let PADDING_MAX = 48
+
+	$: PADDING_MAX = innerWidth > 688 ? 48 : 24
+	$: topOffset = spacerElement?.getBoundingClientRect().top ?? 0
+	$: padding = Math.max(PADDING_MAX - PADDING_MIN - y / 2, 0) + PADDING_MIN
+
 	export let address: string | undefined = undefined
 </script>
 
-<svelte:window bind:scrollY={y} />
+<svelte:window bind:scrollY={y} bind:innerWidth />
 
-<header class={`root header-top ${y > 0 ? 'scrolled' : ''} ${cls}`}>
-	<div class="header-content">
-		<h1 class={`header-title ${cls}`}>Kurate</h1>
+<header
+	class={`root ${y > 0 ? 'scrolled' : ''} ${cls}`}
+	style={`margin-top: ${topOffset}px; padding: ${padding}px`}
+>
+	<div class="content" bind:clientHeight>
+		<h1 class={`title ${cls}`}>Kurate</h1>
 
 		<div class="btns">
 			{#if address}
@@ -41,10 +56,15 @@
 		</div>
 	</div>
 </header>
+<div
+	class="spacer"
+	style={`height: ${clientHeight + PADDING_MAX * 2}px;`}
+	bind:this={spacerElement}
+/>
 
 <style lang="scss">
 	header {
-		position: sticky;
+		position: fixed;
 		top: 0;
 		left: 0;
 		right: 0;
@@ -53,20 +73,18 @@
 		transition: box-shadow 0.2s;
 		z-index: 100;
 
-		.header-content {
+		.content {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: var(--spacing-24);
 			transition: padding 0.2s;
 
 			@media (min-width: 688px) {
-				padding: var(--spacing-48);
 				transition: padding 0.2s;
 			}
 		}
 
-		.header-title {
+		.title {
 			font-family: var(--font-body);
 			font-weight: 600;
 			font-size: 18px;
@@ -79,7 +97,6 @@
 			transition: box-shadow 0.2s;
 
 			.header-content {
-				padding-block: var(--spacing-12);
 				transition: padding 0.2s;
 			}
 			// @media (prefers-color-scheme: dark) {
