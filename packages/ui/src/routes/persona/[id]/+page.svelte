@@ -15,6 +15,10 @@
 	import Header from '$lib/components/header.svelte'
 	import Container from '$lib/components/container.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
+	import SectionTitle from '$lib/components/section-title.svelte'
+	import Dropdown from '$lib/components/dropdown.svelte'
+	import DropdownItem from '$lib/components/dropdown-item.svelte'
+	import Search from '$lib/components/search.svelte'
 
 	import { posts } from '$lib/stores/post'
 	import { personas } from '$lib/stores/persona'
@@ -25,10 +29,6 @@
 	import adapter from '$lib/adapters'
 	import { canConnectWallet } from '$lib/services'
 	import { onDestroy, onMount } from 'svelte'
-	import SectionTitle from '$lib/components/section-title.svelte'
-	import Dropdown from '$lib/components/dropdown.svelte'
-	import DropdownItem from '$lib/components/dropdown-item.svelte'
-	import Search from '$lib/components/search.svelte'
 
 	const groupId = $page.params.id
 	const persona = $personas.all.get(groupId)
@@ -37,24 +37,13 @@
 	let sortBy: 'date' | 'alphabetical' = 'date'
 	let filterQuery = ''
 	let unsubscribe: () => unknown
-	let hasJoined = false
-
-	const unsubProfile = profile.subscribe(async (state) => {
-		if (state.unirepIdentity) {
-			hasJoined = await adapter.queryPersonaJoined(groupId)
-		}
-	})
 
 	onMount(async () => {
 		adapter.subscribePersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
-		if ($profile.unirepIdentity) {
-			hasJoined = await adapter.queryPersonaJoined(groupId)
-		}
 	})
 
 	onDestroy(() => {
 		if (unsubscribe) unsubscribe()
-		unsubProfile()
 	})
 
 	let y: number
@@ -62,13 +51,6 @@
 
 	const addToFavorite = () => adapter.addPersonaToFavorite(groupId, persona)
 	const removeFromFavorite = () => adapter.removePersonaFromFavorite(groupId, persona)
-
-	const joinPersona = async () => {
-		await adapter.joinPersona(groupId)
-		if ($profile.unirepIdentity) {
-			hasJoined = await adapter.queryPersonaJoined(groupId)
-		}
-	}
 
 	$: personaPosts = $posts.data.get(groupId)
 </script>
@@ -122,16 +104,12 @@
 
 		<svelte:fragment slot="button_primary">
 			{#if $profile.signer !== undefined}
-				{#if hasJoined}
-					<Button
-						variant="primary"
-						label="Submit post"
-						icon={Edit}
-						on:click={() => goto(ROUTES.POST_NEW(groupId))}
-					/>
-				{:else}
-					<Button variant="primary" label="Join Persona" icon={Edit} on:click={joinPersona} />
-				{/if}
+				<Button
+					variant="primary"
+					label="Submit post"
+					icon={Edit}
+					on:click={() => goto(ROUTES.POST_NEW(groupId))}
+				/>
 			{:else}
 				<Button
 					variant="primary"

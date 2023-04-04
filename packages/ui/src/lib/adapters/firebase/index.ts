@@ -525,15 +525,4 @@ export class Firebase implements Adapter {
 		const chatDoc = doc(db, `chats/${chatId}`)
 		updateDoc(chatDoc, { messages: arrayUnion(message), lastMessage: text })
 	}
-
-	async queryPersonaJoined(personId: string): Promise<boolean> {
-		// FIXME: properly implement
-		console.error('NOT IMPLEMENTED', 'queryPersonaJoined')
-		return true
-	}
-
-	async joinPersona(personId: string): Promise<void> {
-		// FIXME: properly implement
-		console.error('NOT IMPLEMENTED', 'joinPersona')
-	}
 }

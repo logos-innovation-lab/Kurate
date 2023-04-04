@@ -3,7 +3,7 @@ import { type Chat, chats } from '$lib/stores/chat'
 import { type DraftPersona, personas } from '$lib/stores/persona'
 import { get } from 'svelte/store'
 import { profile } from '$lib/stores/profile'
-import { saveToLocalStorage } from '$lib/utils'
+import { saveToLocalStorage, sleep } from '$lib/utils'
 import type { Adapter } from '..'
 import { GroupAdapter } from './group-adapter'
 import type { Signer } from 'ethers'
@@ -642,6 +642,20 @@ export class ZkitterAdapter implements Adapter {
 	): Promise<string> {
 		const { Post, MessageType, PostMessageSubType } = await import('zkitter-js')
 		// const {Registry, RLN} = await import('rlnjs')
+
+		// User did not join the persona yet
+		if (await this.queryPersonaJoined(personaId)) {
+			await this.joinPersona(personaId)
+
+			// Wait for the join to propagate
+			await new Promise((resolve) => {
+				const interval = setInterval(async () => {
+					if (await this.queryPersonaJoined(personaId)) resolve(clearInterval(interval))
+				})
+			})
+		}
+
+		await sleep(1000) // wait for zkitter to sync
 
 		const post = new Post({
 			type: MessageType.Post,
