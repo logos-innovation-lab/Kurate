@@ -26,7 +26,7 @@ import type { ZkIdentity } from '@zk-kit/identity'
 import type { GlobalAnonymousFeed } from '../../assets/typechain'
 import { getFromLocalStorage } from '../../utils'
 import type { ReputationProof, UserStateTransitionProof } from '@unirep/circuits'
-import {GLOBAL_ANONYMOUS_FEED_ADDRESS, RELAYER_URL} from '../../constants'
+import { GLOBAL_ANONYMOUS_FEED_ADDRESS, RELAYER_URL } from '../../constants'
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =

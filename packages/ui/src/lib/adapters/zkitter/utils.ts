@@ -7,7 +7,7 @@ import { generateMerkleTree } from '@zk-kit/protocols'
 import type { Proof, ProofType } from 'zkitter-js'
 import { getFromLocalStorage, saveToLocalStorage } from '../../utils'
 import { GroupAdapter } from './group-adapter'
-import {RELAYER_URL} from "../../constants";
+import { RELAYER_URL } from '../../constants'
 
 export const prover: Prover = {
 	verifyProof: async (
