@@ -37,7 +37,6 @@ import {
 	where,
 } from 'firebase/firestore'
 import { get } from 'svelte/store'
-import {randomId} from "../in-memory-and-ipfs/utils";
 import { subscribeAccountChanged, subscribeChainChanged } from '../utils'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -517,7 +516,6 @@ export class Firebase implements Adapter {
 			timestamp: Date.now(),
 			text,
 			address,
-			messageId: randomId(),
 		}
 
 		const chatDoc = doc(db, `chats/${chatId}`)

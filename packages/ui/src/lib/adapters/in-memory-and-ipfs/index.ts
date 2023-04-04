@@ -500,7 +500,6 @@ export class InMemoryAndIPFS implements Adapter {
 					timestamp: Date.now(),
 					text,
 					address,
-					messageId: randomId(),
 				})
 				state.chats.set(chatId, chat)
 				resolve()
@@ -523,7 +522,6 @@ export class InMemoryAndIPFS implements Adapter {
 						timestamp: Date.now(),
 						text: randomText(randomIntegerBetween(1, 5)),
 						address: randomId(),
-						messageId: randomId(),
 					}
 					chat.messages.push(newMessage)
 					state.chats.set(chatId, chat)
