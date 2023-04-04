@@ -525,7 +525,7 @@ export class Firebase implements Adapter {
 	async queryPersonaJoined(personId: string): Promise<boolean> {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'queryPersonaJoined')
-		return true;
+		return true
 	}
 
 	async joinPersona(personId: string): Promise<void> {

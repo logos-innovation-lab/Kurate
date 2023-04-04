@@ -4,7 +4,7 @@ import { generateMerkleTree } from '@zk-kit/protocols'
 import { providers } from 'ethers'
 import { PROVIDER } from '$lib/constants'
 import type { GenericDBAdapterInterface, GenericGroupAdapter } from 'zkitter-js'
-import {GLOBAL_ANONYMOUS_FEED_ADDRESS} from "../../constants";
+import { GLOBAL_ANONYMOUS_FEED_ADDRESS } from '../../constants'
 
 export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 	db: GenericDBAdapterInterface

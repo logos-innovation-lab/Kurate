@@ -538,7 +538,7 @@ export class InMemoryAndIPFS implements Adapter {
 	async queryPersonaJoined(personId: string): Promise<boolean> {
 		// FIXME: properly implement
 		console.error('NOT IMPLEMENTED', 'subscribeToChat')
-		return true;
+		return true
 	}
 
 	async joinPersona(personId: string): Promise<void> {

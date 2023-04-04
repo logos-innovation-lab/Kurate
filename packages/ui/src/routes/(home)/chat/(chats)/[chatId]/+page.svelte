@@ -15,7 +15,7 @@
 	let unsubscribe: undefined | (() => unknown)
 
 	onMount(async () => {
-		unsubscribe = adapter.subscribeToChat && await adapter.subscribeToChat(chatId)
+		unsubscribe = adapter.subscribeToChat && (await adapter.subscribeToChat(chatId))
 	})
 
 	onDestroy(() => {

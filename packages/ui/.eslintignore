@@ -6,9 +6,11 @@ node_modules
 .env
 .env.*
 !.env.example
+/dist
 
 # Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
 src/lib/protos/*.ts
+src/lib/assets/typechain/*

@@ -130,12 +130,7 @@
 						on:click={() => goto(ROUTES.POST_NEW(groupId))}
 					/>
 				{:else}
-					<Button
-						variant="primary"
-						label="Join Persona"
-						icon={Edit}
-						on:click={joinPersona}
-					/>
+					<Button variant="primary" label="Join Persona" icon={Edit} on:click={joinPersona} />
 				{/if}
 			{:else}
 				<Button

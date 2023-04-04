@@ -1,15 +1,15 @@
-import {connectWallet, getGlobalAnonymousFeed, getProvider} from '$lib/services'
-import {type Chat, chats} from '$lib/stores/chat'
-import {type DraftPersona, personas} from '$lib/stores/persona'
-import {get} from 'svelte/store'
-import {profile} from '$lib/stores/profile'
-import {saveToLocalStorage} from '$lib/utils'
-import type {Adapter} from '..'
-import {GroupAdapter} from './group-adapter'
-import type {Signer} from 'ethers'
-import {create} from 'ipfs-http-client'
-import {createIdentity, generateRLNProofForNewPersona, prover, rlnVkey} from './utils'
-import {posts} from '$lib/stores/post'
+import { connectWallet, getGlobalAnonymousFeed, getProvider } from '$lib/services'
+import { type Chat, chats } from '$lib/stores/chat'
+import { type DraftPersona, personas } from '$lib/stores/persona'
+import { get } from 'svelte/store'
+import { profile } from '$lib/stores/profile'
+import { saveToLocalStorage } from '$lib/utils'
+import type { Adapter } from '..'
+import { GroupAdapter } from './group-adapter'
+import type { Signer } from 'ethers'
+import { create } from 'ipfs-http-client'
+import { createIdentity, generateRLNProofForNewPersona, prover, rlnVkey } from './utils'
+import { posts } from '$lib/stores/post'
 import type {
 	GenericDBAdapterInterface,
 	PostMeta,
@@ -17,16 +17,16 @@ import type {
 	Message,
 	Post as ZkitterPost,
 	Chat as ZKitterChat,
-	Proof
+	Proof,
 } from 'zkitter-js'
-import type {Persona} from '../../stores/persona'
-import {UserState} from '@unirep/core'
-import type {ZkIdentity as UnirepIdentity} from '@unirep/utils'
-import type {ZkIdentity} from '@zk-kit/identity'
-import type {GlobalAnonymousFeed} from "../../assets/typechain";
-import {getFromLocalStorage} from "../../utils";
-import type {ReputationProof, UserStateTransitionProof} from "@unirep/circuits";
-import {GLOBAL_ANONYMOUS_FEED_ADDRESS} from "../../constants";
+import type { Persona } from '../../stores/persona'
+import { UserState } from '@unirep/core'
+import type { ZkIdentity as UnirepIdentity } from '@unirep/utils'
+import type { ZkIdentity } from '@zk-kit/identity'
+import type { GlobalAnonymousFeed } from '../../assets/typechain'
+import { getFromLocalStorage } from '../../utils'
+import type { ReputationProof, UserStateTransitionProof } from '@unirep/circuits'
+import { GLOBAL_ANONYMOUS_FEED_ADDRESS } from '../../constants'
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -66,19 +66,25 @@ export class ZkitterAdapter implements Adapter {
 				const post = msg as ZkitterPost
 				const hash = post.hash()
 				const hashOx = '0x' + hash
-				const [protocol, contractAddress, personaId] = ((proof.type === 'rln' && proof.groupId) || '').split('_')
+				const [protocol, contractAddress, personaId] = (
+					(proof.type === 'rln' && proof.groupId) ||
+					''
+				).split('_')
 
 				if (protocol !== 'kurate' && contractAddress !== GLOBAL_ANONYMOUS_FEED_ADDRESS) return
 
 				if (await contract.publishedMessage(hashOx)) {
 					console.log('insert post')
-					posts.addApproved({
-						postId: hash,
-						timestamp: post.createdAt.getTime(),
-						text: post.payload.content,
-						images: post.payload.attachment ? [post.payload.attachment] : [],
-					}, personaId)
-					return;
+					posts.addApproved(
+						{
+							postId: hash,
+							timestamp: post.createdAt.getTime(),
+							text: post.payload.content,
+							images: post.payload.attachment ? [post.payload.attachment] : [],
+						},
+						personaId,
+					)
+					return
 				}
 
 				const proposedMessage = await contract.proposedMessageByEpoch(
@@ -93,7 +99,7 @@ export class ZkitterAdapter implements Adapter {
 							postId: hash,
 							text: post.payload.content,
 							timestamp: post.createdAt.getTime(),
-							images: post.payload.attachment ? [post.payload.attachment]: [],
+							images: post.payload.attachment ? [post.payload.attachment] : [],
 						},
 						personaId,
 					)
@@ -101,19 +107,21 @@ export class ZkitterAdapter implements Adapter {
 			}
 
 			if (msg.type === 'CHAT') {
-				const {generateECDHKeyPairFromZKIdentity, deriveSharedSecret, decrypt, deriveChatId} = await import('zkitter-js')
+				const { generateECDHKeyPairFromZKIdentity, deriveSharedSecret, decrypt, deriveChatId } =
+					await import('zkitter-js')
 
 				const chat = msg as ZKitterChat
 
-				const {zkIdentity} = this.identity!
+				const { zkIdentity } = this.identity!
 				const postId = chat.payload.senderSeed
 				const msgProof = await this.zkitter!.getProof(postId)
 
-				if (msgProof?.type !== 'rln' || !msgProof.ecdh) throw new Error('invalid proof from chat id');
+				if (msgProof?.type !== 'rln' || !msgProof.ecdh)
+					throw new Error('invalid proof from chat id')
 
-				const {pub, priv} = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
-				const {ecdh: receiverECDH} = msgProof;
-				const sharedKey = await deriveSharedSecret(receiverECDH, priv);
+				const { pub, priv } = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
+				const { ecdh: receiverECDH } = msgProof
+				const sharedKey = await deriveSharedSecret(receiverECDH, priv)
 				const chatId = await deriveChatId(receiverECDH, pub)
 
 				chat.payload.content = decrypt(chat.payload.encryptedContent, sharedKey)
@@ -144,7 +152,9 @@ export class ZkitterAdapter implements Adapter {
 	private async syncChats() {
 		if (!this.identity) return
 
-		const chatMetas = await this.zkitter!.getChatByUser('0x' + this.identity.zkIdentity.genIdentityCommitment().toString(16))
+		const chatMetas = await this.zkitter!.getChatByUser(
+			'0x' + this.identity.zkIdentity.genIdentityCommitment().toString(16),
+		)
 
 		for (let i = 0; i < chatMetas.length; i++) {
 			const meta = chatMetas[i]
@@ -173,34 +183,42 @@ export class ZkitterAdapter implements Adapter {
 					})
 				}
 			}
-
 		}
 	}
 	private async syncActivePost(personaId: string) {
 		const contract = getGlobalAnonymousFeed()
-		const activePosts = await contract.queryFilter(contract.filters.NewPersonaMessage(personaId));
+		const activePosts = await contract.queryFilter(contract.filters.NewPersonaMessage(personaId))
 
 		for (let i = 0; i < activePosts.length; i++) {
-			const {args: {messageHash}} = activePosts[i]
+			const {
+				args: { messageHash },
+			} = activePosts[i]
 			const post = await this.getPostByHash(messageHash)
 
 			if (post) {
-				posts.addApproved({
-					postId: post.hash(),
-					timestamp: post.createdAt.getTime(),
-					text: post.payload.content,
-					images: post.payload.attachment ? [post.payload.attachment] : [],
-				}, personaId)
+				posts.addApproved(
+					{
+						postId: post.hash(),
+						timestamp: post.createdAt.getTime(),
+						text: post.payload.content,
+						images: post.payload.attachment ? [post.payload.attachment] : [],
+					},
+					personaId,
+				)
 			}
 		}
 	}
 	private async syncPendingPost(personaId: string) {
 		const contract = getGlobalAnonymousFeed()
-		const currentEpoch = await contract.attesterCurrentEpoch();
-		const proposedPosts = await contract.queryFilter(contract.filters["NewProposedMessage(uint256,uint256,bytes32)"](personaId, currentEpoch));
+		const currentEpoch = await contract.attesterCurrentEpoch()
+		const proposedPosts = await contract.queryFilter(
+			contract.filters['NewProposedMessage(uint256,uint256,bytes32)'](personaId, currentEpoch),
+		)
 
 		for (let i = 0; i < proposedPosts.length; i++) {
-			const {args: {messageHash}} = proposedPosts[i]
+			const {
+				args: { messageHash },
+			} = proposedPosts[i]
 			const post = await this.getPostByHash(messageHash)
 
 			if (post) {
@@ -209,7 +227,7 @@ export class ZkitterAdapter implements Adapter {
 						postId: post.hash(),
 						text: post.payload.content,
 						timestamp: post.createdAt.getTime(),
-						images: post.payload.attachment ? [post.payload.attachment]: [],
+						images: post.payload.attachment ? [post.payload.attachment] : [],
 					},
 					personaId,
 				)
@@ -218,8 +236,11 @@ export class ZkitterAdapter implements Adapter {
 	}
 	private async syncPersonasFromContract(contract: GlobalAnonymousFeed) {
 		if (this.timeout) clearTimeout(this.timeout)
-		await this.queryPersonasFromContract(contract);
-		this.timeout = setTimeout(() => this.syncPersonasFromContract(contract), this.contractSyncInterval)
+		await this.queryPersonasFromContract(contract)
+		this.timeout = setTimeout(
+			() => this.syncPersonasFromContract(contract),
+			this.contractSyncInterval,
+		)
 	}
 	private async queryPersonasFromContract(contract: GlobalAnonymousFeed) {
 		if (!this.zkitter) throw new Error('zkitter is not initialized')
@@ -229,7 +250,7 @@ export class ZkitterAdapter implements Adapter {
 		const groupIds: string[] = []
 
 		for (let i = 0; i < numOfPersonas; i++) {
-			const personaId = '' + i;
+			const personaId = '' + i
 
 			if (!personaStore.all.has(personaId)) {
 				const group = new GroupAdapter({
@@ -246,14 +267,14 @@ export class ZkitterAdapter implements Adapter {
 			}
 		}
 
-		personas.update(state => ({ ...state, loading: false }))
+		personas.update((state) => ({ ...state, loading: false }))
 	}
 
 	private async syncPersonaData(contract: GlobalAnonymousFeed) {
 		const numOfPersonas = (await contract.numOfPersonas()).toNumber()
 
 		for (let i = 0; i < numOfPersonas; i++) {
-			const personaId = '' + i;
+			const personaId = '' + i
 
 			const personaData = await contract.personas(i)
 
@@ -274,9 +295,9 @@ export class ZkitterAdapter implements Adapter {
 				timestamp: Date.now(),
 			}
 
-			personas.update(state => {
-				state.all.set(personaId, persona);
-				return { ...state };
+			personas.update((state) => {
+				state.all.set(personaId, persona)
+				return { ...state }
 			})
 		}
 	}
@@ -284,7 +305,7 @@ export class ZkitterAdapter implements Adapter {
 	async queryPersonaJoined(personaId: string): Promise<boolean> {
 		const identityCommitment = this.identity?.unirepIdentity.genIdentityCommitment()
 
-		if (!identityCommitment) return false;
+		if (!identityCommitment) return false
 
 		const members = await this.zkitter!.getGroupMembers(GroupAdapter.createGroupId(personaId))
 
@@ -301,10 +322,9 @@ export class ZkitterAdapter implements Adapter {
 		const favorite = getFromLocalStorage<string[]>('favorite', [])
 
 		if (favorite.length) {
-			// @ts-ignore
-			await this.zkitter!.updateFilter({ group: favorite.map(GroupAdapter.createGroupId) })
+			await this.zkitter!.updateFilter({ group: favorite.map(GroupAdapter.createGroupId) } as never)
 
-			personas.update(store => {
+			personas.update((store) => {
 				return {
 					...store,
 					favorite,
@@ -409,7 +429,7 @@ export class ZkitterAdapter implements Adapter {
 		await this.zkitter!.services.pubsub.publish(
 			pitch,
 			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
-			true
+			true,
 		)
 
 		const description = new Post({
@@ -420,8 +440,12 @@ export class ZkitterAdapter implements Adapter {
 
 		await this.zkitter!.services.pubsub.publish(
 			description,
-			await generateRLNProofForNewPersona(description.hash(), this.identity.zkIdentity, newPersonaId),
-			true
+			await generateRLNProofForNewPersona(
+				description.hash(),
+				this.identity.zkIdentity,
+				newPersonaId,
+			),
+			true,
 		)
 
 		const seedPostHashes: string[] = []
@@ -440,7 +464,7 @@ export class ZkitterAdapter implements Adapter {
 			await this.zkitter!.services.pubsub.publish(
 				post,
 				await generateRLNProofForNewPersona(post.hash(), this.identity.zkIdentity, newPersonaId),
-				true
+				true,
 			)
 		}
 
@@ -453,7 +477,7 @@ export class ZkitterAdapter implements Adapter {
 		const resp = await fetch(`http://localhost:3000/create-and-join-with-rep`, {
 			method: 'post',
 			headers: {
-				'content-type': 'application/json'
+				'content-type': 'application/json',
 			},
 			body: JSON.stringify({
 				name: draftPersona.name,
@@ -466,7 +490,7 @@ export class ZkitterAdapter implements Adapter {
 				repProof: repProof.proof,
 				signupSignals: signupProof.publicSignals,
 				signupProof: signupProof.proof,
-			})
+			}),
 		})
 
 		// @dev to create without rep
@@ -527,13 +551,13 @@ export class ZkitterAdapter implements Adapter {
 		const resp = await fetch(`http://localhost:3000/join-persona`, {
 			method: 'post',
 			headers: {
-				'content-type': 'application/json'
+				'content-type': 'application/json',
 			},
 			body: JSON.stringify({
 				personaId: Number(personaId),
 				signupSignals: signupProof.publicSignals,
 				signupProof: signupProof.proof,
-			})
+			}),
 		})
 
 		const json = await resp.json()
@@ -599,13 +623,15 @@ export class ZkitterAdapter implements Adapter {
 	}
 
 	getEpoch(): string[] {
-		const timeNow = new Date();
-		timeNow.setHours(Math.floor(timeNow.getHours() / 8) * 8);
-		timeNow.setMilliseconds(0);
-		timeNow.setSeconds(0);
-		timeNow.setMinutes(0);
-		const baseEpoch = timeNow.getTime();
-		return Array(10).fill(0).map((_, i) => String(baseEpoch + i * (28800000/10)))
+		const timeNow = new Date()
+		timeNow.setHours(Math.floor(timeNow.getHours() / 8) * 8)
+		timeNow.setMilliseconds(0)
+		timeNow.setSeconds(0)
+		timeNow.setMinutes(0)
+		const baseEpoch = timeNow.getTime()
+		return Array(10)
+			.fill(0)
+			.map((_, i) => String(baseEpoch + i * (28800000 / 10)))
 	}
 
 	async publishPost(
@@ -614,7 +640,7 @@ export class ZkitterAdapter implements Adapter {
 		images: string[],
 		signer: Signer,
 	): Promise<string> {
-		const {Post, MessageType, PostMessageSubType} = await import('zkitter-js')
+		const { Post, MessageType, PostMessageSubType } = await import('zkitter-js')
 		// const {Registry, RLN} = await import('rlnjs')
 
 		const post = new Post({
@@ -663,7 +689,6 @@ export class ZkitterAdapter implements Adapter {
 		// }
 		// console.log(goTokens)
 
-
 		await this.zkitter!.services.pubsub.publish(post, proof)
 
 		const repProof = await this.genRepProof(getGlobalAnonymousFeed(), 5)
@@ -671,7 +696,7 @@ export class ZkitterAdapter implements Adapter {
 		const resp = await fetch(`http://localhost:3000/propose-message-with-rep`, {
 			method: 'post',
 			headers: {
-				'content-type': 'application/json'
+				'content-type': 'application/json',
 			},
 			body: JSON.stringify({
 				personaId: Number(personaId),
@@ -680,8 +705,8 @@ export class ZkitterAdapter implements Adapter {
 				repProof: {
 					publicSignals: repProof.publicSignals,
 					proof: repProof.proof,
-				}
-			})
+				},
+			}),
 		})
 
 		// @dev this is to create without rep
@@ -705,12 +730,15 @@ export class ZkitterAdapter implements Adapter {
 
 		const hash = post.hash()
 
-		posts.addPending({
-			postId: post.hash(),
-			text,
-			images,
-			timestamp: post.createdAt.getTime(),
-		}, personaId)
+		posts.addPending(
+			{
+				postId: post.hash(),
+				text,
+				images,
+				timestamp: post.createdAt.getTime(),
+			},
+			personaId,
+		)
 
 		return hash
 	}
@@ -720,8 +748,7 @@ export class ZkitterAdapter implements Adapter {
 		await this.zkitter!.syncGroup(groupId)
 		await this.syncActivePost(personaId)
 		await this.syncPendingPost(personaId)
-		// @ts-ignore
-		return this.zkitter!.updateFilter({ group: [groupId]})
+		return this.zkitter!.updateFilter({ group: [groupId] } as never)
 	}
 
 	private async waitForTx(txHash: string): Promise<number> {
@@ -730,7 +757,7 @@ export class ZkitterAdapter implements Adapter {
 
 		if (tx?.blockNumber) return tx.blockNumber
 
-		await new Promise(r => setTimeout(r, 3000))
+		await new Promise((r) => setTimeout(r, 3000))
 
 		return this.waitForTx(txHash)
 	}
@@ -739,12 +766,12 @@ export class ZkitterAdapter implements Adapter {
 		const resp = await fetch(`http://localhost:3000/user-state-transition`, {
 			method: 'post',
 			headers: {
-				'content-type': 'application/json'
+				'content-type': 'application/json',
 			},
 			body: JSON.stringify({
 				publicSignals: ustProof.publicSignals,
 				proof: ustProof.proof,
-			})
+			}),
 		})
 
 		const json = await resp.json()
@@ -755,7 +782,10 @@ export class ZkitterAdapter implements Adapter {
 		return json.transaction as string
 	}
 
-	private async genRepProof(contract: GlobalAnonymousFeed, minRep?: number): Promise<ReputationProof> {
+	private async genRepProof(
+		contract: GlobalAnonymousFeed,
+		minRep?: number,
+	): Promise<ReputationProof> {
 		const state = new UserState(
 			{
 				prover: prover, // a circuit prover
@@ -779,30 +809,25 @@ export class ZkitterAdapter implements Adapter {
 			await state.waitForSync(blockNumber)
 		}
 
-		return state.genProveReputationProof({minRep})
+		return state.genProveReputationProof({ minRep })
 	}
 
-	async voteOnPost(
-		groupId: string,
-		postId: string,
-		vote: '+' | '-',
-		signer: Signer,
-	) {
+	async voteOnPost(groupId: string, postId: string, vote: '+' | '-', signer: Signer) {
 		const contract = getGlobalAnonymousFeed(signer)
 
-		const {proof, publicSignals} = await this.genRepProof(contract)
+		const { proof, publicSignals } = await this.genRepProof(contract)
 
 		const resp = await fetch(`http://localhost:3000/vote-on-post`, {
 			method: 'post',
 			headers: {
-				'content-type': 'application/json'
+				'content-type': 'application/json',
 			},
 			body: JSON.stringify({
 				postId: '0x' + postId,
 				isUpvote: vote === '+',
 				publicSignals,
 				proof,
-			})
+			}),
 		})
 
 		const json = await resp.json()
@@ -823,14 +848,14 @@ export class ZkitterAdapter implements Adapter {
 	}
 
 	async startChat(chat: Chat): Promise<string> {
-		const {zkIdentity} = this.identity!
+		const { zkIdentity } = this.identity!
 		const msgProof = await this.zkitter!.getProof(chat.post.postId)
 
-		if (msgProof?.type !== 'rln' || !msgProof.ecdh) throw new Error('invalid proof');
+		if (msgProof?.type !== 'rln' || !msgProof.ecdh) throw new Error('invalid proof')
 
-		const {generateECDHKeyPairFromZKIdentity, deriveChatId} = await import('zkitter-js')
-		const {pub} = await generateECDHKeyPairFromZKIdentity(zkIdentity, chat.post.postId)
-		const {ecdh: receiverECDH} = msgProof;
+		const { generateECDHKeyPairFromZKIdentity, deriveChatId } = await import('zkitter-js')
+		const { pub } = await generateECDHKeyPairFromZKIdentity(zkIdentity, chat.post.postId)
+		const { ecdh: receiverECDH } = msgProof
 		const chatId = await deriveChatId(receiverECDH, pub)
 
 		chats.update((state) => {
@@ -842,11 +867,10 @@ export class ZkitterAdapter implements Adapter {
 		})
 
 		return chatId
-
 	}
 
 	async publishZkitterMessage(message: Message) {
-		const {zkIdentity} = this.identity!
+		const { zkIdentity } = this.identity!
 		const proof = await this.zkitter!.createProof({
 			hash: message.hash(),
 			zkIdentity: this.identity!.zkIdentity,
@@ -857,15 +881,15 @@ export class ZkitterAdapter implements Adapter {
 		if (proof.ecdh) {
 			await this.zkitter!.db.saveChatECDH(
 				'0x' + zkIdentity.genIdentityCommitment().toString(16),
-				proof.ecdh
-			);
+				proof.ecdh,
+			)
 		}
 
 		if (message.type === 'CHAT') {
 			await this.zkitter!.db.saveChatECDH(
 				'0x' + zkIdentity.genIdentityCommitment().toString(16),
 				(message as ZKitterChat).payload.senderECDH,
-			);
+			)
 		}
 
 		const data = await this.zkitter!.publish(message, proof)
@@ -874,15 +898,24 @@ export class ZkitterAdapter implements Adapter {
 	async sendChatMessage(chatId: string, text: string): Promise<void> {
 		const chatStore = get(chats)
 		const chatData = chatStore.chats.get(chatId)
-		const {post: {postId}} = chatData!
-		const {zkIdentity} = this.identity!
+		const {
+			post: { postId },
+		} = chatData!
+		const { zkIdentity } = this.identity!
 		const msgProof = await this.zkitter!.getProof(postId)
 
-		if (msgProof?.type !== 'rln' || !msgProof.ecdh) return;
+		if (msgProof?.type !== 'rln' || !msgProof.ecdh) return
 
-		const {Chat, MessageType, ChatMessageSubType, generateECDHKeyPairFromZKIdentity, deriveSharedSecret, encrypt} = await import('zkitter-js')
-		const {pub, priv} = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
-		const {ecdh: receiverECDH} = msgProof;
+		const {
+			Chat,
+			MessageType,
+			ChatMessageSubType,
+			generateECDHKeyPairFromZKIdentity,
+			deriveSharedSecret,
+			encrypt,
+		} = await import('zkitter-js')
+		const { pub, priv } = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
+		const { ecdh: receiverECDH } = msgProof
 		const sharedKey = await deriveSharedSecret(receiverECDH, priv)
 		const encryptedContent = encrypt(text, sharedKey)
 
@@ -894,7 +927,7 @@ export class ZkitterAdapter implements Adapter {
 				receiverECDH,
 				senderECDH: pub,
 				senderSeed: postId,
-			}
+			},
 		})
 
 		await this.publishZkitterMessage(chat)
@@ -913,25 +946,30 @@ export class ZkitterAdapter implements Adapter {
 	async subscribeToChat(chatId: string): Promise<() => unknown> {
 		const chatStore = get(chats)
 		const chatData = chatStore.chats.get(chatId)
-		const {post: {postId}} = chatData!
+		const {
+			post: { postId },
+		} = chatData!
 
-		const {zkIdentity} = this.identity!
+		const { zkIdentity } = this.identity!
 		const msgProof = await this.zkitter!.getProof(postId)
 
-		if (msgProof?.type !== 'rln' || !msgProof.ecdh) throw new Error('invalid proof from chat id');
+		if (msgProof?.type !== 'rln' || !msgProof.ecdh) throw new Error('invalid proof from chat id')
 
-		const {generateECDHKeyPairFromZKIdentity} = await import('zkitter-js')
-		const {pub, priv} = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
-		const {ecdh: receiverECDH} = msgProof;
+		const { generateECDHKeyPairFromZKIdentity } = await import('zkitter-js')
+		const { pub, priv } = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
+		const { ecdh: receiverECDH } = msgProof
 
-		const chatMsgs = await this.zkitter!.getChatMessages(chatId, undefined, undefined, { type: 'zk', zkIdentity, groupId: '' })
+		const chatMsgs = await this.zkitter!.getChatMessages(chatId, undefined, undefined, {
+			type: 'zk',
+			zkIdentity,
+			groupId: '',
+		})
 
 		for (let i = 0; i < chatMsgs.length; i++) {
 			await this.insertChat(chatMsgs[i], chatId)
 		}
 
-		// @ts-ignore
-		return this.zkitter!.updateFilter({ ecdh: [pub, receiverECDH] })
+		return this.zkitter!.updateFilter({ ecdh: [pub, receiverECDH] } as never)
 	}
 
 	private insertChat(chat: ZKitterChat, chatId: string) {
@@ -943,7 +981,8 @@ export class ZkitterAdapter implements Adapter {
 			if (!chatStore.messages.find(({ messageId }) => messageId === chatHash)) {
 				chatStore.messages.push({
 					timestamp: chat.createdAt.getTime(),
-					text: typeof chat.payload.content === 'undefined' ? 'encryption error' : chat.payload.content,
+					text:
+						typeof chat.payload.content === 'undefined' ? 'encryption error' : chat.payload.content,
 					address: chat.payload.senderECDH,
 					messageId: chatHash,
 				})
