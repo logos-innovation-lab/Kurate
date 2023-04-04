@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "npm run build:ts && tsc -p test/tsconfig.json && tap --ts \"test/**/*.test.ts\"",
-    "start": "npm run build:ts && fastify start -l info dist/app.js",
+    "start": "fastify start -l info dist/app.js",
+    "start:build": "npm run build:ts && pnpm run start",
+    "build": "pnpm run typechain && pnpm run build:ts",
     "build:ts": "tsc && pnpm run copy-assets",
     "watch:ts": "tsc -w && pnpm run copy-assets",
     "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
