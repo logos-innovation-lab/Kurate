@@ -145,7 +145,7 @@ const getBodySchemaWithRep = () => {
   } as const;
 };
 
-const createJoinBodySchemaWithRep = () => {
+const createJoinBodySchemaWithoutRep = () => {
   return {
     type: "object",
     additionalProperties: false,
@@ -169,6 +169,59 @@ const createJoinBodySchemaWithRep = () => {
         type: "array",
         uniqueItems: true,
         items: { type: "string" },
+      },
+      signupSignals: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 8,
+        // maxContains: 8,
+      },
+      signupProof: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 1,
+      },
+    },
+  } as const;
+};
+
+const createJoinBodySchemaWithRep = () => {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "name",
+      "picture",
+      "cover",
+      "pitch",
+      "description",
+      "seedPostHashes",
+      "repSignals",
+      "repProof",
+      "signupProof",
+      "signupSignals"
+    ],
+    properties: {
+      name: { type: "string" },
+      picture: { type: "string" },
+      cover: { type: "string" },
+      pitch: { type: "string" },
+      description: { type: "string" },
+      seedPostHashes: {
+        type: "array",
+        uniqueItems: true,
+        items: { type: "string" },
+      },
+      repSignals: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 8,
+        // maxContains: 8,
+      },
+      repProof: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 1,
       },
       signupSignals: {
         type: "array",
@@ -404,7 +457,7 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
 
   fastify.post(
     "/create-and-join-without-rep",
-    { schema: { response, body: createJoinBodySchemaWithRep() } as const },
+    { schema: { response, body: createJoinBodySchemaWithoutRep() } as const },
     async function ({ body }: {body: any}) {
       // Post data on-chain
       const tx = await feed['createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8])'](
@@ -414,6 +467,30 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
         body.pitch,
         body.description,
         body.seedPostHashes,
+        body.signupSignals,
+        body.signupProof,
+        { gasLimit: 6721974 },
+      )
+
+      // Return transaction hash
+      return { transaction: tx.hash };
+    }
+  );
+
+  fastify.post(
+    "/create-and-join-with-rep",
+    { schema: { response, body: createJoinBodySchemaWithRep() } as const },
+    async function ({ body }: {body: any}) {
+      // Post data on-chain
+      const tx = await feed["createAndJoinPersona(string,string,string,bytes32,bytes32,bytes32[5],uint256[],uint256[8],uint256[],uint256[8])"](
+        body.name,
+        body.picture,
+        body.cover,
+        body.pitch,
+        body.description,
+        body.seedPostHashes,
+        body.repSignals,
+        body.repProof,
         body.signupSignals,
         body.signupProof,
         { gasLimit: 6721974 },
