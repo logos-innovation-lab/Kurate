@@ -14,7 +14,6 @@ export interface DraftChat {
 	post: Post
 	messages: Message[]
 	closed?: boolean
-	chatId?: string
 }
 
 export interface Chat extends DraftChat {

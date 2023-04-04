@@ -7,18 +7,20 @@ export interface DraftPost {
 }
 
 export interface Post extends DraftPost {
-	yourVote?: '+' | '-'
-	myPost?: boolean
 	postId: string
-	address?: string // FIXME: only needed for firebase, might want to remove
+	myPost?: boolean
+}
+
+export interface PostPending extends Post {
+	yourVote?: '+' | '-'
 }
 
 interface PostData {
-	data: Map<string, { approved: Post[]; pending: Post[]; loading: boolean }>
+	data: Map<string, { approved: Post[]; pending: PostPending[]; loading: boolean }>
 }
 
 export interface PostStore extends Writable<PostData> {
-	addPending: (post: Post, groupId: string) => void
+	addPending: (post: PostPending, groupId: string) => void
 	addApproved: (post: Post, groupId: string) => void
 }
 
@@ -27,7 +29,7 @@ function createPostStore(): PostStore {
 
 	return {
 		...store,
-		addPending: (post: Post, groupId: string) => {
+		addPending: (post: PostPending, groupId: string) => {
 			store.update(({ data }) => {
 				const personaPostData = data.get(groupId)
 

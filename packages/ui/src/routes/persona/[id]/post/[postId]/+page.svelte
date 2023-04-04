@@ -85,7 +85,7 @@
 				on:click={adapter.signIn}
 				disabled={!canConnectWallet()}
 			/>
-		{:else if $profile.signer !== undefined && $profile.address !== post.address}
+		{:else if $profile.signer !== undefined && !post.myPost}
 			<Button variant="primary" label="Chat with poster" icon={ChatBot} on:click={startChat} />
 		{/if}
 	</div>

@@ -12,17 +12,9 @@ import {
 	VOTE_GO_PRICE,
 } from '$lib/constants'
 import { tokens } from '$lib/stores/tokens'
-import { posts, type Post } from '$lib/stores/post'
+import { posts, type Post, type PostPending } from '$lib/stores/post'
 import { transaction, type TransactionRecord } from '$lib/stores/transaction'
-
 import type { Adapter } from '..'
-
-// FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
-const IPFS_AUTH =
-	'Basic Mk5Nbk1vZUNSTWMyOTlCQjYzWm9QZzlQYTU3OjAwZTk2MmJjZTBkZmQxZWQxNGNhNmY1M2JiYjYxMTli'
-const IPFS_GATEWAY = 'https://kurate.infura-ipfs.io/ipfs'
-
-// Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
 import {
 	getFirestore,
@@ -38,8 +30,19 @@ import {
 } from 'firebase/firestore'
 import { get } from 'svelte/store'
 import { subscribeAccountChanged, subscribeChainChanged } from '../utils'
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import {
+	chatFromDB,
+	chatToDB,
+	personaFromDB,
+	personaToDB,
+	postFromDB,
+	postPendingFromDB,
+} from './db-adapter'
+
+// FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
+const IPFS_AUTH =
+	'Basic Mk5Nbk1vZUNSTWMyOTlCQjYzWm9QZzlQYTU3OjAwZTk2MmJjZTBkZmQxZWQxNGNhNmY1M2JiYjYxMTli'
+const IPFS_GATEWAY = 'https://kurate.infura-ipfs.io/ipfs'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -82,6 +85,8 @@ export class Firebase implements Adapter {
 	private subscriptions: Array<() => unknown> = []
 	private userSubscriptions: Array<() => unknown> = []
 	private votes = new Map<string, { promote: string[]; demote: string[] }>()
+	private participants = new Map<string, string[]>()
+	private postIdParticipant = new Map<string, string>()
 
 	async start() {
 		const personasQuery = query(collection(db, 'personas'))
@@ -89,10 +94,10 @@ export class Firebase implements Adapter {
 			personas.update((state) => {
 				const all = new Map<string, Persona>()
 				data.docs.forEach((e) => {
-					const persona = e.data()
-					persona.participantsCount = persona.participants?.length
-					persona.personaId = e.id
-					all.set(e.id, persona as Persona)
+					const dbPersona = e.data() as DBPersona
+					const persona = personaFromDB(dbPersona, e.id)
+					this.participants.set(e.id, dbPersona.participants)
+					all.set(e.id, persona)
 				})
 
 				return { ...state, all, loading: false }
@@ -118,7 +123,8 @@ export class Firebase implements Adapter {
 				const subscribeTransactions = onSnapshot(transactionSnapshot, (res) => {
 					const trns: TransactionRecord[] = []
 					res.docs.forEach((d) => {
-						trns.push(d.data() as TransactionRecord)
+						const transactionsDb = d.data() as DBTransaction
+						trns.push(transactionsDb)
 					})
 					transaction.set({ transactions: trns })
 				})
@@ -132,16 +138,10 @@ export class Firebase implements Adapter {
 					const newChats = new Map<string, Chat>()
 					const personasTemp = get(personas)
 					res.docs.forEach((d) => {
-						const data = d.data()
+						const data = d.data() as DBChat
 						const persona = personasTemp.all.get(data.personaId)
 						if (!persona) return
-						const chat: Chat = {
-							persona,
-							post: data.post,
-							users: data.users,
-							chatId: d.id,
-							messages: data.messages,
-						}
+						const chat = chatFromDB(data, persona, d.id)
 						newChats.set(d.id, chat)
 					})
 					chats.update((state) => ({ ...state, chats: newChats, loading: false }))
@@ -233,29 +233,27 @@ export class Firebase implements Adapter {
 		await signer.signMessage('This "transaction" publishes persona')
 		const address = await signer.getAddress()
 		const personasCollection = collection(db, 'personas')
-		const { posts, ...persona } = draftPersona
-		const personaDoc = await addDoc(personasCollection, {
-			...persona,
-			participants: [address],
-			postsCount: 5,
-			timestamp: Date.now(),
-		})
+		const { posts } = draftPersona
+		const personaDoc = await addDoc(personasCollection, personaToDB(draftPersona, [address]))
+
 		const postCollection = collection(db, `personas/${personaDoc.id}/posts`)
-		posts.forEach((p) =>
-			addDoc(postCollection, {
+		posts.forEach((p) => {
+			const dbPost: DBPost = {
 				...p,
 				address,
-			}),
-		)
+			}
+			addDoc(postCollection, dbPost)
+		})
 
 		const profileCollection = collection(db, `users/${address}/transactions`)
-		await addDoc(profileCollection, {
+		const transaction: DBTransaction = {
 			timestamp: Date.now(),
 			goChange: -CREATE_PERSONA_GO_PRICE,
 			repChange: 0,
 			personaId: personaDoc.id,
 			type: 'publish persona',
-		})
+		}
+		await addDoc(profileCollection, transaction)
 
 		const { go, repTotal, repStaked } = get(tokens)
 		const user = doc(db, `users/${address}`)
@@ -306,9 +304,9 @@ export class Firebase implements Adapter {
 		signer: Signer,
 	): Promise<string> {
 		const address = await signer.getAddress()
-		const isMemberOfGroup = get(personas).all.get(groupId)?.participants?.includes(address)
+		const isMemberOfGroup = this.participants.get(groupId)?.includes(address)
 
-		const post = {
+		const post: DBPostPending = {
 			timestamp: Date.now(),
 			text,
 			images,
@@ -330,13 +328,15 @@ export class Firebase implements Adapter {
 		const postDoc = await addDoc(pendingPosts, post)
 
 		const profileCollection = collection(db, `users/${address}/transactions`)
-		await addDoc(profileCollection, {
+
+		const transaction: DBTransaction = {
 			timestamp: Date.now(),
 			goChange: -NEW_POST_GO_PRICE,
 			repChange: -NEW_POST_REP_PRICE,
 			personaId: groupId,
 			type: 'publish post',
-		})
+		}
+		await addDoc(profileCollection, transaction)
 
 		const { go, repTotal, repStaked } = get(tokens)
 		const user = doc(db, `users/${address}`)
@@ -354,32 +354,14 @@ export class Firebase implements Adapter {
 		const postsCollection = collection(db, `personas/${groupId}/posts`)
 
 		const subscribePending = onSnapshot(pendingCollection, (res) => {
-			const newPending: Post[] = []
+			const newPending: PostPending[] = []
 
 			res.docs.forEach((d) => {
-				interface PendingPost {
-					demote: string[]
-					images: string[]
-					promote: string[]
-					text: string
-					timestamp: number
-					address: string
-				}
-				const { text, images, timestamp, demote, promote, address } = d.data() as PendingPost
-				const loggedUser = get(profile)
-				let yourVote: '+' | '-' | undefined = undefined
-				this.votes.set(d.id, { promote, demote })
-				if (loggedUser.address && promote.includes(loggedUser.address)) yourVote = '+'
-				if (loggedUser.address && demote.includes(loggedUser.address)) yourVote = '-'
-				newPending.push({
-					text,
-					images,
-					timestamp,
-					yourVote,
-					postId: d.id,
-					address,
-					myPost: loggedUser.address === address,
-				})
+				const postDb = d.data() as DBPostPending
+				const { address } = get(profile)
+				this.votes.set(d.id, { promote: postDb.promote, demote: postDb.demote })
+				this.postIdParticipant.set(d.id, postDb.address)
+				newPending.push(postPendingFromDB(postDb, d.id, address))
 			})
 
 			posts.update(({ data }) => {
@@ -407,7 +389,9 @@ export class Firebase implements Adapter {
 						if (vt.promote.includes(address)) yourVote = '+'
 						if (vt.demote.includes(address)) yourVote = '-'
 
-						return { ...p, myPost: p.address === address, yourVote }
+						const postSender = this.postIdParticipant.get(p.postId)
+
+						return { ...p, myPost: postSender === address, yourVote }
 					})
 					data.set(groupId, { ...personaPostData, pending })
 
@@ -420,22 +404,10 @@ export class Firebase implements Adapter {
 			const newPostst: Post[] = []
 
 			res.docs.forEach((d) => {
-				interface DbPost {
-					images: string[]
-					text: string
-					timestamp: number
-					address: string
-				}
-				const { text, images, timestamp, address } = d.data() as DbPost
-				const loggedUser = get(profile)
-				newPostst.push({
-					text,
-					images,
-					timestamp,
-					postId: d.id,
-					address,
-					myPost: address === loggedUser.address,
-				})
+				const postDb = d.data() as DBPost
+				const { address } = get(profile)
+				this.postIdParticipant.set(d.id, postDb.address)
+				newPostst.push(postFromDB(postDb, d.id, address))
 			})
 
 			posts.update(({ data }) => {
@@ -477,34 +449,29 @@ export class Firebase implements Adapter {
 		setDoc(user, { address, go: go - VOTE_GO_PRICE }, { merge: true })
 
 		const profileCollection = collection(db, `users/${address}/transactions`)
-		await addDoc(profileCollection, {
+
+		const transaction: DBTransaction = {
 			timestamp: Date.now(),
 			goChange: -VOTE_GO_PRICE,
 			repChange: 0,
 			type: promoteDemote,
 			personaId: groupId,
-		})
+		}
+
+		await addDoc(profileCollection, transaction)
 	}
 
 	async startChat(chat: DraftChat): Promise<string> {
-		const address = get(profile).address
+		const { address } = get(profile)
+		const postSender = this.postIdParticipant.get(chat.post.postId)
 
 		if (!address) throw new Error('You need to be logged in to start a chat')
-		if (!chat.post.address) throw new Error('Info about original poster is missing')
+		if (!postSender) throw new Error('Info about original poster is missing')
 		if (!chat.post.postId) throw new Error('PostId is missing')
 		if (!chat.persona.personaId) throw new Error('PersonaId is missing')
 
-		const dbChat = {
-			users: [address, chat.post.address],
-			post: {
-				postId: chat.post.postId,
-				address: chat.post.address,
-				images: chat.post.images,
-				timestamp: chat.post.timestamp,
-				text: chat.post.text,
-			} as Post,
-			personaId: chat.persona.personaId,
-		}
+		const dbChat = chatToDB(chat, address, postSender)
+
 		const chatCollection = collection(db, `/chats`)
 		const chatDoc = await addDoc(chatCollection, dbChat)
 

@@ -1,4 +1,3 @@
-import { DEFAULT_GO_AMOUNT } from '$lib/constants'
 import { writable, type Writable } from 'svelte/store'
 
 export interface TokenData {
@@ -15,8 +14,8 @@ export type TokenStore = Writable<TokenData>
 function createTokenStore(): TokenStore {
 	const epochDuration = 8 * 60 * 60 * 1000
 	const store = writable<TokenData>({
-		go: DEFAULT_GO_AMOUNT,
-		repTotal: 55,
+		go: 0,
+		repTotal: 0,
 		repStaked: 0,
 		loading: false,
 		epochDuration,
