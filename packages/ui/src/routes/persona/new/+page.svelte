@@ -166,7 +166,7 @@
 	</PersonaEditText>
 {:else if state === 'add_rep'}
 	<PersonaEditRep
-		minReputation={persona.minReputation}
+		bind:minReputation={persona.minReputation}
 		title="Create Persona"
 		repTotal={$tokens.repTotal}
 		onClose={onLeave}
