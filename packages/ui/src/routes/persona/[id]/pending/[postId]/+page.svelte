@@ -80,10 +80,12 @@
 
 <svelte:window bind:scrollY={y} />
 
-{#if $tokens.go > 0}
+{#if $profile.signer !== undefined && $tokens.go > 0}
 	<Banner icon={Info}>{$tokens.go} GO left in this cycle</Banner>
-{:else}
+{:else if $profile.signer !== undefined}
 	<Banner icon={Info} variant="danger">No GO left in this cycle</Banner>
+{:else}
+	<Banner icon={Info}>Connect to see your GO balance</Banner>
 {/if}
 
 {#if post === undefined}

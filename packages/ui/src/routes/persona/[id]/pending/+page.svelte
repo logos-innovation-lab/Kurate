@@ -147,10 +147,12 @@
 		</svelte:fragment>
 	</InfoScreen>
 {:else}
-	{#if $tokens.go > 0}
+	{#if $profile.signer !== undefined && $tokens.go > 0}
 		<Banner icon={Info}>{$tokens.go} GO left in this cycle</Banner>
-	{:else}
+	{:else if $profile.signer !== undefined}
 		<Banner icon={Info} variant="danger">No GO left in this cycle</Banner>
+	{:else}
+		<Banner icon={Info}>Connect to see your GO balance</Banner>
 	{/if}
 	<Header title={`Pending • ${persona.name}`} onBack={() => goto(ROUTES.PERSONA(groupId))}>
 		{#if $profile.signer !== undefined}
