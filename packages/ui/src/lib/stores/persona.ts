@@ -15,7 +15,6 @@ export interface Persona {
 	postsCount: number
 	minReputation: ReputationOptions
 	timestamp: number
-	participants?: string[] // FIXME: this is only needed for firebase, might want to remove
 }
 
 export interface DraftPersona

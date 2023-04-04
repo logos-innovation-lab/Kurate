@@ -50,7 +50,7 @@
 
 	let avatar = createAvatar(botttsNeutral, {
 		size: 94, // This is 47pt at 2x resolution
-		seed: chat.chatId,
+		seed: (chat as Chat).chatId,
 	}).toDataUriSync()
 
 	$: if (scrollElement) observer.observe(scrollElement)

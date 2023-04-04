@@ -1,13 +1,6 @@
 import { writable, type Writable } from 'svelte/store'
 
-type TransactionType =
-	| 'publish persona'
-	| 'promote'
-	| 'demote'
-	| 'publish post'
-	| 'vote_win'
-	| 'post_included'
-	| 'post_rejected'
+export type TransactionType = 'publish persona' | 'promote' | 'demote' | 'publish post'
 
 export interface TransactionRecord {
 	timestamp: number
