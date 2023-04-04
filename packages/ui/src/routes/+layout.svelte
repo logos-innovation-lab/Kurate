@@ -18,16 +18,3 @@
 </script>
 
 <slot />
-<a class="dev" href="/dev">DEV DASHBOARD</a>
-
-<style>
-	.dev {
-		position: fixed;
-		right: 0;
-		bottom: 0;
-		padding: 5px;
-		background: #000;
-		color: #fff;
-		font-size: 0.9rem;
-	}
-</style>
