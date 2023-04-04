@@ -6,7 +6,7 @@
 	import SortAscending from '$lib/components/icons/sort-ascending.svelte'
 	import SortDescending from '$lib/components/icons/sort-descending.svelte'
 	import Divider from '$lib/components/divider.svelte'
-	import { formatAddress, formatDateAndTime, formatEpoch } from '$lib/utils/format'
+	import { formatDateAndTime, formatEpoch } from '$lib/utils/format'
 	import { canConnectWallet } from '$lib/services'
 	import { profile } from '$lib/stores/profile'
 	import adapter from '$lib/adapters'
@@ -79,7 +79,7 @@
 					{#await $profile.signer.getAddress()}
 						loading...
 					{:then address}
-						{formatAddress(address)}
+						{address}
 					{:catch error}
 						{error.message}
 					{/await}
@@ -245,6 +245,7 @@
 			display: block;
 			padding: var(--spacing-12);
 			font-family: var(--font-mono);
+			word-break: break-all;
 		}
 
 		.connect-info {
