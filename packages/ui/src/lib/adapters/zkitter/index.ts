@@ -26,7 +26,7 @@ import type { ZkIdentity } from '@zk-kit/identity'
 import type { GlobalAnonymousFeed } from '../../assets/typechain'
 import { getFromLocalStorage } from '../../utils'
 import type { ReputationProof, UserStateTransitionProof } from '@unirep/circuits'
-import { GLOBAL_ANONYMOUS_FEED_ADDRESS } from '../../constants'
+import {GLOBAL_ANONYMOUS_FEED_ADDRESS, RELAYER_URL} from '../../constants'
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -474,7 +474,7 @@ export class ZkitterAdapter implements Adapter {
 
 		const signupProof = await state.genUserSignUpProof()
 		const repProof = await this.genRepProof(contract, 10)
-		const resp = await fetch(`http://localhost:3000/create-and-join-with-rep`, {
+		const resp = await fetch(`${RELAYER_URL}/create-and-join-with-rep`, {
 			method: 'post',
 			headers: {
 				'content-type': 'application/json',
@@ -494,7 +494,7 @@ export class ZkitterAdapter implements Adapter {
 		})
 
 		// @dev to create without rep
-		// const resp = await fetch(`http://localhost:3000/create-and-join-without-rep`, {
+		// const resp = await fetch(`${RELAYER_URL}/create-and-join-without-rep`, {
 		// 	method: 'post',
 		// 	headers: {
 		// 		'content-type': 'application/json'
@@ -548,7 +548,7 @@ export class ZkitterAdapter implements Adapter {
 
 		const signupProof = await state.genUserSignUpProof()
 
-		const resp = await fetch(`http://localhost:3000/join-persona`, {
+		const resp = await fetch(`${RELAYER_URL}/join-persona`, {
 			method: 'post',
 			headers: {
 				'content-type': 'application/json',
@@ -669,7 +669,7 @@ export class ZkitterAdapter implements Adapter {
 
 		// const epochs = this.getEpoch()
 		// const merkleProof = rlnRegistry.generateMerkleProof(this.identity!.unirepIdentity.genIdentityCommitment());
-		// const rln = new RLN('http://localhost:3000/rln/rln.wasm', 'http://localhost:3000/rln/rln_final.zkey', rlnVkey)
+		// const rln = new RLN('${RELAYER_URL}/rln/rln.wasm', '${RELAYER_URL}/rln/rln_final.zkey', rlnVkey)
 		// const goTokens: any[] = []
 		// for (let i = 0; i < epochs.length; i++) {
 		// 	console.log(`generating go token ${i}`)
@@ -693,7 +693,7 @@ export class ZkitterAdapter implements Adapter {
 
 		const repProof = await this.genRepProof(getGlobalAnonymousFeed(), 5)
 		console.log(repProof)
-		const resp = await fetch(`http://localhost:3000/propose-message-with-rep`, {
+		const resp = await fetch(`${RELAYER_URL}/propose-message-with-rep`, {
 			method: 'post',
 			headers: {
 				'content-type': 'application/json',
@@ -710,7 +710,7 @@ export class ZkitterAdapter implements Adapter {
 		})
 
 		// @dev this is to create without rep
-		// const resp = await fetch(`http://localhost:3000/propose-message-without-rep`, {
+		// const resp = await fetch(`${RELAYER_URL}/propose-message-without-rep`, {
 		// 	method: 'post',
 		// 	headers: {
 		// 		'content-type': 'application/json'
@@ -763,7 +763,7 @@ export class ZkitterAdapter implements Adapter {
 	}
 
 	private async userStateTransition(ustProof: UserStateTransitionProof): Promise<string> {
-		const resp = await fetch(`http://localhost:3000/user-state-transition`, {
+		const resp = await fetch(`${RELAYER_URL}/user-state-transition`, {
 			method: 'post',
 			headers: {
 				'content-type': 'application/json',
@@ -817,7 +817,7 @@ export class ZkitterAdapter implements Adapter {
 
 		const { proof, publicSignals } = await this.genRepProof(contract)
 
-		const resp = await fetch(`http://localhost:3000/vote-on-post`, {
+		const resp = await fetch(`${RELAYER_URL}/vote-on-post`, {
 			method: 'post',
 			headers: {
 				'content-type': 'application/json',

@@ -7,6 +7,7 @@ import { generateMerkleTree } from '@zk-kit/protocols'
 import type { Proof, ProofType } from 'zkitter-js'
 import { getFromLocalStorage, saveToLocalStorage } from '../../utils'
 import { GroupAdapter } from './group-adapter'
+import {RELAYER_URL} from "../../constants";
 
 export const prover: Prover = {
 	verifyProof: async (
@@ -15,15 +16,15 @@ export const prover: Prover = {
 		proof: SnarkProof,
 	) => {
 		const snarkjs = await import('snarkjs')
-		const url = new URL(`/circuits/${circuitName}.vkey.json`, 'http://localhost:3000')
+		const url = new URL(`/circuits/${circuitName}.vkey.json`, RELAYER_URL)
 		const vkey = await fetch(url.toString()).then((r) => r.json())
 		return snarkjs.groth16.verify(vkey, publicSignals, proof)
 	},
 	genProofAndPublicSignals: async (circuitName: string | Circuit, inputs: unknown) => {
 		const snarkjs = await import('snarkjs')
-		const wasmUrl = new URL(`/circuits/${circuitName}.wasm`, 'http://localhost:3000')
+		const wasmUrl = new URL(`/circuits/${circuitName}.wasm`, RELAYER_URL)
 		const wasm = await fetch(wasmUrl.toString()).then((r) => r.arrayBuffer())
-		const zkeyUrl = new URL(`/circuits/${circuitName}.zkey`, 'http://localhost:3000')
+		const zkeyUrl = new URL(`/circuits/${circuitName}.zkey`, RELAYER_URL)
 		const zkey = await fetch(zkeyUrl.toString()).then((r) => r.arrayBuffer())
 		const { proof, publicSignals } = await snarkjs.groth16.fullProve(
 			inputs,
@@ -33,7 +34,7 @@ export const prover: Prover = {
 		return { proof, publicSignals }
 	},
 	getVKey: async (name: string | Circuit): Promise<string> => {
-		return new URL(`/circuits/${name}.vkey.json`, 'http://localhost:3000').toString()
+		return new URL(`/circuits/${name}.vkey.json`, RELAYER_URL).toString()
 	},
 }
 
