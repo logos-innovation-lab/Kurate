@@ -64,7 +64,6 @@
 		</InfoBox>
 	</Container>
 {:else}
-	<!-- <div class={`header ${y > 0 ? 'scrolled' : ''}`}> -->
 	<Header title={persona.name} {onBack} onlyScrolled>
 		{#if $profile.signer !== undefined}
 			<Button variant="primary" icon={Edit} on:click={() => goto(ROUTES.POST_NEW(groupId))} />
@@ -77,7 +76,6 @@
 			/>
 		{/if}
 	</Header>
-	<!-- </div> -->
 	<PersonaDetail
 		name={persona.name}
 		pitch={persona.pitch}
@@ -183,13 +181,3 @@
 		{/if}
 	</PersonaDetail>
 {/if}
-
-<style lang="scss">
-	.header {
-		display: none;
-
-		&.scrolled {
-			display: block;
-		}
-	}
-</style>
