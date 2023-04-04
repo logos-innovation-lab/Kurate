@@ -223,6 +223,12 @@ export class ZkitterAdapter implements Adapter {
 
 		if (!identityCommitment) return false;
 
+		const members = await this.zkitter!.getGroupMembers(GroupAdapter.createGroupId(personaId))
+
+		if (members.includes('0x' + identityCommitment.toString(16))) {
+			return true
+		}
+
 		const contract = getGlobalAnonymousFeed()
 		return contract.membersByPersona(personaId, identityCommitment)
 	}
@@ -449,7 +455,12 @@ export class ZkitterAdapter implements Adapter {
 
 		const json = await resp.json()
 
-		console.log(json)
+		if (json.error) throw new Error(json.error)
+
+		if (json?.transaction) {
+			await this.waitForTx(json.transaction)
+			await this.zkitter!.syncGroup(GroupAdapter.createGroupId(personaId))
+		}
 	}
 
 	signIn = async (): Promise<void> => {
@@ -572,7 +583,9 @@ export class ZkitterAdapter implements Adapter {
 
 		await this.zkitter!.services.pubsub.publish(post, proof)
 
-		const resp = await fetch(`http://localhost:3000/propose-message-without-rep`, {
+		const repProof = await this.genRepProof(getGlobalAnonymousFeed(), 5)
+		console.log(repProof)
+		const resp = await fetch(`http://localhost:3000/propose-message-with-rep`, {
 			method: 'post',
 			headers: {
 				'content-type': 'application/json'
@@ -581,18 +594,18 @@ export class ZkitterAdapter implements Adapter {
 				personaId: Number(personaId),
 				type: 0,
 				postHash: '0x' + post.hash(),
+				repProof: {
+					publicSignals: repProof.publicSignals,
+					proof: repProof.proof,
+				}
 			})
 		})
 
 		const json = await resp.json()
 
+		if (json.error) throw new Error(json.error)
+
 		console.log(json)
-		// await contract['proposeMessage(uint256,uint8,bytes32)'](
-		// 	Number(personaId),
-		// 	0,
-		// 	'0x' + post.hash(),
-		// 	{ gasLimit: 6721974 },
-		// )
 
 		const hash = post.hash()
 
@@ -614,8 +627,18 @@ export class ZkitterAdapter implements Adapter {
 		return () => null
 	}
 
+	private async waitForTx(txHash: string): Promise<number> {
+		const provider = getProvider()
+		const tx = await provider.getTransaction(txHash)
 
-	private async userStateTransition(ustProof: UserStateTransitionProof): Promise<void> {
+		if (tx?.blockNumber) return tx.blockNumber
+
+		await new Promise(r => setTimeout(r, 3000))
+
+		return this.waitForTx(txHash)
+	}
+
+	private async userStateTransition(ustProof: UserStateTransitionProof): Promise<string> {
 		const resp = await fetch(`http://localhost:3000/user-state-transition`, {
 			method: 'post',
 			headers: {
@@ -629,12 +652,13 @@ export class ZkitterAdapter implements Adapter {
 
 		const json = await resp.json()
 
-		if (json.error) throw new Error(json.error)
+		if (json?.error) throw new Error(json.error)
+		if (!json?.transaction) throw new Error(json)
 
-		console.log(json)
+		return json.transaction as string
 	}
 
-	private async genRepProof(contract: GlobalAnonymousFeed): Promise<ReputationProof> {
+	private async genRepProof(contract: GlobalAnonymousFeed, minRep?: number): Promise<ReputationProof> {
 		const state = new UserState(
 			{
 				prover: prover, // a circuit prover
@@ -651,14 +675,14 @@ export class ZkitterAdapter implements Adapter {
 		const latestTransitionedEpoch = await state.latestTransitionedEpoch()
 		const currentEpoch = (await contract.attesterCurrentEpoch()).toNumber()
 
-		console.log(latestTransitionedEpoch, currentEpoch)
 		if (latestTransitionedEpoch < currentEpoch) {
-			const ust = await state.genUserStateTransitionProof({});
-			await this.userStateTransition(ust);
+			const ust = await state.genUserStateTransitionProof({})
+			const txHash = await this.userStateTransition(ust)
+			const blockNumber = await this.waitForTx(txHash)
+			await state.waitForSync(blockNumber)
 		}
 
-		await state.waitForSync(latestTransitionedEpoch)
-		return state.genProveReputationProof({})
+		return state.genProveReputationProof({minRep})
 	}
 
 	async voteOnPost(
@@ -688,17 +712,17 @@ export class ZkitterAdapter implements Adapter {
 
 		if (json.error) throw new Error(json.error)
 
-		// posts.update((state) => {
-		// 	const posts = state.data.get(groupId)
-		//
-		// 	if (posts) {
-		// 		const i = posts.pending.findIndex(post => post.postId === postId);
-		// 		posts.pending[i].yourVote = vote
-		// 		state.data.set(groupId, posts)
-		// 	}
-		//
-		// 	return state
-		// })
+		posts.update((state) => {
+			const posts = state.data.get(groupId)
+
+			if (posts) {
+				const i = posts.pending.findIndex(post => post.postId === postId);
+				posts.pending[i].yourVote = vote
+				state.data.set(groupId, posts)
+			}
+
+			return state
+		})
 	}
 
 	async startChat(chat: Chat): Promise<string> {

@@ -63,6 +63,13 @@
 	const addToFavorite = () => adapter.addPersonaToFavorite(groupId, persona)
 	const removeFromFavorite = () => adapter.removePersonaFromFavorite(groupId, persona)
 
+	const joinPersona = async () => {
+		await adapter.joinPersona(groupId)
+		if ($profile.unirepIdentity) {
+			hasJoined = await adapter.queryPersonaJoined(groupId)
+		}
+	}
+
 	$: personaPosts = $posts.data.get(groupId)
 </script>
 
@@ -129,7 +136,7 @@
 						variant="primary"
 						label="Join Persona"
 						icon={Edit}
-						on:click={() => adapter.joinPersona(groupId)}
+						on:click={joinPersona}
 					/>
 				{/if}
 			{:else}

@@ -1,5 +1,5 @@
 import { FastifyPluginAsyncJsonSchemaToTs } from "@fastify/type-provider-json-schema-to-ts";
-import { rlnRegistry, verifyProof } from "../services/rln";
+// import { rlnRegistry, verifyProof } from "../services/rln";
 import { getDefaultProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, PRIVATE_KEY, RPC_URL } from "../config";
@@ -8,85 +8,85 @@ import cors from '@fastify/cors'
 const path = require('path')
 
 // Config
-enum MessageType {
-  Post,
-  Comment,
-  Vote,
-}
+// enum MessageType {
+//   Post,
+//   Comment,
+//   Vote,
+// }
 
-const goRequired: {[msgType: number]: number} = {
-  [MessageType.Post]: 10,
-  [MessageType.Comment]: 5,
-  [MessageType.Vote]: 1,
-};
+// const goRequired: {[msgType: number]: number} = {
+//   [MessageType.Post]: 10,
+//   [MessageType.Comment]: 5,
+//   [MessageType.Vote]: 1,
+// };
 
 const bigIntSchema = { type: "string", pattern: "^[0-9]+$" } as const;
-const rlnProofSchema = {
-  type: "object",
-  additionalProperties: false,
-  required: ["snarkProof", "epoch", "rlnIdentifier"],
-  properties: {
-    snarkProof: {
-      type: "object",
-      additionalProperties: false,
-      required: ["proof", "publicSignals"],
-      properties: {
-        proof: {
-          type: "object",
-          additionalProperties: false,
-          required: ["pi_a", "pi_b", "pi_c", "protocol", "curve"],
-          properties: {
-            pi_a: {
-              type: "array",
-              items: bigIntSchema,
-              // minContains: 3,
-              // maxContains: 3,
-            },
-            pi_b: {
-              type: "array",
-              items: {
-                type: "array",
-                items: bigIntSchema,
-                // minContains: 2,
-                // maxContains: 2,
-              },
-              // minContains: 3,
-              // maxContains: 3,
-            },
-            pi_c: {
-              type: "array",
-              items: bigIntSchema,
-              // minContains: 3,
-              // maxContains: 3,
-            },
-            protocol: { const: "groth16" },
-            curve: { const: "bn128" },
-          },
-        },
-        publicSignals: {
-          type: "object",
-          additionalProperties: false,
-          required: [
-            "yShare",
-            "merkleRoot",
-            "internalNullifier",
-            "signalHash",
-            "externalNullifier",
-          ],
-          properties: {
-            yShare: bigIntSchema,
-            merkleRoot: bigIntSchema,
-            internalNullifier: bigIntSchema,
-            signalHash: bigIntSchema,
-            externalNullifier: bigIntSchema,
-          },
-        },
-      },
-    },
-    epoch: bigIntSchema,
-    rlnIdentifier: bigIntSchema,
-  },
-} as const;
+// const rlnProofSchema = {
+//   type: "object",
+//   additionalProperties: false,
+//   required: ["snarkProof", "epoch", "rlnIdentifier"],
+//   properties: {
+//     snarkProof: {
+//       type: "object",
+//       additionalProperties: false,
+//       required: ["proof", "publicSignals"],
+//       properties: {
+//         proof: {
+//           type: "object",
+//           additionalProperties: false,
+//           required: ["pi_a", "pi_b", "pi_c", "protocol", "curve"],
+//           properties: {
+//             pi_a: {
+//               type: "array",
+//               items: bigIntSchema,
+//               // minContains: 3,
+//               // maxContains: 3,
+//             },
+//             pi_b: {
+//               type: "array",
+//               items: {
+//                 type: "array",
+//                 items: bigIntSchema,
+//                 // minContains: 2,
+//                 // maxContains: 2,
+//               },
+//               // minContains: 3,
+//               // maxContains: 3,
+//             },
+//             pi_c: {
+//               type: "array",
+//               items: bigIntSchema,
+//               // minContains: 3,
+//               // maxContains: 3,
+//             },
+//             protocol: { const: "groth16" },
+//             curve: { const: "bn128" },
+//           },
+//         },
+//         publicSignals: {
+//           type: "object",
+//           additionalProperties: false,
+//           required: [
+//             "yShare",
+//             "merkleRoot",
+//             "internalNullifier",
+//             "signalHash",
+//             "externalNullifier",
+//           ],
+//           properties: {
+//             yShare: bigIntSchema,
+//             merkleRoot: bigIntSchema,
+//             internalNullifier: bigIntSchema,
+//             signalHash: bigIntSchema,
+//             externalNullifier: bigIntSchema,
+//           },
+//         },
+//       },
+//     },
+//     epoch: bigIntSchema,
+//     rlnIdentifier: bigIntSchema,
+//   },
+// } as const;
 
 const repProofSchema = {
   type: "object",
@@ -122,18 +122,24 @@ const getBodySchemaWithRep = () => {
   return {
     type: "object",
     additionalProperties: false,
-    required: ["personaId", "type", "postHash", "goProofs", "repProof"],
+    required: [
+      "personaId",
+      "type",
+      "postHash",
+      // "goProofs",
+      "repProof"
+    ],
     properties: {
       personaId: bigIntSchema,
       type: { enum: [0, 1] },
       postHash: {
         type: "string",
       },
-      goProofs: {
-        type: "array",
-        uniqueItems: true,
-        items: rlnProofSchema,
-      },
+      // goProofs: {
+      //   type: "array",
+      //   uniqueItems: true,
+      //   items: rlnProofSchema,
+      // },
       repProof: repProofSchema,
     },
   } as const;
@@ -251,7 +257,11 @@ const ustBody = () => {
 
 const getBodySchemaWithoutRep = () => {
   const schema = getBodySchemaWithRep();
-  const { repProof, goProofs, ...properties } = schema.properties;
+  const {
+    repProof,
+    // goProofs,
+    ...properties
+  } = schema.properties;
 
   return {
     ...schema,
@@ -308,31 +318,31 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
   })
 
   fastify.post(
-    "/with-rep",
+    "/propose-message-with-rep",
     { schema: { response, body: getBodySchemaWithRep() } } as const,
     async function ({ body }: {body: any}) {
-      if (body.goProofs.length !== goRequired[body.type]) {
-        throw new Error("wrong number of go proofs");
-      }
+      // if (body.goProofs.length !== goRequired[body.type]) {
+      //   throw new Error("wrong number of go proofs");
+      // }
 
-      const { signalHash } = body.goProofs[0].snarkProof.publicSignals;
+      // const { signalHash } = body.goProofs[0].snarkProof.publicSignals;
 
       // Make sure that the signal for each proof is identical
       // TODO: Also check nullifiers?
       // TODO: Make sure that ell the epochs are in the same interval
       // TODO: Check that internalNullifier === "kurate"
-      for (const { snarkProof } of body.goProofs) {
-        if (snarkProof.publicSignals.signalHash !== signalHash) {
-          throw new Error("signalHashes different");
-        }
-
-        if (BigInt(snarkProof.publicSignals.merkleRoot) !== rlnRegistry.root) {
-          throw new Error("wrong root hash");
-        }
-      }
+      // for (const { snarkProof } of body.goProofs) {
+      //   if (snarkProof.publicSignals.signalHash !== signalHash) {
+      //     throw new Error("signalHashes different");
+      //   }
+      //
+      //   if (BigInt(snarkProof.publicSignals.merkleRoot) !== rlnRegistry.root) {
+      //     throw new Error("wrong root hash");
+      //   }
+      // }
 
       // Check all proofs
-      await Promise.all(body.goProofs.map(verifyProof));
+      // await Promise.all(body.goProofs.map(verifyProof));
 
       // Post data on-chain
       const tx = await feed[

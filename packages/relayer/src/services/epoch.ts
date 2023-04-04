@@ -103,6 +103,7 @@ class EpochSealer {
     // try sealing epoch every minute
     // this is a noop when all epoch has sealed
     setTimeout(this.maybeSealEpoch, 60*1000)
+
   }
 }
 
