@@ -169,7 +169,6 @@ importers:
       knip: ^2.1.1
       prettier: ^2.8.7
       prettier-plugin-svelte: ^2.10.0
-      rlnjs: ^2.0.6
       sass: ^1.60.0
       snarkjs: ^0.6.7
       svelte: ^3.57.0
@@ -209,7 +208,6 @@ importers:
       knip: 2.1.1
       prettier: 2.8.7
       prettier-plugin-svelte: 2.10.0_5ir2xprf4ygk6mygilwnltaw3a
-      rlnjs: 2.0.6
       sass: 1.60.0
       snarkjs: 0.6.10
       svelte: 3.57.0
@@ -3426,6 +3424,7 @@ packages:
       - encoding
       - supports-color
       - utf-8-validate
+    dev: false
 
   /@semaphore-protocol/identity/3.0.0:
     resolution: {integrity: sha512-qZtudIFTy053Wk1c38VgnkLw4GEYlZZz0VkkDdFXEOfJxqS/3S7gKupR88AMSDA0FBgPA9rFGAx31Yvjky460g==}
@@ -5545,6 +5544,7 @@ packages:
     hasBin: true
     dependencies:
       ffjavascript: 0.2.55
+    dev: false
 
   /circom_runtime/0.1.21:
     resolution: {integrity: sha512-qTkud630B/GK8y76hnOaaS1aNuF6prfV0dTrkeRsiJKnlP1ryQbP2FWLgDOPqn6aKyaPlam+Z+DTbBhkEzh8dA==}
@@ -7346,6 +7346,7 @@ packages:
       wasmbuilder: 0.0.12
       wasmcurves: 0.1.0
       web-worker: 1.2.0
+    dev: false
 
   /ffjavascript/0.2.56:
     resolution: {integrity: sha512-em6G5Lrj7ucIqj4TYEgyoHs/j99Urwwqa4+YxEVY2hggnpRimVj+noX5pZQTxI1pvtiekZI4rG65JBf0xraXrg==}
@@ -7573,7 +7574,7 @@ packages:
     resolution: {integrity: sha512-Gz1EvfOneuFfk4yG458dJ3TLJ7gV19q3OM/vVvvHf7eT02Hm1DleB4edsia6ahbKgAYxO9gvyQ1ioWZR+a00Yw==}
     dev: true
 
-  /follow-redirects/1.15.2:
+  /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
     engines: {node: '>=4.0'}
     peerDependencies:
@@ -7581,6 +7582,8 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dependencies:
+      debug: 4.3.4
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -8482,7 +8485,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug
@@ -11849,6 +11852,7 @@ packages:
       '@iden3/binfileutils': 0.0.11
       fastfile: 0.0.20
       ffjavascript: 0.2.55
+    dev: false
 
   /r1csfile/0.0.41:
     resolution: {integrity: sha512-Q1WDF3u1vYeAwjHo4YuddkA8Aq0TulbKjmGm99+Atn13Lf5fTsMZBnBV9T741w8iSyPFG6Uh6sapQby77sREqA==}
@@ -12204,6 +12208,7 @@ packages:
       - encoding
       - supports-color
       - utf-8-validate
+    dev: false
 
   /rlp/2.2.7:
     resolution: {integrity: sha512-d5gdPmgQ0Z+AklL2NVXr/IoSjNZFfTVvQWzL/AM2AOcSzYP2xjlb0AC8YyCLc41MSNf6P6QVtjgPdmVtzb+4lQ==}
@@ -12609,6 +12614,7 @@ packages:
       js-sha3: 0.8.0
       logplease: 1.2.15
       r1csfile: 0.0.40
+    dev: false
 
   /snarkjs/0.5.0:
     resolution: {integrity: sha512-KWz8mZ2Y+6wvn6GGkQo6/ZlKwETdAGohd40Lzpwp5TUZCn6N6O4Az1SuX1rw/qREGL6Im+ycb19suCFE8/xaKA==}
@@ -12676,7 +12682,7 @@ packages:
     dependencies:
       command-exists: 1.2.9
       commander: 3.0.2
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       fs-extra: 0.30.0
       js-sha3: 0.8.0
       memorystream: 0.3.1
@@ -12694,7 +12700,7 @@ packages:
     dependencies:
       command-exists: 1.2.9
       commander: 8.3.0
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       js-sha3: 0.8.0
       memorystream: 0.3.1
       semver: 5.7.1
