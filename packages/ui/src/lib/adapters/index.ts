@@ -1,7 +1,6 @@
 import type { DraftPersona, Persona } from '$lib/stores/persona'
 import type { Signer } from 'ethers'
 import type { DraftChat } from '$lib/stores/chat'
-import { InMemoryAndIPFS } from './in-memory-and-ipfs'
 import { ZkitterAdapter } from './zkitter'
 import { Firebase } from './firebase'
 import { ADAPTER } from '$lib/constants'
@@ -37,7 +36,7 @@ export interface Adapter {
 	joinPersona(personaId: string): Promise<void>
 }
 
-export const adapters = ['in-memory', 'zkitter', 'firebase'] as const
+export const adapters = ['zkitter', 'firebase'] as const
 export type AdapterName = (typeof adapters)[number]
 export const adapterName: AdapterName = getFromLocalStorage<AdapterName>(
 	'adapter',
@@ -46,9 +45,6 @@ export const adapterName: AdapterName = getFromLocalStorage<AdapterName>(
 
 let adapter: Adapter
 switch (adapterName) {
-	case 'in-memory':
-		adapter = new InMemoryAndIPFS()
-		break
 	case 'zkitter':
 		adapter = new ZkitterAdapter()
 		break
