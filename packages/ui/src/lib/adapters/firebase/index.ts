@@ -3,7 +3,7 @@ import { chats, type Chat, type Message } from '$lib/stores/chat'
 import { personas, type DraftPersona, type Persona } from '$lib/stores/persona'
 import { profile } from '$lib/stores/profile'
 import { getFromLocalStorage, saveToLocalStorage } from '$lib/utils'
-import type { Signer } from 'ethers'
+import type { Signer, providers } from 'ethers'
 import { create } from 'ipfs-http-client'
 import {
 	CREATE_PERSONA_GO_PRICE,
@@ -54,6 +54,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app)
+
+type WindowWithEthereum = Window &
+	typeof globalThis & { ethereum: providers.ExternalProvider | any }
 
 function epochCounter(): () => unknown {
 	const interval = setInterval(() => {
@@ -154,6 +157,21 @@ export class Firebase implements Adapter {
 		})
 		this.subscriptions.push(unsubscribeUser)
 		this.subscriptions.push(epochCounter())
+
+		const windowWithEthereum = window as WindowWithEthereum
+		if (
+			windowWithEthereum &&
+			windowWithEthereum.ethereum &&
+			typeof windowWithEthereum.ethereum.on === 'function'
+		) {
+			windowWithEthereum.ethereum.on('accountsChanged', () => {
+				profile.set({}) // Clear profile
+				personas.update((state) => ({ ...state, draft: [] }))
+				tokens.update((state) => ({ ...state, go: 0, repStaked: 0, repTotal: 0, loading: true }))
+				chats.set({ chats: new Map<string, Chat>(), loading: true, unread: 0 })
+				transaction.set({ transactions: [] })
+			})
+		}
 	}
 	stop() {
 		this.subscriptions.forEach((s) => s())
