@@ -25,17 +25,19 @@ const app: FastifyPluginAsync<AppOptions> = async (
   const provider = getDefaultProvider(RPC_URL);
   syncGroup(provider, GLOBAL_ANONYMOUS_FEED_ADDRESS);
 
-  epochSealer.start()
+  epochSealer.start();
 
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused
   // through your application
+  /*
   fastify.register(AutoLoad, {
     dir: join(__dirname, "plugins"),
     options: opts,
   });
+  */
 
   // This loads all plugins defined in routes
   // define your routes in one of these
