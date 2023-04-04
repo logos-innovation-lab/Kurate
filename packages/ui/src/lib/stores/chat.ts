@@ -6,6 +6,7 @@ export interface Message {
 	timestamp: number
 	text: string
 	address?: string
+	messageId?: string
 }
 
 export interface DraftChat {

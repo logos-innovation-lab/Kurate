@@ -84,8 +84,8 @@
 				seed={chat.chatId}
 				name={chat.persona?.name}
 				postText={chat.post?.text}
-				lastMessage={lastMessage.text}
-				timeStamp={formatDateAndTime(lastMessage.timestamp)}
+				lastMessage={lastMessage?.text}
+				timeStamp={formatDateAndTime(lastMessage?.timestamp || 0)}
 				on:click={() => goto(ROUTES.CHAT(chat.chatId))}
 			/>
 		{/each}
@@ -100,8 +100,8 @@
 					seed={chat.chatId}
 					name={chat.persona?.name}
 					postText={chat.post?.text}
-					lastMessage={lastMessage.text}
-					timeStamp={formatDateAndTime(lastMessage.timestamp)}
+					lastMessage={lastMessage?.text}
+					timeStamp={formatDateAndTime(lastMessage?.timestamp || 0)}
 					on:click={() => goto(ROUTES.CHAT(chat.chatId))}
 				/>
 			{/each}

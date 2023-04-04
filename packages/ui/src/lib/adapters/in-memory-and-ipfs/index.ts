@@ -508,7 +508,7 @@ export class InMemoryAndIPFS implements Adapter {
 		})
 	}
 
-	subscribeToChat(chatId: string): () => unknown {
+	async subscribeToChat(chatId: string): Promise<() => unknown> {
 		const interval = setInterval(() => {
 			chats.update((state) => {
 				const chat = state.chats.get(chatId)
@@ -533,5 +533,16 @@ export class InMemoryAndIPFS implements Adapter {
 		return () => {
 			clearInterval(interval)
 		}
+	}
+
+	async queryPersonaJoined(personId: string): Promise<boolean> {
+		// FIXME: properly implement
+		console.error('NOT IMPLEMENTED', 'subscribeToChat')
+		return true
+	}
+
+	async joinPersona(personId: string): Promise<void> {
+		// FIXME: properly implement
+		console.error('NOT IMPLEMENTED', 'subscribeToChat')
 	}
 }

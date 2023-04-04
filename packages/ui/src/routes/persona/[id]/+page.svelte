@@ -37,13 +37,24 @@
 	let sortBy: 'date' | 'alphabetical' = 'date'
 	let filterQuery = ''
 	let unsubscribe: () => unknown
+	let hasJoined = false
 
-	onMount(() => {
+	const unsubProfile = profile.subscribe(async (state) => {
+		if (state.unirepIdentity) {
+			hasJoined = await adapter.queryPersonaJoined(groupId)
+		}
+	})
+
+	onMount(async () => {
 		adapter.subscribePersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
+		if ($profile.unirepIdentity) {
+			hasJoined = await adapter.queryPersonaJoined(groupId)
+		}
 	})
 
 	onDestroy(() => {
 		if (unsubscribe) unsubscribe()
+		unsubProfile()
 	})
 
 	let y: number
@@ -51,6 +62,13 @@
 
 	const addToFavorite = () => adapter.addPersonaToFavorite(groupId, persona)
 	const removeFromFavorite = () => adapter.removePersonaFromFavorite(groupId, persona)
+
+	const joinPersona = async () => {
+		await adapter.joinPersona(groupId)
+		if ($profile.unirepIdentity) {
+			hasJoined = await adapter.queryPersonaJoined(groupId)
+		}
+	}
 
 	$: personaPosts = $posts.data.get(groupId)
 </script>
@@ -104,12 +122,16 @@
 
 		<svelte:fragment slot="button_primary">
 			{#if $profile.signer !== undefined}
-				<Button
-					variant="primary"
-					label="Submit post"
-					icon={Edit}
-					on:click={() => goto(ROUTES.POST_NEW(groupId))}
-				/>
+				{#if hasJoined}
+					<Button
+						variant="primary"
+						label="Submit post"
+						icon={Edit}
+						on:click={() => goto(ROUTES.POST_NEW(groupId))}
+					/>
+				{:else}
+					<Button variant="primary" label="Join Persona" icon={Edit} on:click={joinPersona} />
+				{/if}
 			{:else}
 				<Button
 					variant="primary"

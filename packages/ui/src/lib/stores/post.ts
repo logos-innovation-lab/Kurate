@@ -30,6 +30,11 @@ function createPostStore(): PostStore {
 		addPending: (post: Post, groupId: string) => {
 			store.update(({ data }) => {
 				const personaPostData = data.get(groupId)
+
+				if (personaPostData?.pending.find(({ postId }) => postId === post.postId)) {
+					return { data }
+				}
+
 				const pending = [post, ...(personaPostData?.pending ?? [])]
 				const approved = personaPostData?.approved ?? []
 				data.set(groupId, { loading: false, approved, pending })
@@ -40,6 +45,11 @@ function createPostStore(): PostStore {
 		addApproved: (post: Post, groupId: string) => {
 			store.update(({ data }) => {
 				const personaPostData = data.get(groupId)
+
+				if (personaPostData?.approved.find(({ postId }) => postId === post.postId)) {
+					return { data }
+				}
+
 				const pending = personaPostData?.pending ?? []
 				const approved = [post, ...(personaPostData?.approved ?? [])]
 				data.set(groupId, { loading: false, approved, pending })

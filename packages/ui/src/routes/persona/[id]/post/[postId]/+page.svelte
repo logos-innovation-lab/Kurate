@@ -40,9 +40,10 @@
 		if (!draftChat) return
 		const chat = {
 			...draftChat,
-			messages: [{ timestamp: Date.now(), text, address: $profile.address }],
+			messages: [],
 		}
 		const chatId = await adapter.startChat(chat)
+		await adapter.sendChatMessage(chatId, text)
 		goto(ROUTES.CHAT(chatId))
 	}
 	let unsubscribe: () => unknown
