@@ -2,7 +2,7 @@ import { connectWallet } from '$lib/services'
 import { chats, type Chat, type Message } from '$lib/stores/chat'
 import { personas, type DraftPersona, type Persona } from '$lib/stores/persona'
 import { profile } from '$lib/stores/profile'
-import { saveToLocalStorage } from '$lib/utils'
+import { getFromLocalStorage, saveToLocalStorage } from '$lib/utils'
 import type { Signer } from 'ethers'
 import { create } from 'ipfs-http-client'
 import {
@@ -38,6 +38,7 @@ import {
 } from 'firebase/firestore'
 import { get } from 'svelte/store'
 import {randomId} from "../in-memory-and-ipfs/utils";
+import { subscribeAccountChanged, subscribeChainChanged } from '../utils'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -155,6 +156,8 @@ export class Firebase implements Adapter {
 		})
 		this.subscriptions.push(unsubscribeUser)
 		this.subscriptions.push(epochCounter())
+		this.subscriptions.push(subscribeAccountChanged())
+		this.subscriptions.push(subscribeChainChanged())
 	}
 	stop() {
 		this.subscriptions.forEach((s) => s())
@@ -164,8 +167,9 @@ export class Firebase implements Adapter {
 		return new Promise((resolve) => {
 			personas.update(({ favorite, ...store }) => {
 				const favoriteNew: string[] = [...favorite, groupId]
+				const { address } = get(profile)
 
-				saveToLocalStorage('favorite', favoriteNew)
+				if (address) saveToLocalStorage(`${address}-firebase-favorite`, favoriteNew)
 
 				resolve()
 				return { ...store, favorite: favoriteNew }
@@ -176,8 +180,9 @@ export class Firebase implements Adapter {
 		return new Promise((resolve) => {
 			personas.update(({ favorite, ...store }) => {
 				const favoriteNew: string[] = favorite.filter((s) => s !== groupId)
+				const { address } = get(profile)
 
-				saveToLocalStorage('favorite', favoriteNew)
+				if (address) saveToLocalStorage(`${address}-firebase-favorite`, favoriteNew)
 
 				resolve()
 				return { ...store, favorite: favoriteNew }
@@ -264,7 +269,7 @@ export class Firebase implements Adapter {
 		personas.update(({ draft, ...state }) => {
 			const newDraft = draft.filter((d) => d !== draftPersona)
 
-			saveToLocalStorage('drafts', newDraft)
+			saveToLocalStorage(`${address}-firebase-drafts`, newDraft)
 
 			return { ...state, draft: newDraft }
 		})
@@ -275,6 +280,9 @@ export class Firebase implements Adapter {
 	async signIn(): Promise<void> {
 		const signer = await connectWallet()
 		const address = await signer.getAddress()
+		const draftPersonas = getFromLocalStorage(`${address}-firebase-drafts`, [])
+		const favoritePersonas = getFromLocalStorage(`${address}-firebase-favorite`, [])
+		personas.update((state) => ({ ...state, drafts: draftPersonas, favorite: favoritePersonas }))
 
 		const user = doc(db, `users/${address}`)
 		setDoc(user, { address, lastSignIn: Date.now() }, { merge: true })

@@ -58,7 +58,7 @@
 	})
 
 	let y: number
-	let onBack = () => history.back()
+	let onBack = () => goto(ROUTES.HOME)
 
 	const addToFavorite = () => adapter.addPersonaToFavorite(groupId, persona)
 	const removeFromFavorite = () => adapter.removePersonaFromFavorite(groupId, persona)
@@ -82,20 +82,18 @@
 		</InfoBox>
 	</Container>
 {:else}
-	<div class={`header ${y > 0 ? 'scrolled' : ''}`}>
-		<Header title={persona.name} {onBack}>
-			{#if $profile.signer !== undefined}
-				<Button variant="primary" icon={Edit} on:click={() => goto(ROUTES.POST_NEW(groupId))} />
-			{:else}
-				<Button
-					variant="primary"
-					icon={Wallet}
-					on:click={adapter.signIn}
-					disabled={!canConnectWallet()}
-				/>
-			{/if}
-		</Header>
-	</div>
+	<Header title={persona.name} {onBack} onlyScrolled>
+		{#if $profile.signer !== undefined}
+			<Button variant="primary" icon={Edit} on:click={() => goto(ROUTES.POST_NEW(groupId))} />
+		{:else}
+			<Button
+				variant="primary"
+				icon={Wallet}
+				on:click={adapter.signIn}
+				disabled={!canConnectWallet()}
+			/>
+		{/if}
+	</Header>
 	<PersonaDetail
 		name={persona.name}
 		pitch={persona.pitch}
@@ -210,17 +208,3 @@
 		{/if}
 	</PersonaDetail>
 {/if}
-
-<style lang="scss">
-	.header {
-		position: fixed;
-		inset: -100% 0 auto;
-		z-index: 100;
-		transition: inset 0.5s;
-
-		&.scrolled {
-			inset: 0 0 auto;
-			transition: inset 0.3s;
-		}
-	}
-</style>

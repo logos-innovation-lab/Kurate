@@ -15,7 +15,7 @@
 	export { cls as class }
 	export let submit: (postText: string, images: string[]) => unknown
 	export let onBack: (postText: string, images: string[]) => unknown = () => history.back()
-	export let label: string | undefined = 'Publish'
+	export let label: string | undefined = 'Submit'
 	export let postText = ''
 	export let images: string[] = []
 
