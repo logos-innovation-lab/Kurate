@@ -68,11 +68,8 @@
 
 	async function sendMessage(text: string) {
 		if (!draftChat) return
-		const chat = {
-			...draftChat,
-			messages: [{ timestamp: Date.now(), text, address: $profile.address }],
-		}
-		const chatId = await adapter.startChat(chat)
+		const chatId = await adapter.startChat(draftChat)
+		await adapter.sendChatMessage(chatId, text)
 		goto(ROUTES.CHAT(chatId))
 	}
 

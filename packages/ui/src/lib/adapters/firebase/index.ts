@@ -1,5 +1,5 @@
 import { connectWallet } from '$lib/services'
-import { chats, type Chat, type Message } from '$lib/stores/chat'
+import { chats, type Chat, type Message, type DraftChat } from '$lib/stores/chat'
 import { personas, type DraftPersona, type Persona } from '$lib/stores/persona'
 import { profile } from '$lib/stores/profile'
 import { getFromLocalStorage, saveToLocalStorage } from '$lib/utils'
@@ -486,20 +486,24 @@ export class Firebase implements Adapter {
 		})
 	}
 
-	async startChat(chat: Chat): Promise<string> {
+	async startChat(chat: DraftChat): Promise<string> {
 		const address = get(profile).address
 
 		if (!address) throw new Error('You need to be logged in to start a chat')
 		if (!chat.post.address) throw new Error('Info about original poster is missing')
 		if (!chat.post.postId) throw new Error('PostId is missing')
 		if (!chat.persona.personaId) throw new Error('PersonaId is missing')
-		if (chat.messages.length === 0) throw new Error('No messages to start a chat')
 
 		const dbChat = {
 			users: [address, chat.post.address],
-			post: chat.post,
+			post: {
+				postId: chat.post.postId,
+				address: chat.post.address,
+				images: chat.post.images,
+				timestamp: chat.post.timestamp,
+				text: chat.post.text,
+			} as Post,
 			personaId: chat.persona.personaId,
-			messages: chat.messages,
 		}
 		const chatCollection = collection(db, `/chats`)
 		const chatDoc = await addDoc(chatCollection, dbChat)
