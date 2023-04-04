@@ -64,7 +64,7 @@
 		top: 0;
 		left: 0;
 		right: 0;
-		inset: 0 -10px auto;
+		inset: 0 0 auto;
 		background-color: rgba(var(--color-body-bg-rgb), 0.93);
 		backdrop-filter: blur(var(--blur));
 		z-index: 100;
