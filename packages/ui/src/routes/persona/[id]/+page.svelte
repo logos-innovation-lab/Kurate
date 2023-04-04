@@ -41,7 +41,6 @@
 
 	const unsubProfile = profile.subscribe(async (state) => {
 		if (state.unirepIdentity) {
-			console.log('updated')
 			hasJoined = await adapter.queryPersonaJoined(groupId)
 		}
 	})
@@ -49,7 +48,6 @@
 	onMount(async () => {
 		adapter.subscribePersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
 		if ($profile.unirepIdentity) {
-			console.log('has logged in')
 			hasJoined = await adapter.queryPersonaJoined(groupId)
 		}
 	})

@@ -63,39 +63,39 @@ describe("Global Anonymous Feed Contract", () => {
         provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_URL)
         const signer = new ethers.Wallet(process.env.ETHEREUM_PRIVATE_KEY as string, provider)
         postContract = new GlobalAnonymousFeed__factory(signer).attach(process.env.GLOBAL_ANONYMOUS_FEED_ADDRESS as string);
-        // unirepContract = getUnirepContract('0x5e5384c3EA26185BADF41d6980397eB4D36b850e', signer);
-        unirepContract = getUnirepContract('0xF309DDf2Cc1b2701fED5171C5150092bAc946f07', signer);
-        signupVerifier = new ethers.Contract(
-          await unirepContract.signupVerifier(),
-          // '0xd5d0eCcCAD248661C4bB5B5c75DEa07d74A7EF6e',
-          [
-              {
-                  "inputs": [
-                      {
-                          "internalType": "uint256[]",
-                          "name": "input",
-                          "type": "uint256[]"
-                      },
-                      {
-                          "internalType": "uint256[8]",
-                          "name": "_proof",
-                          "type": "uint256[8]"
-                      }
-                  ],
-                  "name": "verifyProof",
-                  "outputs": [
-                      {
-                          "internalType": "bool",
-                          "name": "",
-                          "type": "bool"
-                      }
-                  ],
-                  "stateMutability": "view",
-                  "type": "function"
-              }
-          ],
-          provider,
-        )
+        unirepContract = getUnirepContract('0x5e5384c3EA26185BADF41d6980397eB4D36b850e', signer);
+        // unirepContract = getUnirepContract('0xF309DDf2Cc1b2701fED5171C5150092bAc946f07', signer);
+        // signupVerifier = new ethers.Contract(
+        //   await unirepContract.signupVerifier(),
+        //   // '0xd5d0eCcCAD248661C4bB5B5c75DEa07d74A7EF6e',
+        //   [
+        //       {
+        //           "inputs": [
+        //               {
+        //                   "internalType": "uint256[]",
+        //                   "name": "input",
+        //                   "type": "uint256[]"
+        //               },
+        //               {
+        //                   "internalType": "uint256[8]",
+        //                   "name": "_proof",
+        //                   "type": "uint256[8]"
+        //               }
+        //           ],
+        //           "name": "verifyProof",
+        //           "outputs": [
+        //               {
+        //                   "internalType": "bool",
+        //                   "name": "",
+        //                   "type": "bool"
+        //               }
+        //           ],
+        //           "stateMutability": "view",
+        //           "type": "function"
+        //       }
+        //   ],
+        //   provider,
+        // )
         console.log(await postContract.attesterCurrentEpoch());
         console.log(await postContract.attesterEpochRemainingTime());
         console.log(buildPath);
@@ -155,7 +155,7 @@ describe("Global Anonymous Feed Contract", () => {
                 provider, // an ethers.js provider
             }, zkIdentity2)
 
-            await new Promise(r => setTimeout(r, 5000));
+            // await new Promise(r => setTimeout(r, 5000));
 
             await state.sync.start();
             await state.waitForSync();
@@ -165,15 +165,15 @@ describe("Global Anonymous Feed Contract", () => {
             const signupProof = await state.genUserSignUpProof();
             const memberSignedUp = await postContract.membersByPersona(0, signupProof.publicSignals[0]);
 
-            console.log(await unirepContract.signupVerifier());
-            console.log(await signupVerifier.verifyProof(signupProof.publicSignals, signupProof.proof));
+            // console.log(await unirepContract.signupVerifier());
+            // console.log(await signupVerifier.verifyProof(signupProof.publicSignals, signupProof.proof));
 
             if (!memberSignedUp) {
                 await postContract["joinPersona(uint256,uint256[],uint256[8])"](
                   0,
                   signupProof.publicSignals,
                   signupProof.proof,
-                  { gasLimit: 16721974 }
+                  { gasLimit: 6721974 }
                 );
             }
 

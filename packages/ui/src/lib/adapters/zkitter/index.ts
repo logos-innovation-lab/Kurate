@@ -17,6 +17,7 @@ import type {ZkIdentity as UnirepIdentity} from '@unirep/utils'
 import type {ZkIdentity} from '@zk-kit/identity'
 import type {GlobalAnonymousFeed} from "../../assets/typechain";
 import {getFromLocalStorage} from "../../utils";
+import type {ReputationProof, UserStateTransitionProof} from "@unirep/circuits";
 
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
@@ -613,14 +614,27 @@ export class ZkitterAdapter implements Adapter {
 		return () => null
 	}
 
-	async voteOnPost(
-		groupId: string,
-		postId: string,
-		vote: '+' | '-',
-		signer: Signer,
-	) {
-		const contract = getGlobalAnonymousFeed(signer)
 
+	private async userStateTransition(ustProof: UserStateTransitionProof): Promise<void> {
+		const resp = await fetch(`http://localhost:3000/user-state-transition`, {
+			method: 'post',
+			headers: {
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify({
+				publicSignals: ustProof.publicSignals,
+				proof: ustProof.proof,
+			})
+		})
+
+		const json = await resp.json()
+
+		if (json.error) throw new Error(json.error)
+
+		console.log(json)
+	}
+
+	private async genRepProof(contract: GlobalAnonymousFeed): Promise<ReputationProof> {
 		const state = new UserState(
 			{
 				prover: prover, // a circuit prover
@@ -634,7 +648,28 @@ export class ZkitterAdapter implements Adapter {
 		await state.sync.start()
 		await state.waitForSync()
 
-		const {proof, publicSignals} = await state.genProveReputationProof({})
+		const latestTransitionedEpoch = await state.latestTransitionedEpoch()
+		const currentEpoch = (await contract.attesterCurrentEpoch()).toNumber()
+
+		console.log(latestTransitionedEpoch, currentEpoch)
+		if (latestTransitionedEpoch < currentEpoch) {
+			const ust = await state.genUserStateTransitionProof({});
+			await this.userStateTransition(ust);
+		}
+
+		await state.waitForSync(latestTransitionedEpoch)
+		return state.genProveReputationProof({})
+	}
+
+	async voteOnPost(
+		groupId: string,
+		postId: string,
+		vote: '+' | '-',
+		signer: Signer,
+	) {
+		const contract = getGlobalAnonymousFeed(signer)
+
+		const {proof, publicSignals} = await this.genRepProof(contract)
 
 		const resp = await fetch(`http://localhost:3000/vote-on-post`, {
 			method: 'post',
@@ -651,19 +686,19 @@ export class ZkitterAdapter implements Adapter {
 
 		const json = await resp.json()
 
-		console.log(json)
+		if (json.error) throw new Error(json.error)
 
-		posts.update((state) => {
-			const posts = state.data.get(groupId)
-
-			if (posts) {
-				const i = posts.pending.findIndex(post => post.postId === postId);
-				posts.pending[i].yourVote = vote
-				state.data.set(groupId, posts)
-			}
-
-			return state
-		})
+		// posts.update((state) => {
+		// 	const posts = state.data.get(groupId)
+		//
+		// 	if (posts) {
+		// 		const i = posts.pending.findIndex(post => post.postId === postId);
+		// 		posts.pending[i].yourVote = vote
+		// 		state.data.set(groupId, posts)
+		// 	}
+		//
+		// 	return state
+		// })
 	}
 
 	async startChat(chat: Chat): Promise<string> {

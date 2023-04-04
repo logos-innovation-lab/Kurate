@@ -228,6 +228,27 @@ const voteBody = () => {
   } as const;
 };
 
+const ustBody = () => {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["publicSignals", "proof"],
+    properties: {
+      publicSignals: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 8,
+        // maxContains: 8,
+      },
+      proof: {
+        type: "array",
+        items: bigIntSchema,
+        // minContains: 1,
+      },
+    },
+  } as const;
+};
+
 const getBodySchemaWithoutRep = () => {
   const schema = getBodySchemaWithRep();
   const { repProof, goProofs, ...properties } = schema.properties;
@@ -426,6 +447,20 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
       const tx = await feed.vote(
         body.postId,
         body.isUpvote,
+        body.publicSignals,
+        body.proof,
+        { gasLimit: 6721974 },
+      )
+
+      return { transaction: tx.hash };
+    }
+  )
+
+  fastify.post(
+  "/user-state-transition",
+    { schema: { response, body: ustBody() } as const },
+    async function ({ body }: {body: any}) {
+      const tx = await feed.userStateTransition(
         body.publicSignals,
         body.proof,
         { gasLimit: 6721974 },

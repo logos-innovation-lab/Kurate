@@ -5,6 +5,7 @@ import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts
 import { syncGroup } from "./services/rln";
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, RPC_URL } from "./config";
 import { getDefaultProvider } from "@ethersproject/providers";
+import epochSealer from "./services/epoch";
 
 export type AppOptions = {
   // Place your custom options for app below here.
@@ -23,6 +24,8 @@ const app: FastifyPluginAsync<AppOptions> = async (
   // Services
   const provider = getDefaultProvider(RPC_URL);
   syncGroup(provider, GLOBAL_ANONYMOUS_FEED_ADDRESS);
+
+  epochSealer.start()
 
   // Do not touch the following lines
 
