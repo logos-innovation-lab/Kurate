@@ -25,6 +25,7 @@ interface ChatData {
 	loading: boolean
 	unread: number
 	chats: Map<string, Chat>
+	error?: Error
 }
 
 export type ChatStore = Writable<ChatData>

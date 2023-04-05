@@ -46,8 +46,8 @@
 	}
 
 	const groupId = $page.params.id
-	const persona = $personas.all.get(groupId)
-	let personaPosts = $posts.data.get(groupId)
+	$: persona = $personas.all.get(groupId)
+	$: personaPosts = $posts.data.get(groupId)
 	let sortAsc = false
 	let sortBy: SortBy = 'date'
 	let filterQuery = ''
@@ -74,13 +74,23 @@
 	})
 
 	let y: number
-
-	$: personaPosts = $posts.data.get(groupId)
 </script>
 
 <svelte:window bind:scrollY={y} />
 
-{#if persona === undefined}
+{#if $personas.loading || personaPosts?.loading}
+	<Container>
+		<InfoBox>
+			<div>Loading...</div>
+		</InfoBox>
+	</Container>
+{:else if $personas.error || personaPosts?.error}
+	<Container>
+		<InfoBox>
+			<div>Something went wrong</div>
+		</InfoBox>
+	</Container>
+{:else if persona === undefined}
 	<Container>
 		<InfoBox>
 			<div>There is no persona with group ID {groupId}</div>

@@ -352,6 +352,16 @@ export class Firebase implements Adapter {
 	}
 
 	async subscribePersonaPosts(groupId: string): Promise<() => unknown> {
+		// Sets loading to true if the data is not yet retrieved
+		posts.update(({ data }) => {
+			const personaPostData = data.get(groupId)
+			if (!personaPostData) {
+				data.set(groupId, { approved: [], pending: [], loading: true, error: undefined })
+			}
+
+			return { data }
+		})
+
 		const pendingCollection = collection(db, `personas/${groupId}/pending`)
 		const postsCollection = collection(db, `personas/${groupId}/posts`)
 

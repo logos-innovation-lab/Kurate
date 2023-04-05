@@ -51,10 +51,12 @@
 
 	const postId = $page.params.postId
 	const groupId = $page.params.id
-	let post = $posts.data.get(groupId)?.pending.find((p) => p.postId === postId)
-	$: post = $posts.data.get(groupId)?.pending.find((p) => p.postId === postId)
-	const persona = $personas.all.get(groupId)
+	$: personaPosts = $posts.data.get(groupId)
+	$: post = personaPosts?.pending.find((p) => p.postId === postId)
+	$: persona = $personas.all.get(groupId)
 	let draftChat: DraftChat | undefined = undefined
+
+	$: console.log({ persona, post, personaPosts })
 
 	const startChat = async () => {
 		if (!persona || !post) return
@@ -88,7 +90,19 @@
 	<Banner icon={Info}>Connect to see your GO balance</Banner>
 {/if}
 
-{#if post === undefined}
+{#if $personas.loading || personaPosts?.loading}
+	<Container>
+		<InfoBox>
+			<div>Loading...</div>
+		</InfoBox>
+	</Container>
+{:else if $personas.loading || personaPosts?.error}
+	<Container>
+		<InfoBox>
+			<div>Something went wrong</div>
+		</InfoBox>
+	</Container>
+{:else if post === undefined}
 	<Container>
 		<InfoBox>
 			<div>There is no post with post ID {$page.params.postId}</div>
