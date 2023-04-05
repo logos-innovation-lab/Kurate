@@ -49,7 +49,7 @@
 	const persona = $personas.all.get(groupId)
 	let personaPosts = $posts.data.get(groupId)
 	let sortAsc = false
-	let sortBy: 'date' | 'alphabetical' = 'date'
+	let sortBy: SortBy = 'date'
 	let filterQuery = ''
 	let unsubscribe: () => unknown
 
