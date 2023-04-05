@@ -17,14 +17,17 @@
 
 	const MAX_IMAGES = 3
 
+	$: isLastImage = openedImageIndex === post.images.length - 1
+	$: isFirstImage = openedImageIndex === 0
+
 	function nextImage() {
 		if (openedImageIndex === undefined) return
-		openedImageIndex += openedImageIndex === post.images.length - 1 ? 0 : 1
+		openedImageIndex += isLastImage ? 0 : 1
 	}
 
 	function previousImage() {
 		if (openedImageIndex === undefined) return
-		openedImageIndex -= openedImageIndex === 0 ? 0 : 1
+		openedImageIndex -= isFirstImage ? 0 : 1
 	}
 
 	function closeImage() {
@@ -59,12 +62,16 @@
 	<div class="button-close">
 		<Button icon={Close} variant="overlay" on:click={closeImage} />
 	</div>
-	<div class="button-next">
-		<Button icon={ArrowRight} variant="overlay" on:click={nextImage} />
-	</div>
-	<div class="button-previous">
-		<Button icon={ArrowLeft} variant="overlay" on:click={previousImage} />
-	</div>
+	{#if !isLastImage}
+		<div class="button-next">
+			<Button icon={ArrowRight} variant="overlay" on:click={nextImage} />
+		</div>
+	{/if}
+	{#if !isFirstImage}
+		<div class="button-previous">
+			<Button icon={ArrowLeft} variant="overlay" on:click={previousImage} />
+		</div>
+	{/if}
 {/if}
 
 <Card on:click class={` ${cls}`} {noHover}>
