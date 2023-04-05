@@ -192,8 +192,9 @@ export class Firebase implements Adapter {
 		return new Promise((resolve) =>
 			personas.update(({ draft, ...state }) => {
 				const newDraft = [...draft, draftPersona]
+				const { address } = get(profile)
 
-				saveToLocalStorage('drafts', newDraft)
+				if (address) saveToLocalStorage(`${address}-firebase-drafts`, newDraft)
 
 				resolve(newDraft.length - 1)
 
@@ -205,8 +206,9 @@ export class Firebase implements Adapter {
 		return new Promise((resolve) =>
 			personas.update(({ draft, ...state }) => {
 				draft[index] = draftPersona
+				const { address } = get(profile)
 
-				saveToLocalStorage('drafts', draft)
+				if (address) saveToLocalStorage(`${address}-firebase-drafts`, draft)
 
 				resolve()
 
@@ -219,8 +221,9 @@ export class Firebase implements Adapter {
 		return new Promise((resolve) =>
 			personas.update(({ draft, ...state }) => {
 				const newDraft = draft.filter((_, i) => i !== index)
+				const { address } = get(profile)
 
-				saveToLocalStorage('drafts', newDraft)
+				if (address) saveToLocalStorage(`${address}-firebase-drafts`, draft)
 
 				resolve()
 
