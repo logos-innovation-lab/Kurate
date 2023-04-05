@@ -27,6 +27,8 @@ import {
 	updateDoc,
 	arrayUnion,
 	where,
+	arrayRemove,
+	getDoc,
 } from 'firebase/firestore'
 import { get } from 'svelte/store'
 import { subscribeAccountChanged, subscribeChainChanged } from '../utils'
@@ -109,14 +111,15 @@ export class Firebase implements Adapter {
 			if (p.signer && this.userSubscriptions.length === 0) {
 				const userSnapshot = doc(db, `users/${p.address}`)
 				const subscribeTokens = onSnapshot(userSnapshot, (res) => {
-					type UserRes = { go: number; repStaked: number; repTotal: number }
-					const { go, repStaked, repTotal } = res.data() as UserRes
+					type UserRes = { go: number; repStaked: number; repTotal: number; favorite?: string[] }
+					const { go, repStaked, repTotal, favorite } = res.data() as UserRes
 					tokens.update((state) => ({
 						...state,
 						go: go ?? 5000, // FIXME: this should be DEFAULT_GO_AMOUNT
 						repStaked: repStaked ?? 0,
 						repTotal: repTotal ?? 5000, // FIXME: this should be 0
 					}))
+					personas.update((state) => ({ ...state, favorite: favorite ?? [] }))
 				})
 				this.userSubscriptions.push(subscribeTokens)
 				const transactionSnapshot = collection(db, `users/${p.address}/transactions`)
@@ -162,31 +165,17 @@ export class Firebase implements Adapter {
 		this.subscriptions.forEach((s) => s())
 		this.userSubscriptions.forEach((s) => s())
 	}
-	addPersonaToFavorite(groupId: string): Promise<void> {
-		return new Promise((resolve) => {
-			personas.update(({ favorite, ...store }) => {
-				const favoriteNew: string[] = [...favorite, groupId]
-				const { address } = get(profile)
-
-				if (address) saveToLocalStorage(`${address}-firebase-favorite`, favoriteNew)
-
-				resolve()
-				return { ...store, favorite: favoriteNew }
-			})
-		})
+	async addPersonaToFavorite(groupId: string): Promise<void> {
+		const { address } = get(profile)
+		if (!address) return
+		const userDoc = doc(db, `users/${address}`)
+		await updateDoc(userDoc, { favorite: arrayUnion(groupId) })
 	}
-	removePersonaFromFavorite(groupId: string): Promise<void> {
-		return new Promise((resolve) => {
-			personas.update(({ favorite, ...store }) => {
-				const favoriteNew: string[] = favorite.filter((s) => s !== groupId)
-				const { address } = get(profile)
-
-				if (address) saveToLocalStorage(`${address}-firebase-favorite`, favoriteNew)
-
-				resolve()
-				return { ...store, favorite: favoriteNew }
-			})
-		})
+	async removePersonaFromFavorite(groupId: string): Promise<void> {
+		const { address } = get(profile)
+		if (!address) return
+		const userDoc = doc(db, `users/${address}`)
+		await updateDoc(userDoc, { favorite: arrayRemove(groupId) })
 	}
 	addPersonaDraft(draftPersona: DraftPersona): Promise<number> {
 		return new Promise((resolve) =>
@@ -280,12 +269,9 @@ export class Firebase implements Adapter {
 	async signIn(): Promise<void> {
 		const signer = await connectWallet()
 		const address = await signer.getAddress()
-		const draftPersonas = getFromLocalStorage(`${address}-firebase-drafts`, [])
-		const favoritePersonas = getFromLocalStorage(`${address}-firebase-favorite`, [])
-		personas.update((state) => ({ ...state, drafts: draftPersonas, favorite: favoritePersonas }))
+		const userDoc = doc(db, `users/${address}`)
 
-		const user = doc(db, `users/${address}`)
-		setDoc(user, { address, lastSignIn: Date.now() }, { merge: true })
+		setDoc(userDoc, { address, lastSignIn: Date.now() }, { merge: true })
 		profile.update((state) => ({ ...state, signer, address }))
 	}
 
