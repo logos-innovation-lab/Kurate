@@ -16,7 +16,7 @@ export interface PostPending extends Post {
 }
 
 interface PostData {
-	data: Map<string, { approved: Post[]; pending: PostPending[]; loading: boolean }>
+	data: Map<string, { approved: Post[]; pending: PostPending[]; loading: boolean; error?: Error }>
 }
 
 export interface PostStore extends Writable<PostData> {

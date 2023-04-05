@@ -21,9 +21,9 @@
 
 	const postId = $page.params.postId
 	const groupId = $page.params.id
-	let post = $posts.data.get(groupId)?.approved.find((p) => p.postId === postId)
-	$: post = $posts.data.get(groupId)?.approved.find((p) => p.postId === postId)
-	const persona = $personas.all.get($page.params.id)
+	$: personaPosts = $posts.data.get(groupId)
+	$: post = personaPosts?.approved.find((p) => p.postId === postId)
+	$: persona = $personas.all.get(groupId)
 	let draftChat: DraftChat | undefined = undefined
 
 	const startChat = async () => {
@@ -59,7 +59,19 @@
 
 <svelte:window bind:scrollY={y} />
 
-{#if post === undefined}
+{#if $personas.loading || personaPosts?.loading}
+	<Container>
+		<InfoBox>
+			<div>Loading...</div>
+		</InfoBox>
+	</Container>
+{:else if $personas.loading || personaPosts?.error}
+	<Container>
+		<InfoBox>
+			<div>Something went wrong</div>
+		</InfoBox>
+	</Container>
+{:else if post === undefined}
 	<Container>
 		<InfoBox>
 			<div>There is no post with post ID {$page.params.postId}</div>

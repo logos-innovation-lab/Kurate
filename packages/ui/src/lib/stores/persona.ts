@@ -27,6 +27,7 @@ type PersonaStore = {
 	favorite: string[]
 	all: Map<string, Persona>
 	loading: boolean
+	error?: Error
 }
 
 function createPersonaStore(): Writable<PersonaStore> {
