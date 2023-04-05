@@ -271,7 +271,7 @@ export class Firebase implements Adapter {
 		personas.update(({ draft, ...state }) => {
 			const newDraft = draft.filter((d) => d !== draftPersona)
 			const userDoc = doc(db, `users/${address}`)
-			updateDoc(userDoc, { draft: newDraft })
+			updateDoc(userDoc, { draft: newDraft, favorite: arrayUnion(personaDoc.id) })
 
 			return { ...state, draft: newDraft }
 		})
