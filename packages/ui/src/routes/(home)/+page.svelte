@@ -18,13 +18,26 @@
 
 	import { goto } from '$app/navigation'
 
+	type SortBy = 'date' | 'participantsCount' | 'postsCount' | 'alphabetical' | 'rep'
+	interface SortByOption {
+		sortBy: SortBy
+		label: string
+	}
 	let filterQuery = ''
 	let sortAsc = false
-	let sortBy: 'date' | 'participantsCount' | 'postsCount' | 'alphabetical' = 'date'
+	let sortBy: SortBy = 'date'
 
 	function createDraft() {
 		goto(ROUTES.PERSONA_NEW)
 	}
+
+	const sortByOptions: SortByOption[] = [
+		{ sortBy: 'date', label: 'Sort by date of creation' },
+		{ sortBy: 'participantsCount', label: 'Sort by number of participants' },
+		{ sortBy: 'postsCount', label: 'Sort by number of posts' },
+		{ sortBy: 'alphabetical', label: 'Sort by name (alphabetical)' },
+		{ sortBy: 'rep', label: 'Sort by reputation' },
+	]
 </script>
 
 {#if $personas.loading}
@@ -77,21 +90,11 @@
 			<Dropdown>
 				<Button slot="button" icon={SettingsView} />
 
-				<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
-					Sort by date of creation
-				</DropdownItem>
-				<DropdownItem
-					active={sortBy === 'participantsCount'}
-					onClick={() => (sortBy = 'participantsCount')}
-				>
-					Sort by number of participants
-				</DropdownItem>
-				<DropdownItem active={sortBy === 'postsCount'} onClick={() => (sortBy = 'postsCount')}>
-					Sort by number of posts
-				</DropdownItem>
-				<DropdownItem active={sortBy === 'alphabetical'} onClick={() => (sortBy = 'alphabetical')}>
-					Sort by name (alphabetical)
-				</DropdownItem>
+				{#each sortByOptions as option}
+					<DropdownItem active={sortBy === option.sortBy} onClick={() => (sortBy = option.sortBy)}>
+						{option.label}
+					</DropdownItem>
+				{/each}
 			</Dropdown>
 			<Button
 				icon={sortAsc ? SortAscending : SortDescending}
@@ -114,6 +117,8 @@
 						return sortAsc ? a.postsCount - b.postsCount : b.postsCount - a.postsCount
 					case 'alphabetical':
 						return sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+					case 'rep':
+						return sortAsc ? a.minReputation - b.minReputation : b.minReputation - a.minReputation
 				}
 			}) as [groupId, data]}
 			<Persona

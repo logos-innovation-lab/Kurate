@@ -30,13 +30,24 @@
 	import { canConnectWallet } from '$lib/services'
 	import { onDestroy, onMount } from 'svelte'
 
+	type SortBy = 'date' | 'alphabetical'
+	interface SortByOption {
+		sortBy: SortBy
+		label: string
+	}
+
 	const groupId = $page.params.id
 	const persona = $personas.all.get(groupId)
 	let personaPosts = $posts.data.get(groupId)
 	let sortAsc = false
-	let sortBy: 'date' | 'alphabetical' = 'date'
+	let sortBy: SortBy = 'date'
 	let filterQuery = ''
 	let unsubscribe: () => unknown
+
+	const sortByOptions: SortByOption[] = [
+		{ sortBy: 'date', label: 'Sort by date of creation' },
+		{ sortBy: 'alphabetical', label: 'Sort by name (alphabetical)' },
+	]
 
 	onMount(async () => {
 		adapter.subscribePersonaPosts(groupId).then((unsub) => (unsubscribe = unsub))
@@ -134,15 +145,14 @@
 				<Dropdown>
 					<Button slot="button" icon={SettingsView} />
 
-					<DropdownItem active={sortBy === 'date'} onClick={() => (sortBy = 'date')}>
-						Sort by date of creation
-					</DropdownItem>
-					<DropdownItem
-						active={sortBy === 'alphabetical'}
-						onClick={() => (sortBy = 'alphabetical')}
-					>
-						Sort by name (alphabetical)
-					</DropdownItem>
+					{#each sortByOptions as option}
+						<DropdownItem
+							active={sortBy === option.sortBy}
+							onClick={() => (sortBy = option.sortBy)}
+						>
+							{option.label}
+						</DropdownItem>
+					{/each}
 				</Dropdown>
 				<Button
 					icon={sortAsc ? SortAscending : SortDescending}
