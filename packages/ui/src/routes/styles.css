@@ -18,10 +18,13 @@
 	--color-red-rgb: 255, 0, 0;
 
 	--color-success: #12bb10;
+	--color-danger: #fff2f2;
+	--color-danger-rgb: 255, 242, 242;
 
 	--grey-100: #f0f0f0;
 	--grey-150: #f9f9f9;
 	--grey-200: #ececec;
+	--grey-200-rgb: 236, 236, 236;
 	--grey-300: #999999;
 	--grey-400: #666666;
 	--grey-500: #2c2c2c;

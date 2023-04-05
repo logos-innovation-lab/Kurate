@@ -35,11 +35,11 @@
 
 		&.info {
 			color: (--color-body-text);
-			background-color: var(--grey-200);
+			background-color: rgba(var(--grey-200-rgb), 0.95);
 		}
 
 		&.danger {
-			background-color: rgba(var(--color-red-rgb), 0.05);
+			background-color: rgba(var(--color-danger-rgb), 0.95);
 			color: var(--color-red);
 
 			:global(svg) {
