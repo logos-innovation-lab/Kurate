@@ -2,7 +2,6 @@ import { connectWallet } from '$lib/services'
 import { chats, type Chat, type Message, type DraftChat } from '$lib/stores/chat'
 import { personas, type DraftPersona, type Persona } from '$lib/stores/persona'
 import { profile } from '$lib/stores/profile'
-import { getFromLocalStorage, saveToLocalStorage } from '$lib/utils'
 import type { Signer } from 'ethers'
 import { create } from 'ipfs-http-client'
 import {
@@ -28,7 +27,6 @@ import {
 	arrayUnion,
 	where,
 	arrayRemove,
-	getDoc,
 } from 'firebase/firestore'
 import { get } from 'svelte/store'
 import { subscribeAccountChanged, subscribeChainChanged } from '../utils'
@@ -111,15 +109,21 @@ export class Firebase implements Adapter {
 			if (p.signer && this.userSubscriptions.length === 0) {
 				const userSnapshot = doc(db, `users/${p.address}`)
 				const subscribeTokens = onSnapshot(userSnapshot, (res) => {
-					type UserRes = { go: number; repStaked: number; repTotal: number; favorite?: string[] }
-					const { go, repStaked, repTotal, favorite } = res.data() as UserRes
+					type UserRes = {
+						go: number
+						repStaked: number
+						repTotal: number
+						favorite?: string[]
+						draft?: DraftPersona[]
+					}
+					const { go, repStaked, repTotal, favorite, draft } = res.data() as UserRes
 					tokens.update((state) => ({
 						...state,
 						go: go ?? 5000, // FIXME: this should be DEFAULT_GO_AMOUNT
 						repStaked: repStaked ?? 0,
 						repTotal: repTotal ?? 5000, // FIXME: this should be 0
 					}))
-					personas.update((state) => ({ ...state, favorite: favorite ?? [] }))
+					personas.update((state) => ({ ...state, favorite: favorite ?? [], draft: draft ?? [] }))
 				})
 				this.userSubscriptions.push(subscribeTokens)
 				const transactionSnapshot = collection(db, `users/${p.address}/transactions`)
@@ -183,7 +187,10 @@ export class Firebase implements Adapter {
 				const newDraft = [...draft, draftPersona]
 				const { address } = get(profile)
 
-				if (address) saveToLocalStorage(`${address}-firebase-drafts`, newDraft)
+				if (address) {
+					const userDoc = doc(db, `users/${address}`)
+					updateDoc(userDoc, { draft: newDraft })
+				}
 
 				resolve(newDraft.length - 1)
 
@@ -197,7 +204,10 @@ export class Firebase implements Adapter {
 				draft[index] = draftPersona
 				const { address } = get(profile)
 
-				if (address) saveToLocalStorage(`${address}-firebase-drafts`, draft)
+				if (address) {
+					const userDoc = doc(db, `users/${address}`)
+					updateDoc(userDoc, { draft: draft })
+				}
 
 				resolve()
 
@@ -212,7 +222,10 @@ export class Firebase implements Adapter {
 				const newDraft = draft.filter((_, i) => i !== index)
 				const { address } = get(profile)
 
-				if (address) saveToLocalStorage(`${address}-firebase-drafts`, draft)
+				if (address) {
+					const userDoc = doc(db, `users/${address}`)
+					updateDoc(userDoc, { draft: newDraft })
+				}
 
 				resolve()
 
@@ -257,8 +270,8 @@ export class Firebase implements Adapter {
 
 		personas.update(({ draft, ...state }) => {
 			const newDraft = draft.filter((d) => d !== draftPersona)
-
-			saveToLocalStorage(`${address}-firebase-drafts`, newDraft)
+			const userDoc = doc(db, `users/${address}`)
+			updateDoc(userDoc, { draft: newDraft })
 
 			return { ...state, draft: newDraft }
 		})
