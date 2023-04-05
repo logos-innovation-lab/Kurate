@@ -29,9 +29,20 @@
 			...chat,
 			chatId,
 		}))
+
+	type SortBy = 'activity' | 'alphabetical'
+	interface SortByOption {
+		sortBy: SortBy
+		label: string
+	}
 	let sortAsc = false
-	let sortBy: 'activity' | 'alphabetical' = 'activity'
+	let sortBy: SortBy = 'activity'
 	let filterQuery = ''
+
+	const sortByOptions: SortByOption[] = [
+		{ sortBy: 'activity', label: 'Sort by recent activity' },
+		{ sortBy: 'alphabetical', label: 'Sort by name (alphabetical)' },
+	]
 
 	$: openChats = allChats
 		.filter(
@@ -63,12 +74,11 @@
 			<Dropdown>
 				<Button slot="button" icon={SettingsView} />
 
-				<DropdownItem active={sortBy === 'activity'} onClick={() => (sortBy = 'activity')}>
-					Sort by recent activity
-				</DropdownItem>
-				<DropdownItem active={sortBy === 'alphabetical'} onClick={() => (sortBy = 'alphabetical')}>
-					Sort by name (alphabetical)
-				</DropdownItem>
+				{#each sortByOptions as option}
+					<DropdownItem active={sortBy === option.sortBy} onClick={() => (sortBy = option.sortBy)}>
+						{option.label}
+					</DropdownItem>
+				{/each}
 			</Dropdown>
 			<Button
 				icon={sortAsc ? SortAscending : SortDescending}
