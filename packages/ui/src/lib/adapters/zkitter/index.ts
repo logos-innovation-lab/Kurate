@@ -34,8 +34,8 @@ const IPFS_AUTH =
 const IPFS_GATEWAY = 'https://kurate.infura-ipfs.io/ipfs'
 
 export class ZkitterAdapter implements Adapter {
-	private zkitter?: Zkitter
-	private ipfs = create({
+	protected zkitter?: Zkitter
+	protected ipfs = create({
 		host: 'ipfs.infura.io',
 		port: 5001,
 		protocol: 'https',
@@ -44,15 +44,15 @@ export class ZkitterAdapter implements Adapter {
 		},
 	})
 
-	private identity: {
+	protected identity: {
 		zkIdentity: ZkIdentity
 		unirepIdentity: UnirepIdentity
 		ecdsa: { pub: string; priv: string }
 	} | null = null
 
-	private timeout: ReturnType<typeof setTimeout> | null = null
+	protected timeout: ReturnType<typeof setTimeout> | null = null
 
-	private contractSyncInterval: number = 60 * 1000 // 1 min
+	protected contractSyncInterval: number = 60 * 1000 // 1 min
 
 	async start() {
 		const { Zkitter } = await import('zkitter-js')
@@ -162,7 +162,7 @@ export class ZkitterAdapter implements Adapter {
 			const postMeta = await this.zkitter!.getPostMeta(meta.senderSeed)
 
 			if (meta && post && postMeta) {
-				const [_, __, personaId] = postMeta.groupId.split('_')
+				const [, , personaId] = postMeta.groupId.split('_')
 				const persona = get(personas).all.get(personaId)
 				if (persona) {
 					chats.update((state) => {
@@ -707,7 +707,24 @@ export class ZkitterAdapter implements Adapter {
 
 		const repProof = await this.genRepProof(getGlobalAnonymousFeed(), 5)
 		console.log(repProof)
-		const resp = await fetch(`${RELAYER_URL}/propose-message-with-rep`, {
+		// const resp = await fetch(`${RELAYER_URL}/propose-message-with-rep`, {
+		// 	method: 'post',
+		// 	headers: {
+		// 		'content-type': 'application/json',
+		// 	},
+		// 	body: JSON.stringify({
+		// 		personaId: Number(personaId),
+		// 		type: 0,
+		// 		postHash: '0x' + post.hash(),
+		// 		repProof: {
+		// 			publicSignals: repProof.publicSignals,
+		// 			proof: repProof.proof,
+		// 		},
+		// 	}),
+		// })
+
+		// @dev this is to create without rep
+		const resp = await fetch(`${RELAYER_URL}/propose-message-without-rep`, {
 			method: 'post',
 			headers: {
 				'content-type': 'application/json',
@@ -716,25 +733,8 @@ export class ZkitterAdapter implements Adapter {
 				personaId: Number(personaId),
 				type: 0,
 				postHash: '0x' + post.hash(),
-				repProof: {
-					publicSignals: repProof.publicSignals,
-					proof: repProof.proof,
-				},
 			}),
 		})
-
-		// @dev this is to create without rep
-		// const resp = await fetch(`${RELAYER_URL}/propose-message-without-rep`, {
-		// 	method: 'post',
-		// 	headers: {
-		// 		'content-type': 'application/json'
-		// 	},
-		// 	body: JSON.stringify({
-		// 		personaId: Number(personaId),
-		// 		type: 0,
-		// 		postHash: '0x' + post.hash(),
-		// 	})
-		// })
 
 		const json = await resp.json()
 
@@ -796,7 +796,7 @@ export class ZkitterAdapter implements Adapter {
 		return json.transaction as string
 	}
 
-	private async genRepProof(
+	protected async genRepProof(
 		contract: GlobalAnonymousFeed,
 		minRep?: number,
 	): Promise<ReputationProof> {
