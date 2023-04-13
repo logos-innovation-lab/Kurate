@@ -15,6 +15,7 @@
 	export { cls as class }
 	export let submit: (postText: string, images: string[]) => unknown
 	export let onBack: (postText: string, images: string[]) => unknown = () => history.back()
+	export let submitting = false
 	export let label: string | undefined = 'Submit'
 	export let postText = ''
 	export let images: string[] = []
@@ -59,9 +60,9 @@
 		<Button
 			icon={Checkmark}
 			variant="primary"
-			{label}
+			label={submitting ? 'Submitting...' : label}
 			on:click={() => submit(postText, images)}
-			disabled={!$profile.signer && postText === ''}
+			disabled={submitting || !$profile.signer || postText === ''}
 		/>
 	</Header>
 

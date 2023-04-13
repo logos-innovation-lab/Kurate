@@ -20,17 +20,22 @@
 	import { goto } from '$app/navigation'
 
 	const persona = $personas.all.get($page.params.id)
+	let submitting = false
 
 	async function submit(postText: string, images: string[]) {
 		try {
 			const signer = $profile.signer
 			if (!signer) throw new Error('no signer')
+			submitting = true
 
 			await adapter.publishPost($page.params.id, postText, images, signer)
+
+			submitting = false
 
 			state = 'post_submitted'
 		} catch (error) {
 			console.error(error)
+			submitting = false
 		}
 	}
 
@@ -166,7 +171,7 @@
 		</InfoScreen>
 	{/if}
 {:else if state === 'edit'}
-	<PostNew {submit} {onBack} />
+	<PostNew {submit} {onBack} {submitting} />
 {:else}
 	<InfoScreen title="Post submitted">
 		<div class="token-info">
