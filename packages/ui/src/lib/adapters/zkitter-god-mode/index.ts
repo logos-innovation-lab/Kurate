@@ -17,8 +17,8 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 	start(): Promise<void> {
 		tokens.set({
 			repStaked: 0,
-			repTotal: 9999,
-			go: 9999,
+			repTotal: Infinity,
+			go: Infinity,
 			loading: false,
 			epochDuration,
 			timeToEpoch: 0,
