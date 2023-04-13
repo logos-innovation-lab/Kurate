@@ -316,6 +316,7 @@ export class ZkitterAdapter implements Adapter {
 		const contract = getGlobalAnonymousFeed()
 		return contract.membersByPersona(personaId, identityCommitment)
 	}
+
 	private async loadFavorite(): Promise<void> {
 		if (!this.identity) return
 
@@ -644,7 +645,7 @@ export class ZkitterAdapter implements Adapter {
 		// const {Registry, RLN} = await import('rlnjs')
 
 		// User did not join the persona yet
-		if (await this.queryPersonaJoined(personaId)) {
+		if (!(await this.queryPersonaJoined(personaId))) {
 			await this.joinPersona(personaId)
 
 			// Wait for the join to propagate

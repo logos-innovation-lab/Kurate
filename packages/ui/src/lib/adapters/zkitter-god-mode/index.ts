@@ -38,7 +38,7 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 		const { Post, MessageType, PostMessageSubType } = await import('zkitter-js')
 
 		// User did not join the persona yet
-		if (await this.queryPersonaJoined(personaId)) {
+		if (!(await this.queryPersonaJoined(personaId))) {
 			await this.joinPersona(personaId)
 
 			// Wait for the join to propagate
@@ -60,13 +60,16 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 			},
 		})
 
-		const proof = await this.zkitter!.createProof({
+		if (!this.zkitter) throw Error('zkitter is not initialized')
+		if (!this.identity) throw Error('must sign in first')
+
+		const proof = await this.zkitter.createProof({
 			hash: post.hash(),
-			zkIdentity: this.identity!.zkIdentity,
+			zkIdentity: this.identity.zkIdentity,
 			groupId: GroupAdapter.createGroupId(personaId),
 		})
 
-		await this.zkitter!.services.pubsub.publish(post, proof)
+		await this.zkitter.services.pubsub.publish(post, proof)
 
 		const repProof = await this.genRepProof(getGlobalAnonymousFeed(), 5)
 		console.log(repProof)
@@ -136,7 +139,9 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 			payload: { content: draftPersona.pitch },
 		})
 
-		await this.zkitter!.services.pubsub.publish(
+		if (!this.zkitter) throw Error('zkitter is not initialized')
+
+		await this.zkitter.services.pubsub.publish(
 			pitch,
 			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
 			true,
@@ -148,7 +153,7 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 			payload: { content: draftPersona.description },
 		})
 
-		await this.zkitter!.services.pubsub.publish(
+		await this.zkitter.services.pubsub.publish(
 			description,
 			await generateRLNProofForNewPersona(
 				description.hash(),
@@ -171,7 +176,7 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 				},
 			})
 			seedPostHashes.push('0x' + post.hash())
-			await this.zkitter!.services.pubsub.publish(
+			await this.zkitter.services.pubsub.publish(
 				post,
 				await generateRLNProofForNewPersona(post.hash(), this.identity.zkIdentity, newPersonaId),
 				true,
