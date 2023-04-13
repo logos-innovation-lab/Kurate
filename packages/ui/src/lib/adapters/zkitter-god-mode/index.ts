@@ -1,4 +1,4 @@
-import { getGlobalAnonymousFeed } from '$lib/services'
+import { getGlobalAnonymousFeed, getProvider } from '$lib/services'
 import { sleep } from '$lib/utils'
 import { GroupAdapter } from '../zkitter/group-adapter'
 import type { Signer } from 'ethers'
@@ -6,6 +6,9 @@ import { posts } from '$lib/stores/post'
 import { RELAYER_URL } from '../../constants'
 import { ZkitterAdapter } from '../zkitter'
 import { tokens } from '$lib/stores/tokens'
+import { generateRLNProofForNewPersona, prover } from '../zkitter/utils'
+import { UserState } from '@unirep/core'
+import type { DraftPersona } from '$lib/stores/persona'
 
 const epochDuration = 8 * 60 * 60 * 1000
 
@@ -33,7 +36,6 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 		signer: Signer,
 	): Promise<string> {
 		const { Post, MessageType, PostMessageSubType } = await import('zkitter-js')
-		// const {Registry, RLN} = await import('rlnjs')
 
 		// User did not join the persona yet
 		if (await this.queryPersonaJoined(personaId)) {
@@ -101,5 +103,108 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 		)
 
 		return hash
+	}
+
+	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
+		if (!this.identity) throw new Error('must sign in first')
+		if (!this.zkitter) throw new Error('zkitter is not initialized')
+
+		const { MessageType, Post, PostMessageSubType } = await import('zkitter-js')
+
+		const { unirepIdentity } = this.identity
+
+		const contract = getGlobalAnonymousFeed()
+
+		const state = new UserState(
+			{
+				prover: prover, // a circuit prover
+				attesterId: (await contract.attesterId()).toBigInt(),
+				unirepAddress: await contract.unirep(),
+				provider: getProvider(), // an ethers.js provider
+			},
+			unirepIdentity,
+		)
+
+		await state.sync.start()
+		await state.waitForSync()
+
+		const newPersonaId = (await contract.numOfPersonas()).toNumber()
+
+		const pitch = new Post({
+			type: MessageType.Post,
+			subtype: PostMessageSubType.Default,
+			payload: { content: draftPersona.pitch },
+		})
+
+		await this.zkitter!.services.pubsub.publish(
+			pitch,
+			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
+			true,
+		)
+
+		const description = new Post({
+			type: MessageType.Post,
+			subtype: PostMessageSubType.Default,
+			payload: { content: draftPersona.description },
+		})
+
+		await this.zkitter!.services.pubsub.publish(
+			description,
+			await generateRLNProofForNewPersona(
+				description.hash(),
+				this.identity.zkIdentity,
+				newPersonaId,
+			),
+			true,
+		)
+
+		const seedPostHashes: string[] = []
+
+		for (let i = 0; i < draftPersona.posts.length; i++) {
+			const data = draftPersona.posts[i]
+			const post = new Post({
+				type: MessageType.Post,
+				subtype: PostMessageSubType.Default,
+				payload: {
+					content: data.text,
+					attachment: data.images.length ? data.images[0] : undefined,
+				},
+			})
+			seedPostHashes.push('0x' + post.hash())
+			await this.zkitter!.services.pubsub.publish(
+				post,
+				await generateRLNProofForNewPersona(post.hash(), this.identity.zkIdentity, newPersonaId),
+				true,
+			)
+		}
+
+		if (draftPersona.posts.length !== 5) throw new Error('must contain exactly 5 seed posts')
+		if (!draftPersona.picture) throw new Error('must contain a profile picture')
+		if (!draftPersona.cover) throw new Error('must contain a cover image')
+
+		const signupProof = await state.genUserSignUpProof()
+
+		const resp = await fetch(`${RELAYER_URL}/create-and-join-without-rep`, {
+			method: 'post',
+			headers: {
+				'content-type': 'application/json',
+			},
+			body: JSON.stringify({
+				name: draftPersona.name,
+				picture: draftPersona.picture,
+				cover: draftPersona.cover,
+				pitch: '0x' + pitch.hash(),
+				description: '0x' + description.hash(),
+				seedPostHashes: seedPostHashes as [string, string, string, string, string],
+				signupSignals: signupProof.publicSignals,
+				signupProof: signupProof.proof,
+			}),
+		})
+
+		const json = await resp.json()
+
+		console.log(json)
+
+		return String(newPersonaId)
 	}
 }
