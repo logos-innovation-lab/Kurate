@@ -20,7 +20,7 @@ import type {
 	Proof,
 } from 'zkitter-js'
 import type { Persona } from '../../stores/persona'
-import { UserState } from '@unirep/core'
+import { UserState, schema } from '@unirep/core'
 import type { ZkIdentity as UnirepIdentity } from '@unirep/utils'
 import type { ZkIdentity } from '@zk-kit/identity'
 import type { GlobalAnonymousFeed } from '../../assets/typechain'
@@ -53,6 +53,8 @@ export class ZkitterAdapter implements Adapter {
 	protected timeout: ReturnType<typeof setTimeout> | null = null
 
 	protected contractSyncInterval: number = 60 * 1000 // 1 min
+
+	protected userState: UserState | null = null
 
 	async start() {
 		const { Zkitter } = await import('zkitter-js')
@@ -402,22 +404,9 @@ export class ZkitterAdapter implements Adapter {
 
 		const { MessageType, Post, PostMessageSubType } = await import('zkitter-js')
 
-		const { unirepIdentity } = this.identity
-
 		const contract = getGlobalAnonymousFeed()
 
-		const state = new UserState(
-			{
-				prover: prover, // a circuit prover
-				attesterId: (await contract.attesterId()).toBigInt(),
-				unirepAddress: await contract.unirep(),
-				provider: getProvider(), // an ethers.js provider
-			},
-			unirepIdentity,
-		)
-
-		await state.sync.start()
-		await state.waitForSync()
+		await this.userState!.waitForSync()
 
 		const newPersonaId = (await contract.numOfPersonas()).toNumber()
 
@@ -473,7 +462,7 @@ export class ZkitterAdapter implements Adapter {
 		if (!draftPersona.picture) throw new Error('must contain a profile picture')
 		if (!draftPersona.cover) throw new Error('must contain a cover image')
 
-		const signupProof = await state.genUserSignUpProof()
+		const signupProof = await this.userState!.genUserSignUpProof()
 		const repProof = await this.genRepProof(contract, 10)
 		const resp = await fetch(`${RELAYER_URL}/create-and-join-with-rep`, {
 			method: 'post',
@@ -530,24 +519,9 @@ export class ZkitterAdapter implements Adapter {
 		if (!this.identity) throw new Error('must sign in first')
 		if (!this.zkitter) throw new Error('zkitter is not initialized')
 
-		const { unirepIdentity } = this.identity
+		await this.userState!.waitForSync()
 
-		const contract = getGlobalAnonymousFeed()
-
-		const state = new UserState(
-			{
-				prover: prover, // a circuit prover
-				attesterId: (await contract.attesterId()).toBigInt(),
-				unirepAddress: await contract.unirep(),
-				provider: getProvider(), // an ethers.js provider
-			},
-			unirepIdentity,
-		)
-
-		await state.sync.start()
-		await state.waitForSync()
-
-		const signupProof = await state.genUserSignUpProof()
+		const signupProof = await this.userState!.genUserSignUpProof()
 
 		const resp = await fetch(`${RELAYER_URL}/join-persona`, {
 			method: 'post',
@@ -588,8 +562,24 @@ export class ZkitterAdapter implements Adapter {
 			ecdsa,
 		}))
 
-		await this.syncChats()
+		const contract = getGlobalAnonymousFeed()
 
+		const { IndexedDBConnector } = await import('anondb/web');
+
+		const db = await IndexedDBConnector.create(schema)
+		this.userState = new UserState(
+			{
+				db,
+				prover: prover, // a circuit prover
+				attesterId: (await contract.attesterId()).toBigInt(),
+				unirepAddress: await contract.unirep(),
+				provider: getProvider(), // an ethers.js provider
+			},
+			unirepIdentity,
+		)
+
+		await this.userState.sync.start()
+		await this.syncChats()
 		await this.loadFavorite()
 	}
 
@@ -801,30 +791,19 @@ export class ZkitterAdapter implements Adapter {
 		contract: GlobalAnonymousFeed,
 		minRep?: number,
 	): Promise<ReputationProof> {
-		const state = new UserState(
-			{
-				prover: prover, // a circuit prover
-				attesterId: (await contract.attesterId()).toBigInt(),
-				unirepAddress: await contract.unirep(),
-				provider: getProvider(), // an ethers.js provider
-			},
-			this.identity!.unirepIdentity,
-		)
+		await this.userState!.waitForSync()
 
-		await state.sync.start()
-		await state.waitForSync()
-
-		const latestTransitionedEpoch = await state.latestTransitionedEpoch()
+		const latestTransitionedEpoch = await this.userState!.latestTransitionedEpoch()
 		const currentEpoch = (await contract.attesterCurrentEpoch()).toNumber()
 
 		if (latestTransitionedEpoch < currentEpoch) {
-			const ust = await state.genUserStateTransitionProof({})
+			const ust = await this.userState!.genUserStateTransitionProof({})
 			const txHash = await this.userStateTransition(ust)
 			const blockNumber = await this.waitForTx(txHash)
-			await state.waitForSync(blockNumber)
+			await this.userState!.waitForSync(blockNumber)
 		}
 
-		return state.genProveReputationProof({ minRep })
+		return this.userState!.genProveReputationProof({ minRep })
 	}
 
 	async voteOnPost(groupId: string, postId: string, vote: '+' | '-', signer: Signer) {

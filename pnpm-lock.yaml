@@ -159,6 +159,7 @@ importers:
       '@unirep/utils': ^2.0.0-beta-1
       '@zk-kit/identity': ^1.4.1
       '@zk-kit/protocols': ^1.11.1
+      anondb: ^0.0.17
       eslint: ^8.36.0
       eslint-config-prettier: ^8.8.0
       eslint-plugin-svelte3: ^4.0.0
@@ -199,6 +200,7 @@ importers:
       '@unirep/utils': 2.0.0-beta-1
       '@zk-kit/identity': 1.4.1
       '@zk-kit/protocols': 1.11.1
+      anondb: 0.0.17
       eslint: 8.36.0
       eslint-config-prettier: 8.8.0_eslint@8.36.0
       eslint-plugin-svelte3: 4.0.0_wzem237sbvnwe7n34ytc5phasy
@@ -4575,6 +4577,23 @@ packages:
       - supports-color
     dev: true
 
+  /anondb/0.0.17:
+    resolution: {integrity: sha512-ihjIJQhAhFkBp76fXzEGb6L1qNrzu5qkL3r4aFuZEIe83fXNkZ9KabUtiJfAq3DwmSJCRp6pZwAynkoZOCxmCQ==}
+    dependencies:
+      async-lock: 1.4.0
+      idb: 6.1.5
+      nanoid: 3.3.4
+      pg: 8.10.0
+      sql.js: 1.8.0
+      sqlite: 4.1.2
+      sqlite3: 5.1.6
+    transitivePeerDependencies:
+      - bluebird
+      - encoding
+      - pg-native
+      - supports-color
+    dev: true
+
   /ansi-colors/3.2.3:
     resolution: {integrity: sha512-LEHHyuhlPY3TmuUYMh2oz89lTShfvgbmzaBcxve9t/9Wuy7Dwf4yoAKcND7KFT1HAQfqZ12qtc+DUrBMeKF9nw==}
     engines: {node: '>=6'}
@@ -7574,6 +7593,15 @@ packages:
     resolution: {integrity: sha512-Gz1EvfOneuFfk4yG458dJ3TLJ7gV19q3OM/vVvvHf7eT02Hm1DleB4edsia6ahbKgAYxO9gvyQ1ioWZR+a00Yw==}
     dev: true
 
+  /follow-redirects/1.15.2:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
     engines: {node: '>=4.0'}
@@ -7584,6 +7612,7 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.4
+    dev: true
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -8485,7 +8514,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug
@@ -12700,7 +12729,7 @@ packages:
     dependencies:
       command-exists: 1.2.9
       commander: 8.3.0
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       js-sha3: 0.8.0
       memorystream: 0.3.1
       semver: 5.7.1

@@ -7,7 +7,6 @@ import { RELAYER_URL } from '../../constants'
 import { ZkitterAdapter } from '../zkitter'
 import { tokens } from '$lib/stores/tokens'
 import { generateRLNProofForNewPersona, prover } from '../zkitter/utils'
-import { UserState } from '@unirep/core'
 import type { DraftPersona } from '$lib/stores/persona'
 
 const epochDuration = 8 * 60 * 60 * 1000
@@ -71,8 +70,8 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 
 		await this.zkitter.services.pubsub.publish(post, proof)
 
-		const repProof = await this.genRepProof(getGlobalAnonymousFeed(), 5)
-		console.log(repProof)
+		// const repProof = await this.genRepProof(getGlobalAnonymousFeed(), 5)
+		// console.log(repProof)
 
 		// @dev this is to create without rep
 		const resp = await fetch(`${RELAYER_URL}/propose-message-without-rep`, {
@@ -114,22 +113,9 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 
 		const { MessageType, Post, PostMessageSubType } = await import('zkitter-js')
 
-		const { unirepIdentity } = this.identity
-
 		const contract = getGlobalAnonymousFeed()
 
-		const state = new UserState(
-			{
-				prover: prover, // a circuit prover
-				attesterId: (await contract.attesterId()).toBigInt(),
-				unirepAddress: await contract.unirep(),
-				provider: getProvider(), // an ethers.js provider
-			},
-			unirepIdentity,
-		)
-
-		await state.sync.start()
-		await state.waitForSync()
+		await this.userState!.waitForSync()
 
 		const newPersonaId = (await contract.numOfPersonas()).toNumber()
 
@@ -187,7 +173,7 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 		if (!draftPersona.picture) throw new Error('must contain a profile picture')
 		if (!draftPersona.cover) throw new Error('must contain a cover image')
 
-		const signupProof = await state.genUserSignUpProof()
+		const signupProof = await this.userState!.genUserSignUpProof()
 
 		const resp = await fetch(`${RELAYER_URL}/create-and-join-without-rep`, {
 			method: 'post',
