@@ -15,7 +15,7 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 
 	personaId: number
 
-	lastSync: number = 0;
+	lastSync = 0
 
 	static createGroupId(personaId: number | string) {
 		return `kurate_${GLOBAL_ANONYMOUS_FEED_ADDRESS}_${personaId}`
@@ -36,7 +36,7 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 	}
 
 	async sync() {
-		if (Date.now() - this.lastSync < 60000) return;
+		if (Date.now() - this.lastSync < 60000) return
 		const lastMemberIdCommitment = (await this.members()).pop()
 		// TODO: expose method in new zkitter-js release
 		const lastMember = await (this.db as any)
@@ -69,7 +69,7 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 			}
 		}
 
-		this.lastSync = Date.now();
+		this.lastSync = Date.now()
 	}
 
 	async tree() {

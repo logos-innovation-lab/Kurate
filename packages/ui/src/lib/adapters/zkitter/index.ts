@@ -564,7 +564,7 @@ export class ZkitterAdapter implements Adapter {
 
 		const contract = getGlobalAnonymousFeed()
 
-		const { IndexedDBConnector } = await import('anondb/web');
+		const { IndexedDBConnector } = await import('anondb/web')
 
 		const db = await IndexedDBConnector.create(schema)
 		this.userState = new UserState(
