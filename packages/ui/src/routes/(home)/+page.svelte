@@ -5,6 +5,7 @@
 	import SortDescending from '$lib/components/icons/sort-descending.svelte'
 
 	import Button from '$lib/components/button.svelte'
+	import Loading from '$lib/components/loading.svelte'
 	import Dropdown from '$lib/components/dropdown.svelte'
 	import DropdownItem from '$lib/components/dropdown-item.svelte'
 	import Grid from '$lib/components/grid.svelte'
@@ -41,7 +42,15 @@
 </script>
 
 {#if $personas.loading}
-	<SectionTitle title="Loading personas..." />
+<!-- <SectionTitle title="Loading personas..." /> -->
+	<Loading title="Loading Personas">
+		<!-- <svelte:fragment slot="title">
+			Please wait while Personas are being loaded
+		</svelte:fragment>
+		<svelte:fragment slot="description">
+			Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi eum provident, alias quis explicabo, sequi perferendis commodi distinctio repellendus odio aliquid harum ullam.
+		</svelte:fragment> -->
+	</Loading>
 {:else}
 	{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
 		<SectionTitle title="Draft personas">
