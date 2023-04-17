@@ -43,9 +43,7 @@
 
 {#if $personas.loading}
 	<Loading fullPage>
-		<svelte:fragment slot="title">
-			Loading Kurate homepage
-		</svelte:fragment>
+		<svelte:fragment slot="title">Loading Kurate homepage</svelte:fragment>
 	</Loading>
 {:else}
 	{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}

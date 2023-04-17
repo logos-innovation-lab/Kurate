@@ -92,9 +92,7 @@
 {/if}
 {#if $personas.loading || personaPosts?.loading}
 	<Loading>
-		<svelte:fragment slot="title">
-			Loading post
-		</svelte:fragment>
+		<svelte:fragment slot="title">Loading post</svelte:fragment>
 	</Loading>
 {:else if $personas.loading || personaPosts?.error}
 	<Container>

@@ -78,12 +78,10 @@
 </script>
 
 <svelte:window bind:scrollY={y} />
-	
-{#if $personas.loading || personaPosts?.loading}	
+
+{#if $personas.loading || personaPosts?.loading}
 	<Loading title="">
-		<svelte:fragment slot="title">
-			Loading
-		</svelte:fragment>
+		<svelte:fragment slot="title">Loading</svelte:fragment>
 	</Loading>
 {:else if $personas.error || personaPosts?.error}
 	<Container>
@@ -238,11 +236,9 @@
 		</svelte:fragment>
 		<Search bind:filterQuery />
 	</SectionTitle>
-	{#if !personaPosts || personaPosts.loading}		
+	{#if !personaPosts || personaPosts.loading}
 		<Loading title="">
-			<svelte:fragment slot="title">
-				Loading pending posts
-			</svelte:fragment>
+			<svelte:fragment slot="title">Loading pending posts</svelte:fragment>
 		</Loading>
 	{:else if personaPosts.pending.length === 0}
 		<Container>

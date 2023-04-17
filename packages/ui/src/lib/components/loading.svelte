@@ -18,9 +18,9 @@
 
 <div class={`loading-screen ${y > 0 ? 'scrolled' : ''} ${fullPage ? 'full-page' : ''} ${cls}`}>
 	<div class="loading">
-		<div class="circle"></div>
-		<div class="circle"></div>
-		<div class="circle"></div>
+		<div class="circle" />
+		<div class="circle" />
+		<div class="circle" />
 	</div>
 	<div class="title">
 		<slot name="title" />
@@ -34,7 +34,7 @@
 </div>
 
 <style lang="scss">
-	.loading-screen {		
+	.loading-screen {
 		display: flex;
 		align-items: stretch;
 		justify-content: center;
@@ -48,7 +48,7 @@
 		&.full-page {
 			min-height: calc(100dvh - 92px);
 			min-height: calc(100vh - 92px);
-			
+
 			@media (min-width: 688px) {
 				min-height: calc(100vh - 140px);
 			}
@@ -66,7 +66,7 @@
 			margin-bottom: var(--spacing-12);
 
 			@keyframes loading-circle {
-				0% {					
+				0% {
 					width: var(--spacing-6);
 					height: var(--spacing-6);
 					background-color: var(--color-body-text);
@@ -91,7 +91,7 @@
 					position: absolute;
 					inset: 50%;
 					transform: translate(-50%, -50%);
-					content: "";
+					content: '';
 					border-radius: 50%;
 					animation-duration: 2.1s;
 					animation-name: loading-circle;

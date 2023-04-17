@@ -53,11 +53,9 @@
 			</span>
 		</InfoBox>
 	</Container>
-{:else if $chats.loading}	
+{:else if $chats.loading}
 	<Loading>
-		<svelte:fragment slot="title">
-			Loading chat
-		</svelte:fragment>
+		<svelte:fragment slot="title">Loading chat</svelte:fragment>
 	</Loading>
 {:else if $chats.error}
 	<Container>

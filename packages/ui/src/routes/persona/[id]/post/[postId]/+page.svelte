@@ -60,12 +60,10 @@
 </script>
 
 <svelte:window bind:scrollY={y} />
-	
+
 {#if $personas.loading || personaPosts?.loading}
 	<Loading title="Loading post" fullPage>
-		<svelte:fragment slot="title">
-			Loading post
-		</svelte:fragment>
+		<svelte:fragment slot="title">Loading post</svelte:fragment>
 		<svelte:fragment slot="buttons">
 			<Button label="Cancel" icon={Close} on:click={() => history.back()} />
 		</svelte:fragment>

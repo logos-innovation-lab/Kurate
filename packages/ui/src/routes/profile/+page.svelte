@@ -79,9 +79,7 @@
 				<div class="wallet-info-wrapper">
 					{#await $profile.signer.getAddress()}
 						<Loading>
-							<svelte:fragment slot="title">
-								Loading address
-							</svelte:fragment>
+							<svelte:fragment slot="title">Loading address</svelte:fragment>
 						</Loading>
 					{:then address}
 						{address}

@@ -70,14 +70,12 @@
 	<SectionTitle title="Please login" />
 {:else if $chatsStore.loading === true}
 	<Loading fullPage>
-		<svelte:fragment slot="title">
-			Loading chats
-		</svelte:fragment>
+		<svelte:fragment slot="title">Loading chats</svelte:fragment>
 		<svelte:fragment slot="buttons">
 			<Button label="Cancel" icon={Close} on:click={() => goto(ROUTES.HOME)} />
 		</svelte:fragment>
 	</Loading>
-{:else}	
+{:else}
 	<SectionTitle title="Active chats">
 		<svelte:fragment slot="buttons">
 			<Dropdown>
