@@ -4,7 +4,8 @@
 	let cls: string | undefined = undefined
 	let y: number
 	export { cls as class }
-	export let title: string
+	export let title: string | undefined = undefined
+	export let fullPage: boolean | undefined = undefined
 	export let onBack: (() => unknown) | undefined = undefined
 	export let onClose: (() => unknown) | undefined = undefined
 </script>
@@ -15,7 +16,7 @@
 	<Header {title} {onBack} {onClose} />
 {/if}
 
-<div class={`loading-screen ${y > 0 ? 'scrolled' : ''} ${cls}`}>
+<div class={`loading-screen ${y > 0 ? 'scrolled' : ''} ${fullPage ? 'full-page' : ''} ${cls}`}>
 	<div class="loading">
 		<div class="circle"></div>
 		<div class="circle"></div>
@@ -33,9 +34,7 @@
 </div>
 
 <style lang="scss">
-	.loading-screen {
-		min-height: calc(100dvh - 92px);
-		min-height: calc(100vh - 92px);
+	.loading-screen {		
 		display: flex;
 		align-items: stretch;
 		justify-content: center;
@@ -46,12 +45,25 @@
 		padding: var(--spacing-24);
 		text-align: center;
 
+		&.full-page {
+			min-height: calc(100dvh - 92px);
+			min-height: calc(100vh - 92px);
+			
+			@media (min-width: 688px) {
+				min-height: calc(100vh - 140px);
+			}
+			&.scrolled {
+				min-height: calc(100vh - 68px);
+			}
+		}
+
 		.loading {
 			display: flex;
 			gap: var(--spacing-6);
 			justify-content: center;
 			align-items: center;
-			height: var(--spacing-12);
+			height: 32px;
+			margin-bottom: var(--spacing-12);
 
 			@keyframes loading-circle {
 				0% {					
@@ -102,6 +114,7 @@
 		}
 
 		.btns {
+			margin-top: var(--spacing-48);
 			display: flex;
 			flex-direction: row;
 			align-items: center;
@@ -111,13 +124,6 @@
 
 		:global(.small) {
 			font-size: var(--font-size-sm);
-		}
-
-		@media (min-width: 688px) {
-			min-height: calc(100vh - 140px);
-		}
-		&.scrolled {
-			min-height: calc(100vh - 68px);
 		}
 	}
 </style>

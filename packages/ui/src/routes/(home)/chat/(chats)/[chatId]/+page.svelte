@@ -6,6 +6,7 @@
 
 	import ChatScreen from '$lib/components/chat-screen.svelte'
 	import Container from '$lib/components/container.svelte'
+	import Loading from '$lib/components/loading.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
 
@@ -52,12 +53,12 @@
 			</span>
 		</InfoBox>
 	</Container>
-{:else if $chats.loading}
-	<Container>
-		<InfoBox>
-			<div>Loading...</div>
-		</InfoBox>
-	</Container>
+{:else if $chats.loading}	
+	<Loading>
+		<svelte:fragment slot="title">
+			Loading chat
+		</svelte:fragment>
+	</Loading>
 {:else if $chats.error}
 	<Container>
 		<InfoBox>

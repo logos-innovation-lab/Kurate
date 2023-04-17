@@ -42,14 +42,10 @@
 </script>
 
 {#if $personas.loading}
-<!-- <SectionTitle title="Loading personas..." /> -->
-	<Loading title="Loading Personas">
-		<!-- <svelte:fragment slot="title">
-			Please wait while Personas are being loaded
+	<Loading fullPage>
+		<svelte:fragment slot="title">
+			Loading Kurate homepage
 		</svelte:fragment>
-		<svelte:fragment slot="description">
-			Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi eum provident, alias quis explicabo, sequi perferendis commodi distinctio repellendus odio aliquid harum ullam.
-		</svelte:fragment> -->
 	</Loading>
 {:else}
 	{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}

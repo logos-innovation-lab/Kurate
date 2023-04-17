@@ -1,8 +1,10 @@
 <script lang="ts">
 	import Post from '$lib/components/post.svelte'
+	import Loading from '$lib/components/loading.svelte'
 	import Button from '$lib/components/button.svelte'
 	import ChatBot from '$lib/components/icons/chat-bot.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
+	import Close from '$lib/components/icons/close.svelte'
 	import Header from '$lib/components/header.svelte'
 	import Container from '$lib/components/container.svelte'
 	import InfoBox from '$lib/components/info-box.svelte'
@@ -58,13 +60,16 @@
 </script>
 
 <svelte:window bind:scrollY={y} />
-
+	
 {#if $personas.loading || personaPosts?.loading}
-	<Container>
-		<InfoBox>
-			<div>Loading...</div>
-		</InfoBox>
-	</Container>
+	<Loading title="Loading post" fullPage>
+		<svelte:fragment slot="title">
+			Loading post
+		</svelte:fragment>
+		<svelte:fragment slot="buttons">
+			<Button label="Cancel" icon={Close} on:click={() => history.back()} />
+		</svelte:fragment>
+	</Loading>
 {:else if $personas.loading || personaPosts?.error}
 	<Container>
 		<InfoBox>

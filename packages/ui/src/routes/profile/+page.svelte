@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte'
+	import Loading from '$lib/components/loading.svelte'
 	import Header from '$lib/components/header.svelte'
 	import Logout from '$lib/components/icons/logout.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
@@ -77,7 +78,11 @@
 				<h2>Wallet address</h2>
 				<div class="wallet-info-wrapper">
 					{#await $profile.signer.getAddress()}
-						loading...
+						<Loading>
+							<svelte:fragment slot="title">
+								Loading address
+							</svelte:fragment>
+						</Loading>
 					{:then address}
 						{address}
 					{:catch error}

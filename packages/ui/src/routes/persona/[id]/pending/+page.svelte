@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Post from '$lib/components/post.svelte'
+	import Loading from '$lib/components/loading.svelte'
 	import Button from '$lib/components/button.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
@@ -77,13 +78,13 @@
 </script>
 
 <svelte:window bind:scrollY={y} />
-
-{#if $personas.loading || personaPosts?.loading}
-	<Container>
-		<InfoBox>
-			<div>Loading...</div>
-		</InfoBox>
-	</Container>
+	
+{#if $personas.loading || personaPosts?.loading}	
+	<Loading title="">
+		<svelte:fragment slot="title">
+			Loading
+		</svelte:fragment>
+	</Loading>
 {:else if $personas.error || personaPosts?.error}
 	<Container>
 		<InfoBox>
@@ -237,13 +238,12 @@
 		</svelte:fragment>
 		<Search bind:filterQuery />
 	</SectionTitle>
-
-	{#if !personaPosts || personaPosts.loading}
-		<Container>
-			<InfoBox>
-				<p>Loading posts...</p>
-			</InfoBox>
-		</Container>
+	{#if !personaPosts || personaPosts.loading}		
+		<Loading title="">
+			<svelte:fragment slot="title">
+				Loading pending posts
+			</svelte:fragment>
+		</Loading>
 	{:else if personaPosts.pending.length === 0}
 		<Container>
 			<InfoBox>

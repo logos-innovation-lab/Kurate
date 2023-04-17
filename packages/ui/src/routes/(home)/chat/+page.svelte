@@ -4,8 +4,10 @@
 	import SettingsView from '$lib/components/icons/settings-view.svelte'
 	import SortAscending from '$lib/components/icons/sort-ascending.svelte'
 	import SortDescending from '$lib/components/icons/sort-descending.svelte'
+	import Close from '$lib/components/icons/close.svelte'
 
 	import Button from '$lib/components/button.svelte'
+	import Loading from '$lib/components/loading.svelte'
 	import ChatComponent from '$lib/components/chat.svelte'
 	import Dropdown from '$lib/components/dropdown.svelte'
 	import DropdownItem from '$lib/components/dropdown-item.svelte'
@@ -67,8 +69,15 @@
 {#if $profile.signer === undefined}
 	<SectionTitle title="Please login" />
 {:else if $chatsStore.loading === true}
-	<SectionTitle title="Loading..." />
-{:else}
+	<Loading fullPage>
+		<svelte:fragment slot="title">
+			Loading chats
+		</svelte:fragment>
+		<svelte:fragment slot="buttons">
+			<Button label="Cancel" icon={Close} on:click={() => goto(ROUTES.HOME)} />
+		</svelte:fragment>
+	</Loading>
+{:else}	
 	<SectionTitle title="Active chats">
 		<svelte:fragment slot="buttons">
 			<Dropdown>
