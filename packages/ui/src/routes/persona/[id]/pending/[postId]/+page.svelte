@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Post from '$lib/components/post.svelte'
+	import Loading from '$lib/components/loading.svelte'
 	import Button from '$lib/components/button.svelte'
 	import ChatBot from '$lib/components/icons/chat-bot.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
@@ -89,13 +90,10 @@
 {:else}
 	<Banner icon={Info}>Connect to see your GO balance</Banner>
 {/if}
-
 {#if $personas.loading || personaPosts?.loading}
-	<Container>
-		<InfoBox>
-			<div>Loading...</div>
-		</InfoBox>
-	</Container>
+	<Loading>
+		<svelte:fragment slot="title">Loading post</svelte:fragment>
+	</Loading>
 {:else if $personas.loading || personaPosts?.error}
 	<Container>
 		<InfoBox>

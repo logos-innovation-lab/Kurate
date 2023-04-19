@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Post from '$lib/components/post.svelte'
 	import Button from '$lib/components/button.svelte'
+	import Loading from '$lib/components/loading.svelte'
 	import Edit from '$lib/components/icons/edit.svelte'
 	import Star from '$lib/components/icons/star.svelte'
 	import Wallet from '$lib/components/icons/wallet.svelte'
@@ -67,11 +68,9 @@
 <svelte:window bind:scrollY={y} />
 
 {#if $personas.loading || personaPosts?.loading}
-	<Container>
-		<InfoBox>
-			<div>Loading...</div>
-		</InfoBox>
-	</Container>
+	<Loading title="Loading Persona" onBack={() => history.back} fullPage>
+		<svelte:fragment slot="title">Please wait</svelte:fragment>
+	</Loading>
 {:else if $personas.error || personaPosts?.error}
 	<Container>
 		<InfoBox>
@@ -171,13 +170,10 @@
 			</svelte:fragment>
 			<Search bind:filterQuery />
 		</SectionTitle>
-
 		{#if !personaPosts || personaPosts.loading}
-			<Container>
-				<InfoBox>
-					<p>Loading posts...</p>
-				</InfoBox>
-			</Container>
+			<Loading>
+				<svelte:fragment slot="title">Loading posts</svelte:fragment>
+			</Loading>
 		{:else if personaPosts.approved.length == 0}
 			<Container>
 				<InfoBox>

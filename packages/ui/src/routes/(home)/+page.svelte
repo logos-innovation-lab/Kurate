@@ -5,6 +5,7 @@
 	import SortDescending from '$lib/components/icons/sort-descending.svelte'
 
 	import Button from '$lib/components/button.svelte'
+	import Loading from '$lib/components/loading.svelte'
 	import Dropdown from '$lib/components/dropdown.svelte'
 	import DropdownItem from '$lib/components/dropdown-item.svelte'
 	import Grid from '$lib/components/grid.svelte'
@@ -41,7 +42,9 @@
 </script>
 
 {#if $personas.loading}
-	<SectionTitle title="Loading personas..." />
+	<Loading fullPage>
+		<svelte:fragment slot="title">Loading Kurate homepage</svelte:fragment>
+	</Loading>
 {:else}
 	{#if $personas.draft?.length !== 0 && $profile.signer !== undefined}
 		<SectionTitle title="Draft personas">
