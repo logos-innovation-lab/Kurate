@@ -57,8 +57,6 @@
 	$: persona = $personas.all.get(groupId)
 	let draftChat: DraftChat | undefined = undefined
 
-	$: console.log({ persona, post, personaPosts })
-
 	const startChat = async () => {
 		if (!persona || !post) return
 

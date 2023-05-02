@@ -31,6 +31,7 @@
 		"@unirep/utils": "^2.0.0-beta-1",
 		"@zk-kit/identity": "^1.4.1",
 		"@zk-kit/protocols": "^1.11.1",
+		"anondb": "^0.0.17",
 		"eslint": "^8.36.0",
 		"eslint-config-prettier": "^8.8.0",
 		"eslint-plugin-svelte3": "^4.0.0",

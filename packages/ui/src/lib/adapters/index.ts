@@ -5,6 +5,7 @@ import { ZkitterAdapter } from './zkitter'
 import { Firebase } from './firebase'
 import { ADAPTER } from '$lib/constants'
 import { getFromLocalStorage } from '$lib/utils'
+import { ZkitterAdapterGodMode } from './zkitter-god-mode'
 
 export interface Adapter {
 	// This is run when the app is mounted and should start app wide subscriptions
@@ -34,7 +35,7 @@ export interface Adapter {
 	subscribeToChat?: (chatId: string) => Promise<() => void>
 }
 
-export const adapters = ['zkitter', 'firebase'] as const
+export const adapters = ['zkitter', 'firebase', 'zkitter-god-mode'] as const
 export type AdapterName = (typeof adapters)[number]
 export const adapterName: AdapterName = getFromLocalStorage<AdapterName>(
 	'adapter',
@@ -48,6 +49,9 @@ switch (adapterName) {
 		break
 	case 'firebase':
 		adapter = new Firebase()
+		break
+	case 'zkitter-god-mode':
+		adapter = new ZkitterAdapterGodMode()
 		break
 	default:
 		throw new Error(`Invalid adapter ${ADAPTER}`)
