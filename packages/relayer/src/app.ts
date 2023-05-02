@@ -3,7 +3,7 @@ import AutoLoad, { AutoloadPluginOptions } from "@fastify/autoload";
 import { FastifyPluginAsync } from "fastify";
 import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts";
 import { syncGroup } from "./services/rln";
-import { GLOBAL_ANONYMOUS_FEED_ADDRESS, RPC_URL } from "./config";
+import { PUBLIC_GLOBAL_ANONYMOUS_FEED_ADDRESS, PUBLIC_PROVIDER } from "./config";
 import { getDefaultProvider } from "@ethersproject/providers";
 import epochSealer from "./services/epoch";
 
@@ -22,8 +22,8 @@ const app: FastifyPluginAsync<AppOptions> = async (
   fastify.withTypeProvider<JsonSchemaToTsProvider>();
 
   // Services
-  const provider = getDefaultProvider(RPC_URL);
-  syncGroup(provider, GLOBAL_ANONYMOUS_FEED_ADDRESS);
+  const provider = getDefaultProvider(PUBLIC_PROVIDER);
+  syncGroup(provider, PUBLIC_GLOBAL_ANONYMOUS_FEED_ADDRESS);
 
   epochSealer.start();
 

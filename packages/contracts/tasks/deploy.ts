@@ -1,43 +1,57 @@
+import { Unirep } from "@unirep/contracts";
+import { deployUnirep } from "@unirep/contracts/deploy";
 import { task, types } from "hardhat/config"
+
+// 28800 seconds = 8 hours per epoch
+const DEFAULT_EPOCH_LENGTH = 28800;
 
 task("deploy", "Deploy a GlobalAnonymousFeed contract")
   .addOptionalParam("unirep", "unirep contract address", undefined, types.string)
   .addOptionalParam("logs", "Print the logs", true, types.boolean)
-  .setAction(async ({ logs, unirep: unirepAddress }, { ethers, run }) => {
+  .addOptionalParam("epoch", `Epoch length (defaults to ${DEFAULT_EPOCH_LENGTH}`, DEFAULT_EPOCH_LENGTH, types.int)
+  .setAction(async ({ logs, unirep: unirepAddress, epoch: epochLength }, { ethers }) => {
     const globalAnonymousFeedFactory = await ethers.getContractFactory("GlobalAnonymousFeed");
 
     const [deployer] = await ethers.getSigners();
 
-    console.log(
-      "Deploying contracts with the account:",
-      deployer.address
-    );
+    logs && console.log(`Deploying contracts with the account: ${deployer.address}`);
+    logs && console.log("Account balance:", ethers.utils.formatEther(await deployer.getBalance()));
 
-    console.log("Account balance:", (await deployer.getBalance()).toString());
+    if (!unirepAddress) {
+        logs && console.log("Unirep contract address not provided, deploying Unirep first\n")
+        const unirepContract: Unirep = await deployUnirep(deployer)
+        unirepAddress = unirepContract.address;
+    }
+
+    logs && console.log(`\nUnirep contract address: ${unirepAddress}`);
 
     const gasPrice = await globalAnonymousFeedFactory.signer.getGasPrice();
-    // const estimatedGas = await globalAnonymousFeedFactory.signer.estimateGas(globalAnonymousFeedFactory.getDeployTransaction('0xF309DDf2Cc1b2701fED5171C5150092bAc946f07', 28800));
-    const estimatedGas = await globalAnonymousFeedFactory.signer.estimateGas(globalAnonymousFeedFactory.getDeployTransaction('0x5e5384c3EA26185BADF41d6980397eB4D36b850e', 60));
-    console.log(`Estimated gas: ${estimatedGas}`);
-    console.log(`Gas Price: ${gasPrice}`)
+    const estimatedGas = await globalAnonymousFeedFactory.signer.estimateGas(globalAnonymousFeedFactory.getDeployTransaction(unirepAddress, epochLength));
+    logs && console.log(`Estimated gas: ${estimatedGas}`);
+    logs && console.log(`Gas price: ${gasPrice}`)
+
     const deploymentPrice = gasPrice.mul(estimatedGas);
     const deployerBalance = await globalAnonymousFeedFactory.signer.getBalance();
-    console.log(`Deployer balance:  ${ethers.utils.formatEther(deployerBalance)}`);
-    console.log(`Deployment price:  ${ethers.utils.formatEther(deploymentPrice)}`);
-    // This is unirep@2.0.0-beta-1 contract address on Arbitrum Goerli
-    // https://developer.unirep.io/docs/testnet-deployment
-    // 28800 seconds = 8 hours per epoch
-    // const globalAnonymousFeedContract = await globalAnonymousFeedFactory.deploy('0xF309DDf2Cc1b2701fED5171C5150092bAc946f07', 28800);
 
-    // This was used for local dev
-    // 60 seconds = 1 minute per epoch
-    const globalAnonymousFeedContract = await globalAnonymousFeedFactory.deploy('0x5e5384c3EA26185BADF41d6980397eB4D36b850e', 60);
+    logs && console.log(`Deployer balance:  ${ethers.utils.formatEther(deployerBalance)}`);
+    logs && console.log(`Deployment price:  ${ethers.utils.formatEther(deploymentPrice)}`);
+
+    const globalAnonymousFeedContract = await globalAnonymousFeedFactory.deploy(unirepAddress, epochLength);
 
     await globalAnonymousFeedContract.deployed();
 
-    if (logs) {
-      console.info(`GlobalAnonymousFeedContract contract has been deployed to: ${globalAnonymousFeedContract.address}`);
-    }
+    logs && console.info("\n-----------------------------------------------------------------");
+    logs && console.info('GlobalAnonymousFeedContract contract has been deployed');
+    logs && console.log("Don't forget to set the variables for both the UI and relayer\n");
+
+    logs && console.log(`PUBLIC_GLOBAL_ANONYMOUS_FEED_ADDRESS=${globalAnonymousFeedContract.address}`);
+    logs && console.log(`PUBLIC_PROVIDER=${ethers.provider.connection.url}`);
+
+    logs && console.log("\nRelayer only");
+    logs && console.log(`PRIVATE_KEY=...`);
+
+    logs && console.log("\nUI only");
+    logs && console.log(`PUBLIC_RELAYER_URL=...`);
 
     return globalAnonymousFeedContract;
  })

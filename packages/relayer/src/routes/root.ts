@@ -2,7 +2,7 @@ import { FastifyPluginAsyncJsonSchemaToTs } from "@fastify/type-provider-json-sc
 // import { rlnRegistry, verifyProof } from "../services/rln";
 import { getDefaultProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
-import { GLOBAL_ANONYMOUS_FEED_ADDRESS, PRIVATE_KEY, RPC_URL } from "../config";
+import { PUBLIC_GLOBAL_ANONYMOUS_FEED_ADDRESS, PRIVATE_KEY, PUBLIC_PROVIDER } from "../config";
 import { GlobalAnonymousFeed__factory } from "../abi";
 import cors from '@fastify/cors'
 const path = require('path')
@@ -331,11 +331,11 @@ const getBodySchemaWithoutRep = () => {
 const root: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
 ): Promise<void> => {
-  console.log(RPC_URL)
-  const provider = getDefaultProvider(RPC_URL);
+  console.log(PUBLIC_PROVIDER)
+  const provider = getDefaultProvider(PUBLIC_PROVIDER);
   const wallet = new Wallet(PRIVATE_KEY, provider);
   const feed = GlobalAnonymousFeed__factory.connect(
-    GLOBAL_ANONYMOUS_FEED_ADDRESS,
+    PUBLIC_GLOBAL_ANONYMOUS_FEED_ADDRESS,
     wallet
   );
 
@@ -360,7 +360,7 @@ const root: FastifyPluginAsyncJsonSchemaToTs = async (
         return
       }
       const hostname = new URL(origin as string).hostname
-      if(hostname === "localhost"){
+      if(hostname === "localhost" || hostname === "127.0.0.1" || hostname === "kurate.vercel.app"){
         //  Request from localhost will pass
         cb(null, true)
         return
