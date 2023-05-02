@@ -1,4 +1,4 @@
-import { getGlobalAnonymousFeed, getProvider } from '$lib/services'
+import { getGlobalAnonymousFeed } from '$lib/services'
 import { sleep } from '$lib/utils'
 import { GroupAdapter } from '../zkitter/group-adapter'
 import type { Signer } from 'ethers'
@@ -6,7 +6,7 @@ import { posts } from '$lib/stores/post'
 import { RELAYER_URL } from '../../constants'
 import { ZkitterAdapter } from '../zkitter'
 import { tokens } from '$lib/stores/tokens'
-import { generateRLNProofForNewPersona, prover } from '../zkitter/utils'
+import { generateRLNProofForNewPersona } from '../zkitter/utils'
 import type { DraftPersona } from '$lib/stores/persona'
 
 const epochDuration = 8 * 60 * 60 * 1000
@@ -35,6 +35,8 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 		signer: Signer,
 	): Promise<string> {
 		const { Post, MessageType, PostMessageSubType } = await import('zkitter-js')
+
+		if (!signer) throw new Error('must connect with wallet first')
 
 		// User did not join the persona yet
 		if (!(await this.queryPersonaJoined(personaId))) {
@@ -70,9 +72,6 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 
 		await this.zkitter.services.pubsub.publish(post, proof)
 
-		// const repProof = await this.genRepProof(getGlobalAnonymousFeed(), 5)
-		// console.log(repProof)
-
 		// @dev this is to create without rep
 		const resp = await fetch(`${RELAYER_URL}/propose-message-without-rep`, {
 			method: 'post',
@@ -90,8 +89,6 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 
 		if (json.error) throw new Error(json.error)
 
-		console.log(json)
-
 		const hash = post.hash()
 
 		posts.addPending(
@@ -108,14 +105,16 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 	}
 
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
+		if (!signer) throw new Error('must connect with wallet first')
 		if (!this.identity) throw new Error('must sign in first')
 		if (!this.zkitter) throw new Error('zkitter is not initialized')
+		if (!this.userState) throw new Error('user state is not initialized')
 
 		const { MessageType, Post, PostMessageSubType } = await import('zkitter-js')
 
 		const contract = getGlobalAnonymousFeed()
 
-		await this.userState!.waitForSync()
+		await this.userState.waitForSync()
 
 		const newPersonaId = (await contract.numOfPersonas()).toNumber()
 
@@ -173,7 +172,7 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 		if (!draftPersona.picture) throw new Error('must contain a profile picture')
 		if (!draftPersona.cover) throw new Error('must contain a cover image')
 
-		const signupProof = await this.userState!.genUserSignUpProof()
+		const signupProof = await this.userState.genUserSignUpProof()
 
 		const resp = await fetch(`${RELAYER_URL}/create-and-join-without-rep`, {
 			method: 'post',
