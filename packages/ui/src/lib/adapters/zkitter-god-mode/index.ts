@@ -12,10 +12,6 @@ import type { DraftPersona } from '$lib/stores/persona'
 const epochDuration = 8 * 60 * 60 * 1000
 
 export class ZkitterAdapterGodMode extends ZkitterAdapter {
-	constructor() {
-		super()
-	}
-
 	start(): Promise<void> {
 		tokens.set({
 			repStaked: 0,
@@ -37,6 +33,8 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 		const { Post, MessageType, PostMessageSubType } = await import('zkitter-js')
 
 		if (!signer) throw new Error('must connect with wallet first')
+
+		const zkitter = await this.getZkitterClient()
 
 		// User did not join the persona yet
 		if (!(await this.queryPersonaJoined(personaId))) {
@@ -61,16 +59,15 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 			},
 		})
 
-		if (!this.zkitter) throw Error('zkitter is not initialized')
 		if (!this.identity) throw Error('must sign in first')
 
-		const proof = await this.zkitter.createProof({
+		const proof = await zkitter.createProof({
 			hash: post.hash(),
 			zkIdentity: this.identity.zkIdentity,
 			groupId: GroupAdapter.createGroupId(personaId),
 		})
 
-		await this.zkitter.services.pubsub.publish(post, proof)
+		await zkitter.services.pubsub.publish(post, proof)
 
 		// @dev this is to create without rep
 		const resp = await fetch(`${RELAYER_URL}/propose-message-without-rep`, {
@@ -107,8 +104,9 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
 		if (!signer) throw new Error('must connect with wallet first')
 		if (!this.identity) throw new Error('must sign in first')
-		if (!this.zkitter) throw new Error('zkitter is not initialized')
 		if (!this.userState) throw new Error('user state is not initialized')
+
+		const zkitter = await this.getZkitterClient()
 
 		const { MessageType, Post, PostMessageSubType } = await import('zkitter-js')
 
@@ -124,9 +122,9 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 			payload: { content: draftPersona.pitch },
 		})
 
-		if (!this.zkitter) throw Error('zkitter is not initialized')
+		if (!zkitter) throw Error('zkitter is not initialized')
 
-		await this.zkitter.services.pubsub.publish(
+		await zkitter.services.pubsub.publish(
 			pitch,
 			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
 			true,
@@ -138,7 +136,7 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 			payload: { content: draftPersona.description },
 		})
 
-		await this.zkitter.services.pubsub.publish(
+		await zkitter.services.pubsub.publish(
 			description,
 			await generateRLNProofForNewPersona(
 				description.hash(),
@@ -161,7 +159,7 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 				},
 			})
 			seedPostHashes.push('0x' + post.hash())
-			await this.zkitter.services.pubsub.publish(
+			await zkitter.services.pubsub.publish(
 				post,
 				await generateRLNProofForNewPersona(post.hash(), this.identity.zkIdentity, newPersonaId),
 				true,
