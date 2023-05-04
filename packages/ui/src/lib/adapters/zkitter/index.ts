@@ -34,7 +34,6 @@ const IPFS_AUTH =
 const IPFS_GATEWAY = 'https://kurate.infura-ipfs.io/ipfs'
 
 export class ZkitterAdapter implements Adapter {
-	protected zkitter?: Zkitter
 	protected ipfs = create({
 		host: 'ipfs.infura.io',
 		port: 5001,
@@ -56,14 +55,30 @@ export class ZkitterAdapter implements Adapter {
 
 	protected userState: UserState | null = null
 
+	protected _startPromise: Promise<Zkitter>
+
+	protected _resolveZkitterStart: (zkitter: Zkitter) => void = () => null
+
+	constructor() {
+		this._startPromise = new Promise((resolve) => {
+			this._resolveZkitterStart = resolve
+		})
+	}
+
+	async getZkitterClient(): Promise<Zkitter> {
+		return this._startPromise
+	}
+
 	async start() {
 		const { Zkitter } = await import('zkitter-js')
 
 		const contract = await getGlobalAnonymousFeed()
 
-		this.zkitter = await Zkitter.initialize({ groups: [], topicPrefix: 'kurate_dev_5' })
+		const zkitter = await Zkitter.initialize({ groups: [], topicPrefix: 'kurate_dev_5' })
 
-		this.zkitter.on('Zkitter.NewMessageCreated', async (msg: Message, proof: Proof) => {
+		this._resolveZkitterStart(zkitter)
+
+		zkitter.on('Zkitter.NewMessageCreated', async (msg: Message, proof: Proof) => {
 			if (msg.type === 'POST') {
 				const post = msg as ZkitterPost
 				const hash = post.hash()
@@ -116,7 +131,7 @@ export class ZkitterAdapter implements Adapter {
 
 				const { zkIdentity } = this.identity!
 				const postId = chat.payload.senderSeed
-				const msgProof = await this.zkitter!.getProof(postId)
+				const msgProof = await zkitter.getProof(postId)
 
 				if (msgProof?.type !== 'rln' || !msgProof.ecdh)
 					throw new Error('invalid proof from chat id')
@@ -131,7 +146,7 @@ export class ZkitterAdapter implements Adapter {
 			}
 		})
 
-		this.zkitter.on('Group.NewGroupMemberCreated', async (member, groupId) => {
+		zkitter.on('Group.NewGroupMemberCreated', async (member, groupId) => {
 			console.log('Group.NewGroupMemberCreated', member, groupId)
 		})
 
@@ -139,7 +154,7 @@ export class ZkitterAdapter implements Adapter {
 		await this.syncPersonaData(contract)
 		await this.syncChats()
 
-		await this.zkitter.services.groups.watch()
+		await zkitter.services.groups.watch()
 
 		await this.loadFavorite()
 
@@ -154,14 +169,16 @@ export class ZkitterAdapter implements Adapter {
 	private async syncChats() {
 		if (!this.identity) return
 
-		const chatMetas = await this.zkitter!.getChatByUser(
+		const zkitter = await this.getZkitterClient()
+
+		const chatMetas = await zkitter.getChatByUser(
 			'0x' + this.identity.zkIdentity.genIdentityCommitment().toString(16),
 		)
 
 		for (let i = 0; i < chatMetas.length; i++) {
 			const meta = chatMetas[i]
-			const post = await this.zkitter!.db.getPost(meta.senderSeed)
-			const postMeta = await this.zkitter!.getPostMeta(meta.senderSeed)
+			const post = await zkitter.db.getPost(meta.senderSeed)
+			const postMeta = await zkitter.getPostMeta(meta.senderSeed)
 
 			if (meta && post && postMeta) {
 				const [, , personaId] = postMeta.groupId.split('_')
@@ -245,8 +262,7 @@ export class ZkitterAdapter implements Adapter {
 		)
 	}
 	private async queryPersonasFromContract(contract: GlobalAnonymousFeed) {
-		if (!this.zkitter) throw new Error('zkitter is not initialized')
-
+		const zkitter = await this.getZkitterClient()
 		const numOfPersonas = (await contract.numOfPersonas()).toNumber()
 		const personaStore = get(personas)
 		const groupIds: string[] = []
@@ -257,11 +273,11 @@ export class ZkitterAdapter implements Adapter {
 			if (!personaStore.all.has(personaId)) {
 				const group = new GroupAdapter({
 					globalAnonymousFeed: contract,
-					db: this.zkitter.db as GenericDBAdapterInterface,
+					db: zkitter.db as GenericDBAdapterInterface,
 					personaId: i,
 				})
 
-				this.zkitter.services.groups.addGroup(group)
+				zkitter.services.groups.addGroup(group)
 
 				await group.sync()
 
@@ -309,7 +325,9 @@ export class ZkitterAdapter implements Adapter {
 
 		if (!identityCommitment) return false
 
-		const members = await this.zkitter!.getGroupMembers(GroupAdapter.createGroupId(personaId))
+		const zkitter = await this.getZkitterClient()
+
+		const members = await zkitter.getGroupMembers(GroupAdapter.createGroupId(personaId))
 
 		if (members.includes('0x' + identityCommitment.toString(16))) {
 			return true
@@ -324,8 +342,10 @@ export class ZkitterAdapter implements Adapter {
 
 		const favorite = getFromLocalStorage<string[]>('favorite', [])
 
+		const zkitter = await this.getZkitterClient()
+
 		if (favorite.length) {
-			await this.zkitter!.updateFilter({ group: favorite.map(GroupAdapter.createGroupId) } as never)
+			await zkitter.updateFilter({ group: favorite.map(GroupAdapter.createGroupId) } as never)
 
 			personas.update((store) => {
 				return {
@@ -400,7 +420,8 @@ export class ZkitterAdapter implements Adapter {
 	}
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
 		if (!this.identity) throw new Error('must sign in first')
-		if (!this.zkitter) throw new Error('zkitter is not initialized')
+
+		const zkitter = await this.getZkitterClient()
 
 		const { MessageType, Post, PostMessageSubType } = await import('zkitter-js')
 
@@ -416,7 +437,7 @@ export class ZkitterAdapter implements Adapter {
 			payload: { content: draftPersona.pitch },
 		})
 
-		await this.zkitter!.services.pubsub.publish(
+		await zkitter.services.pubsub.publish(
 			pitch,
 			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
 			true,
@@ -428,7 +449,7 @@ export class ZkitterAdapter implements Adapter {
 			payload: { content: draftPersona.description },
 		})
 
-		await this.zkitter!.services.pubsub.publish(
+		await zkitter.services.pubsub.publish(
 			description,
 			await generateRLNProofForNewPersona(
 				description.hash(),
@@ -451,7 +472,7 @@ export class ZkitterAdapter implements Adapter {
 				},
 			})
 			seedPostHashes.push('0x' + post.hash())
-			await this.zkitter!.services.pubsub.publish(
+			await zkitter.services.pubsub.publish(
 				post,
 				await generateRLNProofForNewPersona(post.hash(), this.identity.zkIdentity, newPersonaId),
 				true,
@@ -517,7 +538,7 @@ export class ZkitterAdapter implements Adapter {
 
 	async joinPersona(personaId: string): Promise<void> {
 		if (!this.identity) throw new Error('must sign in first')
-		if (!this.zkitter) throw new Error('zkitter is not initialized')
+		const zkitter = await this.getZkitterClient()
 
 		await this.userState!.waitForSync()
 
@@ -541,7 +562,7 @@ export class ZkitterAdapter implements Adapter {
 
 		if (json?.transaction) {
 			await this.waitForTx(json.transaction)
-			await this.zkitter!.syncGroup(GroupAdapter.createGroupId(personaId))
+			await zkitter.syncGroup(GroupAdapter.createGroupId(personaId))
 		}
 	}
 
@@ -595,21 +616,23 @@ export class ZkitterAdapter implements Adapter {
 	}
 
 	async getPostByHash(hash: string) {
+		const zkitter = await this.getZkitterClient()
 		const msgHash = hash.slice(0, 2) === '0x' ? hash.slice(2) : hash
-		let post = await this.zkitter!.services.posts.getPost(msgHash)
+		let post = await zkitter.services.posts.getPost(msgHash)
 
-		if (!post) await this.zkitter!.queryThread(msgHash)
+		if (!post) await zkitter.queryThread(msgHash)
 
-		post = await this.zkitter!.services.posts.getPost(msgHash)
+		post = await zkitter.services.posts.getPost(msgHash)
 
 		return post
 	}
 
 	async getPostMetaByHash(hash: string): Promise<PostMeta> {
+		const zkitter = await this.getZkitterClient()
 		const msgHash = hash.slice(0, 2) === '0x' ? hash.slice(2) : hash
-		let meta = await this.zkitter!.getPostMeta(msgHash)
-		if (!meta) await this.zkitter!.queryThread(msgHash)
-		meta = await this.zkitter!.getPostMeta(msgHash)
+		let meta = await zkitter.getPostMeta(msgHash)
+		if (!meta) await zkitter.queryThread(msgHash)
+		meta = await zkitter.getPostMeta(msgHash)
 		return meta
 	}
 
@@ -632,6 +655,8 @@ export class ZkitterAdapter implements Adapter {
 		signer: Signer,
 	): Promise<string> {
 		const { Post, MessageType, PostMessageSubType } = await import('zkitter-js')
+		const zkitter = await this.getZkitterClient()
+
 		// const {Registry, RLN} = await import('rlnjs')
 
 		// User did not join the persona yet
@@ -657,7 +682,7 @@ export class ZkitterAdapter implements Adapter {
 			},
 		})
 
-		const proof = await this.zkitter!.createProof({
+		const proof = await zkitter.createProof({
 			hash: post.hash(),
 			zkIdentity: this.identity!.zkIdentity,
 			groupId: GroupAdapter.createGroupId(personaId),
@@ -694,7 +719,7 @@ export class ZkitterAdapter implements Adapter {
 		// }
 		// console.log(goTokens)
 
-		await this.zkitter!.services.pubsub.publish(post, proof)
+		await zkitter.services.pubsub.publish(post, proof)
 
 		const repProof = await this.genRepProof(getGlobalAnonymousFeed(), 5)
 		console.log(repProof)
@@ -750,10 +775,12 @@ export class ZkitterAdapter implements Adapter {
 
 	async subscribePersonaPosts(personaId: string): Promise<() => unknown> {
 		const groupId = GroupAdapter.createGroupId(personaId)
-		await this.zkitter!.syncGroup(groupId)
+		const zkitter = await this.getZkitterClient()
+
+		await zkitter.syncGroup(groupId)
 		await this.syncActivePost(personaId)
 		await this.syncPendingPost(personaId)
-		return this.zkitter!.updateFilter({ group: [groupId] } as never)
+		return zkitter.updateFilter({ group: [groupId] } as never)
 	}
 
 	private async waitForTx(txHash: string): Promise<number> {
@@ -843,7 +870,9 @@ export class ZkitterAdapter implements Adapter {
 
 	async startChat(chat: Chat): Promise<string> {
 		const { zkIdentity } = this.identity!
-		const msgProof = await this.zkitter!.getProof(chat.post.postId)
+		const zkitter = await this.getZkitterClient()
+
+		const msgProof = await zkitter.getProof(chat.post.postId)
 
 		if (msgProof?.type !== 'rln' || !msgProof.ecdh) throw new Error('invalid proof')
 
@@ -865,7 +894,9 @@ export class ZkitterAdapter implements Adapter {
 
 	async publishZkitterMessage(message: Message) {
 		const { zkIdentity } = this.identity!
-		const proof = await this.zkitter!.createProof({
+		const zkitter = await this.getZkitterClient()
+
+		const proof = await zkitter.createProof({
 			hash: message.hash(),
 			zkIdentity: this.identity!.zkIdentity,
 		})
@@ -873,20 +904,20 @@ export class ZkitterAdapter implements Adapter {
 		if (proof.type !== 'rln') throw new Error('invalid proof')
 
 		if (proof.ecdh) {
-			await this.zkitter!.db.saveChatECDH(
+			await zkitter.db.saveChatECDH(
 				'0x' + zkIdentity.genIdentityCommitment().toString(16),
 				proof.ecdh,
 			)
 		}
 
 		if (message.type === 'CHAT') {
-			await this.zkitter!.db.saveChatECDH(
+			await zkitter.db.saveChatECDH(
 				'0x' + zkIdentity.genIdentityCommitment().toString(16),
 				(message as ZKitterChat).payload.senderECDH,
 			)
 		}
 
-		const data = await this.zkitter!.publish(message, proof)
+		const data = await zkitter.publish(message, proof)
 		console.log(data)
 	}
 	async sendChatMessage(chatId: string, text: string): Promise<void> {
@@ -896,7 +927,9 @@ export class ZkitterAdapter implements Adapter {
 			post: { postId },
 		} = chatData!
 		const { zkIdentity } = this.identity!
-		const msgProof = await this.zkitter!.getProof(postId)
+		const zkitter = await this.getZkitterClient()
+
+		const msgProof = await zkitter.getProof(postId)
 
 		if (msgProof?.type !== 'rln' || !msgProof.ecdh) return
 
@@ -945,7 +978,9 @@ export class ZkitterAdapter implements Adapter {
 		} = chatData!
 
 		const { zkIdentity } = this.identity!
-		const msgProof = await this.zkitter!.getProof(postId)
+		const zkitter = await this.getZkitterClient()
+
+		const msgProof = await zkitter.getProof(postId)
 
 		if (msgProof?.type !== 'rln' || !msgProof.ecdh) throw new Error('invalid proof from chat id')
 
@@ -953,7 +988,7 @@ export class ZkitterAdapter implements Adapter {
 		const { pub, priv } = await generateECDHKeyPairFromZKIdentity(zkIdentity, postId)
 		const { ecdh: receiverECDH } = msgProof
 
-		const chatMsgs = await this.zkitter!.getChatMessages(chatId, undefined, undefined, {
+		const chatMsgs = await zkitter.getChatMessages(chatId, undefined, undefined, {
 			type: 'zk',
 			zkIdentity,
 			groupId: '',
@@ -963,7 +998,7 @@ export class ZkitterAdapter implements Adapter {
 			await this.insertChat(chatMsgs[i], chatId)
 		}
 
-		return this.zkitter!.updateFilter({ ecdh: [pub, receiverECDH] } as never)
+		return zkitter.updateFilter({ ecdh: [pub, receiverECDH] } as never)
 	}
 
 	private insertChat(chat: ZKitterChat, chatId: string) {
