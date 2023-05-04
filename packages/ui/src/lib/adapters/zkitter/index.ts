@@ -55,18 +55,18 @@ export class ZkitterAdapter implements Adapter {
 
 	protected userState: UserState | null = null
 
-	protected _startPromise: Promise<Zkitter>;
+	protected _startPromise: Promise<Zkitter>
 
-	protected _resolveZkitterStart: (zkitter: Zkitter) => void = () => null;
+	protected _resolveZkitterStart: (zkitter: Zkitter) => void = () => null
 
 	constructor() {
-		this._startPromise = new Promise(resolve => {
-			this._resolveZkitterStart = resolve;
-		});
+		this._startPromise = new Promise((resolve) => {
+			this._resolveZkitterStart = resolve
+		})
 	}
 
 	async getZkitterClient(): Promise<Zkitter> {
-		return this._startPromise;
+		return this._startPromise
 	}
 
 	async start() {
@@ -76,7 +76,7 @@ export class ZkitterAdapter implements Adapter {
 
 		const zkitter = await Zkitter.initialize({ groups: [], topicPrefix: 'kurate_dev_5' })
 
-		this._resolveZkitterStart(zkitter);
+		this._resolveZkitterStart(zkitter)
 
 		zkitter.on('Zkitter.NewMessageCreated', async (msg: Message, proof: Proof) => {
 			if (msg.type === 'POST') {
@@ -169,7 +169,7 @@ export class ZkitterAdapter implements Adapter {
 	private async syncChats() {
 		if (!this.identity) return
 
-		const zkitter = await this.getZkitterClient();
+		const zkitter = await this.getZkitterClient()
 
 		const chatMetas = await zkitter.getChatByUser(
 			'0x' + this.identity.zkIdentity.genIdentityCommitment().toString(16),
@@ -262,7 +262,7 @@ export class ZkitterAdapter implements Adapter {
 		)
 	}
 	private async queryPersonasFromContract(contract: GlobalAnonymousFeed) {
-		const zkitter = await this.getZkitterClient();
+		const zkitter = await this.getZkitterClient()
 		const numOfPersonas = (await contract.numOfPersonas()).toNumber()
 		const personaStore = get(personas)
 		const groupIds: string[] = []
@@ -325,7 +325,7 @@ export class ZkitterAdapter implements Adapter {
 
 		if (!identityCommitment) return false
 
-		const zkitter = await this.getZkitterClient();
+		const zkitter = await this.getZkitterClient()
 
 		const members = await zkitter.getGroupMembers(GroupAdapter.createGroupId(personaId))
 
@@ -342,7 +342,7 @@ export class ZkitterAdapter implements Adapter {
 
 		const favorite = getFromLocalStorage<string[]>('favorite', [])
 
-		const zkitter = await this.getZkitterClient();
+		const zkitter = await this.getZkitterClient()
 
 		if (favorite.length) {
 			await zkitter.updateFilter({ group: favorite.map(GroupAdapter.createGroupId) } as never)
@@ -421,7 +421,7 @@ export class ZkitterAdapter implements Adapter {
 	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
 		if (!this.identity) throw new Error('must sign in first')
 
-		const zkitter = await this.getZkitterClient();
+		const zkitter = await this.getZkitterClient()
 
 		const { MessageType, Post, PostMessageSubType } = await import('zkitter-js')
 
@@ -681,7 +681,6 @@ export class ZkitterAdapter implements Adapter {
 				attachment: images.length ? images[0] : undefined,
 			},
 		})
-
 
 		const proof = await zkitter.createProof({
 			hash: post.hash(),
