@@ -49,6 +49,7 @@
 	let postToEditImages: string[] = []
 	let postToDelete: DraftPost | undefined = undefined
 	let publishedPersonaId: string | undefined = undefined
+	let publishing = false
 
 	type State = 'persona_preview' | 'edit_text' | 'edit_rep' | 'post_new' | 'publish_warning'
 
@@ -75,10 +76,16 @@
 	}
 
 	async function publishPersona() {
-		if (!$profile.signer) return
+		try {
+			publishing = true
+			if (!$profile.signer) throw new Error('No signer, please login')
 
-		publishedPersonaId = await adapter.publishPersona(persona, $profile.signer)
-		adapter.addPersonaToFavorite(publishedPersonaId)
+			publishedPersonaId = await adapter.publishPersona(persona, $profile.signer)
+			adapter.addPersonaToFavorite(publishedPersonaId)
+		} catch (e) {
+			console.error(e)
+		}
+		publishing = false
 	}
 
 	let y: number
@@ -397,11 +404,12 @@
 
 		<svelte:fragment slot="buttons">
 			{#if $tokens.go >= TOKEN_POST_COST}
-				<Button icon={Checkmark} variant="primary" label="I agree" on:click={publishPersona} />
+				<Button icon={Checkmark} variant="primary" disabled={publishing} label={publishing ? "Publishing..." : "I agree"} on:click={publishPersona} />
 				<Button
 					variant="secondary"
 					label="Nope"
 					icon={Close}
+					disabled={publishing}
 					on:click={() => setState('persona_preview')}
 				/>
 			{:else}
