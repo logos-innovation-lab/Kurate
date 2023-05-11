@@ -4,7 +4,7 @@
     "private": true,
     "main": "index.js",
     "scripts": {
-        "start": "pnpm run compile && pnpm run deploy -- --network localhost",
+        "start": "pnpm run compile && pnpm run deploy --network localhost",
         "start:blockchain": "hardhat node",
         "compile": "hardhat compile",
         "download:snark-artifacts": "hardhat run scripts/download-snark-artifacts.ts",

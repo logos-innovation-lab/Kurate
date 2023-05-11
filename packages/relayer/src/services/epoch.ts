@@ -1,5 +1,5 @@
 import {getDefaultProvider} from "@ethersproject/providers";
-import {GLOBAL_ANONYMOUS_FEED_ADDRESS, PRIVATE_KEY, RPC_URL} from "../config";
+import {PUBLIC_GLOBAL_ANONYMOUS_FEED_ADDRESS, PRIVATE_KEY, PUBLIC_PROVIDER} from "../config";
 import {Wallet} from "@ethersproject/wallet";
 import {GlobalAnonymousFeed, GlobalAnonymousFeed__factory} from "../abi";
 import {BuildOrderedTree, Circuit, CircuitConfig, Prover} from "@unirep/circuits";
@@ -23,10 +23,10 @@ class EpochSealer {
   nextEpochEnd: number = 0;
 
   constructor() {
-    const provider = getDefaultProvider(RPC_URL);
+    const provider = getDefaultProvider(PUBLIC_PROVIDER);
     this.wallet = new Wallet(PRIVATE_KEY, provider);
     this.contract = GlobalAnonymousFeed__factory.connect(
-      GLOBAL_ANONYMOUS_FEED_ADDRESS,
+      PUBLIC_GLOBAL_ANONYMOUS_FEED_ADDRESS,
       this.wallet
     );
   }

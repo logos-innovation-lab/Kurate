@@ -7,7 +7,12 @@ import { transaction } from '$lib/stores/transaction'
 import type { providers } from 'ethers'
 
 type WindowWithEthereum = Window &
-	typeof globalThis & { ethereum: providers.ExternalProvider | any }
+	typeof globalThis & {
+		ethereum: providers.ExternalProvider & {
+			on: (name: string, handler: () => unknown) => void
+			removeListener: (name: string, handler: () => unknown) => void
+		}
+	}
 
 const windowWithEthereum = browser && (window as WindowWithEthereum)
 

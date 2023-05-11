@@ -38,7 +38,7 @@ export class GroupAdapter extends EventEmitter2 implements GenericGroupAdapter {
 	async sync() {
 		if (Date.now() - this.lastSync < 60000) return
 		const lastMemberIdCommitment = (await this.members()).pop()
-		// TODO: expose method in new zkitter-js release
+		// FIXME: let's not use any in the codebase please
 		const lastMember = await (this.db as any)
 			.groupMembersDB(this.groupId)
 			.get(lastMemberIdCommitment)

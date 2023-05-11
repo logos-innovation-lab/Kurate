@@ -14,35 +14,25 @@ import "./tasks/deploy"
 dotenvConfig({ path: resolve(__dirname, "../../.env") })
 
 function getNetworks(): NetworksUserConfig {
-    if (process.env.ETHEREUM_URL && process.env.ETHEREUM_PRIVATE_KEY) {
-        const accounts = [`0x${process.env.ETHEREUM_PRIVATE_KEY}`]
+    const networks: NetworksUserConfig = {
+        localhost: {
+            url: 'http://127.0.0.1:8545',
+            chainId: 31337
+        }
+    }
 
+    if (process.env.ETHEREUM_URL && process.env.ETHEREUM_PRIVATE_KEY) {
         return {
-            goerli: {
-                url: process.env.ETHEREUM_URL,
-                chainId: 5,
-                accounts
-            },
+            ...networks,
             // arbitrum goerli
             agor: {
                 url: 'https://goerli-rollup.arbitrum.io/rpc',
                 chainId: 421613,
-                accounts,
+                accounts: [process.env.ETHEREUM_PRIVATE_KEY],
             },
-            sepolia: {
-                url: process.env.ETHEREUM_URL,
-                chainId: 11155111,
-                accounts
-            },
-            localhost: {
-                url: 'http://127.0.0.1:7545',
-                chainId: 1337,
-                accounts,
-            }
         }
     }
-
-    return {}
+    return networks
 }
 
 const hardhatConfig: HardhatUserConfig = {
@@ -54,9 +44,6 @@ const hardhatConfig: HardhatUserConfig = {
         artifacts: config.paths.build.contracts
     },
     networks: {
-        hardhat: {
-            chainId: 1337
-        },
         ...getNetworks()
     },
     gasReporter: {

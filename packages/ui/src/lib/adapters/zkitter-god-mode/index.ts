@@ -1,7 +1,6 @@
 import { getGlobalAnonymousFeed } from '$lib/services'
 import { sleep } from '$lib/utils'
 import { GroupAdapter } from '../zkitter/group-adapter'
-import type { Signer } from 'ethers'
 import { posts } from '$lib/stores/post'
 import { RELAYER_URL } from '../../constants'
 import { ZkitterAdapter } from '../zkitter'
@@ -24,15 +23,8 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 		return super.start()
 	}
 
-	async publishPost(
-		personaId: string,
-		text: string,
-		images: string[],
-		signer: Signer,
-	): Promise<string> {
+	async publishPost(personaId: string, text: string, images: string[]): Promise<string> {
 		const { Post, MessageType, PostMessageSubType } = await import('zkitter-js')
-
-		if (!signer) throw new Error('must connect with wallet first')
 
 		const zkitter = await this.getZkitterClient()
 
@@ -101,8 +93,7 @@ export class ZkitterAdapterGodMode extends ZkitterAdapter {
 		return hash
 	}
 
-	async publishPersona(draftPersona: DraftPersona, signer: Signer): Promise<string> {
-		if (!signer) throw new Error('must connect with wallet first')
+	async publishPersona(draftPersona: DraftPersona): Promise<string> {
 		if (!this.identity) throw new Error('must sign in first')
 		if (!this.userState) throw new Error('user state is not initialized')
 
