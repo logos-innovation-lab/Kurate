@@ -404,7 +404,13 @@
 
 		<svelte:fragment slot="buttons">
 			{#if $tokens.go >= TOKEN_POST_COST}
-				<Button icon={Checkmark} variant="primary" disabled={publishing} label={publishing ? "Publishing..." : "I agree"} on:click={publishPersona} />
+				<Button
+					icon={Checkmark}
+					variant="primary"
+					disabled={publishing}
+					label={publishing ? 'Publishing...' : 'I agree'}
+					on:click={publishPersona}
+				/>
 				<Button
 					variant="secondary"
 					label="Nope"

@@ -100,7 +100,7 @@ export async function updateActivePosts(postHashes: string[]): Promise<{ [hash: 
 	return newActives
 }
 
-export async function getActivePosts(postHashes: string[]): Promise<{ [hash: string]: string }> {
+export async function getActivePosts(): Promise<{ [hash: string]: string }> {
 	return getFromLocalStorage<{ [hash: string]: string }>('kurate/actives', {})
 }
 
