@@ -453,6 +453,7 @@ export class ZkitterAdapter implements Adapter {
 		await zkitter.services.pubsub.publish(
 			pitch,
 			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
+			true,
 		)
 
 		const description = new Post({
@@ -468,6 +469,7 @@ export class ZkitterAdapter implements Adapter {
 				this.identity.zkIdentity,
 				newPersonaId,
 			),
+			true,
 		)
 
 		const seedPostHashes: string[] = []
@@ -486,6 +488,7 @@ export class ZkitterAdapter implements Adapter {
 			await zkitter.services.pubsub.publish(
 				post,
 				await generateRLNProofForNewPersona(post.hash(), this.identity.zkIdentity, newPersonaId),
+				true,
 			)
 		}
 
