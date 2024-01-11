@@ -24,7 +24,6 @@ export const createRLNProof = async (
     BigInt("0x" + rlnIdentifier)
   );
 
-  // @ts-ignore
   return RLN.genProof(witness, wasmFilePath, finalZkeyPath);
 };
 

@@ -35,7 +35,7 @@ export interface GenericDBAdapterInterface {
     limit?: number,
     offset?: number | string
   ) => Promise<string[]>;
-  findGroupHash: (hash: string) => Promise<string | null>;
+  findGroupHash: (hash: string, groupId?: string) => Promise<string | null>;
   insertPost: (post: Post, proof: Proof) => Promise<Post>;
   insertChat: (chat: Chat, proof: Proof) => Promise<Chat>;
   insertModeration: (
@@ -67,6 +67,11 @@ export interface GenericDBAdapterInterface {
   ) => Promise<Post[]>;
   getUserPosts: (
     address: string,
+    limit?: number,
+    offset?: number | string
+  ) => Promise<Post[]>;
+  getGroupPosts: (
+    groupId: string,
     limit?: number,
     offset?: number | string
   ) => Promise<Post[]>;

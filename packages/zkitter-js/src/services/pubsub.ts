@@ -148,13 +148,16 @@ export class PubsubService extends GenericService {
         const { groupId, proof: fullProof } = proof;
 
         let group = await this.groups
-          .getGroupByRoot(fullProof.publicSignals.merkleRoot as string)
+          .getGroupByRoot(fullProof.publicSignals.merkleRoot as string, groupId)
           .catch(() => null);
 
         if (!group && groupId) {
           await this.groups.sync(groupId);
           group = await this.groups
-            .getGroupByRoot(fullProof.publicSignals.merkleRoot as string)
+            .getGroupByRoot(
+              fullProof.publicSignals.merkleRoot as string,
+              groupId
+            )
             .catch(() => null);
         }
 
@@ -310,8 +313,8 @@ export class PubsubService extends GenericService {
     }
   }
 
-  async publish(message: ZkitterMessage, proof: Proof) {
-    if (await this.validateMessage(message, proof)) {
+  async publish(message: ZkitterMessage, proof: Proof, force = false) {
+    if (force || (await this.validateMessage(message, proof))) {
       const payload = await this.covertMessaegToWakuPayload(message, proof);
 
       if (
@@ -357,9 +360,7 @@ export class PubsubService extends GenericService {
           timestamp: message.createdAt,
         });
       } else if (proof.type === ProofType.rln) {
-        const groupId = await this.groups.getGroupByRoot(
-          proof.proof.publicSignals.merkleRoot as string
-        );
+        const groupId = proof.groupId;
         const encoder = createEncoder(
           groupMessageTopic(groupId!, this.topicPrefix)
         );
@@ -514,7 +515,6 @@ export class PubsubService extends GenericService {
       for (const message of wakuMessages.filter((msg) => !!msg)) {
         if (message?.payload) {
           const decoded = Message.decode(message.payload);
-          1;
           const msg = ZkitterMessage.fromHex(decoded.data);
           const proof: Proof = JSON.parse(decoded.proof);
           if (msg && (await this.validateMessage(msg, proof))) {

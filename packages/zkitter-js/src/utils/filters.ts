@@ -4,7 +4,7 @@ import {
   groupMessageTopic,
   threadTopic,
   userMessageTopic,
-} from "./pubsub";
+} from "../utils/pubsub";
 
 export type FilterOptions = {
   address?: string[];

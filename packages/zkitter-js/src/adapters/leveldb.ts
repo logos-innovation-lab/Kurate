@@ -184,8 +184,8 @@ export class LevelDBAdapter implements GenericDBAdapterInterface {
     });
   }
 
-  get groupRootsDB() {
-    return this.db.sublevel<string, string>("groupRoots", {
+  groupRootsDB(rootHash: string) {
+    return this.db.sublevel<string, string>(rootHash + "/groupRoots", {
       valueEncoding: "json",
     });
   }
@@ -405,8 +405,8 @@ export class LevelDBAdapter implements GenericDBAdapterInterface {
         value: member.idCommitment,
       },
       {
-        key: member.newRoot,
-        sublevel: this.groupRootsDB,
+        key: groupId,
+        sublevel: this.groupRootsDB(member.newRoot),
         type: "put",
         // @ts-ignore
         value: groupId,
@@ -821,7 +821,8 @@ export class LevelDBAdapter implements GenericDBAdapterInterface {
 
     if (proof.type === ProofType.rln) {
       const groupId = await this.findGroupHash(
-        proof.proof.publicSignals.merkleRoot as string
+        proof.proof.publicSignals.merkleRoot as string,
+        proof.groupId
       );
       postMetaDirty = true;
       postMeta.groupId = groupId || "";
@@ -1446,7 +1447,23 @@ export class LevelDBAdapter implements GenericDBAdapterInterface {
     return chats;
   }
 
-  async findGroupHash(hash: string): Promise<string | null> {
-    return this.groupRootsDB.get(hash).catch(() => null);
+  async findGroupHash(hash: string, groupId?: string): Promise<string | null> {
+    let retValue;
+
+    if (groupId) {
+      retValue = await this.groupRootsDB(hash)
+        .get(groupId)
+        .catch(() => null);
+    }
+
+    if (retValue) return retValue;
+
+    for await (const value of this.groupRootsDB(hash).values({
+      valueEncoding: "json",
+    })) {
+      return value;
+    }
+
+    return null;
   }
 }
