@@ -28,6 +28,9 @@ import { getFromLocalStorage } from '../../utils'
 import type { ReputationProof, UserStateTransitionProof } from '@unirep/circuits'
 import { GLOBAL_ANONYMOUS_FEED_ADDRESS, RELAYER_URL } from '../../constants'
 
+import wasmFilePath from 'zkitter-js/rln/rln.wasm?url'
+import finalZkeyPath from 'zkitter-js/rln/rln.zkey?url'
+
 // FIXME: no idea where whe should put these so that they don't leak. I can limit to some specific origin I guess
 const IPFS_AUTH =
 	'Basic Mk5Nbk1vZUNSTWMyOTlCQjYzWm9QZzlQYTU3OjAwZTk2MmJjZTBkZmQxZWQxNGNhNmY1M2JiYjYxMTli'
@@ -74,7 +77,12 @@ export class ZkitterAdapter implements Adapter {
 
 		const contract = getGlobalAnonymousFeed()
 
-		const zkitter = await Zkitter.initialize({ groups: [], topicPrefix: 'kurate_dev_5' })
+		const zkitter = await Zkitter.initialize({
+			wasmFilePath,
+			finalZkeyPath,
+			groups: [],
+			topicPrefix: 'kurate_dev_5',
+		})
 
 		this._resolveZkitterStart(zkitter)
 
@@ -445,7 +453,6 @@ export class ZkitterAdapter implements Adapter {
 		await zkitter.services.pubsub.publish(
 			pitch,
 			await generateRLNProofForNewPersona(pitch.hash(), this.identity.zkIdentity, newPersonaId),
-			true,
 		)
 
 		const description = new Post({
@@ -461,7 +468,6 @@ export class ZkitterAdapter implements Adapter {
 				this.identity.zkIdentity,
 				newPersonaId,
 			),
-			true,
 		)
 
 		const seedPostHashes: string[] = []
@@ -480,7 +486,6 @@ export class ZkitterAdapter implements Adapter {
 			await zkitter.services.pubsub.publish(
 				post,
 				await generateRLNProofForNewPersona(post.hash(), this.identity.zkIdentity, newPersonaId),
-				true,
 			)
 		}
 

@@ -49,11 +49,11 @@
 		"typescript": "^5.0.2",
 		"vite": "v4.2.1",
 		"vite-plugin-node-polyfills": "^0.7.0",
-		"vitest": "^0.29.7",
-		"zkitter-js": "^1.2.8"
+		"vitest": "^0.29.7"
 	},
 	"type": "module",
 	"dependencies": {
-		"firebase": "^9.19.1"
+		"firebase": "^9.19.1",
+		"zkitter-js": "workspace:^"
 	}
 }

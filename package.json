@@ -16,5 +16,12 @@
   },
   "engines": {
     "node": "16.x - 19.x"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@zk-kit/incremental-merkle-tree@0.4.3": "patches/@zk-kit__incremental-merkle-tree@0.4.3.patch",
+      "@zk-kit/identity@1.4.1": "patches/@zk-kit__identity@1.4.1.patch",
+      "@zk-kit/protocols@1.11.1": "patches/@zk-kit__protocols@1.11.1.patch"
+    }
   }
 }

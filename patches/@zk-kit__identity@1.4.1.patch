@@ -1,0 +1,31 @@
+diff --git a/dist/types/index.d.mts b/dist/types/index.d.mts
+new file mode 100644
+index 0000000000000000000000000000000000000000..8b3a9328aa56bb0ec4206a6c9ccb16aec2ea79fa
+--- /dev/null
++++ b/dist/types/index.d.mts
+@@ -0,0 +1,2 @@
++import ZkIdentity, { Strategy } from "./identity";
++export { ZkIdentity, Strategy };
+diff --git a/package.json b/package.json
+index ddb97ee6629f2d330f65c682fcbae9b9635d07a1..cd9745ccfcbd526b2521622b22f71c0497bb332a 100644
+--- a/package.json
++++ b/package.json
+@@ -5,10 +5,16 @@
+   "license": "MIT",
+   "main": "dist/index.node.js",
+   "exports": {
+-    "import": "./dist/index.mjs",
+-    "require": "./dist/index.node.js"
++    "import": {
++      "types": "./dist/types/index.d.mts",
++      "default": "./dist/index.mjs"
++    },
++    "require": {
++      "types": "./dist/types/index.d.ts",
++      "default": "./dist/index.node.js"
++    }
+   },
+   "types": "dist/types/index.d.ts",
+   "files": [
+     "dist/",
+     "src/",

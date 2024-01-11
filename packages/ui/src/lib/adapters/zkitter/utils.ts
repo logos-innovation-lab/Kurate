@@ -9,6 +9,9 @@ import { getFromLocalStorage, saveToLocalStorage } from '../../utils'
 import { GroupAdapter } from './group-adapter'
 import { RELAYER_URL } from '../../constants'
 
+import wasmFilePath from 'zkitter-js/rln/rln.wasm?url'
+import finalZkeyPath from 'zkitter-js/rln/rln.zkey?url'
+
 export const prover: Prover = {
 	verifyProof: async (
 		circuitName: string | Circuit,
@@ -77,7 +80,7 @@ export async function generateRLNProofForNewPersona(
 	const idcommit = zkIdentity.genIdentityCommitment()
 	const tree = generateMerkleTree(15, BigInt(0), [idcommit])
 	const path = tree.createProof(tree.indexOf(idcommit))
-	const proof = await createRLNProof(hash, zkIdentity, path)
+	const proof = await createRLNProof(wasmFilePath, finalZkeyPath, hash, zkIdentity, path)
 	const ecdh = await generateECDHKeyPairFromZKIdentity(zkIdentity, hash)
 	return {
 		ecdh: ecdh.pub,
